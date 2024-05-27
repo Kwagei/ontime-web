@@ -1,0 +1,13 @@
+svg {
+    width: 40px;
+    height: 40px;
+    margin-right: 0.5rem;
+}
+
+.nav-link {
+    padding: 0.5rem 2rem;
+}
+
+#app-title {
+    padding: 0 !important;
+}

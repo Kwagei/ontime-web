@@ -13,7 +13,7 @@
                         padding: 0.8rem 0.5rem;
                         font-weight: 400;
                         border: 0.0125rem solid #ccc;
-                        border-radius: 1rem !important;
+                        border-radius: 0.5rem !important;
                     "
                 >
                     <svg
@@ -38,7 +38,7 @@
                         padding: 0.8rem 1rem;
                         font-weight: 400;
                         border: 0.0125rem solid #ccc;
-                        border-radius: 1rem !important;
+                        border-radius: 0.25rem !important;
                     "
                 >
                     ...
@@ -68,13 +68,13 @@
                         padding: 0.9rem 1.4rem;
                         font-weight: 400;
                         border: 0.0125rem solid #ccc;
-                        border-radius: 1rem !important;
+                        border-radius: 0.25rem !important;
                     "
                 />
             </div>
             <div
                 class="col-md-3 filter-item bg-white d-flex justify-content-between"
-                style="border: 0.0125rem solid #ccc; border-radius: 1rem"
+                style="border: 0.0125rem solid #ccc; border-radius: 0.25rem"
             >
                 <button
                     class="btn"
@@ -82,7 +82,7 @@
                         width: 80%;
                         height: 100%;
                         border: none;
-                        border-radius: 1rem;
+                        border-radius: 0.25rem;
                         border-right: 0.0125rem solid #ccc;
                         padding: 0.9rem;
                         font-weight: 400;
@@ -96,20 +96,20 @@
                     style="
                         border: none;
                         background-color: white;
-                        border-radius: 1rem;
+                        border-radius: 0.25rem;
                     "
                 ></button>
             </div>
             <div
                 class="col-md-3 filter-item bg-white d-flex justify-content-between"
-                style="border: 0.0125rem solid #ccc; border-radius: 1rem"
+                style="border: 0.0125rem solid #ccc; border-radius: 0.25rem"
             >
                 <button
                     class="flex-grow-1"
                     style="
                         border: none;
                         background-color: white;
-                        border-radius: 1rem;
+                        border-radius: 0.25rem;
                     "
                 ></button>
                 <button
@@ -118,7 +118,7 @@
                         width: 80%;
                         height: 100%;
                         border: none;
-                        border-radius: 1rem;
+                        border-radius: 0.25rem;
                         border-left: 0.0125rem solid #ccc;
                         padding: 0.9rem;
                         font-weight: 400;

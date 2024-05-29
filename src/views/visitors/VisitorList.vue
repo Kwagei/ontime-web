@@ -31,8 +31,8 @@
 </template>
 
 <style scoped>
-th,
+/* th,
 td {
     padding: 1rem;
-}
+} */
 </style>

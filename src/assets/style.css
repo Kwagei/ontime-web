@@ -1,6 +1,6 @@
 svg {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     margin-right: 0.5rem;
 }
 
@@ -10,4 +10,24 @@ svg {
 
 #app-title {
     padding: 0 !important;
+}
+
+a.router-link-active {
+    color: var(--bs-black) !important;
+    background-color: var(--bs-nav-pills-link-active-bg);
+}
+
+a.router-link-active path {
+    fill: var(--bs-black) !important;
+}
+
+@media (hover: hover) {
+    a:hover {
+        background-color: var(--bs-white) !important;
+        color: var(--bs-black) !important;
+    }
+
+    a:hover path {
+        fill: var(--bs-black) !important;
+    }
 }

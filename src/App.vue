@@ -14,9 +14,10 @@
                     <!-- <AddVisitors
                         @visitorFormSubmitted="handleVisitorSubmitted"
                     /> -->
-                    <AddVisits
-                        @visitorFormSubmitted="handleVisitorSubmitted"
-                    />
+                    <!-- <AddVisits
+                        @visitorFormSubmitted="handleVisitSubmitted"
+                    /> -->
+                    
                     <RouterView />
                 </section>
             </main>

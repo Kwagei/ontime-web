@@ -3,14 +3,14 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb m-0">
                 <li
-                    class="breadcrumb-item lead"
+                    class="breadcrumb-item"
                     v-for="(breadcrumb, index) in breadcrumbs"
                     :key="breadcrumb"
-                    style="padding: 0.8rem 0.5rem"
+                    style="padding: 0.8rem 0.5rem; font-weight: 400"
                 >
                     <template v-if="breadcrumbs[index + 1]">
                         <router-link :to="`/${breadcrumb}`">
-                            {{ breadcrumb }} >
+                            <span>{{ breadcrumb }}</span>
                         </router-link>
                     </template>
                     <span v-else>{{ breadcrumb }}</span>

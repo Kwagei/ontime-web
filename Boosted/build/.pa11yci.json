@@ -1,0 +1,23 @@
+{
+  "standard": "WCAG2AA",
+  "level": "error",
+  "defaults": {
+    "chromeLaunchConfig": {
+        "args": [
+            "--no-sandbox"
+        ]
+    },
+    "reporters": [
+      "cli",
+      ["pa11y-ci-reporter-html", {"destination": ".pa11y", "includeZeroIssues": true}]
+    ],
+    "runners": [
+      "axe"
+    ],
+    "useIncognitoBrowserContext": false,
+    "hideElements": "iframe, #text-decoration + p + div a.text-decoration-none, .accordion-collapse, #offcanvas, #offcanvasDark, #offcanvasResponsive, #bdSidebar, .overflow-y-scroll, .overflow-y-auto, .overflow-x-scroll, .overflow-x-auto, .table-responsive, fieldset.star-rating[disabled]",
+    "ignore": [
+      "color-contrast"
+    ]
+  }
+}

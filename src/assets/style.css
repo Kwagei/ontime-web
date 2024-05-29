@@ -30,4 +30,13 @@ a.router-link-active path {
     a:hover path {
         fill: var(--bs-black) !important;
     }
+    .hover-btn:hover {
+        background-color: var(--bs-black) !important;
+        color: white !important;
+    }
+
+    .hover-btn:hover path,
+    .hover-btn:hover g {
+        fill: var(--bs-white) !important;
+    }
 }

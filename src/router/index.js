@@ -4,23 +4,23 @@ import App from "../App.vue";
 const routes = [
     {
         path: "/dashboard",
-        component: () => import("../views/dashboard/DashboardView.vue"),
+        component: () => import("../views/Dashboard.vue"),
     },
     {
         path: "/visitors",
-        component: () => import("../views/visitors/VisitorView.vue"),
+        component: () => import("../views/Visitors.vue"),
     },
     {
         path: "/visits",
-        component: () => import("../views/visits/VisitsList.vue"),
+        component: () => import("../views/Visits.vue"),
     },
     {
         path: "/users",
-        component: () => import("../views/users/UsersList.vue"),
+        component: () => import("../views/Users.vue"),
     },
     {
         path: "/events",
-        component: () => import("../views/events/EventsList.vue"),
+        component: () => import("../views/Events.vue"),
     },
 ];
 

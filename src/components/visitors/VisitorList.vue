@@ -1,9 +1,6 @@
 <template>
-    <div class="table-responsive" style="width: 80%; margin: auto">
-        <table
-            class="table table-sm table-hover has-checkbox"
-            style="margin-top: 1rem"
-        >
+    <div class="table-responsive">
+        <table class="table table-sm table-hover has-checkbox">
             <thead>
                 <tr>
                     <th scope="col">

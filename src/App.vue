@@ -1,19 +1,23 @@
 <template>
-    <div style="height: 100vh">
-        <div class="d-flex container gap-4 px-0" style="height: 100%">
-            <aside class="flex-grow-0 bg-info" style="width: 18rem">
-                <SideBar />
-            </aside>
-            <main
-                class="flex-grow-1"
-                style="height: 100%; background-color: #ececec"
+    <div style="" id="wrapper">
+        <div class="d-flex gap-4 px-0" style="height: 100%">
+            <aside
+                class="flex-grow-0 bg-info"
+                style="width: 20rem; height: 100%"
             >
-                <HeaderBar />
+                <SideBar @currentSection="currentSection" />
+            </aside>
+            <main class="flex-grow-1" style="background-color: #ececec">
+                <HeaderBar :activeSection="activeSection" />
 
-                <section style="padding: 0.5rem 4rem">
-                    <AddVisitors
+                <section>
+                    <!-- <AddVisitors
+                        @visitorFormSubmitted="handleVisitorSubmitted"
+                    /> -->
+                    <AddVisits
                         @visitorFormSubmitted="handleVisitorSubmitted"
                     />
+                    <RouterView />
                 </section>
             </main>
         </div>
@@ -22,16 +26,35 @@
 
 <script setup>
 import AddVisitors from "./components/visitors/AddVisitors.vue";
-// import AddVisits from "./components/visits/AddVisits.vue";
+import AddVisits from "./components/visits/AddVisits.vue";
 import SideBar from "./components/SideBar.vue";
 import HeaderBar from "./components/HeaderBar.vue";
 
-import { ref } from "vue";
+import { ref, defineProps } from "vue";
+import { RouterView } from "vue-router";
 
-const visitors = ref([]);
+const emit = defineEmits(["activeSection"]);
+
+const breadcrumbs = ref([]);
+const activeSection = ref("");
+
+const currentSection = (section) => {
+    activeSection.value = section;
+    breadcrumbs.value.push(section);
+};
+
+window.onload = () => {
+    const { pathname } = location;
+    activeSection.value = pathname.split("/")[1];
+};
 
 const handleVisitorSubmitted = (visitor) => {
     visitors.value.push(visitor);
-    console.log(visitors.value);
 };
 </script>
+
+<style scope>
+#wrapper {
+    height: 100vh;
+}
+</style>

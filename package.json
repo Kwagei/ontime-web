@@ -1,31 +1,31 @@
 {
-  "name": "ontime",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
-  },
-  "dependencies": {
-    "@floating-ui/vue": "^1.0.6",
-    "@vue/compiler-sfc": "^3.4.27",
-    "boosted": "^5.3.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "eslint": "^9.3.0",
-    "eslint-plugin-vue": "^9.26.0",
-    "jquery": "^3.7.1",
-    "papaparse": "^5.4.1",
-    "portal-vue": "^3.0.0-beta.0",
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.4",
-    "vite": "^5.2.8",
-    "vite-plugin-vue-devtools": "^7.0.25"
-  }
+	"name": "ontime",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+	},
+	"dependencies": {
+		"@floating-ui/vue": "^1.0.6",
+		"@vue/compiler-sfc": "^3.4.27",
+		"boosted": "^5.3.3",
+		"cors": "^2.8.5",
+		"dotenv": "^16.4.5",
+		"eslint": "^9.3.0",
+		"eslint-plugin-vue": "^9.26.0",
+		"jquery": "^3.7.1",
+		"papaparse": "^5.4.1",
+		"portal-vue": "^3.0.0-beta.0",
+		"vue": "^3.4.21",
+		"vue-router": "^4.3.0"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue": "^5.0.4",
+		"vite": "^5.2.8",
+		"vite-plugin-vue-devtools": "^7.0.25"
+	}
 }

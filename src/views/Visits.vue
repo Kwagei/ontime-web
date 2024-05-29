@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
 	<div id="visit-view" class="d-flex flex-column container">
 		<div

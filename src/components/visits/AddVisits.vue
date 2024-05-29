@@ -32,7 +32,6 @@
                             v-model="arrival_time"
                             aria-label="readonly input example"
                             id="arrival_time"
-                            readonly
                             disabled
                         />
                     </div>
@@ -59,7 +58,6 @@
                             v-model="departural_time"
                             aria-label="readonly input example"
                             id="departural_time"
-                            readonly
                             disabled
                         />
                     </div>
@@ -69,13 +67,14 @@
                         <label for="visit_host" class="form-label is-required">
                             Host<span class="visually-hidden">(required)</span>
                         </label>
-                        <input
-                            v-model="host"
-                            type="text"
-                            class="form-control"
-                            id="visit_host"
-                            required
-                        />
+                        <button type="button" class="form-control btn btn-dropdown dropdown-toggle" data-bs-toggle="dropdown"  aria-expanded="false" id="visit_host" required>
+                            Select Host
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" type="button">Action</button></li>
+                            <li><button class="dropdown-item" type="button">Another action</button></li>
+                            <li><button class="dropdown-item" type="button">Something else here</button></li>
+                        </ul>
                     </div>
                     <div class="col-md-6">
                         <label for="date" class="form-label">Date</label>
@@ -84,22 +83,24 @@
                             type="date"
                             v-model="date"
                             aria-label="readonly input example"
-                            id="date"
-                            readonly
-                            disabled
+                            id="date"                     
+                            disabled 
                         />
                     </div>
                 </div>
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
-                        <label for="visits_room" class="form-label is-required">Room <span class="visually-hidden">(required)</span></label>
-                        <input
-                            v-model="room"
-                            type="text"
-                            class="form-control"
-                            id="visits_room"
-                            required
-                        />
+                         <label for="visit_room" class="form-label is-required">
+                            Room<span class="visually-hidden">(required)</span>
+                        </label>
+                        <button type="button" class="form-control btn btn-dropdown dropdown-toggle" data-bs-toggle="dropdown" :id="visit_room"  aria-expanded="false" id="visit_host" required>
+                            Select Room
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" type="button">Action</button></li>
+                            <li><button class="dropdown-item" type="button">Another action</button></li>
+                            <li><button class="dropdown-item" type="button">Something else here</button></li>
+                        </ul>
                     </div>
                     <div class="col-md-6">
                         <label for="institution" class="form-label">Institution</label>
@@ -107,7 +108,20 @@
                             v-model="institution"
                             type="text"
                             class="form-control"
-                            id="institution"
+                            id="vist_institution"
+                        />
+                    </div>
+                </div>
+                <div class="row g-3 mb-3">
+                   
+                    <div class="col-md-6">
+                        <label for="belonging" class="form-label is-required">Belonging<span class="visually-hidden">(required)</span></label>
+                        <input
+                            v-model="belonging"
+                            type="text"
+                            class="form-control"
+                            id="vist_belonging"
+                            required
                         />
                     </div>
                 </div>

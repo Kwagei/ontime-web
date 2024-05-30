@@ -157,6 +157,7 @@ const host = ref('');
 const date = ref('');
 const room = ref('');
 const institution = ref('');
+const belonging = ref('');
 const purpose = ref('');
 
 const emit = defineEmits(['visitFormSubmitted']);
@@ -171,10 +172,11 @@ const onSubmit = () => {
         date: date.value,
         room: room.value,
         institution: institution.value,
+        belonging: belonging.value,
         purpose: purpose.value,
     };
-    console.log(visits);
-
+    
     emit('visitFormSubmitted', visits);
+    console.log(visits);
 };
 </script>

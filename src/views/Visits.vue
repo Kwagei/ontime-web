@@ -40,13 +40,13 @@
             <Filter />
             <Sort />
         </div>
-        <VisitorList />
+        <VisitList />
     </div>
 </template>
 
 <script setup>
 import BreadCrumbs from "../components/BreadCrumbs.vue";
-import VisitorList from "../components/visitors/VisitorList.vue";
+import VisitList from "../components/visits/VisitList.vue";
 import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";

@@ -3,7 +3,7 @@
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
         >
-            <BreadCrumbs />
+            <BreadCrumbs :breadCrumbs="breadCrumbs" />
 
             <div>
                 <RefreshList />
@@ -51,6 +51,17 @@ import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
 import Pagination from "../components/Pagination.vue";
+
+import { RouterLink } from "vue-router";
+
+import { ref, defineProps } from "vue";
+
+const props = defineProps({
+    breadCrumbs: {
+        type: Array,
+        required: true,
+    },
+});
 </script>
 
 <style scoped>

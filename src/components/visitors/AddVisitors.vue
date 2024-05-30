@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <div id="visitor-view" class="d-flex flex-column container">
         <div
-            class="d-flex justify-content-between align-items-center"
-            style="width: 80%; margin: auto; padding-top: 1rem"
+            class="d-flex justify-content-between align-items-center container p-0 mx-auto"
+            style="margin-top: 0.3rem"
         >
-            <BreadCrumbs />
+            <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
         <div
@@ -123,7 +123,7 @@ import BreadCrumbs from "../BreadCrumbs.vue";
 import ModalTemplate from "../ModalTemplate.vue";
 import { registerVisitor } from "@/assets/js/index.js";
 
-import { ref } from "vue";
+import { ref, defineProps, onMounted } from "vue";
 
 const first_name = ref("");
 const middle_name = ref("");
@@ -151,4 +151,49 @@ const onSubmit = async () => {
 
     emit("visitorFormSubmitted", visitor);
 };
+
+const activeBreadCrumbs = ref([]);
+
+const props = defineProps({
+    breadCrumbs: {
+        type: Array,
+        required: true,
+    },
+});
+
+activeBreadCrumbs.value = [...props.breadCrumbs, "new-visitor"];
+
+onMounted(() => {
+    document
+        .querySelector("aside #visitors")
+        .classList.add("router-link-active");
+});
 </script>
+
+<style scoped>
+#list-options {
+    padding: 0.6rem 0.5rem;
+    font-weight: 400;
+    border: 0.0125rem solid #ccc;
+    border-radius: 0.25rem !important;
+}
+svg {
+    height: 20px !important;
+    margin: 0 !important;
+}
+
+#new-visitor:hover {
+    color: white !important;
+}
+
+#visitor-view {
+    padding-top: 2rem;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) and (max-width: 1440px) {
+    #visitor-view {
+        padding: 1rem 3rem 0 3rem;
+    }
+}
+</style>

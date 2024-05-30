@@ -2,16 +2,16 @@
     <div style="" id="wrapper">
         <div class="d-flex gap-4 px-0" style="height: 100%">
             <aside class="flex-grow-0 bg-info">
-                <SideBar @currentSection="currentSection" />
+                <SideBar
+                    v-model:activeSection="activeSection"
+                    v-model:breadCrumbs="breadCrumbs"
+                />
             </aside>
             <main class="flex-grow-1" style="background-color: #ececec">
                 <HeaderBar :activeSection="activeSection" />
 
                 <section>
-                    <!-- <AddVisitors
-                        @visitorFormSubmitted="handleVisitorSubmitted"
-                    /> -->
-                    <RouterView :breadcrumbs="breadcrumbs" />
+                    <RouterView :breadCrumbs="breadCrumbs" />
                 </section>
             </main>
         </div>
@@ -21,17 +21,13 @@
 <script setup>
 import SideBar from "./components/SideBar.vue";
 import HeaderBar from "./components/HeaderBar.vue";
+import BreadCrumbs from "./components/BreadCrumbs.vue";
 
 import { ref } from "vue";
 import { RouterView } from "vue-router";
 
-const breadcrumbs = ref("");
 const activeSection = ref("");
-
-const currentSection = (section) => {
-    activeSection.value = section;
-    breadcrumbs.value = section;
-};
+const breadCrumbs = ref([]);
 </script>
 
 <style scope>

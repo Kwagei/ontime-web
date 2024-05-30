@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div
-        class="d-flex flex-column"
-        style="padding: 3rem 8rem 0 8rem; gap: 2.5rem"
+        class="d-flex flex-column container"
+        style="padding-top: 3rem; gap: 2.5rem"
     >
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"

@@ -1,9 +1,8 @@
 <template>
-    <header>
-        <nav class="navbar sticky-top">
+    <header class="bg-white">
+        <nav class="navbar sticky-top container">
             <div
                 class="container-fluid d-flex align-items-center justify-content-between"
-                style="padding-right: 3rem"
             >
                 <div class="navbar-brand">
                     <h3 class="m-0 active-section">{{ activeSection }}</h3>

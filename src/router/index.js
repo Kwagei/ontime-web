@@ -5,6 +5,7 @@ const routes = [
     {
         path: "/dashboard",
         component: () => import("../views/Dashboard.vue"),
+        props: true,
     },
     {
         path: "/visitors",
@@ -21,6 +22,10 @@ const routes = [
     {
         path: "/events",
         component: () => import("../views/Events.vue"),
+    },
+    {
+        path: "/visitors/new-visitor",
+        component: () => import("../components/visitors/AddVisitors.vue"),
     },
 ];
 

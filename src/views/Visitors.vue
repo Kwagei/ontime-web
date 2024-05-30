@@ -1,8 +1,5 @@
 <template>
-    <div
-        class="d-flex flex-column container"
-        style="padding-top: 3rem; gap: 2.5rem"
-    >
+    <div id="visitor-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
         >
@@ -24,14 +21,16 @@
                         </g>
                     </svg>
                 </button>
-                <button
-                    class=".hover-btn btn btn-primary text-black"
-                    id="new-visitor"
-                    type="submit"
-                    style="padding: 0.8rem 1.5rem; font-weight: 600"
-                >
-                    Add Visitor
-                </button>
+                <router-link :to="'/visitors/new-visitor'">
+                    <button
+                        class=".hover-btn btn btn-primary text-black"
+                        id="new-visitor"
+                        type="submit"
+                        style="padding: 0.5rem 1.5rem; font-weight: 600"
+                    >
+                        Add Visitor
+                    </button>
+                </router-link>
             </div>
         </div>
         <div class="row justify-content-between container p-0 mx-auto">
@@ -40,6 +39,7 @@
             <Sort />
         </div>
         <VisitorList />
+        <Pagination />
     </div>
 </template>
 
@@ -50,11 +50,12 @@ import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
+import Pagination from "../components/Pagination.vue";
 </script>
 
 <style scoped>
 #list-options {
-    padding: 0.8rem 0.5rem;
+    padding: 0.6rem 0.5rem;
     font-weight: 400;
     border: 0.0125rem solid #ccc;
     border-radius: 0.25rem !important;
@@ -66,5 +67,16 @@ svg {
 
 #new-visitor:hover {
     color: white !important;
+}
+
+#visitor-view {
+    padding-top: 2rem;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) and (max-width: 1440px) {
+    #visitor-view {
+        padding: 1rem 3rem 0 3rem;
+    }
 }
 </style>

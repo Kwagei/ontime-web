@@ -24,7 +24,7 @@
 import { ref, defineProps } from "vue";
 import { RouterLink } from "vue-router";
 
-const breadcrumbs = ["Visitors"];
+const breadcrumbs = ref([]);
 
 const props = defineProps({
     breadcrumbs: {

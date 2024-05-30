@@ -1,5 +1,4 @@
 <template>
-    <ModalTemplate />
     <div>
         <div
             class="d-flex justify-content-between align-items-center"
@@ -9,7 +8,7 @@
         </div>
 
         <div
-            class="mt-4 form-control rounded"
+            class="mt-4 form-control input"
             style="width: 80%; margin: auto; padding: 3rem"
         >
             <form @submit.prevent="onSubmit" id="visitor-form">
@@ -23,7 +22,7 @@
                         <input
                             v-model="first_name"
                             type="text"
-                            class="form-control rounded"
+                            class="form-control input"
                             id="first_name"
                             required
                         />
@@ -37,7 +36,7 @@
                         <input
                             v-model="msisdn"
                             type="text"
-                            class="form-control rounded"
+                            class="form-control input"
                             id="phone_number"
                             required
                         />
@@ -51,7 +50,7 @@
                         <input
                             v-model="middle_name"
                             type="text"
-                            class="form-control rounded"
+                            class="form-control input"
                             id="middle_name"
                         />
                     </div>
@@ -61,7 +60,7 @@
                             <input
                                 v-model="email"
                                 type="email"
-                                class="form-control rounded"
+                                class="form-control input"
                                 id="email"
                             />
                         </div>
@@ -77,23 +76,10 @@
                         <input
                             v-model="last_name"
                             type="text"
-                            class="form-control rounded"
+                            class="form-control input"
                             id="last_name"
                             required
                         />
-                    </div>
-                    <div class="col-md-6">
-                        <label for="institution" class="form-label"
-                            >Institution
-                        </label>
-                        <div class="input-group has-validation">
-                            <input
-                                v-model="institution"
-                                type="text"
-                                class="form-control rounded"
-                                id="institution"
-                            />
-                        </div>
                     </div>
                 </div>
                 <div class="col-md-12 mb-3">
@@ -104,7 +90,7 @@
                     >
                     <textarea
                         v-model="address"
-                        class="form-control rounded"
+                        class="form-control input"
                         name="address"
                         id="address"
                         required
@@ -112,7 +98,7 @@
                 </div>
                 <div class="col-12">
                     <button
-                        class="btn btn-primary mt-2 text-white rounded"
+                        class="btn btn-primary mt-2 text-white input"
                         style="width: 8rem"
                         id="save-form"
                         type="submit"
@@ -125,10 +111,16 @@
     </div>
 </template>
 
+<style scoped>
+.input {
+    border: 0.0125rem solid #ccc;
+    border-radius: 0.25rem !important;
+}
+</style>
+
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
 import ModalTemplate from "../ModalTemplate.vue";
-
 import { registerVisitor } from "@/assets/js/index.js";
 
 import { ref } from "vue";

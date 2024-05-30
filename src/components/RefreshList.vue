@@ -2,7 +2,7 @@
     <button
         class="hover-btn btn bg-white refresh"
         style="
-            padding: 0.8rem 0.5rem;
+            padding: 0.6rem;
             font-weight: 400;
             border: 0.0125rem solid #ccc;
             border-radius: 0.25rem !important;

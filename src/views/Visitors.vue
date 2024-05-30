@@ -5,9 +5,14 @@
         >
             <BreadCrumbs :breadCrumbs="breadCrumbs" />
 
-            <div>
+            <div class="d-flex" style="gap: 0.521rem">
                 <RefreshList />
-                <button id="list-options" class="hover-btn btn mx-2 bg-white">
+                <button
+                    class="btn btn-secondary list-options"
+                    style="border: 0.125rem solid black"
+                    type="button"
+                    data-bs-theme="dark"
+                >
                     <svg
                         width="100"
                         height="100"
@@ -24,9 +29,9 @@
 
                 <router-link :to="{ name: 'add-visitor' }">
                     <button
-                        class=".hover-btn btn btn-primary text-black"
+                        type="button"
+                        class="btn btn-primary"
                         id="new-visitor"
-                        type="submit"
                         style="padding: 0.5rem 1.5rem; font-weight: 600"
                     >
                         Add Visitor
@@ -68,24 +73,24 @@ const props = defineProps({
 </script>
 
 <style scoped>
-#list-options {
-    padding: 0.6rem 0.5rem;
-    font-weight: 400;
-    border: 0.0125rem solid #ccc;
-    border-radius: 0.25rem !important;
-}
-svg {
-    height: 20px !important;
-    margin: 0 !important;
-}
-
-#new-visitor:hover {
-    color: white !important;
-}
-
 #visitor-view {
     padding-top: 2rem;
     gap: 1.5rem;
+}
+
+.btn {
+    padding: 0.5rem !important;
+}
+.btn:hover {
+    border: 0.125rem solid black !important;
+}
+
+.btn:hover g {
+    fill: white;
+}
+.list-options svg {
+    height: 20px !important;
+    margin: 0 !important;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {

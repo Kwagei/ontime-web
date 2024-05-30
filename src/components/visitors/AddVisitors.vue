@@ -9,100 +9,124 @@
 
         <div
             class="mt-4 form-control input"
-            style="width: 80%; margin: auto; padding: 3rem"
+            style="margin: auto; padding: 3rem"
         >
-            <form @submit.prevent="onSubmit" id="visitor-form">
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <label for="first_name" class="form-label is-required"
-                            >First name<span class="visually-hidden">
-                                (required)</span
-                            ></label
-                        >
+            <form class="row g-3 needs-validation" novalidate>
+                <!-- FIRST NAME -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustom01"
+                        class="form-label is-required"
+                        >First name<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
                         <input
-                            v-model="first_name"
                             type="text"
-                            class="form-control input"
-                            id="first_name"
+                            class="form-control"
+                            id="validationCustomFirstName"
+                            aria-describedby="inputGroupPrepend"
                             required
                         />
-                    </div>
-                    <div class="col-md-6">
-                        <label for="phone_number" class="form-label is-required"
-                            >Phone number<span class="visually-hidden">
-                                (required)</span
-                            ></label
-                        >
-                        <input
-                            v-model="msisdn"
-                            type="text"
-                            class="form-control input"
-                            id="phone_number"
-                            required
-                        />
-                    </div>
-                </div>
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <label for="middle_name" class="form-label"
-                            >Middle name
-                        </label>
-                        <input
-                            v-model="middle_name"
-                            type="text"
-                            class="form-control input"
-                            id="middle_name"
-                        />
-                    </div>
-                    <div class="col-md-6">
-                        <label for="email" class="form-label">Email </label>
-                        <div class="input-group has-validation">
-                            <input
-                                v-model="email"
-                                type="email"
-                                class="form-control input"
-                                id="email"
-                            />
+                        <div class="invalid-feedback">
+                            Please provide a first name.
                         </div>
                     </div>
                 </div>
-                <div class="row g-3 mb-3">
-                    <div class="col-md-6">
-                        <label for="last_name" class="form-label is-required"
-                            >Last name<span class="visually-hidden">
-                                (required)</span
-                            ></label
-                        >
+
+                <!-- PHONE NUMBER -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustom02"
+                        class="form-label is-required"
+                        >Phone number<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
                         <input
-                            v-model="last_name"
                             type="text"
-                            class="form-control input"
-                            id="last_name"
+                            class="form-control"
+                            id="validationCustomFirstName"
+                            aria-describedby="inputGroupPrepend"
                             required
                         />
+                        <div class="invalid-feedback">
+                            Please provide a phone number.
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-12 mb-3">
-                    <label for="address" class="form-label is-required"
+
+                <!-- MIDDLE NAME -->
+                <div class="col-md-6">
+                    <label for="validationCustomUsername" class="form-label"
+                        >Middle name</label
+                    >
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="validationCustomUsername"
+                        aria-describedby="inputGroupPrepend"
+                    />
+                </div>
+
+                <!-- EMAIL -->
+                <div class="col-md-6">
+                    <label for="validationCustom03" class="form-label"
+                        >Email</label
+                    >
+                    <input
+                        type="email"
+                        class="form-control"
+                        id="validationCustomUsername"
+                        aria-describedby="inputGroupPrepend"
+                    />
+                </div>
+
+                <!-- LAST NAME -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustom02"
+                        class="form-label is-required"
+                        >Last name<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="validationCustom02"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Please provide a last name.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label
+                        for="validationCustom02"
+                        class="form-label is-required"
                         >Address<span class="visually-hidden">
                             (required)</span
                         ></label
                     >
-                    <textarea
-                        v-model="address"
-                        class="form-control input"
-                        name="address"
-                        id="address"
-                        required
-                    ></textarea>
+                    <div class="input-group has-validation">
+                        <textarea
+                            class="form-control"
+                            id="validationCustom02"
+                            required
+                        ></textarea>
+                        <div class="invalid-feedback">
+                            Please provide an address.
+                        </div>
+                    </div>
                 </div>
                 <div class="col-12">
-                    <button
-                        class="btn btn-primary mt-2 text-white input"
-                        style="width: 8rem"
-                        id="save-form"
-                        type="submit"
-                    >
+                    <button class="btn btn-primary mt-2" type="submit">
                         Save
                     </button>
                 </div>
@@ -136,6 +160,7 @@ const address = ref("");
 const emit = defineEmits(["visitorFormSubmitted"]);
 
 const onSubmit = async () => {
+    return;
     const visitor = {
         first_name: first_name.value,
         middle_name: middle_name.value || "",
@@ -164,9 +189,28 @@ const props = defineProps({
 activeBreadCrumbs.value = [...props.breadCrumbs, "new-visitor"];
 
 onMounted(() => {
-    // document
-    //     .querySelector("aside #visitors")
-    //     .classList.toggle("router-link-active");
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (() => {
+        "use strict";
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const form = document.querySelector(".needs-validation");
+
+        // Loop over them and prevent submission
+
+        form.addEventListener(
+            "submit",
+            (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add("was-validated");
+            },
+            false
+        );
+    })();
 });
 </script>
 

@@ -21,7 +21,8 @@
                         </g>
                     </svg>
                 </button>
-                <router-link :to="'/visitors/new-visitor'">
+
+                <router-link :to="{ name: 'add-visitor' }">
                     <button
                         class=".hover-btn btn btn-primary text-black"
                         id="new-visitor"
@@ -38,8 +39,10 @@
             <Filter />
             <Sort />
         </div>
+
         <VisitorList />
         <Pagination />
+        <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
 
@@ -52,7 +55,7 @@ import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
 import Pagination from "../components/Pagination.vue";
 
-import { RouterLink } from "vue-router";
+import { RouterLink, RouterView } from "vue-router";
 
 import { ref, defineProps } from "vue";
 

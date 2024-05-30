@@ -14,7 +14,7 @@
             <li class="nav-item" v-for="item in navItems" :key="item.name">
                 <router-link
                     class="nav-link text-white"
-                    :to="`/${item.name}`"
+                    :to="{ name: item.name }"
                     :id="item.name"
                 >
                     <span v-html="item.svg"></span>

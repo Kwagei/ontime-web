@@ -164,9 +164,9 @@ const props = defineProps({
 activeBreadCrumbs.value = [...props.breadCrumbs, "new-visitor"];
 
 onMounted(() => {
-    document
-        .querySelector("aside #visitors")
-        .classList.add("router-link-active");
+    // document
+    //     .querySelector("aside #visitors")
+    //     .classList.toggle("router-link-active");
 });
 </script>
 

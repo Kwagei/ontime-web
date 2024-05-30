@@ -11,7 +11,11 @@
             class="mt-4 form-control input"
             style="margin: auto; padding: 3rem"
         >
-            <form class="row g-3 needs-validation" novalidate>
+            <form
+                class="row g-3 needs-validation"
+                novalidate
+                @submit.prevent="onSubmit"
+            >
                 <!-- FIRST NAME -->
                 <div class="col-md-6">
                     <label
@@ -27,6 +31,7 @@
                             class="form-control"
                             id="validationCustomFirstName"
                             aria-describedby="inputGroupPrepend"
+                            v-model="first_name"
                             required
                         />
                         <div class="invalid-feedback">
@@ -48,6 +53,7 @@
                         <input
                             type="text"
                             class="form-control"
+                            v-model="msisdn"
                             id="validationCustomFirstName"
                             aria-describedby="inputGroupPrepend"
                             required
@@ -67,6 +73,7 @@
                         type="text"
                         class="form-control"
                         id="validationCustomUsername"
+                        v-model="middle_name"
                         aria-describedby="inputGroupPrepend"
                     />
                 </div>
@@ -80,6 +87,7 @@
                         type="email"
                         class="form-control"
                         id="validationCustomUsername"
+                        v-model="email"
                         aria-describedby="inputGroupPrepend"
                     />
                 </div>
@@ -98,6 +106,7 @@
                             type="text"
                             class="form-control"
                             id="validationCustom02"
+                            v-model="last_name"
                             required
                         />
                         <div class="invalid-feedback">
@@ -119,6 +128,7 @@
                             class="form-control"
                             id="validationCustom02"
                             required
+                            v-model="address"
                         ></textarea>
                         <div class="invalid-feedback">
                             Please provide an address.
@@ -154,20 +164,26 @@ const middle_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
-const institution = ref("");
 const address = ref("");
 
 const emit = defineEmits(["visitorFormSubmitted"]);
 
 const onSubmit = async () => {
-    return;
+    if (
+        !first_name.value ||
+        !last_name.value ||
+        !msisdn.value ||
+        !address.value
+    ) {
+        return;
+    }
+
     const visitor = {
         first_name: first_name.value,
-        middle_name: middle_name.value || "",
+        middle_name: middle_name.value,
         last_name: last_name.value,
         msisdn: msisdn.value,
-        institution: institution.value || "",
-        email: email.value || "",
+        email: email.value,
         address: address.value,
     };
 
@@ -189,14 +205,10 @@ const props = defineProps({
 activeBreadCrumbs.value = [...props.breadCrumbs, "new-visitor"];
 
 onMounted(() => {
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
     (() => {
         "use strict";
 
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
         const form = document.querySelector(".needs-validation");
-
-        // Loop over them and prevent submission
 
         form.addEventListener(
             "submit",

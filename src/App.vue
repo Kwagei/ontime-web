@@ -41,8 +41,8 @@ aside {
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {
-    aside {
-        width: 16rem;
-    }
+    /* aside {
+        width: 17rem;
+    } */
 }
 </style>

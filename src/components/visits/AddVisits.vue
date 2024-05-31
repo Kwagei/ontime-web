@@ -4,13 +4,65 @@
       class="d-flex justify-content-between align-items-center container p-0 mx-auto"
       style="margin-top: 0.3rem"
     >
-      <BreadCrumbs />
+      <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
     </div>
 
     <div
       class="mt-4 form-control input"
       style="margin: auto; padding: 3rem; width: 80%"
     >
+      <!-- Button trigger modal -->
+            <button
+                type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+            >
+                Launch demo modal
+            </button>
+
+            <!-- Modal -->
+            <div
+                class="modal fade"
+                id="exampleModal"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+            >
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title h5" id="exampleModalLabel">
+                                Modal title
+                            </h1>
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                data-bs-title="Close"
+                            >
+                                <span class="visually-hidden">Close</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">...</div>
+                        <div class="modal-footer">
+                            <button
+                                type="button"
+                                class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Close
+                            </button>
+                            <button type="button" class="btn btn-primary">
+                                Save changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
       <form class="row g-3 needs-validation" novalidate @submit.prevent="onSubmit">
         <!-- Visitor Information -->
         <div class="col-md-6">

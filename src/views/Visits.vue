@@ -1,6 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div
+        id="visit-view"
         class="d-flex flex-column"
         style="padding: 3rem 8rem 0 8rem; gap: 2.5rem"
     >
@@ -24,15 +25,18 @@
                             <circle cx="800" cy="500" r="100" />
                         </g>
                     </svg>
+                    <!-- button for going to add new visit form -->
                 </button>
-                <button
-                    class=".hover-btn btn btn-primary text-black"
-                    id="new-visitor"
-                    type="submit"
-                    style="padding: 0.8rem 1.5rem; font-weight: 600"
-                >
-                    Add Visitor
-                </button>
+                <router-link :to="{ name: 'add-visit' }">
+                    <button
+                        class=".hover-btn btn btn-primary text-black"
+                        id="new-visit"
+                        type="submit"
+                        style="padding: 0.8rem 1.5rem; font-weight: 600"
+                    >
+                        Add Visit
+                    </button>
+                </router-link>
             </div>
         </div>
         <div class="row justify-content-between container p-0 mx-auto">
@@ -41,6 +45,8 @@
             <Sort />
         </div>
         <VisitList />
+        <Pagination />
+        <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
 
@@ -51,6 +57,18 @@ import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
+import Pagination from "../components/Pagination.vue";
+
+import { RouterLink, RouterView } from "vue-router";
+
+import { ref, defineProps } from "vue";
+
+const props = defineProps({
+    breadCrumbs: {
+        type: Array,
+        required: true,
+    },
+});
 </script>
 
 <style scoped>
@@ -65,7 +83,7 @@ svg {
     margin: 0 !important;
 }
 
-#new-visitor:hover {
+#new-visit:hover {
     color: white !important;
 }
 </style>

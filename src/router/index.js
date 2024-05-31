@@ -6,6 +6,7 @@ import Visits from "../views/Visits.vue";
 import Users from "../views/Users.vue";
 import Events from "../views/Events.vue";
 import AddVisitors from "../components/visitors/AddVisitors.vue";
+import AddVisits from "../components/visits/AddVisits.vue";
 
 const routes = [
     {
@@ -29,9 +30,22 @@ const routes = [
         ],
     },
     {
+        // path: "/visits",
+        // component: Visits,
+        // name: "visits",
         path: "/visits",
-        component: Visits,
-        name: "visits",
+        children: [
+            {
+                path: "",
+                component: Visits,
+                name: "visits",
+            },
+            {
+                path: "new-visit",
+                component: AddVisits,
+                name: "add-visit",
+            },
+        ],
     },
     {
         path: "/users",

@@ -17,7 +17,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="visit in visits" :key="visit.id" :id="visit.id">
+                <tr v-for="visit in visits" :key="visit.id" :id="visit">
                     <td>{{ visit.id }}</td>
                     <td>{{ visit.name }}</td>
                     <td>{{ visit.arrival_time }}</td>
@@ -160,7 +160,7 @@ const visits = ref([
 </script>
 
 <style scoped>
-th, td {
-    padding: 1rem;
-}
+    th, td {
+        padding: 1rem;
+    }
 </style>

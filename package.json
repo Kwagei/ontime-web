@@ -11,8 +11,11 @@
   },
   "dependencies": {
     "@floating-ui/vue": "^1.0.6",
+    "@vue/compiler-sfc": "^3.4.27",
     "boosted": "^5.3.3",
     "bootstrap": "^5.3.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "eslint": "^9.3.0",
     "eslint-plugin-vue": "^9.26.0",
     "pinia": "^2.1.7",

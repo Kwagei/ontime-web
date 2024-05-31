@@ -32,7 +32,6 @@
                 border: none;
                 border-radius: 0.25rem;
                 border-left: 0.0125rem solid #ccc;
-                /* padding: 0.7rem; */
                 font-weight: 400;
                 color: black;
             "

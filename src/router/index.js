@@ -1,5 +1,6 @@
+import AddEvent from "../components/events/AddEvent.vue";
 import { createRouter, createWebHistory } from "vue-router";
-import App from "../App.vue";
+import Events from "../views/Events.vue";
 
 const routes = [
     {
@@ -21,7 +22,10 @@ const routes = [
     },
     {
         path: "/events",
-        component: () => import("../views/Events.vue"),
+        children: [
+            { path: "", component: Events, name: "events" },
+            { path: "/add-event", component: AddEvent, name: "add-event" },
+        ],
     },
     {
         path: "/visitors/new-visitor",

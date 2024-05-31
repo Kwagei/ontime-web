@@ -13,9 +13,9 @@
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item" v-for="item in navItems" :key="item.name">
                 <router-link
-                    @click="currentSection(item.name)"
                     class="nav-link text-white"
-                    :to="`/${item.name}`"
+                    :to="{ name: item.name }"
+                    :id="item.name"
                 >
                     <span v-html="item.svg"></span>
                     {{ item.name }}
@@ -49,7 +49,24 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute } from "vue-router";
+
+import { ref, watch } from "vue";
+
+const route = useRoute();
+const breadCrumbs = defineModel("breadCrumbs");
+const activeSection = defineModel("activeSection");
+
+activeSection.value = route.path.split("/")[1];
+
+watch(
+    () => route.path,
+    (newPath, oldPath) => {
+        const currentSection = newPath.split("/")[1];
+        activeSection.value = currentSection;
+        breadCrumbs.value = [currentSection];
+    }
+);
 
 const navItems = [
     {
@@ -134,12 +151,6 @@ const navItems = [
                     </svg>`,
     },
 ];
-
-const emit = defineEmits(["currentSection"]);
-
-const currentSection = (section) => {
-    emit("currentSection", section);
-};
 </script>
 
 <style scoped>

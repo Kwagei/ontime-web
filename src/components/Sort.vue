@@ -1,15 +1,12 @@
 <template>
     <div
         class="col-md-3 sort bg-white d-flex justify-content-between"
-        style="border: 0.0125rem solid #ccc; border-radius: 0.25rem"
+        style="border: 0.125rem solid black"
     >
         <button
-            class="flex-grow-1 hover-btn"
-            style="
-                border: none;
-                background-color: white;
-                border-radius: 0.25rem;
-            "
+            class="btn btn-secondary w-25"
+            type="button"
+            data-bs-theme="dark"
         >
             <svg
                 width="100"
@@ -25,17 +22,10 @@
             </svg>
         </button>
         <button
-            class="btn hover-btn"
-            style="
-                width: 80%;
-                height: 100%;
-                border: none;
-                border-radius: 0.25rem;
-                border-left: 0.0125rem solid #ccc;
-                padding: 0.9rem;
-                font-weight: 400;
-                color: black;
-            "
+            type="button"
+            class="btn btn-secondary w-75"
+            data-bs-theme="dark"
+            style="border-left: 0.125rem solid black"
         >
             Last Updated On
         </button>

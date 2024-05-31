@@ -1,20 +1,13 @@
 <template>
     <div
-        class="col-md-3 filter bg-white d-flex justify-content-between"
-        style="border: 0.0125rem solid #ccc; border-radius: 0.25rem"
+        class="col-md-3 filter d-flex justify-content-between"
+        style="border: 0.125rem solid black"
     >
         <button
-            class="btn hover-btn"
-            style="
-                width: 80%;
-                height: 100%;
-                border: none;
-                border-radius: 0.25rem;
-                border-right: 0.0125rem solid #ccc;
-                padding: 0.9rem;
-                font-weight: 400;
-                color: black;
-            "
+            type="button"
+            class="btn btn-secondary w-75"
+            data-bs-theme="dark"
+            style="border-right: 0.125rem solid black"
         >
             <svg
                 width="100"
@@ -30,13 +23,11 @@
             </svg>
             Filter
         </button>
+
         <button
-            class="flex-grow-1 hover-btn"
-            style="
-                border: none;
-                background-color: white;
-                border-radius: 0.25rem;
-            "
+            class="btn btn-secondary w-25"
+            type="button"
+            data-bs-theme="dark"
         >
             <svg
                 width="100"
@@ -55,6 +46,16 @@
 </template>
 
 <style>
+.visitors-btn {
+    border: 0.125rem solid black !important;
+}
+.btn:hover {
+    border: none !important;
+}
+
+.btn:hover path {
+    fill: white;
+}
 .filter {
     padding: 0 !important;
 }

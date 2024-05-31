@@ -1,26 +1,47 @@
 import { createRouter, createWebHistory } from "vue-router";
 import App from "../App.vue";
+import Dashboard from "../views/Dashboard.vue";
+import Visitors from "../views/Visitors.vue";
+import Visits from "../views/Visits.vue";
+import Users from "../views/Users.vue";
+import Events from "../views/Events.vue";
+import AddVisitors from "../components/visitors/AddVisitors.vue";
 
 const routes = [
     {
         path: "/dashboard",
-        component: () => import("../views/Dashboard.vue"),
+        component: Dashboard,
+        name: "dashboard",
     },
     {
         path: "/visitors",
-        component: () => import("../views/Visitors.vue"),
+        children: [
+            {
+                path: "",
+                component: Visitors,
+                name: "visitors",
+            },
+            {
+                path: "new-visitor",
+                component: AddVisitors,
+                name: "add-visitor",
+            },
+        ],
     },
     {
         path: "/visits",
-        component: () => import("../views/Visits.vue"),
+        component: Visits,
+        name: "visits",
     },
     {
         path: "/users",
-        component: () => import("../views/Users.vue"),
+        component: Users,
+        name: "users",
     },
     {
         path: "/events",
-        component: () => import("../views/Events.vue"),
+        component: Events,
+        name: "events",
     },
 ];
 

@@ -51,6 +51,18 @@ import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
+import Pagination from "../components/Pagination.vue";
+
+import { RouterLink, RouterView } from "vue-router";
+
+import { ref, defineProps } from "vue";
+
+const props = defineProps({
+	breadCrumbs: {
+		type: Array,
+		required: true,
+	},
+});
 </script>
 
 <style scoped>

@@ -22,7 +22,7 @@ const registerVisitor = async (data) => {
 
 const getVisitors = async (start = 0, limit = 10) => {
     try {
-        const response = await fetch(`${API}/visitors?${start}&&${limit}`);
+        const response = await fetch(`${API}/visitors?start=${start}&limit=${limit}`);
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }

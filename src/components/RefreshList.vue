@@ -1,12 +1,9 @@
 <template>
     <button
-        class="hover-btn btn bg-white refresh"
-        style="
-            padding: 0.6rem;
-            font-weight: 400;
-            border: 0.0125rem solid #ccc;
-            border-radius: 0.25rem !important;
-        "
+        class="btn btn-secondary refresh"
+        style="border: 0.125rem solid black"
+        type="button"
+        data-bs-theme="dark"
     >
         <svg
             width="100"
@@ -24,6 +21,16 @@
 </template>
 
 <style scoped>
+.btn {
+    padding: 0.5rem !important;
+}
+.btn:hover {
+    border: 0.125rem solid black !important;
+}
+
+.btn:hover path {
+    fill: white;
+}
 .refresh svg {
     height: 20px !important;
     margin: 0 !important;

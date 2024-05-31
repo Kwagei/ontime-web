@@ -1,15 +1,12 @@
 <template>
     <div
         class="col-md-3 sort bg-white d-flex justify-content-between"
-        style="border: 0.0125rem solid #ccc; border-radius: 0.25rem"
+        style="border: 0.125rem solid black"
     >
         <button
-            class="flex-grow-1 hover-btn"
-            style="
-                border: none;
-                background-color: white;
-                border-radius: 0.25rem;
-            "
+            class="btn btn-secondary w-25"
+            type="button"
+            data-bs-theme="dark"
         >
             <svg
                 width="100"

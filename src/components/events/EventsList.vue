@@ -68,7 +68,6 @@ export default {
 
         req.open("GET", "http://localhost:3000/api/events");
         req.responseType = "json";
-        req.setRequestHeader("API_KEY", "ccea0f61-ed15-425e-8a80-87ae9c60cf13");
         req.send();
 
         req.onload = () => {

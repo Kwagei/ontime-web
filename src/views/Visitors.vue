@@ -3,16 +3,17 @@
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
         >
-            <BreadCrumbs />
+            <BreadCrumbs :breadCrumbs="breadCrumbs" />
 
-            <div>
+            <div class="d-flex" style="gap: 0.521rem">
                 <RefreshList />
+                <<<<<<< HEAD
                 <MoreIcon />
                 <router-link :to="'/visitors/new-visitor'">
                     <button
-                        class=".hover-btn btn btn-primary text-black"
+                        type="button"
+                        class="btn btn-primary"
                         id="new-visitor"
-                        type="submit"
                         style="padding: 0.5rem 1.5rem; font-weight: 600"
                     >
                         Add Visitor
@@ -25,8 +26,10 @@
             <Filter />
             <Sort />
         </div>
+
         <VisitorList />
         <Pagination />
+        <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
 
@@ -54,6 +57,21 @@ svg {
 #visitor-view {
     padding-top: 2rem;
     gap: 1.5rem;
+}
+
+.btn {
+    padding: 0.5rem !important;
+}
+.btn:hover {
+    border: 0.125rem solid black !important;
+}
+
+.btn:hover g {
+    fill: white;
+}
+.list-options svg {
+    height: 20px !important;
+    margin: 0 !important;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {

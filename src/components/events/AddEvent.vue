@@ -157,6 +157,7 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { ref, defineProps, onMounted } from "vue";
 import $ from "jquery";
 
@@ -165,6 +166,11 @@ import { visuallyHideModalBackdrop, API_URL } from "../../assets/js/index.js";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import Alert from "../Alert.vue";
+=======
+import { ref, defineProps } from "vue";
+import BreadCrumbs from "../BreadCrumbs.vue";
+import $ from "jquery";
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
 
 const activeBreadCrumbs = ref([]);
 
@@ -173,6 +179,7 @@ const title = ref("");
 const facilitator = ref("");
 const startDate = ref("");
 const endDate = ref("");
+<<<<<<< HEAD
 const type = ref("");
 const details = ref("");
 
@@ -192,6 +199,11 @@ const endDateError = ref("");
 const typeError = ref("");
 const detailsError = ref("");
 
+=======
+const type = ref("Select Event Type...");
+const details = ref("");
+
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
 const props = defineProps({
 	breadCrumbs: {
 		type: Array,

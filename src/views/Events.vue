@@ -1,36 +1,40 @@
 <template>
-    <div>
-        <div id="eventsWrapper">
-            <div class="d-flex justify-content-between my-4">
-                <div>
-                    <BreadCrumbs :breadCrumbs="breadCrumbs" />
-                </div>
-                <div>
-                    <RefreshList />
-                    <Options class="mx-2" />
-                    <router-link :to="{ name: 'add-event' }">
-                        <button class="btn btn-primary">Add Event</button>
-                    </router-link>
-                </div>
-            </div>
-            <div class="d-flex justify-content-between my-4">
-                <Search />
-                <Filter />
-                <Sort />
-            </div>
-            <EventsList />
-            <RouterView :breadCrumbs="breadCrumbs" />
-        </div>
+	<div>
+		<div id="eventsWrapper">
+			<div class="d-flex justify-content-between my-4">
+				<div>
+					<BreadCrumbs :breadCrumbs="breadCrumbs" />
+				</div>
+				<div>
+					<RefreshList />
+					<Options class="mx-2" />
+					<router-link :to="{ name: 'add-event' }">
+						<button class="btn btn-primary">Add Event</button>
+					</router-link>
+				</div>
+			</div>
+			<div class="d-flex justify-content-between my-4">
+				<Search />
+				<Filter />
+				<Sort />
+			</div>
+			<EventsList />
+			<RouterView :breadCrumbs="breadCrumbs" />
+		</div>
 
-        <div class="row justify-content-between container p-0 mx-auto">
-            <Search v-model:search="searchTerms" />
-            <Filter />
-            <Sort v-model:sort="sortTerms" v-model:direction="directionTerms" />
-        </div>
+		<div class="row justify-content-between container p-0 mx-auto">
+			<Search v-model:search="searchTerms" />
+			<Filter />
+			<Sort v-model:sort="sortTerms" v-model:direction="directionTerms" />
+		</div>
 
-        <EventsList />
-        <RouterView :breadCrumbs="breadCrumbs" />
-    </div>
+		<EventsList />
+		<<<<<<< HEAD =======
+		<Pagination />
+		>>>>>>> ff015c8 (completed creating and retrieving events from database,
+		pulling code to use Modal for displaying messages)
+		<RouterView :breadCrumbs="breadCrumbs" />
+	</div>
 </template>
 
 <script setup>
@@ -43,13 +47,14 @@ import Sort from "../components/Sort.vue";
 import EventsList from "../components/events/EventsList.vue";
 
 const props = defineProps({
-    breadCrumbs: {
-        type: Array,
-        required: true,
-    },
+	breadCrumbs: {
+		type: Array,
+		required: true,
+	},
 });
 </script>
 
+<<<<<<< HEAD
 <style scoped>
 svg {
     height: 20px !important;
@@ -84,5 +89,10 @@ svg {
     #eventsWrapper {
         padding: 1rem 3rem 0 3rem;
     }
+=======
+<style>
+#eventsWrapper {
+    margin: 50px 125px;
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
 }
 </style>

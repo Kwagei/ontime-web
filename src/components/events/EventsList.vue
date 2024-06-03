@@ -4,7 +4,11 @@
             <thead>
                 <tr>
                     <th scope="col">
+<<<<<<< HEAD
                         <input type="checkbox" class="form-check-input" />
+=======
+                        <input type="checkbox" />
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
                     </th>
                     <th scope="col">Title</th>
                     <th scope="col">Start Date</th>
@@ -15,7 +19,11 @@
                 </tr>
             </thead>
             <tbody>
+<<<<<<< HEAD
                 <tr v-for="event in eventsToShow">
+=======
+                <tr v-for="(event, index) in events.data">
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
                     <td>
                         <input
                             class="form-check-input"
@@ -23,7 +31,11 @@
                             name="{{ event.id }}"
                         />
                     </td>
+<<<<<<< HEAD
                     <td>{{ event.title }}</td>
+=======
+                    <td class="bold">{{ event.title }}</td>
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
                     <td>
                         {{ formatDate(event.start_date) }}
                     </td>
@@ -34,6 +46,7 @@
                 </tr>
             </tbody>
         </table>
+<<<<<<< HEAD
         <div
             v-if="hasEvents"
             style="
@@ -45,6 +58,13 @@
         >
             <h2>No Events Currently!</h2>
         </div>
+=======
+        <h2 v-else-if="events.data && events.data.length <= 0">
+            No Events Currently!
+        </h2>
+        <h2 v-else-if="Object.keys(events).length <= 0">Loading Events...</h2>
+        <h2 v-else>Error Loading Events, Try again!</h2>
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
     </div>
     <Pagination v-model="paginationStart" />
 </template>
@@ -54,17 +74,44 @@ import Pagination from "../Pagination.vue";
 import { ref, onMounted, watch } from "vue";
 import $ from "jquery";
 
+<<<<<<< HEAD
 const paginationStart = ref(0);
 const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX = ref(10);
+=======
+export default {
+    name: "EventsList",
+    data() {
+        return {
+            events: ref({}),
+        };
+    },
+    methods: {
+        formatDate(date) {
+            const rawDate = new Date(date);
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
 
 const hasEvents = ref(false);
 
 const formatDetails = (detail) => {
     let words = detail.split(" ");
 
+<<<<<<< HEAD
     return words.length > 7 ? `${words.slice(0, 7).join(" ")}...` : detail;
+=======
+        req.onload = () => {
+            const res = req.response;
+
+            if (req.readyState === 4 && req.status === 200) {
+                this.events = res;
+            } else {
+                console.error("Error getting events: ", res);
+                this.events = res;
+            }
+        };
+    },
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
 };
 
 function formatDate(date) {

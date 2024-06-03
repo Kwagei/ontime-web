@@ -47,6 +47,13 @@ aside {
     height: 100vh;
     position: fixed;
     z-index: 1700;
+<<<<<<< HEAD
+=======
+}
+
+main {
+    margin-left: 20rem;
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
 }
 
 main {

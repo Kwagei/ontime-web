@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
     <div id="eventsWrapper" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -6,6 +7,14 @@
             <BreadCrumbs :breadCrumbs="breadCrumbs" />
 
             <div class="d-flex" style="gap: 0.521rem">
+=======
+    <div id="eventsWrapper">
+        <div class="d-flex justify-content-between my-4">
+            <div>
+                <BreadCrumbs :breadCrumbs="breadCrumbs" />
+            </div>
+            <div>
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
                 <RefreshList />
                 <Options />
 
@@ -32,6 +41,10 @@
         </div>
 
         <EventsList />
+<<<<<<< HEAD
+=======
+        <Pagination />
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
@@ -53,6 +66,7 @@ const props = defineProps({
 });
 </script>
 
+<<<<<<< HEAD
 <style scoped>
 svg {
     height: 20px !important;
@@ -87,5 +101,10 @@ svg {
     #eventsWrapper {
         padding: 1rem 3rem 0 3rem;
     }
+=======
+<style>
+#eventsWrapper {
+    margin: 50px 125px;
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
 }
 </style>

@@ -225,6 +225,7 @@ const room = ref("");
 const institution = ref("");
 const belonging = ref("");
 const purpose = ref("");
+const belonging = ref("");
 
 const emit = defineEmits(["visitFormSubmitted"]);
 

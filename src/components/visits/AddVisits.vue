@@ -237,6 +237,7 @@ const host_name = ref("");
 const msisdn = ref("");
 const email = ref("");
 const purpose = ref("");
+const belonging = ref("");
 
 const emit = defineEmits(["visitorFormSubmitted"]);
 

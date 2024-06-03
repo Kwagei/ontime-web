@@ -59,10 +59,10 @@ import { ref } from "vue";
 import $ from "jquery";
 
 const props = defineProps({
-    breadCrumbs: {
-        type: Array,
-        required: true,
-    },
+	breadCrumbs: {
+		type: Array,
+		required: true,
+	},
 });
 
 const sortTerms = ref([
@@ -91,6 +91,7 @@ function stopEventsRefresh() {
 }
 </script>
 
+<<<<<<< HEAD
 <style scoped>
 svg {
     height: 20px !important;
@@ -127,5 +128,10 @@ svg {
     #eventsWrapper {
         padding: 1rem 3rem 0 3rem;
     }
+=======
+<style>
+#eventsWrapper {
+    margin: 50px 125px;
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
 }
 </style>

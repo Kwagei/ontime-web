@@ -7,11 +7,7 @@
             <thead>
                 <tr>
                     <th scope="col">
-                        <input
-                            type="checkbox"
-                            name="allEventsChecked"
-                            id="allEventsChecked"
-                        />
+                        <input type="checkbox" />
                     </th>
                     <th scope="col">Title</th>
                     <th scope="col" style="width: 150px">Start Date</th>
@@ -23,7 +19,13 @@
             </thead>
             <tbody>
                 <tr v-for="(event, index) in events.data">
-                    <td><input type="checkbox" name="{{ event.id }}" /></td>
+                    <td>
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="{{ event.id }}"
+                        />
+                    </td>
                     <td class="bold">{{ event.title }}</td>
                     <td>
                         {{ formatDate(event.start_date) }}
@@ -38,10 +40,8 @@
         <h2 v-else-if="events.data && events.data.length <= 0">
             No Events Currently!
         </h2>
-        <h2 v-else-if="events.status !== 200 && !events.data">
-            Error Loading Events, Try again!
-        </h2>
-        <h2 v-else>Loading Events...</h2>
+        <h2 v-else-if="Object.keys(events).length <= 0">Loading Events...</h2>
+        <h2 v-else>Error Loading Events, Try again!</h2>
     </div>
 </template>
 
@@ -52,7 +52,7 @@ export default {
     name: "EventsList",
     data() {
         return {
-            events: ref(""),
+            events: ref({}),
         };
     },
     methods: {
@@ -78,6 +78,7 @@ export default {
                 this.events = res;
             } else {
                 console.error("Error getting events: ", res);
+                this.events = res;
             }
         };
     },

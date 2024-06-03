@@ -1,8 +1,11 @@
 <template>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
+=======
+>>>>>>> da5afb7 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
     <Modal
         :data="{
             title: successModalData.title,
@@ -11,6 +14,7 @@
             pageLink: successModalData.pageLink,
         }"
     />
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -22,6 +26,24 @@
         >
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
 <<<<<<< HEAD
+=======
+=======
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+    <div id="eventsWrapper">
+        <div class="d-flex justify-content-between">
+            <div>
+                <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
+            </div>
+            <div>
+                <button
+                    @click="postEvent"
+                    class="border-primary btn btn-primary px-5 py-2"
+                    type="submit"
+                >
+                    Submit
+                </button>
+            </div>
+>>>>>>> da5afb7 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
         </div>
 
         <div class="form-control input" style="margin: auto; padding: 3rem">

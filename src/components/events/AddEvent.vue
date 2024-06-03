@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
     <Modal
         :data="{
             title: successModalData.title,
@@ -7,12 +8,22 @@
             pageLink: successModalData.pageLink,
         }"
     />
-    <div id="eventsWrapper" class="d-flex flex-column container">
-        <div
-            class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-            style="margin-top: 0.3rem"
-        >
-            <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
+=======
+>>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+    <div id="eventsWrapper">
+        <div class="d-flex justify-content-between">
+            <div>
+                <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
+            </div>
+            <div>
+                <button
+                    @click="postEvent"
+                    class="border-primary btn btn-primary px-5 py-2"
+                    type="submit"
+                >
+                    Submit
+                </button>
+            </div>
         </div>
 
         <div class="form-control input" style="margin: auto; padding: 3rem">

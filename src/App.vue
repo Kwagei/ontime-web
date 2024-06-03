@@ -21,7 +21,6 @@
 <script setup>
 import SideBar from "./components/SideBar.vue";
 import HeaderBar from "./components/HeaderBar.vue";
-import BreadCrumbs from "./components/BreadCrumbs.vue";
 
 import { ref } from "vue";
 import { RouterView } from "vue-router";
@@ -37,7 +36,13 @@ const breadCrumbs = ref([]);
 
 aside {
     width: 20rem;
-    height: 100%;
+    height: 100vh;
+    position: fixed;
+    z-index: 1700;
+}
+
+main {
+    margin-left: 20rem;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {

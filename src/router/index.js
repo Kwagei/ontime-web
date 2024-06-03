@@ -42,7 +42,11 @@ const routes = [
         path: "/events",
         children: [
             { path: "", component: Events, name: "events" },
-            { path: "/add-event", component: AddEvent, name: "add-event" },
+            {
+                path: "/events/add-event",
+                component: AddEvent,
+                name: "add-event",
+            },
         ],
     },
     {

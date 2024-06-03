@@ -7,7 +7,6 @@
 
             <div class="d-flex" style="gap: 0.521rem">
                 <RefreshList />
-                <<<<<<< HEAD
                 <MoreIcon />
                 <router-link :to="'/visitors/new-visitor'">
                     <button

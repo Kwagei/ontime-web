@@ -1,8 +1,8 @@
 <template>
-    <div class="eventsWrapper">
+    <div id="eventsWrapper">
         <div class="d-flex justify-content-between my-4">
             <div>
-                <BreadCrumbs />
+                <BreadCrumbs :breadCrumbs="breadCrumbs" />
             </div>
             <div>
                 <RefreshList />
@@ -19,6 +19,7 @@
         </div>
         <EventsList />
         <Pagination />
+        <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
 
@@ -31,10 +32,17 @@ import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import Pagination from "../components/Pagination.vue";
 import EventsList from "../components/events/EventsList.vue";
+
+const props = defineProps({
+    breadCrumbs: {
+        type: Array,
+        required: true,
+    },
+});
 </script>
 
 <style>
-.eventsWrapper {
+#eventsWrapper {
     margin: 50px 125px;
 }
 </style>

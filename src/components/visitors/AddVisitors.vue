@@ -208,7 +208,6 @@
 import BreadCrumbs from "../BreadCrumbs.vue";
 import ModalTemplate from "../ModalTemplate.vue";
 import { registerVisitor } from "@/assets/js/index.js";
-
 import { ref, defineProps, onMounted } from "vue";
 
 const first_name = ref("");

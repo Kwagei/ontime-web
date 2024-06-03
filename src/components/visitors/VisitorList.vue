@@ -49,17 +49,49 @@
             </tbody>
         </table>
     </div>
+
+    <div>{{ searchTerms }}</div>
+
+    <Pagination v-model="start" />
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { getVisitors } from "@/assets/js/index.js";
+import Pagination from "../Pagination.vue";
 
-const visitors = ref(null);
+const visitors = ref();
+const start = ref(0);
+const searchTerms = ref("");
+
+const watchStartValue = watch(
+    () => start.value,
+    async (newValue, oldValue) => {
+        // start.value = newValue;
+        visitors.value = await getVisitors("", start.value);
+    }
+);
+
+const props = defineProps({
+    searchTerms: {
+        type: String,
+        required: true,
+    },
+});
+
+// watch(
+//     () => searchTerms.value,
+//     (n, o) => {
+//         console.log({ n, o });
+//     }
+// );
+
+// const watchSearchValue = watch(()=> )
+
 const fetchData = async () => {
-    visitors.value = await getVisitors();
+    console.log("Term: ", searchTerms.value);
+    visitors.value = await getVisitors(searchTerms.value);
 };
-
 fetchData();
 </script>
 

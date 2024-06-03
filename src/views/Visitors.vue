@@ -21,13 +21,12 @@
             </div>
         </div>
         <div class="row justify-content-between container p-0 mx-auto">
-            <Search />
+            <Search v-model:term="searchTerms" />
             <Filter />
             <Sort />
         </div>
 
-        <VisitorList />
-        <Pagination />
+        <VisitorList :searchTerms="searchTerms" />
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
@@ -39,8 +38,18 @@ import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
-import Pagination from "../components/Pagination.vue";
-import MoreIcon from "../components/MoreIcon.vue";
+
+import { RouterLink, RouterView } from "vue-router";
+
+import { ref, defineProps, watch } from "vue";
+// const searchTerms = defineModel("");
+
+const props = defineProps({
+    breadCrumbs: {
+        type: Array,
+        required: true,
+    },
+});
 </script>
 
 <style scoped>

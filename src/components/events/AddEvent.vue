@@ -157,8 +157,6 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { ref, defineProps, onMounted } from "vue";
 import $ from "jquery";
 
@@ -167,18 +165,6 @@ import { visuallyHideModalBackdrop, API_URL } from "../../assets/js/index.js";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import Alert from "../Alert.vue";
-=======
-import { ref, defineProps } from "vue";
-import BreadCrumbs from "../BreadCrumbs.vue";
-import $ from "jquery";
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
-=======
-import { ref, defineProps, onMounted } from "vue";
-import BreadCrumbs from "../BreadCrumbs.vue";
-import $ from "jquery";
-import Modal from "../Modal.vue";
-import Alert from "../Alert.vue";
->>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
 
 const activeBreadCrumbs = ref([]);
 
@@ -187,10 +173,6 @@ const title = ref("");
 const facilitator = ref("");
 const startDate = ref("");
 const endDate = ref("");
-<<<<<<< HEAD
-const type = ref("");
-const details = ref("");
-
 // Modal Data
 const successModalData = ref({
 	title: "",
@@ -207,30 +189,6 @@ const endDateError = ref("");
 const typeError = ref("");
 const detailsError = ref("");
 
-=======
-const type = ref("Select Event Type...");
-const details = ref("");
-
-<<<<<<< HEAD
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
-=======
-// Modal Data
-const successModalData = ref({
-    title: "",
-    status: "",
-    message: "",
-    pageLink: "",
-});
-
-// Error Alert Data
-const titleError = ref("");
-const facilitatorError = ref("");
-const startDateError = ref("");
-const endDateError = ref("");
-const typeError = ref("");
-const detailsError = ref("");
-
->>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
 const props = defineProps({
 	breadCrumbs: {
 		type: Array,
@@ -336,7 +294,7 @@ onMounted(() => {
 	margin: 50px 125px;
 }
 
-<<<<<<< HEAD #eventsFormWrapper {
+#eventsFormWrapper {
 	outline: 1px solid #aaa;
 	border-radius: 5px;
 	display: grid;

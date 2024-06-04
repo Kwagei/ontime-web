@@ -109,24 +109,6 @@
                 </div>
 
                 <div class="col-12">
-                    <label for="address" class="form-label is-required"
-                        >Address<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <textarea
-                            class="form-control"
-                            id="address"
-                            required
-                            v-model="address"
-                        ></textarea>
-                        <div class="invalid-feedback">
-                            Please provide an address.
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
                     <button class="btn btn-primary mt-2" type="submit">
                         Save
                     </button>

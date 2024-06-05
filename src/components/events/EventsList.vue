@@ -1,5 +1,6 @@
 <template>
     <div id="eventsTableContainer">
+<<<<<<< HEAD
         <table class="table table-hover mb-0">
             <thead>
                 <tr>
@@ -9,6 +10,16 @@
 =======
                         <input type="checkbox" />
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+        <table
+            v-if="allEvents.data && allEvents.data.length >= 1"
+            class="table table-hover"
+        >
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <input type="checkbox" class="form-check-input" />
+>>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
                     </th>
                     <th scope="col">Title</th>
                     <th scope="col">Start Date</th>
@@ -20,10 +31,14 @@
             </thead>
             <tbody>
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <tr v-for="event in eventsToShow">
 =======
                 <tr v-for="(event, index) in events.data">
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+                <tr v-for="event in eventsToShow">
+>>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
                     <td>
                         <input
                             class="form-check-input"
@@ -47,6 +62,7 @@
             </tbody>
         </table>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <div
             v-if="hasEvents"
             style="
@@ -60,9 +76,14 @@
         </div>
 =======
         <h2 v-else-if="events.data && events.data.length <= 0">
+=======
+        <h2 v-else-if="allEvents.data && allEvents.data.length <= 0">
+>>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
             No Events Currently!
         </h2>
-        <h2 v-else-if="Object.keys(events).length <= 0">Loading Events...</h2>
+        <h2 v-else-if="Object.keys(allEvents).length <= 0">
+            Loading Events...
+        </h2>
         <h2 v-else>Error Loading Events, Try again!</h2>
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
     </div>
@@ -74,6 +95,7 @@ import Pagination from "../Pagination.vue";
 import { ref, onMounted, watch } from "vue";
 import $ from "jquery";
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 const paginationStart = ref(0);
 const allEvents = ref("loading");
@@ -91,6 +113,15 @@ export default {
         formatDate(date) {
             const rawDate = new Date(date);
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+const paginationStart = ref(0);
+const allEvents = ref({});
+const eventsToShow = ref([]);
+const MAX = ref(10);
+
+function formatDate(date) {
+    const rawDate = new Date(date);
+>>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
 
 const hasEvents = ref(false);
 
@@ -180,4 +211,14 @@ async function moreEvents(
 }
 </script>
 
+<<<<<<< HEAD
 <style scoped></style>
+=======
+<style scoped>
+#eventsTableContainer {
+    max-height: 63vh;
+    overflow: scroll;
+    margin-bottom: 30px;
+}
+</style>
+>>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)

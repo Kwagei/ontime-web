@@ -42,9 +42,12 @@
 
         <EventsList />
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         <Pagination />
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+>>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
@@ -104,7 +107,11 @@ svg {
 =======
 <style>
 #eventsWrapper {
+<<<<<<< HEAD
     margin: 50px 125px;
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+    margin: 25px 125px;
+>>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
 }
 </style>

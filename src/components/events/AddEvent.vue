@@ -23,7 +23,12 @@
             </div>
         </div>
 
-        <form @submit="postEvent" id="eventsFormWrapper" class="my-4 p-5">
+        <form
+            @submit.prevent="postEvent"
+            id="eventsFormWrapper"
+            novalidate
+            class="my-4 p-5 needs-validation"
+        >
             <div>
                 <label for="titleInput" class="form-label is-required">
                     Title
@@ -119,9 +124,6 @@
                     aria-label="Select Event Type"
                     required
                 >
-                    <option value="Select Event Type...">
-                        Select Event Type...
-                    </option>
                     <option value="Course">Course</option>
                     <option value="Conference">Conference</option>
                     <option value="Hackathon">Hackathon</option>
@@ -147,6 +149,9 @@
 
                 <Alert :title="detailsError" />
             </div>
+            <button type="submit" class="btn btn-primary visually-hidden">
+                Submit
+            </button>
         </form>
     </div>
 </template>
@@ -165,7 +170,7 @@ const title = ref("");
 const facilitator = ref("");
 const startDate = ref("");
 const endDate = ref("");
-const type = ref("Select Event Type...");
+const type = ref("");
 const details = ref("");
 
 // Modal Data
@@ -218,7 +223,7 @@ async function postEvent() {
             successModalData.value.title = "Event Created";
             successModalData.value.pageLink = "/events/";
 
-            toggleModalVisuallyHidden();
+            visuallyHideModalBackdrop();
         });
 
         clearInputs();
@@ -230,7 +235,7 @@ async function postEvent() {
     }
 }
 
-function toggleModalVisuallyHidden() {
+function visuallyHideModalBackdrop() {
     const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
 
     if (modalsBackdrops.length) {
@@ -257,8 +262,12 @@ function clearInputs() {
     facilitator.value = "";
     startDate.value = "";
     endDate.value = "";
-    type.value = "Select Event Type...";
+    type.value = "";
     details.value = "";
+
+    document
+        .querySelector(".needs-validation")
+        .classList.remove("was-validated");
 }
 
 function clearErrors() {
@@ -270,6 +279,27 @@ function clearErrors() {
     typeError.value = "";
     detailsError.value = "";
 }
+
+onMounted(() => {
+    (() => {
+        "use strict";
+
+        const form = document.querySelector(".needs-validation");
+
+        form.addEventListener(
+            "submit",
+            (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add("was-validated");
+            },
+            false
+        );
+    })();
+});
 </script>
 
 <style>

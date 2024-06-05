@@ -109,24 +109,6 @@
                 </div>
 
                 <div class="col-12">
-                    <label for="address" class="form-label is-required"
-                        >Address<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <textarea
-                            class="form-control"
-                            id="address"
-                            required
-                            v-model="address"
-                        ></textarea>
-                        <div class="invalid-feedback">
-                            Please provide an address.
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
                     <button class="btn btn-primary mt-2" type="submit">
                         Save
                     </button>
@@ -148,19 +130,13 @@ const middle_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
-const address = ref("");
 
 const status = ref("");
 const message = ref("");
 const title = ref("");
 
 const onSubmit = async () => {
-    if (
-        !first_name.value ||
-        !last_name.value ||
-        !msisdn.value ||
-        !address.value
-    ) {
+    if (!first_name.value || !last_name.value || !msisdn.value) {
         return;
     }
 
@@ -170,7 +146,6 @@ const onSubmit = async () => {
         last_name: last_name.value,
         msisdn: msisdn.value,
         email: email.value,
-        address: address.value,
     };
 
     const response = await registerVisitor(visitor);
@@ -186,6 +161,8 @@ const onSubmit = async () => {
         message.value = response.result.message;
         title.value = "Success";
     }
+
+    visuallyHideModalBackdrop();
 };
 
 const activeBreadCrumbs = ref([]);
@@ -219,6 +196,16 @@ const formValidation = onMounted(() => {
         );
     })();
 });
+
+function visuallyHideModalBackdrop() {
+    const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
+
+    if (modalsBackdrops.length) {
+        modalsBackdrops.forEach((modal) =>
+            modal.classList.add("visually-hidden")
+        );
+    }
+}
 </script>
 
 <style scoped>

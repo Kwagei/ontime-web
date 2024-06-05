@@ -3,23 +3,6 @@
         class="col-md-3 sort bg-white d-flex justify-content-between"
         style="border: 0.125rem solid black"
     >
-        <!-- <div class="dropdown">
-            <button
-                class="btn btn-dropdown dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-            >
-                Dropdown button
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                </li>
-            </ul>
-        </div>  -->
         <button
             class="btn btn-secondary w-25"
             type="button"
@@ -38,24 +21,57 @@
                 />
             </svg>
         </button>
-        <button
-            class="btn hover-btn"
-            style="
-                width: 80%;
-                height: 100%;
-                border: none;
-                border-radius: 0.25rem;
-                border-left: 0.0125rem solid #ccc;
-                font-weight: 400;
-                color: black;
-            "
+        <div
+            class="d-flex dropdown btn-secondary w-75"
+            style="border-left: 0.125rem solid black"
         >
-            Last Updated On
-        </button>
+            <button
+                class="btn w-100"
+                type="button"
+                data-value=""
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                {{ sortType }}
+            </button>
+            <ul class="dropdown-menu w-100">
+                <li
+                    class="dropdown-item"
+                    v-for="sort in sortItems"
+                    :key="sort.term"
+                    @click="updateSortTerms(sort)"
+                >
+                    {{ sort.type }}
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
+<script setup>
+import { ref } from "vue";
+const sortTerms = defineModel("sort");
+const sortType = ref("Created At");
+
+const updateSortTerms = (sort) => {
+    sortTerms.value = sort.term;
+    sortType.value = sort.type;
+};
+
+const sortItems = [
+    { type: "Created At", term: "created_at" },
+    { type: "First Name", term: "first_name" },
+    { type: "Middle Name", term: "middle_name" },
+    { type: "Last Name", term: "last_name" },
+    { type: "Phone Number", term: "msisdn" },
+    { type: "Email", term: "email" },
+];
+</script>
+
 <style scoped>
+.dropdown-item {
+    cursor: pointer;
+}
 .sort {
     padding: 0 !important;
 }

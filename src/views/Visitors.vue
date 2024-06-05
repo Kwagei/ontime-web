@@ -7,13 +7,17 @@
 
             <div class="d-flex" style="gap: 0.521rem">
                 <RefreshList />
-                <MoreIcon />
-                <router-link :to="'/visitors/new-visitor'">
+                <Options />
+
+                <router-link :to="{ name: 'add-visitor' }">
                     <button
                         type="button"
                         class="btn btn-primary"
                         id="new-visitor"
-                        style="padding: 0.5rem 1.5rem; font-weight: 600"
+                        style="
+                            padding: 0.7rem 2rem !important;
+                            font-weight: 600;
+                        "
                     >
                         Add Visitor
                     </button>
@@ -21,12 +25,12 @@
             </div>
         </div>
         <div class="row justify-content-between container p-0 mx-auto">
-            <Search v-model:term="searchTerms" />
+            <Search v-model:search="searchTerms" />
             <Filter />
-            <Sort />
+            <Sort v-model:sort="sortTerms" />
         </div>
 
-        <VisitorList :searchTerms="searchTerms" />
+        <VisitorList :search-terms="searchTerms" :sort-terms="sortTerms" />
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
@@ -38,11 +42,14 @@ import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
+import Options from "@/components/Options.vue";
 
 import { RouterLink, RouterView } from "vue-router";
 
 import { ref, defineProps, watch } from "vue";
-// const searchTerms = defineModel("");
+const searchTerms = ref("");
+const sortTerms = ref("");
+const filterTerms = defineModel([]);
 
 const props = defineProps({
     breadCrumbs: {

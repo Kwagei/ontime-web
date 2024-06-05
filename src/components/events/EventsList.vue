@@ -1,8 +1,8 @@
 <template>
     <div id="eventsTableContainer">
         <table
-            v-if="allEvents.data && allEvents.data.length >= 1"
-            class="table table-hover"
+            v-if="Array.isArray(allEvents) && allEvents.length"
+            class="table table-hover mb-0"
         >
             <thead>
                 <tr>
@@ -37,12 +37,10 @@
                 </tr>
             </tbody>
         </table>
-        <h2 v-else-if="allEvents.data && allEvents.data.length <= 0">
+        <h2 v-else-if="Array.isArray(allEvents) && allEvents.length <= 0">
             No Events Currently!
         </h2>
-        <h2 v-else-if="Object.keys(allEvents).length <= 0">
-            Loading Events...
-        </h2>
+        <h2 v-else-if="allEvents == 'loading'">Loading Events...</h2>
         <h2 v-else>Error Loading Events, Try again!</h2>
     </div>
     <Pagination v-model="paginationStart" />
@@ -54,7 +52,7 @@ import { ref, onMounted, watch } from "vue";
 import $ from "jquery";
 
 const paginationStart = ref(0);
-const allEvents = ref({});
+const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX = ref(10);
 
@@ -65,28 +63,61 @@ function formatDate(date) {
 }
 
 onMounted(async () => {
+    await getEvents();
+});
+
+watch(paginationStart, (newValue) => {
+    eventsToShow.value = allEvents.value.slice(newValue, MAX.value + newValue);
+
+    if (allEvents.value.length - newValue == 10) moreEvents();
+});
+
+async function getEvents(
+    search = "",
+    start = 0,
+    limit = 20,
+    from = "",
+    to = ""
+) {
     // Get Events from API on `localhost:3000`
     try {
-        await $.get("http://localhost:3000/api/events/", (data) => {
-            allEvents.value = data;
-            nextPage(0);
+        const url = `http://localhost:3000/api/events?start=${start}&limit=${limit}`;
+
+        if (search) url += `&search=${search}`;
+        if (from) url += `&from=${from}`;
+        if (to) url += `&to=${to}`;
+
+        await $.get(url, (data) => {
+            allEvents.value = data.data;
+            eventsToShow.value = allEvents.value.slice(0, 10);
         });
     } catch (error) {
-        allEvents.value = error.responseJSON;
+        // do nothing
+        allEvents.value = "error";
     }
-});
-
-watch(paginationStart, (newValue, oldValue) => {
-    if (newValue > oldValue) nextPage(newValue);
-    else previousPage(newValue);
-});
-
-function nextPage(start) {
-    eventsToShow.value = allEvents.value.data.slice(start, MAX.value + start);
 }
 
-function previousPage(start) {
-    eventsToShow.value = allEvents.value.data.slice(start, MAX.value);
+async function moreEvents(
+    search = "",
+    start = allEvents.value.length,
+    limit = 20,
+    from = "",
+    to = ""
+) {
+    // Get Events from API on `localhost:3000`
+    try {
+        const url = `http://localhost:3000/api/events?start=${start}&limit=${limit}`;
+
+        if (search) url += `&search=${search}`;
+        if (from) url += `&from=${from}`;
+        if (to) url += `&to=${to}`;
+
+        await $.get(url, (data) => {
+            allEvents.value.push(...data.data);
+        });
+    } catch (error) {
+        // do nothing
+    }
 }
 </script>
 

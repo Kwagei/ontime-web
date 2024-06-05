@@ -49,10 +49,6 @@ const routes = [
             },
         ],
     },
-    {
-        path: "/visitors/new-visitor",
-        component: () => import("../components/visitors/AddVisitors.vue"),
-    },
 ];
 
 const router = createRouter({

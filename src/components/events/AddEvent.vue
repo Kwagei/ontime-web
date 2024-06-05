@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
     <Modal
         :data="{
             title: successModalData.title,
@@ -8,8 +7,6 @@
             pageLink: successModalData.pageLink,
         }"
     />
-=======
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
     <div id="eventsWrapper">
         <div class="d-flex justify-content-between">
             <div>
@@ -244,6 +241,7 @@ async function postEvent() {
             successModalData.value.pageLink = "/events/";
 
             visuallyHideModalBackdrop();
+            toggleModalVisuallyHidden();
         });
 
         clearInputs();
@@ -255,7 +253,8 @@ async function postEvent() {
     }
 }
 
-function visuallyHideModalBackdrop() {
+// function visuallyHideModalBackdrop() {
+function toggleModalVisuallyHidden() {
     const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
 
     if (modalsBackdrops.length) {

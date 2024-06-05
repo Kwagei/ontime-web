@@ -35,8 +35,13 @@ const breadCrumbs = ref([]);
     width: 100vw;
 }
 
+<<<<<<< HEAD
 /* Section Scrolling Media Query */
 @media (min-width: 1700px) and (min-height: 920px) {
+=======
+/* Desktop Styles */
+@media (min-width: 1700px) {
+>>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
     #wrapper {
         position: fixed;
     }

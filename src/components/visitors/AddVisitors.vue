@@ -220,9 +220,9 @@ svg {
     margin: 0 !important;
 }
 
-#new-visitor:hover {
+/* #new-visitor:hover {
     color: white !important;
-}
+} */
 
 #visitor-view {
     padding-top: 2rem;

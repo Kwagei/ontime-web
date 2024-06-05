@@ -1,3 +1,36 @@
+<!-- <template>
+    <div id="visitor-view" class="d-flex flex-column container">
+        <div
+            class="d-flex justify-content-between align-items-center container p-0 mx-auto"
+        >
+            <BreadCrumbs :breadCrumbs="breadCrumbs" />
+
+            <div class="d-flex" style="gap: 0.521rem">
+                <RefreshList />
+                <Options />
+
+                <router-link :to="{ name: 'add-visitor' }">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="new-visitor"
+                        style="padding: 0.5rem 1.5rem; font-weight: 600"
+                    >
+                        Add Visitor
+                    </button>
+                </router-link>
+            </div>
+        </div>
+        <div class="row justify-content-between container p-0 mx-auto">
+            <Search v-model:search="searchTerms" />
+            <Filter />
+            <Sort />
+        </div>
+
+        <VisitorList @search="" />
+        <RouterView :breadCrumbs="breadCrumbs" />
+    </div>
+</template> -->
 <template>
     <div id="visitor-view" class="d-flex flex-column container">
         <div
@@ -22,12 +55,12 @@
             </div>
         </div>
         <div class="row justify-content-between container p-0 mx-auto">
-            <Search v-model:term="searchTerms" />
+            <Search v-model:search="searchTerms" @search="handleSearch" />
             <Filter />
             <Sort />
         </div>
 
-        <VisitorList :searchTerms="searchTerms" />
+        <VisitorList :search-terms="searchTerms" />
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
@@ -40,19 +73,26 @@ import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
 import Options from "@/components/Options.vue";
-// import Pagination from "../components/Pagination.vue";
 
 import { RouterLink, RouterView } from "vue-router";
 
 import { ref, defineProps, watch } from "vue";
-// const searchTerms = defineModel("");
+const searchTerms = ref("");
+const filterTerms = defineModel([]);
+const sortTerms = defineModel("sort");
 
+const emit = defineEmits(["search"]);
 const props = defineProps({
     breadCrumbs: {
         type: Array,
         required: true,
     },
 });
+
+function handleSearch(event) {
+    const { value } = event.target;
+    searchTerms.value = value;
+}
 </script>
 
 <style scoped>

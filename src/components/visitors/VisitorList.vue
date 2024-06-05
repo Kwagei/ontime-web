@@ -20,7 +20,6 @@
                     <th scope="col">Last name</th>
                     <th scope="col">Contact</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Address</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,13 +43,10 @@
                     <td>{{ visitor.last_name }}</td>
                     <td>{{ visitor.msisdn }}</td>
                     <td>{{ visitor.email }}</td>
-                    <td>{{ visitor.address }}</td>
                 </tr>
             </tbody>
         </table>
     </div>
-
-    <div>{{ searchTerms }}</div>
 
     <Pagination v-model="start" />
 </template>
@@ -62,35 +58,29 @@ import Pagination from "../Pagination.vue";
 
 const visitors = ref();
 const start = ref(0);
-const searchTerms = ref("");
 
-const watchStartValue = watch(
-    () => start.value,
-    async (newValue, oldValue) => {
-        // start.value = newValue;
-        visitors.value = await getVisitors("", start.value);
-    }
-);
-
-const props = defineProps({
+const searchTerms = defineProps({
     searchTerms: {
         type: String,
         required: true,
     },
 });
 
-// watch(
-//     () => searchTerms.value,
-//     (n, o) => {
-//         console.log({ n, o });
-//     }
-// );
-
-// const watchSearchValue = watch(()=> )
+watch(
+    () => [start.value, searchTerms.searchTerms],
+    async ([newPagination, newSearch]) => {
+        visitors.value = await getVisitors({
+            search: newSearch,
+            start: newPagination,
+        });
+    }
+);
 
 const fetchData = async () => {
-    console.log("Term: ", searchTerms.value);
-    visitors.value = await getVisitors(searchTerms.value);
+    visitors.value = await getVisitors({
+        search: searchTerms.value,
+        start: start.value,
+    });
 };
 fetchData();
 </script>

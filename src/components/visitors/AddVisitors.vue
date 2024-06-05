@@ -137,12 +137,7 @@ const message = ref("");
 const title = ref("");
 
 const onSubmit = async () => {
-    if (
-        !first_name.value ||
-        !last_name.value ||
-        !msisdn.value ||
-        !address.value
-    ) {
+    if (!first_name.value || !last_name.value || !msisdn.value) {
         return;
     }
 
@@ -152,7 +147,6 @@ const onSubmit = async () => {
         last_name: last_name.value,
         msisdn: msisdn.value,
         email: email.value,
-        address: address.value,
     };
 
     const response = await registerVisitor(visitor);

@@ -4,9 +4,9 @@
             <input
                 type="search"
                 class="form-control search"
-                id="first_name"
                 placeholder="Search ..."
                 v-model="searchTerms"
+                ref="inputEl"
             />
         </form>
     </div>
@@ -19,6 +19,16 @@
 </style>
 
 <script setup>
-import { ref, watch } from "vue";
-const searchTerms = defineModel("term");
+const searchTerms = defineModel("search");
+import { ref, onMounted } from "vue";
+
+const inputEl = ref(null);
+
+onMounted(() => {
+    inputEl.value.addEventListener("keyup", handleKeyUp);
+});
+
+function handleKeyUp(event) {
+    searchTerms.value = inputEl.value.value;
+}
 </script>

@@ -66,23 +66,14 @@ const getVisitors = async (query) => {
         const {
             search = "",
             start = 0,
-            limit = 20,
+            limit = 10,
             sort = "",
             direction = "",
         } = query;
 
-        let url = `${API}/visitors?start=${start}&limit=${limit}`;
-
-        if (search) {
-            url += `&search=${search}`;
-        }
-
-        if (sort) {
-            url += `&sort=${sort}&direction=${direction}`;
-        }
-
-        const response = await fetch(url);
-
+        const response = await fetch(
+            `${API}/visitors/?search=${search}&start=${start}&limit=${limit}&sort=${sort}&direction=${direction}`
+        );
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }

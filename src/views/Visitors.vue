@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="row justify-content-between container p-0 mx-auto">
-            <Search v-model:search="searchTerms" @search="handleSearch" />
+            <Search v-model:search="searchTerms" />
             <Filter />
             <Sort />
         </div>
@@ -55,11 +55,6 @@ const props = defineProps({
         required: true,
     },
 });
-
-function handleSearch(event) {
-    const { value } = event.target;
-    searchTerms.value = value;
-}
 </script>
 
 <style scoped>

@@ -5,6 +5,7 @@
     >
         <button
             class="btn btn-secondary w-25"
+            @click="toggleDirection"
             type="button"
             data-bs-theme="dark"
         >
@@ -49,13 +50,30 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 const sortTerms = defineModel("sort");
 const sortType = ref("Created At");
+const directionTerms = defineModel("direction");
+const directionType = ref("desc");
+
+watch(
+    () => directionTerms.value,
+    (n, o) => {
+        console.log({ n, o });
+    }
+);
 
 const updateSortTerms = (sort) => {
     sortTerms.value = sort.term;
     sortType.value = sort.type;
+    directionTerms.value = directionType.value;
+};
+
+const toggleDirection = () => {
+    directionType.value = directionType.value !== "asc" ? "asc" : "desc";
+    directionTerms.value = directionType.value;
+    sortTerms.value = sortTerms.value;
+    sortType.value = sortType.value;
 };
 
 const sortItems = [

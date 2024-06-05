@@ -35,7 +35,11 @@
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.page-item {
+    cursor: pointer;
+}
+</style>
 
 <script setup>
 import { ref, computed } from "vue";

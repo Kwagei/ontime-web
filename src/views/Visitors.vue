@@ -27,10 +27,14 @@
         <div class="row justify-content-between container p-0 mx-auto">
             <Search v-model:search="searchTerms" />
             <Filter />
-            <Sort v-model:sort="sortTerms" />
+            <Sort v-model:sort="sortTerms" v-model:direction="directionTerms" />
         </div>
 
-        <VisitorList :search-terms="searchTerms" :sort-terms="sortTerms" />
+        <VisitorList
+            :searchTerms="searchTerms"
+            :sortTerms="sortTerms"
+            :directionTerms="directionTerms"
+        />
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
@@ -49,6 +53,7 @@ import { RouterLink, RouterView } from "vue-router";
 import { ref, defineProps, watch } from "vue";
 const searchTerms = ref("");
 const sortTerms = ref("");
+const directionTerms = ref("desc");
 const filterTerms = defineModel([]);
 
 const props = defineProps({

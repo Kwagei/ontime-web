@@ -56,14 +56,6 @@
 
 <script setup>
 import { ref } from "vue";
-// import { getVisits } from "@/assets/js/index.js";
-
-// const visits = ref(null);
-// const fetchData = async () => {
-//     visits.value = await getVisitors();
-// };
-
-// fetchData();
 
 const visits = ref([
 	{

@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div id="visitor-view" class="d-flex flex-column container">
     <div

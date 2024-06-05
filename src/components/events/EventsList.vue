@@ -120,7 +120,7 @@ async function moreEvents(
 ) {
     // Get Events from API on `localhost:3000`
     try {
-        const url = `http://localhost:3000/api/events?start=${start}&limit=${limit}`;
+        let url = `http://localhost:3000/api/events?start=${start}&limit=${limit}`;
 
         if (search) url += `&search=${search}`;
         if (from) url += `&from=${from}`;

@@ -56,7 +56,7 @@ import { ref, watch } from "vue";
 import { getVisitors } from "@/assets/js/index.js";
 import Pagination from "../Pagination.vue";
 
-const visitors = ref();
+const visitors = defineModel();
 const start = ref(0);
 
 const props = defineProps({
@@ -68,15 +68,32 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    directionTerms: {
+        type: String,
+        required: true,
+    },
 });
 
+// watch(
+//     () => directionTerms.value,
+//     (n, o) => {
+//         console.log;
+//     }
+// );
+
 watch(
-    () => [start.value, props.searchTerms, props.sortTerms],
-    async ([startValue, searchValue, sortValue]) => {
+    () => [
+        start.value,
+        props.searchTerms,
+        props.sortTerms,
+        props.directionTerms,
+    ],
+    async ([startValue, searchValue, sortValue, directionValue]) => {
         visitors.value = await getVisitors({
             search: searchValue,
             start: startValue,
             sort: sortValue,
+            direction: directionValue,
         });
     }
 );
@@ -86,6 +103,7 @@ const fetchData = async () => {
         search: props.searchTerms,
         sort: props.sortTerms,
         start: start.value,
+        direction: props.directionTerms,
     });
 };
 fetchData();

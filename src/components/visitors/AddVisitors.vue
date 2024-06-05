@@ -1,4 +1,5 @@
 <template>
+    <Modal :data="{ title, message, status }" />
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -11,58 +12,6 @@
             class="mt-4 form-control input"
             style="margin: auto; padding: 3rem"
         >
-            <!-- Button trigger modal -->
-            <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#exampleModal"
-            >
-                Launch demo modal
-            </button>
-
-            <!-- Modal -->
-            <div
-                class="modal fade"
-                id="exampleModal"
-                tabindex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-            >
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title h5" id="exampleModalLabel">
-                                Modal title
-                            </h1>
-                            <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="bottom"
-                                data-bs-title="Close"
-                            >
-                                <span class="visually-hidden">Close</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">...</div>
-                        <div class="modal-footer">
-                            <button
-                                type="button"
-                                class="btn btn-outline-secondary"
-                                data-bs-dismiss="modal"
-                            >
-                                Close
-                            </button>
-                            <button type="button" class="btn btn-primary">
-                                Save changes
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <form
                 class="row g-3 needs-validation"
                 novalidate
@@ -70,9 +19,7 @@
             >
                 <!-- FIRST NAME -->
                 <div class="col-md-6">
-                    <label
-                        for="validationCustom01"
-                        class="form-label is-required"
+                    <label for="first_name" class="form-label is-required"
                         >First name<span class="visually-hidden">
                             (required)</span
                         ></label
@@ -81,7 +28,7 @@
                         <input
                             type="text"
                             class="form-control"
-                            id="validationCustomFirstName"
+                            id="first_name"
                             aria-describedby="inputGroupPrepend"
                             v-model="first_name"
                             required
@@ -94,19 +41,17 @@
 
                 <!-- PHONE NUMBER -->
                 <div class="col-md-6">
-                    <label
-                        for="validationCustom02"
-                        class="form-label is-required"
+                    <label for="phone_number" class="form-label is-required"
                         >Phone number<span class="visually-hidden">
                             (required)</span
                         ></label
                     >
                     <div class="input-group has-validation">
                         <input
-                            type="text"
+                            type="tel"
                             class="form-control"
                             v-model="msisdn"
-                            id="validationCustomFirstName"
+                            id="phone_number"
                             aria-describedby="inputGroupPrepend"
                             required
                         />
@@ -118,13 +63,13 @@
 
                 <!-- MIDDLE NAME -->
                 <div class="col-md-6">
-                    <label for="validationCustomUsername" class="form-label"
+                    <label for="middle_name" class="form-label"
                         >Middle name</label
                     >
                     <input
                         type="text"
                         class="form-control"
-                        id="validationCustomUsername"
+                        id="middle_name"
                         v-model="middle_name"
                         aria-describedby="inputGroupPrepend"
                     />
@@ -132,13 +77,11 @@
 
                 <!-- EMAIL -->
                 <div class="col-md-6">
-                    <label for="validationCustom03" class="form-label"
-                        >Email</label
-                    >
+                    <label for="email" class="form-label">Email</label>
                     <input
                         type="email"
                         class="form-control"
-                        id="validationCustomUsername"
+                        id="email"
                         v-model="email"
                         aria-describedby="inputGroupPrepend"
                     />
@@ -146,9 +89,7 @@
 
                 <!-- LAST NAME -->
                 <div class="col-md-6">
-                    <label
-                        for="validationCustom02"
-                        class="form-label is-required"
+                    <label for="last_name" class="form-label is-required"
                         >Last name<span class="visually-hidden">
                             (required)</span
                         ></label
@@ -157,7 +98,7 @@
                         <input
                             type="text"
                             class="form-control"
-                            id="validationCustom02"
+                            id="last_name"
                             v-model="last_name"
                             required
                         />
@@ -168,9 +109,7 @@
                 </div>
 
                 <div class="col-12">
-                    <label
-                        for="validationCustom02"
-                        class="form-label is-required"
+                    <label for="address" class="form-label is-required"
                         >Address<span class="visually-hidden">
                             (required)</span
                         ></label
@@ -178,7 +117,7 @@
                     <div class="input-group has-validation">
                         <textarea
                             class="form-control"
-                            id="validationCustom02"
+                            id="address"
                             required
                             v-model="address"
                         ></textarea>
@@ -197,17 +136,11 @@
     </div>
 </template>
 
-<style scoped>
-.input {
-    border: 0.0125rem solid #ccc;
-    border-radius: 0.25rem !important;
-}
-</style>
-
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
-import ModalTemplate from "../ModalTemplate.vue";
+import Modal from "../Modal.vue";
 import { registerVisitor } from "@/assets/js/index.js";
+
 import { ref, defineProps, onMounted } from "vue";
 
 const first_name = ref("");
@@ -217,7 +150,9 @@ const msisdn = ref("");
 const email = ref("");
 const address = ref("");
 
-const emit = defineEmits(["visitorFormSubmitted"]);
+const status = ref("");
+const message = ref("");
+const title = ref("");
 
 const onSubmit = async () => {
     if (
@@ -239,16 +174,18 @@ const onSubmit = async () => {
     };
 
     const response = await registerVisitor(visitor);
-
-    // if (!response.ok) {
-    //     console.log("");
-    //     onMounted(() => {
-    //         document.querySelector("#exampleModal").classList.toggle("show");
-    //     });
-    // }
-    console.log({ response });
-
-    emit("visitorFormSubmitted", visitor);
+    const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
+    if (!response.ok) {
+        myModal.show(document.querySelector("#toggleMyModal"));
+        status.value = "danger";
+        message.value = response.result.message;
+        title.value = "Error";
+    } else {
+        myModal.show(document.querySelector("#toggleMyModal"));
+        status.value = "success";
+        message.value = response.result.message;
+        title.value = "Success";
+    }
 };
 
 const activeBreadCrumbs = ref([]);

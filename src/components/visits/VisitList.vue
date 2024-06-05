@@ -56,14 +56,6 @@
 
 <script setup>
 import { ref } from "vue";
-// import { getVisits } from "@/assets/js/index.js";
-
-// const visits = ref(null);
-// const fetchData = async () => {
-//     visits.value = await getVisitors();
-// };
-
-// fetchData();
 
 const visits = ref([
     {
@@ -90,7 +82,7 @@ const visits = ref([
 }
 th,
 td {
-    padding: 0.9rem;
+    padding: 0.9rem;    
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {

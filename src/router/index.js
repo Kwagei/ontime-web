@@ -6,7 +6,9 @@ import Visits from "../views/Visits.vue";
 import Users from "../views/Users.vue";
 import Events from "../views/Events.vue";
 import AddVisitors from "../components/visitors/AddVisitors.vue";
-import AddVisits from "../components/visits/AddVisits.vue";
+import AddMeeting from "../components/visits/AddMeeting.vue";
+import AddEvents from "../components/visits/AddEvents.vue";
+import AddWorkspace from "../components/visits/AddWorkspace.vue";
 
 const routes = [
     {
@@ -27,12 +29,14 @@ const routes = [
                 component: AddVisitors,
                 name: "add-visitor",
             },
+            {
+                path: "purpose-event",
+                component: AddVisitors,
+                name: "add-visitor",
+            },
         ],
     },
     {
-        // path: "/visits",
-        // component: Visits,
-        // name: "visits",
         path: "/visits",
         children: [
             {
@@ -41,11 +45,21 @@ const routes = [
                 name: "visits",
             },
             {
-                path: "new-visit",
-                component: AddVisits,
-                name: "add-visit",
+                path: "purpose-meeting",
+                component: AddMeeting,
+                name: "add-meeting",
             },
-        ],
+            {
+                path: "purpose-event",
+                component: AddEvents,
+                name: "visits-event",
+            },
+            {
+                path: "purpose-workspace",
+                component: AddWorkspace,
+                name: "add-workspace",
+            },
+        ], 
     },
     {
         path: "/users",

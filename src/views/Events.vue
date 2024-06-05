@@ -18,7 +18,6 @@
             <Sort />
         </div>
         <EventsList />
-        <Pagination />
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
@@ -30,7 +29,6 @@ import Options from "../components/Options.vue";
 import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
-import Pagination from "../components/Pagination.vue";
 import EventsList from "../components/events/EventsList.vue";
 
 const props = defineProps({
@@ -43,6 +41,6 @@ const props = defineProps({
 
 <style>
 #eventsWrapper {
-    margin: 50px 125px;
+    margin: 25px 125px;
 }
 </style>

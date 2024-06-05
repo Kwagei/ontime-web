@@ -32,6 +32,14 @@ const breadCrumbs = ref([]);
 <style scope>
 #wrapper {
     height: 100vh;
+    width: 100vw;
+}
+
+/* Desktop Styles */
+@media (min-width: 1700px) {
+    #wrapper {
+        position: fixed;
+    }
 }
 
 aside {

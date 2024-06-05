@@ -1,4 +1,12 @@
 <template>
+    <Modal
+        :data="{
+            title: successModalData.title,
+            message: successModalData.message,
+            status: successModalData.status,
+            pageLink: successModalData.pageLink,
+        }"
+    />
     <div id="eventsWrapper">
         <div class="d-flex justify-content-between">
             <div>
@@ -14,6 +22,7 @@
                 </button>
             </div>
         </div>
+
         <form @submit="postEvent" id="eventsFormWrapper" class="my-4 p-5">
             <div>
                 <label for="titleInput" class="form-label is-required">
@@ -23,11 +32,17 @@
                 <input
                     type="text"
                     class="form-control"
+                    :class="{
+                        border: titleError,
+                        'border-danger': titleError,
+                    }"
                     id="titleInput"
                     placeholder="Title"
                     v-model="title"
                     required
                 />
+
+                <Alert :title="titleError" />
             </div>
             <div>
                 <label for="facilitatorInput" class="form-label is-required">
@@ -38,10 +53,16 @@
                     type="text"
                     class="form-control"
                     id="facilitatorInput"
+                    :class="{
+                        border: facilitatorError,
+                        'border-danger': facilitatorError,
+                    }"
                     placeholder="Facilitator"
                     v-model="facilitator"
                     required
                 />
+
+                <Alert :title="facilitatorError" />
             </div>
             <div>
                 <label for="startDateInput" class="form-label is-required">
@@ -52,10 +73,16 @@
                     type="date"
                     class="form-control"
                     id="startDateInput"
+                    :class="{
+                        border: startDateError,
+                        'border-danger': startDateError,
+                    }"
                     placeholder="Start Date"
                     v-model="startDate"
                     required
                 />
+
+                <Alert :title="startDateError" />
             </div>
             <div>
                 <label for="endDateInput" class="form-label is-required">
@@ -66,10 +93,16 @@
                     type="date"
                     class="form-control"
                     id="endDateInput"
+                    :class="{
+                        border: endDateError,
+                        'border-danger': endDateError,
+                    }"
                     placeholder="End Date"
                     v-model="endDate"
                     required
                 />
+
+                <Alert :title="endDateError" />
             </div>
             <div>
                 <label for="typeInput" class="form-label is-required">
@@ -79,6 +112,10 @@
                 <select
                     class="form-select"
                     v-model="type"
+                    :class="{
+                        border: typeError,
+                        'border-danger': typeError,
+                    }"
                     aria-label="Select Event Type"
                     required
                 >
@@ -91,6 +128,8 @@
                     <option value="Workshop">Workshop</option>
                     <option value="Excursion">Excursion</option>
                 </select>
+
+                <Alert :title="typeError" />
             </div>
             <div>
                 <label for="detailsTextarea" class="form-label">Details</label>
@@ -98,19 +137,26 @@
                     placeholder="Enter details..."
                     class="form-control"
                     id="detailsTextarea"
+                    :class="{
+                        border: detailsError,
+                        'border-danger': detailsError,
+                    }"
                     v-model="details"
                     rows="4"
-                    required
                 ></textarea>
+
+                <Alert :title="detailsError" />
             </div>
         </form>
     </div>
 </template>
 
 <script setup>
-import { ref, defineProps } from "vue";
+import { ref, defineProps, onMounted } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import $ from "jquery";
+import Modal from "../Modal.vue";
+import Alert from "../Alert.vue";
 
 const activeBreadCrumbs = ref([]);
 
@@ -121,6 +167,22 @@ const startDate = ref("");
 const endDate = ref("");
 const type = ref("Select Event Type...");
 const details = ref("");
+
+// Modal Data
+const successModalData = ref({
+    title: "",
+    status: "",
+    message: "",
+    pageLink: "",
+});
+
+// Error Alert Data
+const titleError = ref("");
+const facilitatorError = ref("");
+const startDateError = ref("");
+const endDateError = ref("");
+const typeError = ref("");
+const detailsError = ref("");
 
 const props = defineProps({
     breadCrumbs: {
@@ -141,31 +203,72 @@ async function postEvent() {
         details: details.value,
     };
 
+    const modal = new boosted.Modal("#exampleModal");
+
     try {
-        await $.post(
-            "http://localhost:3000/api/events/",
-            body,
-            (data, status) => {
-                console.log("Status: ", status);
-                console.log("Data: ", data);
-                alert(data.message, data.data);
-            }
-        );
+        await $.post("http://localhost:3000/api/events/", body, (data) => {
+            console.log("Data: ", data);
+
+            // show modal
+            modal.show(document.querySelector("#toggleMyModal"));
+
+            // set modal data
+            successModalData.value.message = data.message;
+            successModalData.value.status = "success";
+            successModalData.value.title = "Event Created";
+            successModalData.value.pageLink = "/events/";
+
+            toggleModalVisuallyHidden();
+        });
 
         clearInputs();
+        clearErrors();
     } catch (error) {
         console.log("Error creating event: ", error);
-        alert(error.responseJSON.message);
+        clearErrors();
+        displayErrorMessage(error.responseJSON.message);
     }
 }
 
+function toggleModalVisuallyHidden() {
+    const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
+
+    if (modalsBackdrops.length) {
+        modalsBackdrops.forEach((modal) =>
+            modal.classList.add("visually-hidden")
+        );
+    }
+}
+
+function displayErrorMessage(msg) {
+    const tmpMsg = msg.toLowerCase();
+
+    if (tmpMsg.includes("title")) titleError.value = msg;
+    else if (tmpMsg.includes("facilitator")) facilitatorError.value = msg;
+    else if (tmpMsg.includes("start date")) startDateError.value = msg;
+    else if (tmpMsg.includes("end date")) endDateError.value = msg;
+    else if (tmpMsg.includes("type")) typeError.value = msg;
+    else if (tmpMsg.includes("details")) detailsError.value = msg;
+}
+
 function clearInputs() {
+    // clear inputs
     title.value = "";
     facilitator.value = "";
     startDate.value = "";
     endDate.value = "";
     type.value = "Select Event Type...";
     details.value = "";
+}
+
+function clearErrors() {
+    // clear errors
+    titleError.value = "";
+    facilitatorError.value = "";
+    startDateError.value = "";
+    endDateError.value = "";
+    typeError.value = "";
+    detailsError.value = "";
 }
 </script>
 

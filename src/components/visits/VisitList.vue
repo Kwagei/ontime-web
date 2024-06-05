@@ -38,13 +38,13 @@
                             />
                         </div>
                     </td>
-                    <td>{{ visit.name }}</td>
+                    <td>{{ visit.first_name + " " + visit.last_name }}</td>
                     <td>{{ visit.arrival_time }}</td>
-                    <td>{{ visit.contact }}</td>
-                    <td>{{ visit.departural_time }}</td>
+                    <td>{{ visit.msisdn }}</td>
+                    <td>{{ visit.departure_time }}</td>
                     <td>{{ visit.host }}</td>
                     <td>{{ visit.date }}</td>
-                    <td>{{ visit.room }}</td>
+                    <td>{{ visit.room_name }}</td>
                     <td>{{ visit.institution }}</td>
                     <td>{{ visit.belonging }}</td>
                     <td>{{ visit.purpose }}</td>
@@ -54,26 +54,34 @@
     </div>
 </template>
 
+
 <script setup>
 import { ref } from "vue";
+import { getVisits, registerVisit } from "@/assets/js/index.js";
 
-const visits = ref([
-    {
-        id: 1,
-        name: "John Doe",
-        arrival_time: "08:00 AM",
-        contact: "1234567890",
-        departural_time: "09:00 AM",
-        host: "Alice Johnson",
-        date: "2024-05-29",
-        room: "101",
-        institution: "ABC Corp",
-        belonging: "Laptop",
-        purpose: "Meeting"
-    },
-    // Other visit objects...
-]);
+const visits = ref([]);
+const fetchData = async () => {
+    const data = await getVisits();
+    visits.value = formatDateTime(data)
 
+};
+
+fetchData();
+
+const formatDateTime = (visits) => {
+    for (let i = 0; i < visits.length; i++) {
+        let [date, arrival_time] = visits[i].date_time.split('T')
+        arrival_time = arrival_time.split('.')[0]
+        visits[i] = {...visits[i], date, arrival_time}
+        delete visits[i].date_time
+    }
+
+    return visits
+
+}
+
+
+console.log(getVisits);
 </script>
 
 <style scoped>

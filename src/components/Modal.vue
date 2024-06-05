@@ -10,7 +10,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h1
-                        class="modal-title h5"
+                        class="modal-title h3"
                         :class="{
                             'text-danger': data.status === 'danger',
                             'text-success': data.status === 'success',
@@ -18,7 +18,7 @@
                         }"
                         id="exampleModalLabel"
                     >
-                        {{ data.title }}:
+                        {{ data.title }}
                     </h1>
                     <button
                         type="button"
@@ -31,7 +31,14 @@
                         <span class="visually-hidden">Close</span>
                     </button>
                 </div>
-                <div class="modal-body">{{ data.message }}</div>
+                <div class="modal-body">
+                    <div v-if="data.message != data.title" class="mt-2 mb-3">
+                        {{ data.message }}
+                    </div>
+                    <router-link v-if="data.pageLink" :to="data.pageLink">
+                        <button class="btn btn-primary d-block">View</button>
+                    </router-link>
+                </div>
             </div>
         </div>
     </div>

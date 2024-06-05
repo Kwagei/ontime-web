@@ -1,13 +1,13 @@
 <template>
-    <div>
+    <div id="eventsTableContainer">
         <table
-            v-if="events.data && events.data.length >= 1"
+            v-if="allEvents.data && allEvents.data.length >= 1"
             class="table table-hover"
         >
             <thead>
                 <tr>
                     <th scope="col">
-                        <input type="checkbox" />
+                        <input type="checkbox" class="form-check-input" />
                     </th>
                     <th scope="col">Title</th>
                     <th scope="col" style="width: 150px">Start Date</th>
@@ -18,7 +18,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(event, index) in events.data">
+                <tr v-for="event in eventsToShow">
                     <td>
                         <input
                             class="form-check-input"
@@ -37,49 +37,63 @@
                 </tr>
             </tbody>
         </table>
-        <h2 v-else-if="events.data && events.data.length <= 0">
+        <h2 v-else-if="allEvents.data && allEvents.data.length <= 0">
             No Events Currently!
         </h2>
-        <h2 v-else-if="Object.keys(events).length <= 0">Loading Events...</h2>
+        <h2 v-else-if="Object.keys(allEvents).length <= 0">
+            Loading Events...
+        </h2>
         <h2 v-else>Error Loading Events, Try again!</h2>
     </div>
+    <Pagination v-model="paginationStart" />
 </template>
 
-<script>
-import { ref } from "vue";
+<script setup>
+import Pagination from "../Pagination.vue";
+import { ref, onMounted, watch } from "vue";
+import $ from "jquery";
 
-export default {
-    name: "EventsList",
-    data() {
-        return {
-            events: ref({}),
-        };
-    },
-    methods: {
-        formatDate(date) {
-            const rawDate = new Date(date);
+const paginationStart = ref(0);
+const allEvents = ref({});
+const eventsToShow = ref([]);
+const MAX = ref(10);
 
-            return rawDate.toString().split(" 0")[0];
-        },
-    },
-    mounted() {
-        // Get Events from API on `localhost:3000`
-        const req = new XMLHttpRequest();
+function formatDate(date) {
+    const rawDate = new Date(date);
 
-        req.open("GET", "http://localhost:3000/api/events");
-        req.responseType = "json";
-        req.send();
+    return rawDate.toString().split(" 0")[0];
+}
 
-        req.onload = () => {
-            const res = req.response;
+onMounted(async () => {
+    // Get Events from API on `localhost:3000`
+    try {
+        await $.get("http://localhost:3000/api/events/", (data) => {
+            allEvents.value = data;
+            nextPage(0);
+        });
+    } catch (error) {
+        allEvents.value = error.responseJSON;
+    }
+});
 
-            if (req.readyState === 4 && req.status === 200) {
-                this.events = res;
-            } else {
-                console.error("Error getting events: ", res);
-                this.events = res;
-            }
-        };
-    },
-};
+watch(paginationStart, (newValue, oldValue) => {
+    if (newValue > oldValue) nextPage(newValue);
+    else previousPage(newValue);
+});
+
+function nextPage(start) {
+    eventsToShow.value = allEvents.value.data.slice(start, MAX.value + start);
+}
+
+function previousPage(start) {
+    eventsToShow.value = allEvents.value.data.slice(start, MAX.value);
+}
 </script>
+
+<style scoped>
+#eventsTableContainer {
+    max-height: 63vh;
+    overflow: scroll;
+    margin-bottom: 30px;
+}
+</style>

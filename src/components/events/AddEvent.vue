@@ -2,10 +2,13 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
 =======
 >>>>>>> da5afb7 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+>>>>>>> 6987f26 (completed displaying events and pagination, moving to Event page creation)
     <Modal
         :data="{
             title: successModalData.title,
@@ -14,6 +17,7 @@
             pageLink: successModalData.pageLink,
         }"
     />
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -29,6 +33,8 @@
 =======
 =======
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+>>>>>>> 6987f26 (completed displaying events and pagination, moving to Event page creation)
     <div id="eventsWrapper">
         <div class="d-flex justify-content-between">
             <div>
@@ -533,6 +539,7 @@ async function postEvent() {
             successModalData.value.pageLink = "/events/";
 
             visuallyHideModalBackdrop();
+            toggleModalVisuallyHidden();
         });
 
         clearInputs();
@@ -544,7 +551,8 @@ async function postEvent() {
     }
 }
 
-function visuallyHideModalBackdrop() {
+// function visuallyHideModalBackdrop() {
+function toggleModalVisuallyHidden() {
     const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
 
     if (modalsBackdrops.length) {

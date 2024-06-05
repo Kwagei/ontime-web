@@ -92,9 +92,9 @@ async function getEvents(
     try {
         const url = API_URL + `events?start=${start}&limit=${limit}`;
 
-    if (search) url += `&search=${search}`;
-    if (from) url += `&from=${from}`;
-    if (to) url += `&to=${to}`;
+		if (search) url += `&search=${search}`;
+		if (from) url += `&from=${from}`;
+		if (to) url += `&to=${to}`;
 
     await $.get(url, (data) => {
       allEvents.value = data.data;
@@ -114,9 +114,9 @@ async function moreEvents(
   from = "",
   to = ""
 ) {
-  // Get Events from API on `localhost:3000`
-  try {
-    let url = `http://localhost:3000/api/events?start=${start}&limit=${limit}`;
+    // Get Events from API on `localhost:3000`
+    try {
+        let url = API_URL + `events?start=${start}&limit=${limit}`;
 
     if (search) url += `&search=${search}`;
     if (from) url += `&from=${from}`;

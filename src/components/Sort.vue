@@ -21,18 +21,57 @@
                 />
             </svg>
         </button>
-        <button
-            type="button"
-            class="btn btn-secondary w-75"
-            data-bs-theme="dark"
+        <div
+            class="d-flex dropdown btn-secondary w-75"
             style="border-left: 0.125rem solid black"
         >
-            Last Updated On
-        </button>
+            <button
+                class="btn w-100"
+                type="button"
+                data-value=""
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                {{ sortType }}
+            </button>
+            <ul class="dropdown-menu w-100">
+                <li
+                    class="dropdown-item"
+                    v-for="sort in sortItems"
+                    :key="sort.value"
+                    @click="updateSortTerms(sort)"
+                >
+                    {{ sort.type }}
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
+<script setup>
+import { ref } from "vue";
+const sortTerms = defineModel("sort");
+const sortType = ref("Created At");
+
+const updateSortTerms = (sort) => {
+    sortTerms.value = sort.term;
+    sortType.value = sort.type;
+};
+
+const sortItems = [
+    { type: "Created At", term: "created_at" },
+    { type: "First Name", term: "first_name" },
+    { type: "Middle Name", term: "middle_name" },
+    { type: "Last Name", term: "last_name" },
+    { type: "Phone Number", term: "msisdn" },
+    { type: "Email", term: "email" },
+];
+</script>
+
 <style scoped>
+.dropdown-item {
+    cursor: pointer;
+}
 .sort {
     padding: 0 !important;
 }

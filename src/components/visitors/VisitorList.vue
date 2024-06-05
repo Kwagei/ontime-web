@@ -59,26 +59,32 @@ import Pagination from "../Pagination.vue";
 const visitors = ref();
 const start = ref(0);
 
-const searchTerms = defineProps({
+const props = defineProps({
     searchTerms: {
+        type: String,
+        required: true,
+    },
+    sortTerms: {
         type: String,
         required: true,
     },
 });
 
 watch(
-    () => [start.value, searchTerms.searchTerms],
-    async ([newPagination, newSearch]) => {
+    () => [start.value, props.searchTerms, props.sortTerms],
+    async ([startValue, searchValue, sortValue]) => {
         visitors.value = await getVisitors({
-            search: newSearch,
-            start: newPagination,
+            search: searchValue,
+            start: startValue,
+            sort: sortValue,
         });
     }
 );
 
 const fetchData = async () => {
     visitors.value = await getVisitors({
-        search: searchTerms.value,
+        search: props.searchTerms,
+        sort: props.sortTerms,
         start: start.value,
     });
 };

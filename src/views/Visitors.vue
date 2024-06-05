@@ -14,7 +14,10 @@
                         type="button"
                         class="btn btn-primary"
                         id="new-visitor"
-                        style="padding: 0.5rem 1.5rem; font-weight: 600"
+                        style="
+                            padding: 0.7rem 2rem !important;
+                            font-weight: 600;
+                        "
                     >
                         Add Visitor
                     </button>
@@ -24,10 +27,10 @@
         <div class="row justify-content-between container p-0 mx-auto">
             <Search v-model:search="searchTerms" />
             <Filter />
-            <Sort />
+            <Sort v-model:sort="sortTerms" />
         </div>
 
-        <VisitorList :search-terms="searchTerms" />
+        <VisitorList :search-terms="searchTerms" :sort-terms="sortTerms" />
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
@@ -45,10 +48,9 @@ import { RouterLink, RouterView } from "vue-router";
 
 import { ref, defineProps, watch } from "vue";
 const searchTerms = ref("");
+const sortTerms = ref("");
 const filterTerms = defineModel([]);
-const sortTerms = defineModel("sort");
 
-const emit = defineEmits(["search"]);
 const props = defineProps({
     breadCrumbs: {
         type: Array,

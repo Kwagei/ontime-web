@@ -133,4 +133,15 @@ async function moreEvents(
 }
 </script>
 
+<<<<<<< HEAD
 <style scoped></style>
+=======
+<style scoped>
+#eventsTableContainer {
+	max-height: 63vh;
+	overflow: scroll;
+	margin-bottom: 30px;
+}
+</style>
+>>>>>>> c4b8253 (completed displaying events and pagination, moving to Event
+page creation)

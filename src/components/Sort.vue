@@ -38,7 +38,7 @@
                 <li
                     class="dropdown-item"
                     v-for="sort in sortItems"
-                    :key="sort.value"
+                    :key="sort.term"
                     @click="updateSortTerms(sort)"
                 >
                     {{ sort.type }}

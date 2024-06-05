@@ -273,21 +273,6 @@ onMounted(() => {
   display: flex;
 }
 
-.validated {
-  border-color: var(--bs-form-invalid-border-color);
-}
-
-#list-options {
-  padding: 0.6rem 0.5rem;
-  font-weight: 400;
-  border: 0.0125rem solid #ccc;
-  border-radius: 0.25rem !important;
-}
-svg {
-  height: 20px !important;
-  margin: 0 !important;
-}
-
 #visitor-view {
   padding-top: 2rem;
   gap: 1.5rem;

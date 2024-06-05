@@ -210,8 +210,9 @@
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
+import { registerVisit } from "@/assets/js/index.js";
 
-import { ref, defineProps } from "vue";
+import { ref, defineProps, onMounted } from "vue";
 
 const msisdn = ref("");
 const new_visitor = ref("");
@@ -221,6 +222,46 @@ const institution = ref("");
 const room = ref("");
 const visit_address = ref("");
 const purpose = ref("");
+const status = ref("");
+const message = ref("");
+const title = ref("");
+
+const onSubmit = async () => {
+    if (
+        !msisdn.value ||
+        !new_visitor.value ||
+        !host_name.value ||
+        !visit_address.value
+    ) {
+        return;
+    }
+
+    const visit = {
+        msisdn: msisdn.value,
+        new_visitor: new_visitor.value,
+        host_name: host_name.value,
+        belonging: belonging.value,
+        institution: institution.value,
+        room: room.value,
+        visit_address: visit_address.value,
+        purpose: purpose.value,
+
+    };
+
+    const response = await registerVisit(visit);
+    const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
+    if (!response.ok) {
+        myModal.show(document.querySelector("#toggleMyModal"));
+        status.value = "danger";
+        message.value = response.result.message;
+        title.value = "Error";
+    } else {
+        myModal.show(document.querySelector("#toggleMyModal"));
+        status.value = "success";
+        message.value = response.result.message;
+        title.value = "Success";
+    }
+};
 
 const activeBreadCrumbs = ref([]);
 
@@ -233,7 +274,26 @@ const props = defineProps({
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
 
+const formValidation = onMounted(() => {
+    (() => {
+        "use strict";
 
+        const form = document.querySelector(".needs-validation");
+
+        form.addEventListener(
+            "submit",
+            (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add("was-validated");
+            },
+            false
+        );
+    })();
+});
 
 </script>
 

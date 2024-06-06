@@ -21,14 +21,18 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
+=======
+>>>>>>> 3042ee2 (Updated Interface design to follow Boosted style guide)
     <div id="eventsWrapper" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
             style="margin-top: 0.3rem"
         >
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -50,6 +54,8 @@
                 </button>
             </div>
 >>>>>>> da5afb7 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+>>>>>>> 3042ee2 (Updated Interface design to follow Boosted style guide)
         </div>
 
         <div class="form-control input" style="margin: auto; padding: 3rem">

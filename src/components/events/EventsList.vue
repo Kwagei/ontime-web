@@ -174,7 +174,7 @@ const formatDetails = (detail) => {
 function formatDate(date) {
     const rawDate = new Date(date);
 
-    return rawDate.toString().split(" 0")[0];
+            return rawDate.toString().split(" 0")[0];
 }
 
 onMounted(async () => {

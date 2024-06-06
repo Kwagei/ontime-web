@@ -51,3 +51,9 @@ const props = defineProps({
     data: { type: Object, required: true },
 });
 </script>
+
+<style scoped>
+.modal {
+    background-color: #16161552;
+}
+</style>

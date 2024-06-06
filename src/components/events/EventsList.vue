@@ -131,6 +131,7 @@ async function moreEvents(
 		// do nothing
 	}
 }
+<<<<<<< HEAD
 </script>
 
 <<<<<<< HEAD

@@ -335,7 +335,7 @@ onMounted(() => {
 	margin: 50px 125px;
 }
 
-#eventsFormWrapper {
+<<<<<<< HEAD #eventsFormWrapper {
 	outline: 1px solid #aaa;
 	border-radius: 5px;
 	display: grid;

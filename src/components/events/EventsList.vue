@@ -216,6 +216,7 @@ async function moreEvents(
 function displayEventPage(pageId) {
     router.push({ name: "specific-event", params: { id: pageId } });
 }
+<<<<<<< HEAD
 </script>
 
 <style scoped>

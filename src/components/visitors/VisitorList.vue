@@ -106,13 +106,6 @@ sortTerm.value = "created_at";
 const directionTerm = defineModel("direction");
 directionTerm.value = "desc";
 
-// watch(
-//     () => directionTerms.value,
-//     (n, o) => {
-//         console.log;
-//     }
-// );
-
 watch(
     () => [searchTerms.value, sortTerm.value, directionTerm.value, start.value],
     async ([searchValue, sortValue, directionValue, startValue]) => {

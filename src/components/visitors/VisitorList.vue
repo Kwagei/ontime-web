@@ -74,13 +74,6 @@ const props = defineProps({
     },
 });
 
-// watch(
-//     () => directionTerms.value,
-//     (n, o) => {
-//         console.log;
-//     }
-// );
-
 watch(
     () => [
         start.value,

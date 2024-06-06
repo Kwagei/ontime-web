@@ -108,9 +108,16 @@
                     </div>
                 </div>
 
-                <div class="col-12">
-                    <button class="btn btn-primary mt-2" type="submit">
-                        Save
+                <div class="col-md-12">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="
+                            padding: 0.7rem 2rem !important;
+                            font-weight: 600;
+                        "
+                    >
+                        Submit
                     </button>
                 </div>
             </form>

@@ -1,6 +1,7 @@
 <template>
     <div id="eventsTableContainer">
 <<<<<<< HEAD
+<<<<<<< HEAD
         <table class="table table-hover mb-0">
             <thead>
                 <tr>
@@ -11,10 +12,15 @@
                         <input type="checkbox" />
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
 =======
+=======
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
         <table
             v-if="allEvents.data && allEvents.data.length >= 1"
             class="table table-hover"
         >
+=======
+        <table class="table table-hover mb-0">
+>>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
             <thead>
                 <tr>
                     <th scope="col">
@@ -47,10 +53,14 @@
                         />
                     </td>
 <<<<<<< HEAD
+<<<<<<< HEAD
                     <td>{{ event.title }}</td>
 =======
                     <td class="bold">{{ event.title }}</td>
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+                    <td>{{ event.title }}</td>
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
                     <td>
                         {{ formatDate(event.start_date) }}
                     </td>
@@ -63,6 +73,9 @@
         </table>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
         <div
             v-if="hasEvents"
             style="
@@ -74,6 +87,7 @@
         >
             <h2>No Events Currently!</h2>
         </div>
+<<<<<<< HEAD
 =======
         <h2 v-else-if="events.data && events.data.length <= 0">
 =======
@@ -86,6 +100,8 @@
         </h2>
         <h2 v-else>Error Loading Events, Try again!</h2>
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
     </div>
     <Pagination v-model="paginationStart" />
 </template>
@@ -119,6 +135,14 @@ const allEvents = ref({});
 const eventsToShow = ref([]);
 const MAX = ref(10);
 
+const hasEvents = ref(false);
+
+const formatDetails = (detail) => {
+    let words = detail.split(" ");
+
+    return words.length > 7 ? `${words.slice(0, 7).join(" ")}...` : detail;
+};
+
 function formatDate(date) {
     const rawDate = new Date(date);
 >>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
@@ -134,6 +158,7 @@ const formatDetails = (detail) => {
         req.onload = () => {
             const res = req.response;
 
+<<<<<<< HEAD
             if (req.readyState === 4 && req.status === 200) {
                 this.events = res;
             } else {
@@ -144,6 +169,7 @@ const formatDetails = (detail) => {
     },
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
 };
+<<<<<<< HEAD
 
 function formatDate(date) {
     const rawDate = new Date(date);
@@ -158,6 +184,9 @@ onMounted(async () => {
 watch(paginationStart, (newValue) => {
     eventsToShow.value = allEvents.value.slice(newValue, MAX.value + newValue);
 
+=======
+=======
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
     if (allEvents.value.length - newValue == 10) moreEvents();
 });
 
@@ -209,6 +238,7 @@ async function moreEvents(
         // do nothing
     }
 }
+<<<<<<< HEAD
 </script>
 
 <<<<<<< HEAD
@@ -222,3 +252,9 @@ async function moreEvents(
 }
 </style>
 >>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
+=======
+>>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
+</script>
+
+<style scoped></style>
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)

@@ -12,12 +12,16 @@
         }"
     />
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
     <div id="eventsWrapper" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
             style="margin-top: 0.3rem"
         >
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
+<<<<<<< HEAD
         </div>
 
         <div class="form-control input" style="margin: auto; padding: 3rem">
@@ -184,8 +188,11 @@
                     Submit
                 </button>
             </div>
+=======
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
         </div>
 
+<<<<<<< HEAD
         <form @submit="postEvent" id="eventsFormWrapper" class="my-4 p-5">
             <div>
                 <label for="titleInput" class="form-label is-required">
@@ -204,67 +211,96 @@
                     v-model="title"
                     required
                 />
+=======
+        <div class="form-control input" style="margin: auto; padding: 3rem">
+            <form
+                @submit.prevent="postEvent"
+                class="row g-3 needs-validation"
+                novalidate
+            >
+                <div class="col-md-6">
+                    <label for="titleInput" class="form-label is-required">
+                        Title
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        :class="{
+                            border: titleError,
+                            'border-danger': titleError,
+                        }"
+                        id="titleInput"
+                        placeholder="Title"
+                        v-model="title"
+                        required
+                    />
+>>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
 
-                <Alert :title="titleError" />
-            </div>
-            <div>
-                <label for="facilitatorInput" class="form-label is-required">
-                    Facilitator
-                    <span class="visually-hidden">(required)</span>
-                </label>
-                <input
-                    type="text"
-                    class="form-control"
-                    id="facilitatorInput"
-                    :class="{
-                        border: facilitatorError,
-                        'border-danger': facilitatorError,
-                    }"
-                    placeholder="Facilitator"
-                    v-model="facilitator"
-                    required
-                />
+                    <Alert :title="titleError" />
+                </div>
+                <div class="col-md-6">
+                    <label
+                        for="facilitatorInput"
+                        class="form-label is-required"
+                    >
+                        Facilitator
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="facilitatorInput"
+                        :class="{
+                            border: facilitatorError,
+                            'border-danger': facilitatorError,
+                        }"
+                        placeholder="Facilitator"
+                        v-model="facilitator"
+                        required
+                    />
 
-                <Alert :title="facilitatorError" />
-            </div>
-            <div>
-                <label for="startDateInput" class="form-label is-required">
-                    Start Date
-                    <span class="visually-hidden">(required)</span>
-                </label>
-                <input
-                    type="date"
-                    class="form-control"
-                    id="startDateInput"
-                    :class="{
-                        border: startDateError,
-                        'border-danger': startDateError,
-                    }"
-                    placeholder="Start Date"
-                    v-model="startDate"
-                    required
-                />
+                    <Alert :title="facilitatorError" />
+                </div>
+                <div class="col-md-6">
+                    <label for="startDateInput" class="form-label is-required">
+                        Start Date
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        id="startDateInput"
+                        :class="{
+                            border: startDateError,
+                            'border-danger': startDateError,
+                        }"
+                        placeholder="Start Date"
+                        v-model="startDate"
+                        required
+                    />
 
-                <Alert :title="startDateError" />
-            </div>
-            <div>
-                <label for="endDateInput" class="form-label is-required">
-                    End Date
-                    <span class="visually-hidden">(required)</span>
-                </label>
-                <input
-                    type="date"
-                    class="form-control"
-                    id="endDateInput"
-                    :class="{
-                        border: endDateError,
-                        'border-danger': endDateError,
-                    }"
-                    placeholder="End Date"
-                    v-model="endDate"
-                    required
-                />
+                    <Alert :title="startDateError" />
+                </div>
+                <div class="col-md-6">
+                    <label for="endDateInput" class="form-label is-required">
+                        End Date
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <input
+                        type="date"
+                        class="form-control"
+                        id="endDateInput"
+                        :class="{
+                            border: endDateError,
+                            'border-danger': endDateError,
+                        }"
+                        placeholder="End Date"
+                        v-model="endDate"
+                        required
+                    />
 
+<<<<<<< HEAD
                 <Alert :title="endDateError" />
             </div>
             <div>
@@ -291,27 +327,78 @@
                     <option value="Workshop">Workshop</option>
                     <option value="Excursion">Excursion</option>
                 </select>
+=======
+                    <Alert :title="endDateError" />
+                </div>
+                <div class="col-md-6">
+                    <label for="typeInput" class="form-label is-required">
+                        Type
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <select
+                        class="form-select"
+                        v-model="type"
+                        :class="{
+                            border: typeError,
+                            'border-danger': typeError,
+                        }"
+                        aria-label="Select Event Type"
+                        required
+                    >
+                        <option value="Course">Course</option>
+                        <option value="Conference">Conference</option>
+                        <option value="Hackathon">Hackathon</option>
+                        <option value="Workshop">Workshop</option>
+                        <option value="Excursion">Excursion</option>
+                    </select>
+>>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
 
-                <Alert :title="typeError" />
-            </div>
-            <div>
-                <label for="detailsTextarea" class="form-label">Details</label>
-                <textarea
-                    placeholder="Enter details..."
-                    class="form-control"
-                    id="detailsTextarea"
-                    :class="{
-                        border: detailsError,
-                        'border-danger': detailsError,
-                    }"
-                    v-model="details"
-                    rows="4"
-                ></textarea>
+                    <Alert :title="typeError" />
+                </div>
+                <div class="col-md-6"></div>
+                <div class="col-md-6">
+                    <label for="detailsTextarea" class="form-label"
+                        >Details</label
+                    >
+                    <textarea
+                        placeholder="Enter details..."
+                        class="form-control"
+                        id="detailsTextarea"
+                        :class="{
+                            border: detailsError,
+                            'border-danger': detailsError,
+                        }"
+                        v-model="details"
+                        rows="4"
+                    ></textarea>
 
+<<<<<<< HEAD
                 <Alert :title="detailsError" />
             </div>
         </form>
+<<<<<<< HEAD
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+=======
+                    <Alert :title="detailsError" />
+                </div>
+
+                <div class="col-md-12">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="
+                            padding: 0.7rem 2rem !important;
+                            font-weight: 600;
+                        "
+                    >
+                        Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+>>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
     </div>
 </template>
 
@@ -601,11 +688,19 @@ function clearErrors() {
 }
 </script>
 
-<style>
-#eventsWrapper {
-    margin: 50px 125px;
+<style scoped>
+#list-options {
+    padding: 0.6rem 0.5rem;
+    font-weight: 400;
+    border: 0.0125rem solid #ccc;
+    border-radius: 0.25rem !important;
+}
+svg {
+    height: 20px !important;
+    margin: 0 !important;
 }
 
+<<<<<<< HEAD
 #eventsFormWrapper {
     outline: 1px solid #aaa;
     border-radius: 5px;
@@ -614,5 +709,20 @@ function clearErrors() {
     gap: 30px;
     background-color: #fff;
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+#new-visitor:hover {
+    color: white !important;
+}
+
+#eventsWrapper {
+    padding-top: 2rem;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) and (max-width: 1440px) {
+    #eventsWrapper {
+        padding: 1rem 3rem 0 3rem;
+    }
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
 }
 </style>

@@ -1,5 +1,8 @@
 <template>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
     <div id="eventsWrapper" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -7,6 +10,7 @@
             <BreadCrumbs :breadCrumbs="breadCrumbs" />
 
             <div class="d-flex" style="gap: 0.521rem">
+<<<<<<< HEAD
 =======
     <div id="eventsWrapper">
         <div class="d-flex justify-content-between my-4">
@@ -15,6 +19,8 @@
             </div>
             <div>
 >>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
+=======
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
                 <RefreshList />
                 <Options />
 
@@ -70,6 +76,9 @@ const props = defineProps({
 </script>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
 <style scoped>
 svg {
     height: 20px !important;
@@ -80,6 +89,7 @@ svg {
     color: white !important;
 }
 
+<<<<<<< HEAD
 #eventsWrapper {
     padding-top: 2rem;
     gap: 1.5rem;
@@ -113,5 +123,31 @@ svg {
 =======
     margin: 25px 125px;
 >>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
+=======
+#eventsWrapper {
+    padding-top: 2rem;
+    gap: 1.5rem;
+}
+
+.btn {
+    padding: 0.5rem !important;
+}
+.btn:hover {
+    border: 0.125rem solid black !important;
+}
+
+.btn:hover g {
+    fill: white;
+}
+.list-options svg {
+    height: 20px !important;
+    margin: 0 !important;
+}
+
+@media (min-width: 768px) and (max-width: 1440px) {
+    #eventsWrapper {
+        padding: 1rem 3rem 0 3rem;
+    }
+>>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
 }
 </style>

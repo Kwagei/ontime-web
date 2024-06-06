@@ -8,6 +8,7 @@
             <div class="d-flex" style="gap: 0.521rem">
                 <RefreshList />
                 <Options />
+
                 <router-link :to="{ name: 'add-event' }">
                     <button
                         type="button"

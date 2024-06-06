@@ -137,7 +137,6 @@ const middle_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
-const address = ref("");
 
 const status = ref("");
 const message = ref("");
@@ -169,6 +168,8 @@ const onSubmit = async () => {
         message.value = response.result.message;
         title.value = "Success";
     }
+
+    visuallyHideModalBackdrop();
 };
 
 const activeBreadCrumbs = ref([]);
@@ -202,6 +203,16 @@ const formValidation = onMounted(() => {
         );
     })();
 });
+
+function visuallyHideModalBackdrop() {
+    const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
+
+    if (modalsBackdrops.length) {
+        modalsBackdrops.forEach((modal) =>
+            modal.classList.add("visually-hidden")
+        );
+    }
+}
 </script>
 
 <style scoped>

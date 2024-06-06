@@ -1,13 +1,6 @@
 <template>
     <div id="eventsTableContainer">
-<<<<<<< HEAD
-        <table
-            v-if="allEvents.data && allEvents.data.length >= 1"
-            class="table table-hover"
-        >
-=======
         <table class="table table-hover mb-0">
->>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
             <thead>
                 <tr>
                     <th scope="col">
@@ -62,7 +55,7 @@ import { ref, onMounted, watch } from "vue";
 import $ from "jquery";
 
 const paginationStart = ref(0);
-const allEvents = ref({});
+const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX = ref(10);
 
@@ -77,32 +70,16 @@ const formatDetails = (detail) => {
 function formatDate(date) {
     const rawDate = new Date(date);
 
-            return rawDate.toString().split(" 0")[0];
-        },
-    },
-    mounted() {
-        // Get Events from API on `localhost:3000`
-        const req = new XMLHttpRequest();
+    return rawDate.toString().split(" 0")[0];
+}
 
-        req.open("GET", "http://localhost:3000/api/events");
-        req.responseType = "json";
-        req.setRequestHeader("API_KEY", "ccea0f61-ed15-425e-8a80-87ae9c60cf13");
-        req.send();
+onMounted(async () => {
+    await getEvents();
+});
 
-        req.onload = () => {
-            const res = req.response;
+watch(paginationStart, (newValue) => {
+    eventsToShow.value = allEvents.value.slice(newValue, MAX.value + newValue);
 
-<<<<<<< HEAD
-            if (req.readyState === 4 && req.status === 200) {
-                this.events = res;
-            } else {
-                console.error("Error getting events: ", res);
-                this.events = res;
-            }
-        };
-    },
-};
-=======
     if (allEvents.value.length - newValue == 10) moreEvents();
 });
 
@@ -154,7 +131,6 @@ async function moreEvents(
         // do nothing
     }
 }
->>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
 </script>
 
 <style scoped></style>

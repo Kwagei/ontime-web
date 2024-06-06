@@ -35,8 +35,8 @@ const breadCrumbs = ref([]);
     width: 100vw;
 }
 
-/* Desktop Styles */
-@media (min-width: 1700px) {
+/* Section Scrolling Media Query */
+@media (min-width: 1700px) and (min-height: 920px) {
     #wrapper {
         position: fixed;
     }
@@ -53,6 +53,7 @@ main {
     margin-left: 20rem;
 }
 
+/* Tablet Styles */
 @media (min-width: 768px) and (max-width: 1440px) {
     /* aside {
         width: 17rem;

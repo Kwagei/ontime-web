@@ -15,26 +15,6 @@
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
-<<<<<<< HEAD
-        <form @submit="postEvent" id="eventsFormWrapper" class="my-4 p-5">
-            <div>
-                <label for="titleInput" class="form-label is-required">
-                    Title
-                    <span class="visually-hidden">(required)</span>
-                </label>
-                <input
-                    type="text"
-                    class="form-control"
-                    :class="{
-                        border: titleError,
-                        'border-danger': titleError,
-                    }"
-                    id="titleInput"
-                    placeholder="Title"
-                    v-model="title"
-                    required
-                />
-=======
         <div class="form-control input" style="margin: auto; padding: 3rem">
             <form
                 @submit.prevent="postEvent"
@@ -58,7 +38,6 @@
                         v-model="title"
                         required
                     />
->>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
 
                     <Alert :title="titleError" />
                 </div>
@@ -123,34 +102,6 @@
                         required
                     />
 
-<<<<<<< HEAD
-                <Alert :title="endDateError" />
-            </div>
-            <div>
-                <label for="typeInput" class="form-label is-required">
-                    Type
-                    <span class="visually-hidden">(required)</span>
-                </label>
-                <select
-                    class="form-select"
-                    v-model="type"
-                    :class="{
-                        border: typeError,
-                        'border-danger': typeError,
-                    }"
-                    aria-label="Select Event Type"
-                    required
-                >
-                    <option value="Select Event Type...">
-                        Select Event Type...
-                    </option>
-                    <option value="Course">Course</option>
-                    <option value="Conference">Conference</option>
-                    <option value="Hackathon">Hackathon</option>
-                    <option value="Workshop">Workshop</option>
-                    <option value="Excursion">Excursion</option>
-                </select>
-=======
                     <Alert :title="endDateError" />
                 </div>
                 <div class="col-md-6">
@@ -174,7 +125,6 @@
                         <option value="Workshop">Workshop</option>
                         <option value="Excursion">Excursion</option>
                     </select>
->>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
 
                     <Alert :title="typeError" />
                 </div>
@@ -195,11 +145,6 @@
                         rows="4"
                     ></textarea>
 
-<<<<<<< HEAD
-                <Alert :title="detailsError" />
-            </div>
-        </form>
-=======
                     <Alert :title="detailsError" />
                 </div>
 
@@ -217,7 +162,6 @@
                 </div>
             </form>
         </div>
->>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
     </div>
 </template>
 
@@ -235,7 +179,7 @@ const title = ref("");
 const facilitator = ref("");
 const startDate = ref("");
 const endDate = ref("");
-const type = ref("Select Event Type...");
+const type = ref("");
 const details = ref("");
 
 // Modal Data
@@ -288,7 +232,7 @@ async function postEvent() {
             successModalData.value.title = "Event Created";
             successModalData.value.pageLink = "/events/";
 
-            toggleModalVisuallyHidden();
+            visuallyHideModalBackdrop();
         });
 
         clearInputs();
@@ -300,7 +244,7 @@ async function postEvent() {
     }
 }
 
-function toggleModalVisuallyHidden() {
+function visuallyHideModalBackdrop() {
     const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
 
     if (modalsBackdrops.length) {
@@ -327,8 +271,12 @@ function clearInputs() {
     facilitator.value = "";
     startDate.value = "";
     endDate.value = "";
-    type.value = "Select Event Type...";
+    type.value = "";
     details.value = "";
+
+    document
+        .querySelector(".needs-validation")
+        .classList.remove("was-validated");
 }
 
 function clearErrors() {
@@ -340,6 +288,27 @@ function clearErrors() {
     typeError.value = "";
     detailsError.value = "";
 }
+
+onMounted(() => {
+    (() => {
+        "use strict";
+
+        const form = document.querySelector(".needs-validation");
+
+        form.addEventListener(
+            "submit",
+            (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add("was-validated");
+            },
+            false
+        );
+    })();
+});
 </script>
 
 <style scoped>

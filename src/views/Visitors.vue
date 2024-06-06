@@ -65,6 +65,15 @@ const props = defineProps({
 </script>
 
 <style scoped>
+svg {
+    height: 20px !important;
+    margin: 0 !important;
+}
+
+#new-visitor:hover {
+    color: white !important;
+}
+
 #visitor-view {
     padding-top: 2rem;
     gap: 1.5rem;

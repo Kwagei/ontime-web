@@ -1,6 +1,5 @@
 import AddEvent from "../components/events/AddEvent.vue";
 import { createRouter, createWebHistory } from "vue-router";
-import App from "../App.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Visitors from "../views/Visitors.vue";
 import Visits from "../views/Visits.vue";
@@ -49,12 +48,6 @@ const routes = [
                 name: "add-event",
             },
         ],
-    },
-    {
-        path: "/visitors/new-visitor",
-        component: () => import("../components/visitors/AddVisitors.vue"),
-        component: Events,
-        name: "events",
     },
 ];
 

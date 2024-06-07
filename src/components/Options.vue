@@ -1,10 +1,5 @@
 <template>
-    <button
-        class="btn btn-secondary list-options"
-        style="border: 0.125rem solid black"
-        type="button"
-        data-bs-theme="dark"
-    >
+    <button id="list-options" class="hover-btn btn mx-2 bg-white">
         <svg
             width="100"
             height="100"
@@ -21,10 +16,13 @@
 </template>
 
 <style scoped>
-.btn:hover g {
-    fill: white;
+#list-options {
+    padding: 0.6rem 0.5rem;
+    font-weight: 400;
+    border: 0.0125rem solid #ccc;
+    border-radius: 0.25rem !important;
 }
-.list-options svg {
+svg {
     height: 20px !important;
     margin: 0 !important;
 }

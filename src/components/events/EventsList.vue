@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <div id="eventsTableContainer">
     <table v-if="allEvents.length" class="table table-hover mb-0">
       <thead>
@@ -47,6 +48,55 @@
       >
         <span class="visually-hidden">Loading...</span>
       </div>
+=======
+    <div id="eventsTableContainer">
+        <table
+            v-if="Array.isArray(allEvents) && allEvents.length"
+            class="table table-hover mb-0"
+        >
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <input type="checkbox" class="form-check-input" />
+                    </th>
+                    <th scope="col">Title</th>
+                    <th scope="col" style="width: 150px">Start Date</th>
+                    <th scope="col" style="width: 150px">End Date</th>
+                    <th scope="col">Facilitator</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    v-for="event in eventsToShow"
+                    @click="displayEventPage(event.id)"
+                    class="cursorPointer"
+                >
+                    <td>
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="{{ event.id }}"
+                        />
+                    </td>
+                    <td class="bold">{{ event.title }}</td>
+                    <td>
+                        {{ formatDate(event.start_date) }}
+                    </td>
+                    <td>{{ formatDate(event.end_date) }}</td>
+                    <td>{{ event.facilitator }}</td>
+                    <td>{{ event.type }}</td>
+                    <td>{{ event.details }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h2 v-else-if="Array.isArray(allEvents) && allEvents.length <= 0">
+            No Events Currently!
+        </h2>
+        <h2 v-else-if="allEvents == 'loading'">Loading Events...</h2>
+        <h2 v-else>Error Loading Events, Try again!</h2>
+>>>>>>> 1914adc (completed event page and uploading event participants, optimization and displaying error message outstanding)
     </div>
     <h2 v-else>Error Loading Events, Try again!</h2>
   </div>
@@ -56,6 +106,8 @@
 <script setup>
 import Pagination from "../Pagination.vue";
 import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
+import { formatDate } from "../../assets/js/index.js";
 import $ from "jquery";
 
 import { formatDate, API_URL } from "../../assets/js/index.js";
@@ -65,11 +117,15 @@ const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX = ref(10);
 
+<<<<<<< HEAD
 const formatDetails = (detail) => {
   let words = detail.split(" ");
 
   return words.length > 7 ? `${words.slice(0, 7).join(" ")}...` : detail;
 };
+=======
+const router = useRouter();
+>>>>>>> 1914adc (completed event page and uploading event participants, optimization and displaying error message outstanding)
 
 onMounted(async () => {
   await getEvents();
@@ -131,6 +187,24 @@ async function moreEvents(
     // do nothing
   }
 }
+
+function displayEventPage(pageId) {
+    router.push({ name: "specific-event", params: { id: pageId } });
+}
 </script>
 
+<<<<<<< HEAD
 <style scoped></style>
+=======
+<style scoped>
+#eventsTableContainer {
+    max-height: 63vh;
+    overflow: scroll;
+    margin-bottom: 30px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+</style>
+>>>>>>> 1914adc (completed event page and uploading event participants, optimization and displaying error message outstanding)

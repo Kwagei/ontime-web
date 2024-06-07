@@ -92,6 +92,4 @@ function setModalData(newData) {
 }
 </script>
 
-<style scoped>
-/* code... */
-</style>
+<style scoped></style>

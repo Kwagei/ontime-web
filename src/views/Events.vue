@@ -6,7 +6,7 @@
             </div>
             <div>
                 <RefreshList />
-                <MoreIcon />
+                <Options />
                 <router-link :to="{ name: 'add-event' }">
                     <button class="btn btn-primary">Add Event</button>
                 </router-link>
@@ -25,7 +25,7 @@
 <script setup>
 import RefreshList from "../components/RefreshList.vue";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
-import MoreIcon from "../components/MoreIcon.vue";
+import Options from "../components/Options.vue";
 import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";

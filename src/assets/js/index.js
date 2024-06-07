@@ -38,4 +38,10 @@ const getVisitors = async (query) => {
     }
 };
 
-export { registerVisitor, getVisitors };
+function formatDate(date) {
+    const rawDate = new Date(date);
+
+    return rawDate.toString().split(" 0")[0];
+}
+
+export { registerVisitor, getVisitors, formatDate };

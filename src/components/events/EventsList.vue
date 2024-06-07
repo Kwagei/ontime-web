@@ -18,7 +18,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="event in eventsToShow">
+                <tr
+                    v-for="event in eventsToShow"
+                    @click="displayEventPage(event.id)"
+                    class="cursorPointer"
+                >
                     <td>
                         <input
                             class="form-check-input"
@@ -49,6 +53,8 @@
 <script setup>
 import Pagination from "../Pagination.vue";
 import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
+import { formatDate } from "../../assets/js/index.js";
 import $ from "jquery";
 
 const paginationStart = ref(0);
@@ -56,11 +62,7 @@ const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX = ref(10);
 
-function formatDate(date) {
-    const rawDate = new Date(date);
-
-    return rawDate.toString().split(" 0")[0];
-}
+const router = useRouter();
 
 onMounted(async () => {
     await getEvents();
@@ -119,6 +121,10 @@ async function moreEvents(
         // do nothing
     }
 }
+
+function displayEventPage(pageId) {
+    router.push({ name: "specific-event", params: { id: pageId } });
+}
 </script>
 
 <style scoped>
@@ -126,5 +132,9 @@ async function moreEvents(
     max-height: 63vh;
     overflow: scroll;
     margin-bottom: 30px;
+}
+
+.cursorPointer {
+    cursor: pointer;
 }
 </style>

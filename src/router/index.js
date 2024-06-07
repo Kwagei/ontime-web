@@ -1,11 +1,13 @@
 import AddEvent from "../components/events/AddEvent.vue";
-import { createRouter, createWebHistory } from "vue-router";
-import Dashboard from "../views/Dashboard.vue";
+import Events from "../views/Events.vue";
+import Event from "../components/events/Event.vue";
 import Visitors from "../views/Visitors.vue";
+import AddVisitors from "../components/visitors/AddVisitors.vue";
 import Visits from "../views/Visits.vue";
 import Users from "../views/Users.vue";
-import Events from "../views/Events.vue";
-import AddVisitors from "../components/visitors/AddVisitors.vue";
+import Dashboard from "../views/Dashboard.vue";
+
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
     {
@@ -46,6 +48,11 @@ const routes = [
                 path: "/events/add-event",
                 component: AddEvent,
                 name: "add-event",
+            },
+            {
+                path: "/events/:id",
+                component: Event,
+                name: "specific-event",
             },
         ],
     },

@@ -6,13 +6,13 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-data.txt
 
 node_modules
 .DS_Store
 dist-ssr
 coverage
 *.local
+.env
 
 /cypress/videos/
 /cypress/screenshots/

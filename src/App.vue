@@ -21,7 +21,6 @@
 <script setup>
 import SideBar from "./components/SideBar.vue";
 import HeaderBar from "./components/HeaderBar.vue";
-import BreadCrumbs from "./components/BreadCrumbs.vue";
 
 import { ref } from "vue";
 import { RouterView } from "vue-router";
@@ -33,13 +32,28 @@ const breadCrumbs = ref([]);
 <style scope>
 #wrapper {
     height: 100vh;
+    width: 100vw;
+}
+
+/* Section Scrolling Media Query */
+@media (min-width: 1700px) and (min-height: 920px) {
+    #wrapper {
+        position: fixed;
+    }
 }
 
 aside {
     width: 20rem;
-    height: 100%;
+    height: 100vh;
+    position: fixed;
+    z-index: 1700;
 }
 
+main {
+    margin-left: 20rem;
+}
+
+/* Tablet Styles */
 @media (min-width: 768px) and (max-width: 1440px) {
     /* aside {
         width: 17rem;

@@ -21,8 +21,10 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
 import { RouterLink } from "vue-router";
-import { ref, defineProps } from "vue";
+
+const breadcrumbs = ref(["Events", "All Events"]);
 
 const props = defineProps({
     breadCrumbs: {

@@ -7,32 +7,17 @@
 
             <div class="d-flex" style="gap: 0.521rem">
                 <RefreshList />
-                <button
-                    class="btn btn-secondary list-options"
-                    style="border: 0.125rem solid black"
-                    type="button"
-                    data-bs-theme="dark"
-                >
-                    <svg
-                        width="100"
-                        height="100"
-                        viewBox="0 0 100 100"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g fill="#000000" transform="scale(.1)">
-                            <circle cx="200" cy="500" r="100" />
-                            <circle cx="500" cy="500" r="100" />
-                            <circle cx="800" cy="500" r="100" />
-                        </g>
-                    </svg>
-                </button>
+                <Options />
 
                 <router-link :to="{ name: 'add-visitor' }">
                     <button
                         type="button"
                         class="btn btn-primary"
                         id="new-visitor"
-                        style="padding: 0.5rem 1.5rem; font-weight: 600"
+                        style="
+                            padding: 0.7rem 2rem !important;
+                            font-weight: 600;
+                        "
                     >
                         Add Visitor
                     </button>
@@ -40,13 +25,16 @@
             </div>
         </div>
         <div class="row justify-content-between container p-0 mx-auto">
-            <Search />
+            <Search v-model:search="searchTerms" />
             <Filter />
-            <Sort />
+            <Sort v-model:sort="sortTerms" v-model:direction="directionTerms" />
         </div>
 
-        <VisitorList />
-        <Pagination />
+        <VisitorList
+            :searchTerms="searchTerms"
+            :sortTerms="sortTerms"
+            :directionTerms="directionTerms"
+        />
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
@@ -58,11 +46,15 @@ import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
-import Pagination from "../components/Pagination.vue";
+import Options from "@/components/Options.vue";
 
 import { RouterLink, RouterView } from "vue-router";
 
-import { ref, defineProps } from "vue";
+import { ref, defineProps, watch } from "vue";
+const searchTerms = ref("");
+const sortTerms = ref("");
+const directionTerms = ref("desc");
+const filterTerms = defineModel([]);
 
 const props = defineProps({
     breadCrumbs: {
@@ -73,6 +65,15 @@ const props = defineProps({
 </script>
 
 <style scoped>
+svg {
+    height: 20px !important;
+    margin: 0 !important;
+}
+
+#new-visitor:hover {
+    color: white !important;
+}
+
 #visitor-view {
     padding-top: 2rem;
     gap: 1.5rem;

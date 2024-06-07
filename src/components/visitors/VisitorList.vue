@@ -20,7 +20,6 @@
                     <th scope="col">Last name</th>
                     <th scope="col">Contact</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Address</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,22 +43,62 @@
                     <td>{{ visitor.last_name }}</td>
                     <td>{{ visitor.msisdn }}</td>
                     <td>{{ visitor.email }}</td>
-                    <td>{{ visitor.address }}</td>
                 </tr>
             </tbody>
         </table>
     </div>
+
+    <Pagination v-model="start" />
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { getVisitors } from "@/assets/js/index.js";
+import Pagination from "../Pagination.vue";
 
-const visitors = ref(null);
+const visitors = defineModel();
+const start = ref(0);
+
+const props = defineProps({
+    searchTerms: {
+        type: String,
+        required: true,
+    },
+    sortTerms: {
+        type: String,
+        required: true,
+    },
+    directionTerms: {
+        type: String,
+        required: true,
+    },
+});
+
+watch(
+    () => [
+        start.value,
+        props.searchTerms,
+        props.sortTerms,
+        props.directionTerms,
+    ],
+    async ([startValue, searchValue, sortValue, directionValue]) => {
+        visitors.value = await getVisitors({
+            search: searchValue,
+            start: startValue,
+            sort: sortValue,
+            direction: directionValue,
+        });
+    }
+);
+
 const fetchData = async () => {
-    visitors.value = await getVisitors();
+    visitors.value = await getVisitors({
+        search: props.searchTerms,
+        sort: props.sortTerms,
+        start: start.value,
+        direction: props.directionTerms,
+    });
 };
-
 fetchData();
 </script>
 

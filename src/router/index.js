@@ -1,5 +1,5 @@
+import AddEvent from "../components/events/AddEvent.vue";
 import { createRouter, createWebHistory } from "vue-router";
-import App from "../App.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Visitors from "../views/Visitors.vue";
 import Visits from "../views/Visits.vue";
@@ -68,8 +68,14 @@ const routes = [
     },
     {
         path: "/events",
-        component: Events,
-        name: "events",
+        children: [
+            { path: "", component: Events, name: "events" },
+            {
+                path: "/events/add-event",
+                component: AddEvent,
+                name: "add-event",
+            },
+        ],
     },
 ];
 

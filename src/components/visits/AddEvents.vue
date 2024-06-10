@@ -17,33 +17,34 @@
                 novalidate
                 @submit.prevent="onSubmit"
             >
-            <!-- PHONE NUMBER -->
-            <div class="col-md-6">
-                <label
-                    for="validationCustom02"
-                    class="form-label is-required"
-                    >Phone number<span class="visually-hidden">
-                        (required)</span
-                    ></label
-                >
-                <div class="input-group has-validation">
-                    <input
-                        type="text"
-                        class="form-control"
-                        v-model="msisdn"
-                        id="validationCustomVisitorNumber"
-                        aria-describedby="inputGroupPrepend"
-                        required
-                    />
-                    <div class="invalid-feedback">
-                        Please provide a valid phone number.
+                <!-- PHONE NUMBER -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustomVisitorNumber"
+                        class="form-label is-required"
+                        >Phone number<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            v-model="msisdn"
+                            id="validationCustomVisitorNumber"
+                            aria-describedby="inputGroupPrepend"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Please provide a valid phone number.
+                        </div>
                     </div>
                 </div>
-            </div>
+
                 <!-- NEW VISITOR -->
                 <div class="col-md-6">
                     <label
-                        for="validationCustom01"
+                        for="validationCustomNewVisitor"
                         class="form-label is-required"
                         >Visitor<span class="visually-hidden">
                             (required)</span
@@ -67,7 +68,7 @@
                 <!-- Host -->
                 <div class="col-md-6">
                     <label
-                        for="validationCustom02"
+                        for="validationCustomHost"
                         class="form-label is-required"
                         >Host<span class="visually-hidden">
                             (required)</span
@@ -77,7 +78,7 @@
                         <input
                             type="text"
                             class="form-control"
-                            id="validationCustom02"
+                            id="validationCustomHost"
                             v-model="host_name"
                             required
                         />
@@ -86,9 +87,11 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Belonging -->
                 <div class="col-md-6">
                     <label
-                        for="validationCustom02"
+                        for="validationCustomBelonging"
                         class="form-label is-required"
                         >Belonging<span class="visually-hidden">
                             (required)</span
@@ -98,7 +101,7 @@
                         <input
                             type="text"
                             class="form-control"
-                            id="validationCustom02"
+                            id="validationCustomBelonging"
                             v-model="belonging"
                             required
                         />
@@ -107,10 +110,11 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- Institution -->
                 <div class="col-md-6">
                     <label
-                        for="validationCustom02"
+                        for="validationCustomInstitution"
                         class="form-label"
                         >Institution<span class="visually-hidden">
                             (required)</span
@@ -120,15 +124,16 @@
                         <input
                             type="text"
                             class="form-control"
-                            id="validationCustom02"
+                            id="validationCustomInstitution"
                             v-model="institution"
                         />
                     </div>
                 </div>
+
                 <!-- Room -->
                 <div class="col-md-6">
                     <label
-                        for="validationCustom02"
+                        for="validationCustomRoom"
                         class="form-label is-required"
                         >Room<span class="visually-hidden">
                             (required)</span
@@ -138,7 +143,7 @@
                         <input
                             type="text"
                             class="form-control"
-                            id="validationCustom02"
+                            id="validationCustomRoom"
                             v-model="room"
                             required
                         />
@@ -147,10 +152,11 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- Address -->
                 <div class="col-md-6">
                     <label
-                        for="validationCustom02"
+                        for="validationCustomAddress"
                         class="form-label is-required"
                         >Address<span class="visually-hidden">
                             (required)</span
@@ -160,19 +166,20 @@
                         <input
                             type="text"
                             class="form-control"
-                            id="validationCustom02"
+                            id="validationCustomAddress"
                             v-model="visit_address"
                             required
                         />
                         <div class="invalid-feedback">
-                            Please provide a address name.
+                            Please provide an address.
                         </div>
                     </div>
                 </div>
+
                 <!-- Purpose -->
                 <div class="col-12">
                     <label
-                        for="validationCustom02"
+                        for="validationCustomPurpose"
                         class="form-label is-required"
                         >Purpose<span class="visually-hidden">
                             (required)</span
@@ -181,15 +188,17 @@
                     <div class="input-group has-validation">
                         <textarea
                             class="form-control"
-                            id="validationCustom02"
+                            id="validationCustomPurpose"
                             required
                             v-model="purpose"
                         ></textarea>
                         <div class="invalid-feedback">
-                            Please provide an purpose.
+                            Please provide a purpose.
                         </div>
                     </div>
                 </div>
+
+                <!-- Submit Button -->
                 <div class="col-12">
                     <button class="btn btn-primary mt-2" type="submit">
                         Save
@@ -200,18 +209,10 @@
     </div>
 </template>
 
-<style scoped>
-.input {
-    border: 0.0125rem solid #ccc;
-    border-radius: 0.25rem !important;
-}
-</style>
-
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import { registerVisit } from "@/assets/js/index.js";
-
 import { ref, defineProps, onMounted } from "vue";
 
 const msisdn = ref("");
@@ -227,12 +228,9 @@ const message = ref("");
 const title = ref("");
 
 const onSubmit = async () => {
-    if (
-        !msisdn.value ||
-        !new_visitor.value ||
-        !host_name.value ||
-        !visit_address.value
-    ) {
+    const form = document.querySelector(".needs-validation");
+    if (!form.checkValidity()) {
+        form.classList.add("was-validated");
         return;
     }
 
@@ -245,22 +243,20 @@ const onSubmit = async () => {
         room: room.value,
         visit_address: visit_address.value,
         purpose: purpose.value,
-
     };
 
     const response = await registerVisit(visit);
     const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
     if (!response.ok) {
-        myModal.show(document.querySelector("#toggleMyModal"));
         status.value = "danger";
         message.value = response.result.message;
         title.value = "Error";
     } else {
-        myModal.show(document.querySelector("#toggleMyModal"));
         status.value = "success";
         message.value = response.result.message;
         title.value = "Success";
     }
+    myModal.show();
 };
 
 const activeBreadCrumbs = ref([]);
@@ -274,53 +270,32 @@ const props = defineProps({
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
 
-const formValidation = onMounted(() => {
+onMounted(() => {
     (() => {
         "use strict";
 
-        const form = document.querySelector(".needs-validation");
+        const forms = document.querySelectorAll(".needs-validation");
 
-        form.addEventListener(
-            "submit",
-            (event) => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-
-                form.classList.add("was-validated");
-            },
-            false
-        );
+        Array.prototype.slice.call(forms).forEach((form) => {
+            form.addEventListener(
+                "submit",
+                (event) => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add("was-validated");
+                },
+                false
+            );
+        });
     })();
 });
-
 </script>
 
 <style scoped>
-#list-options {
-    padding: 0.6rem 0.5rem;
-    font-weight: 400;
+.input {
     border: 0.0125rem solid #ccc;
     border-radius: 0.25rem !important;
-}
-svg {
-    height: 20px !important;
-    margin: 0 !important;
-}
-
-#new-visitor:hover {
-    color: white !important;
-}
-
-#visit-view {
-    padding-top: 2rem;
-    gap: 1.5rem;
-}
-
-@media (min-width: 768px) and (max-width: 1440px) {
-    #visit-view {
-        padding: 1rem 3rem 0 3rem;
-    }
 }
 </style>

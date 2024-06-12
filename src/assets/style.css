@@ -1,4 +1,5 @@
 svg {
+<<<<<<< HEAD
 	width: 30px;
 	height: 30px;
 	margin-right: 0.5rem;
@@ -39,4 +40,46 @@ a.router-link-active path {
 	.hover-btn:hover g {
 		fill: var(--bs-white) !important;
 	}
+=======
+  width: 30px;
+  height: 30px;
+  margin-right: 0.5rem;
+}
+
+.nav-link {
+  padding: 0.5rem 2rem;
+}
+
+#app-title {
+  padding: 0 !important;
+}
+
+a.router-link-active {
+  color: var(--bs-black) !important;
+  background-color: var(--bs-nav-pills-link-active-bg);
+}
+
+a.router-link-active path {
+  fill: var(--bs-black) !important;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: var(--bs-white) !important;
+    color: var(--bs-black) !important;
+  }
+
+  a:hover path {
+    fill: var(--bs-black) !important;
+  }
+  .hover-btn:hover {
+    background-color: var(--bs-black) !important;
+    color: white !important;
+  }
+
+  .hover-btn:hover path,
+  .hover-btn:hover g {
+    fill: var(--bs-white) !important;
+  }
+>>>>>>> 35fdf0d (Completed search and sort for visitor list and visitor details)
 }

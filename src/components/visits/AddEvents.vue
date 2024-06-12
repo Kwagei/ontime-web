@@ -28,6 +28,7 @@
                     >
                     <div class="input-group has-validation">
                         <input
+                            @blur="getVisitor"
                             type="text"
                             class="form-control"
                             v-model="msisdn"
@@ -56,7 +57,7 @@
                             class="form-control"
                             id="validationCustomNewVisitor"
                             aria-describedby="inputGroupPrepend"
-                            v-model="new_visitor"
+                            v-model="visitor"
                             required
                         />
                         <div class="invalid-feedback">
@@ -210,13 +211,13 @@
 </template>
 
 <script setup>
+import { ref, defineProps, onMounted } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
-import { registerVisit } from "@/assets/js/index.js";
-import { ref, defineProps, onMounted } from "vue";
+import { registerVisit, getSingleVisitor } from "@/assets/js/index.js";
 
 const msisdn = ref("");
-const new_visitor = ref("");
+const visitor = ref("");
 const host_name = ref("");
 const belonging = ref("");
 const institution = ref("");
@@ -227,36 +228,36 @@ const status = ref("");
 const message = ref("");
 const title = ref("");
 
+
+
+const getVisitor = async function() {
+    try {
+        
+        // Call getSingleVisitor with the msisdn value
+        const visitorData = await getSingleVisitor({
+            msisdn: msisdn.value
+        });
+
+        if(!visitorData){
+            visitor.value = "";
+            alert("please enter a register visitor")
+            return;
+        }
+
+        visitor.value = visitorData.first_name + " " + visitorData.last_name;
+
+       
+    } catch (error) {
+        console.error("Error retrieving visitor:", error);
+    }
+
+}
+
+
 const onSubmit = async () => {
-    const form = document.querySelector(".needs-validation");
-    if (!form.checkValidity()) {
-        form.classList.add("was-validated");
-        return;
+    if(!msisdn.value || visitor.value || host_name.value || belonging.value || room.value || visit_address.value || purpose.value){
+        return
     }
-
-    const visit = {
-        msisdn: msisdn.value,
-        new_visitor: new_visitor.value,
-        host_name: host_name.value,
-        belonging: belonging.value,
-        institution: institution.value,
-        room: room.value,
-        visit_address: visit_address.value,
-        purpose: purpose.value,
-    };
-
-    const response = await registerVisit(visit);
-    const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-    if (!response.ok) {
-        status.value = "danger";
-        message.value = response.result.message;
-        title.value = "Error";
-    } else {
-        status.value = "success";
-        message.value = response.result.message;
-        title.value = "Success";
-    }
-    myModal.show();
 };
 
 const activeBreadCrumbs = ref([]);

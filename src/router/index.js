@@ -11,77 +11,77 @@ import AddEvents from "../components/visits/AddEvents.vue";
 import AddWorkspace from "../components/visits/AddWorkspace.vue";
 
 const routes = [
-    {
-        path: "/dashboard",
-        component: Dashboard,
-        name: "dashboard",
-    },
-    {
-        path: "/visitors",
-        children: [
-            {
-                path: "",
-                component: Visitors,
-                name: "visitors",
-            },
-            {
-                path: "new-visitor",
-                component: AddVisitors,
-                name: "add-visitor",
-            },
-            {
-                path: "purpose-event",
-                component: AddVisitors,
-                name: "add-visitor",
-            },
-        ],
-    },
-    {
-        path: "/visits",
-        children: [
-            {
-                path: "",
-                component: Visits,
-                name: "visits",
-            },
-            {
-                path: "purpose-meeting",
-                component: AddMeeting,
-                name: "add-meeting",
-            },
-            {
-                path: "purpose-event",
-                component: AddEvents,
-                name: "visits-event",
-            },
-            {
-                path: "purpose-workspace",
-                component: AddWorkspace,
-                name: "add-workspace",
-            },
-        ], 
-    },
-    {
-        path: "/users",
-        component: Users,
-        name: "users",
-    },
-    {
-        path: "/events",
-        children: [
-            { path: "", component: Events, name: "events" },
-            {
-                path: "/events/add-event",
-                component: AddEvent,
-                name: "add-event",
-            },
-        ],
-    },
+	{
+		path: "/dashboard",
+		component: Dashboard,
+		name: "dashboard",
+	},
+	{
+		path: "/visitors",
+		children: [
+			{
+				path: "",
+				component: Visitors,
+				name: "visitors",
+			},
+			{
+				path: "new-visitor",
+				component: AddVisitors,
+				name: "add-visitor",
+			},
+			{
+				path: "purpose-event",
+				component: AddVisitors,
+				name: "add-visitor",
+			},
+		],
+	},
+	{
+		path: "/visits",
+		children: [
+			{
+				path: "",
+				component: Visits,
+				name: "visits",
+			},
+			{
+				path: "purpose-meeting",
+				component: AddMeeting,
+				name: "add-meeting",
+			},
+			{
+				path: "purpose-event",
+				component: AddEvents,
+				name: "visits-event",
+			},
+			{
+				path: "purpose-workspace",
+				component: AddWorkspace,
+				name: "add-workspace",
+			},
+		],
+	},
+	{
+		path: "/users",
+		component: Users,
+		name: "users",
+	},
+	{
+		path: "/events",
+		children: [
+			{ path: "", component: Events, name: "events" },
+			{
+				path: "/events/add-event",
+				component: AddEvent,
+				name: "add-event",
+			},
+		],
+	},
 ];
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
-    routes,
+	history: createWebHistory(import.meta.env.BASE_URL),
+	routes,
 });
 
 export default router;

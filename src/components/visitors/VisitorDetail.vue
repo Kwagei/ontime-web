@@ -8,7 +8,7 @@
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
 			style="margin-top: 0.3rem"
 		>
-			<BreadCrumbs v-model:breadCrumbs="breadCrumbs" />
+			<BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
 		</div>
 		<div
 			class="mt-4 form-control"
@@ -27,29 +27,24 @@
 								class="d-flex justify-content-between align-items-center"
 							>
 								<h4 class="">Visitor Information</h4>
-								<router-link
-									:to="{
-										name: 'edit-visitor',
-									}"
-									v-model:visitor-info="visitorInfo"
+								<button
+									type="button"
+									class="btn btn-outline-secondary"
 								>
-									<button
-										type="button"
-										class="edit-btn btn btn-secondary"
+									<svg
+										width=".5rem"
+										height=".5rem"
+										fill="currentColor"
+										aria-hidden="true"
+										focusable="false"
+										class="me-1"
 									>
-										<svg
-											fill="currentColor"
-											aria-hidden="true"
-											focusable="false"
-											class="me-1"
-										>
-											<use
-												xlink:href="../../assets/svg/solaris-icons-sprite.svg#pencil"
-											/>
-										</svg>
-										Edit
-									</button>
-								</router-link>
+										<use
+											xlink:href="../../assets/svg/solaris-icons-sprite.svg#pencil"
+										/>
+									</svg>
+									Edit
+								</button>
 							</div>
 							<div
 								class="d-flex align-items-center"
@@ -176,14 +171,21 @@ import Sort from "../Sort.vue";
 
 import { useRoute } from "vue-router";
 import { ref, onMounted, watch } from "vue";
-import { RouterLink } from "vue-router";
-
 import { getVisitorWithVisits } from "../../assets/js/index";
 
 const start = ref(0);
 const limit = ref(20);
 const loader = ref(true);
 const sort = ref("");
+
+const activeBreadCrumbs = ref([]);
+
+const props = defineProps({
+	breadCrumbs: {
+		type: Array,
+		required: true,
+	},
+});
 
 const searchTerms = ref("");
 const sortTerms = ref([
@@ -197,14 +199,13 @@ const sortTerms = ref([
 const sortTerm = defineModel("term");
 sortTerm.value = "created_at";
 const directionTerm = defineModel("direction");
-// directionTerm.value = "desc";
+directionTerm.value = "desc";
 
 const route = useRoute();
 
 const id = ref(route.params.id);
-const visitorInfo = defineModel("visitor-info");
+const visitorInfo = ref("");
 const visitsInfo = ref("");
-let visitorData = "";
 
 watch(
 	() => [searchTerms.value, sortTerm.value, directionTerm.value, start.value],
@@ -227,14 +228,7 @@ const fetchVisitor = async () => {
 		sort: sort.value,
 		limit: limit.value,
 	});
-
-	if (!data) {
-		loader.value = false;
-		return;
-	}
-
 	const { visitor, visits } = data;
-	visitorData = visitor;
 	visitorInfo.value = {
 		name: `${visitor.first_name} ${visitor?.middle_name || ""} ${
 			visitor.last_name
@@ -248,6 +242,8 @@ const fetchVisitor = async () => {
 		loader.value = false;
 	} else if (!visits.length) loader.value = false;
 	visitsInfo.value = formatDateTime(visits);
+
+	activeBreadCrumbs.value = [...props.breadCrumbs, visitor.id];
 };
 
 const formatVisitorInfo = (key) => {
@@ -262,9 +258,6 @@ const formatVisitorInfo = (key) => {
 onMounted(async () => {
 	await fetchVisitor();
 });
-
-const breadCrumbs = defineModel("breadCrumbs");
-breadCrumbs.value = route.path.split("/").slice(1);
 
 const formatDateTime = (visits) => {
 	return visits.map((visit) => {
@@ -318,14 +311,5 @@ const visitDetail = () => {};
 
 .visitor-item {
 	color: gray;
-}
-
-.edit-btn:hover {
-	border: 2px solid black !important;
-}
-
-.edit-btn svg {
-	width: 1.2rem;
-	height: 1.2rem;
 }
 </style>

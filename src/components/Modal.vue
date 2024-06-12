@@ -8,18 +8,24 @@
     >
         <div class="modal-dialog modal-lg" id="toggleMyModal">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h1
-                        class="modal-title h3"
-                        :class="{
-                            'text-danger': data.status === 'danger',
-                            'text-success': data.status === 'success',
-                            'text-warning': data.status === 'warning',
-                        }"
-                        id="exampleModalLabel"
-                    >
-                        {{ data.title }}
-                    </h1>
+                <div
+                    :class="`alert alert-${data.status}`"
+                    role="alert"
+                    style="background-color: white"
+                >
+                    <span class="alert-icon"></span>
+                    <div>
+                        <h4 class="alert-heading">
+                            {{ data.message }}
+                        </h4>
+                        <p v-if="data.title === 'success'">
+                            <span style="font-size: small">
+                                Please visit link to view detail
+                                <a href="#">here</a>
+                            </span>
+                            <!-- <span v-else>{{ data.message }}</span> -->
+                        </p>
+                    </div>
                     <button
                         type="button"
                         class="btn-close"
@@ -27,17 +33,10 @@
                         data-bs-toggle="tooltip"
                         data-bs-placement="bottom"
                         data-bs-title="Close"
+                        style="margin-left: auto"
                     >
                         <span class="visually-hidden">Close</span>
                     </button>
-                </div>
-                <div class="modal-body">
-                    <div v-if="data.message != data.title" class="mt-2 mb-3">
-                        {{ data.message }}
-                    </div>
-                    <router-link v-if="data.pageLink" :to="data.pageLink">
-                        <button class="btn btn-primary d-block">View</button>
-                    </router-link>
                 </div>
             </div>
         </div>
@@ -46,6 +45,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { RouterLink } from "vue-router";
 
 const props = defineProps({
     data: { type: Object, required: true },
@@ -55,5 +55,11 @@ const props = defineProps({
 <style scoped>
 .modal {
     background-color: #16161552;
+    z-index: 2000;
+}
+
+.modal-content {
+    background-color: transparent !important;
+    border: none !important;
 }
 </style>

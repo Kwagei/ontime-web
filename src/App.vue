@@ -36,7 +36,6 @@ const breadCrumbs = ref([]);
     position: fixed;
 }
 
-<<<<<<< HEAD
 /* Section Scrolling Media Query */
 @media (min-width: 1700px) and (min-height: 920px) {
 	#wrapper {

@@ -16,11 +16,6 @@ import AddWorkspace from "@/components/visits/AddWorkspace.vue";
 
 // Users Components
 import Users from "../views/Users.vue";
-import Events from "../views/Events.vue";
-import AddVisitors from "../components/visitors/AddVisitors.vue";
-import AddMeeting from "../components/visits/AddMeeting.vue";
-import AddEvents from "../components/visits/AddEvents.vue";
-import AddWorkspace from "../components/visits/AddWorkspace.vue";
 
 // Dashboard Components
 import Dashboard from "../views/Dashboard.vue";

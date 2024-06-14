@@ -176,21 +176,14 @@ import Sort from "../Sort.vue";
 
 import { useRoute } from "vue-router";
 import { ref, onMounted, watch } from "vue";
+import { RouterLink } from "vue-router";
+
 import { getVisitorWithVisits } from "../../assets/js/index";
 
 const start = ref(0);
 const limit = ref(20);
 const loader = ref(true);
 const sort = ref("");
-
-const activeBreadCrumbs = ref([]);
-
-const props = defineProps({
-	breadCrumbs: {
-		type: Array,
-		required: true,
-	},
-});
 
 const searchTerms = ref("");
 const sortTerms = ref([
@@ -208,9 +201,13 @@ directionTerm.value = "desc";
 
 const route = useRoute();
 
+// const activeBreadCrumbs = ref([]);
+// const breadCrumbs = defineModel("breadCrumbs");
+
 const id = ref(route.params.id);
-const visitorInfo = ref("");
+const visitorInfo = defineModel("visitor-info");
 const visitsInfo = ref("");
+let visitorData = "";
 
 watch(
     () => [searchTerms.value, sortTerm.value, directionTerm.value, start.value],
@@ -268,6 +265,9 @@ const formatVisitorInfo = (key) => {
 onMounted(async () => {
     await fetchVisitor();
 });
+
+const breadCrumbs = defineModel("breadCrumbs");
+breadCrumbs.value = route.path.split("/").slice(1);
 
 const formatDateTime = (visits) => {
     return visits.map((visit) => {
@@ -330,5 +330,14 @@ const visitDetail = () => {};
 .edit-btn svg {
     width: 1.2rem;
     height: 1.2rem;
+}
+
+.edit-btn:hover {
+	border: 2px solid black !important;
+}
+
+.edit-btn svg {
+	width: 1.2rem;
+	height: 1.2rem;
 }
 </style>

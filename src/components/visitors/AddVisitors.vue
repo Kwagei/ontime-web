@@ -128,7 +128,15 @@
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
-import { registerVisitor } from "@/assets/js/index.js";
+import {
+	registerVisitor,
+	editVisitor,
+	getSingleVisitor,
+} from "@/assets/js/index.js";
+
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 import { ref, onMounted } from "vue";
 
@@ -141,6 +149,7 @@ const email = ref("");
 const status = ref("");
 const message = ref("");
 const title = ref("");
+let visitorInfo;
 
 const onSubmit = async () => {
 	if (!first_name.value || !last_name.value || !msisdn.value) {
@@ -155,8 +164,12 @@ const onSubmit = async () => {
 		email: email.value,
 	};
 
-	const response = await registerVisitor(visitor);
+	const response = formStatus.startsWith("new")
+		? await registerVisitor(visitor)
+		: await editVisitor(visitorInfo.id, visitor);
+
 	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
+
 	if (!response.ok) {
 		myModal.show(document.querySelector("#toggleMyModal"));
 		status.value = "danger";
@@ -173,19 +186,28 @@ const onSubmit = async () => {
 };
 
 const activeBreadCrumbs = ref([]);
+const breadCrumbs = defineModel("breadCrumbs");
+breadCrumbs.value = route.path.split("/").slice(1);
+activeBreadCrumbs.value = breadCrumbs.value;
+const tem = [...breadCrumbs.value];
+const formStatus = tem.pop();
 
-const props = defineProps({
-	breadCrumbs: {
-		type: Array,
-		required: true,
-	},
-});
-
-activeBreadCrumbs.value = [...props.breadCrumbs, "new-visitor"];
+const fetchVisitor = async () => {
+	if (formStatus.startsWith("edit")) {
+		const id = breadCrumbs.value[1];
+		visitorInfo = await getSingleVisitor({ id });
+		first_name.value = visitorInfo.first_name;
+		middle_name.value = visitorInfo.middle_name;
+		last_name.value = visitorInfo.last_name;
+		msisdn.value = visitorInfo.msisdn;
+		email.value = visitorInfo.email;
+	}
+};
 
 const formValidation = onMounted(() => {
 	(() => {
 		"use strict";
+		fetchVisitor();
 
 		const form = document.querySelector(".needs-validation");
 
@@ -226,10 +248,6 @@ svg {
 	height: 20px !important;
 	margin: 0 !important;
 }
-
-/* #new-visitor:hover {
-    color: white !important;
-} */
 
 #visitor-view {
 	padding-top: 2rem;

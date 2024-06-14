@@ -157,20 +157,7 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { ref, defineProps, onMounted } from "vue";
-import BreadCrumbs from "../BreadCrumbs.vue";
-import $ from "jquery";
-import Modal from "../Modal.vue";
-import Alert from "../Alert.vue";
-=======
-import { ref, defineProps } from "vue";
-import BreadCrumbs from "../BreadCrumbs.vue";
-import $ from "jquery";
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
-=======
-import { ref, defineProps, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import $ from "jquery";
 import Modal from "../Modal.vue";

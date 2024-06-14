@@ -40,6 +40,26 @@ export const editVisitor = async (id, data) => {
 	}
 };
 
+export const getSingleVisitor = async (data) => {
+  const { id, msisdn } = data;
+  let response;
+
+  try {
+    if (id) {
+      response = await fetch(`${API}/visitors/${id}`);
+    } else if (msisdn) {
+      response = await fetch(`${API}/visitors?search=${msisdn}`);
+    }
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const { data } = await response.json();
+    return data[0];
+  } catch (error) {}
+};
+
 export const getVisitors = async (query) => {
 	try {
 		const {

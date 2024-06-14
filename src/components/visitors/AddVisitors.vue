@@ -108,6 +108,10 @@
 						>
 							Please provide a valid email address
 						</div>
+						======= class="form-control" v-model="email" id="email"
+						aria-describedby="inputGroupPrepend" /> >>>>>>> 115dcfc
+						(Visitor form submit button label can now change base on
+						the action ot perform on the form)
 					</div>
 					<div id="emailHelp" class="form-text">
 						Please enter a valid email address. For example:

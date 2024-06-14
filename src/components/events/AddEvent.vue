@@ -157,7 +157,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import $ from "jquery";
 import Modal from "../Modal.vue";

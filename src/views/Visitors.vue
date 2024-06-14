@@ -36,12 +36,14 @@ import Options from "@/components/Options.vue";
 import { RouterLink, RouterView } from "vue-router";
 import { ref, watch } from "vue";
 
-const props = defineProps({
-  breadCrumbs: {
-    type: Array,
-    required: true,
-  },
-});
+const breadCrumbs = defineModel("breadCrumbs");
+
+// const props = defineProps({
+//   breadCrumbs: {
+//     type: Array,
+//     required: true,
+//   },
+// });
 </script>
 
 <style scoped>

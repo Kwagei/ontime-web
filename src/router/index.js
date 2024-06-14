@@ -26,11 +26,22 @@ const routes = [
         path: "new-visitor",
         component: AddVisitors,
         name: "add-visitor",
+        prop: true,
       },
       {
         path: ":id",
-        component: VisitorDetail,
-        name: "visitorDetail",
+        children: [
+          {
+            path: "",
+            component: VisitorDetail,
+            name: "visitorDetail",
+          },
+          {
+            path: "edit-visitor",
+            component: AddVisitors,
+            name: "edit-visitor",
+          },
+        ],
       },
     ],
   },

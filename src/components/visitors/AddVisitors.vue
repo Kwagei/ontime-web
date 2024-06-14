@@ -59,6 +59,10 @@
 							Please provide a phone number.
 						</div>
 					</div>
+					<div id="emailHelp" class="form-text">
+						Please enter your phone number starting with 231. For
+						example: 231123456789
+					</div>
 				</div>
 
 				<!-- MIDDLE NAME -->
@@ -78,13 +82,19 @@
 				<!-- EMAIL -->
 				<div class="col-md-6">
 					<label for="email" class="form-label">Email</label>
-					<input
-						type="email"
-						class="form-control"
-						id="email"
-						v-model="email"
-						aria-describedby="inputGroupPrepend"
-					/>
+					<div class="input-group">
+						<input
+							type="email"
+							class="form-control"
+							v-model="email"
+							id="email"
+							aria-describedby="inputGroupPrepend"
+						/>
+					</div>
+					<div id="emailHelp" class="form-text">
+						Please enter a valid email address. For example:
+						example@example.com
+					</div>
 				</div>
 
 				<!-- LAST NAME -->
@@ -117,7 +127,7 @@
 							font-weight: 600;
 						"
 					>
-						Save
+						{{ buttonLabel }}
 					</button>
 				</div>
 			</form>
@@ -149,6 +159,7 @@ const email = ref("");
 const status = ref("");
 const message = ref("");
 const title = ref("");
+const buttonLabel = ref("Save");
 let visitorInfo;
 
 const onSubmit = async () => {
@@ -183,6 +194,9 @@ const onSubmit = async () => {
 	}
 
 	visuallyHideModalBackdrop();
+	if (formStatus.startsWith("new")) {
+		resetForm();
+	}
 };
 
 const activeBreadCrumbs = ref([]);
@@ -194,6 +208,7 @@ const formStatus = tem.pop();
 
 const fetchVisitor = async () => {
 	if (formStatus.startsWith("edit")) {
+		buttonLabel.value = "Update";
 		const id = breadCrumbs.value[1];
 		visitorInfo = await getSingleVisitor({ id });
 		first_name.value = visitorInfo.first_name;
@@ -235,6 +250,14 @@ function visuallyHideModalBackdrop() {
 		);
 	}
 }
+
+const resetForm = () => {
+	first_name.value = "";
+	middle_name.value = "";
+	last_name.value = "";
+	msisdn.value = "";
+	email.value = "";
+};
 </script>
 
 <style scoped>

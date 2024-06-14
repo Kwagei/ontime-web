@@ -29,6 +29,7 @@
           <th scope="col">Last name</th>
           <th scope="col">Contact</th>
           <th scope="col">Email</th>
+          <th scope="col">Created At</th>
         </tr>
       </thead>
       <tbody>
@@ -52,6 +53,7 @@
           <td>{{ visitor.last_name }}</td>
           <td>{{ visitor.msisdn }}</td>
           <td>{{ visitor.email }}</td>
+          <td>{{ visitor.created_at }}</td>
         </tr>
       </tbody>
     </table>
@@ -118,6 +120,8 @@ const visitorDetail = (id) => {
 
 const fetchVisitors = async () => {
   const data = await getVisitors({
+    sort: sortTerm.value,
+    direction: directionTerm.value,
     limit: limit.value,
   });
   visitors.value = data;

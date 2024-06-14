@@ -158,8 +158,11 @@
 
 <script setup>
 import { ref, defineProps, onMounted } from "vue";
-import BreadCrumbs from "../BreadCrumbs.vue";
 import $ from "jquery";
+
+import { visuallyHideModalBackdrop, API_URL } from "../../assets/js/index.js";
+
+import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import Alert from "../Alert.vue";
 
@@ -208,20 +211,17 @@ async function postEvent() {
         details: details.value,
     };
 
-    const modal = new boosted.Modal("#exampleModal");
-
     try {
-        await $.post("http://localhost:3000/api/events/", body, (data) => {
-            console.log("Data: ", data);
-
-            // show modal
+        await $.post(API_URL + "events/", body, (data) => {
+            console.log("Boosted: ", boosted);
+            const modal = new boosted.Modal("#exampleModal");
             modal.show(document.querySelector("#toggleMyModal"));
 
             // set modal data
             successModalData.value.message = data.message;
             successModalData.value.status = "success";
             successModalData.value.title = "Event Created";
-            successModalData.value.pageLink = "/events/";
+            successModalData.value.pageLink = `/events/${data.data.id}`;
 
             visuallyHideModalBackdrop();
         });
@@ -229,19 +229,9 @@ async function postEvent() {
         clearInputs();
         clearErrors();
     } catch (error) {
-        console.log("Error creating event: ", error);
+        console.log("Error creating event: ", error.responseJSON);
         clearErrors();
         displayErrorMessage(error.responseJSON.message);
-    }
-}
-
-function visuallyHideModalBackdrop() {
-    const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
-
-    if (modalsBackdrops.length) {
-        modalsBackdrops.forEach((modal) =>
-            modal.classList.add("visually-hidden")
-        );
     }
 }
 

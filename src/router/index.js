@@ -6,6 +6,7 @@ import AddVisitors from "../components/visitors/AddVisitors.vue";
 import Visits from "../views/Visits.vue";
 import Users from "../views/Users.vue";
 import Dashboard from "../views/Dashboard.vue";
+import EventParticipants from "@/components/events/EventParticipants.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -53,6 +54,11 @@ const routes = [
                 path: "/events/:id",
                 component: Event,
                 name: "specific-event",
+            },
+            {
+                path: "/events/:id/participants",
+                component: EventParticipants,
+                name: "specific-event-participants",
             },
         ],
     },

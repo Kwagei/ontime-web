@@ -1,5 +1,5 @@
 <template>
-    <div style="" id="wrapper">
+    <div id="wrapper">
         <div class="d-flex gap-4 px-0" style="height: 100%">
             <aside class="flex-grow-0 bg-info">
                 <SideBar
@@ -29,10 +29,11 @@ const activeSection = ref("");
 const breadCrumbs = ref([]);
 </script>
 
-<style scope>
+<style scoped>
 #wrapper {
     height: 100vh;
     width: 100vw;
+    position: fixed;
 }
 
 /* Section Scrolling Media Query */

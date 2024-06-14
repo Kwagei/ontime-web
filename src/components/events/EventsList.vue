@@ -44,7 +44,17 @@
         <h2 v-else-if="Array.isArray(allEvents) && allEvents.length <= 0">
             No Events Currently!
         </h2>
-        <h2 v-else-if="allEvents == 'loading'">Loading Events...</h2>
+        <div
+            class="d-flex justify-content-center"
+            v-else-if="allEvents == 'loading'"
+        >
+            <div
+                class="spinner-border spinner-border-lg position-absolute top-50"
+                role="status"
+            >
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
         <h2 v-else>Error Loading Events, Try again!</h2>
     </div>
     <Pagination v-model="paginationStart" />
@@ -54,7 +64,7 @@
 import Pagination from "../Pagination.vue";
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { formatDate } from "../../assets/js/index.js";
+import { formatDate, API_URL } from "../../assets/js/index.js";
 import $ from "jquery";
 
 const paginationStart = ref(0);
@@ -71,6 +81,8 @@ onMounted(async () => {
 watch(paginationStart, (newValue) => {
     eventsToShow.value = allEvents.value.slice(newValue, MAX.value + newValue);
 
+    // get more events if we're on the last page of the
+    // pagination and we still have events to fetch
     if (allEvents.value.length - newValue == 10) moreEvents();
 });
 
@@ -83,7 +95,7 @@ async function getEvents(
 ) {
     // Get Events from API on `localhost:3000`
     try {
-        const url = `http://localhost:3000/api/events?start=${start}&limit=${limit}`;
+        const url = API_URL + `events?start=${start}&limit=${limit}`;
 
         if (search) url += `&search=${search}`;
         if (from) url += `&from=${from}`;

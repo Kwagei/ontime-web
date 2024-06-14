@@ -18,7 +18,7 @@
             <h4>{{ event.details }}</h4>
         </div>
 
-        <div class="d-flex gap-3">
+        <div class="d-flex gap-3" id="detailsOptionsContainer">
             <button
                 class="btn btn-primary"
                 @click="$emit('switch', 'addParticipant')"
@@ -31,29 +31,73 @@
             >
                 Import Participants
             </button>
+            <Options @click="displayOptions" />
+            <ul class="d-none" id="eventOptionsUL">
+                <a
+                    class="link-underline link-underline-opacity-0"
+                    href="http://localhost:5173/participants_template.csv"
+                    download="participants_template.csv"
+                >
+                    <li>Download CSV Template</li>
+                </a>
+                <a
+                    class="link-underline link-underline-opacity-0"
+                    :href="`/events/${eventId}/participants`"
+                >
+                    <li>View Participants</li>
+                </a>
+            </ul>
         </div>
-
-        <ul class="participant-list">
-            <li v-for="participant in participants" :key="participant.id">
-                {{ participant.firstName }} {{ participant.lastName }} -
-                {{ participant.email }}
-                <button @click="removeParticipant(participant)">Remove</button>
-            </li>
-        </ul>
     </div>
 </template>
 
 <script setup>
-import { formatDate } from "../../assets/js/index.js";
+import Options from "../Options.vue";
 
+import { formatDate } from "../../assets/js/index.js";
+import $ from "jquery";
+import { useRoute } from "vue-router";
+
+const router = useRoute();
+const eventId = router.params.id;
 const props = defineProps({
     event: {
         type: Object,
         required: true,
     },
 });
+
+$(document).on("click", () => {
+    $("#eventOptionsUL").addClass("d-none");
+});
+
+function displayOptions(event) {
+    // show drop down list of options
+    const eventsOptionsUL = $("#eventOptionsUL");
+    eventsOptionsUL.toggleClass("d-none");
+    event.stopPropagation();
+    eventsOptionsUL[0].style.left = `${event.clientX - 130}px`;
+    eventsOptionsUL[0].style.top = `${event.clientY + 10}px`;
+}
 </script>
 
 <style scoped>
-/* code... */
+#eventOptionsUL {
+    position: absolute;
+    z-index: 9999;
+    background-color: #eee;
+    list-style: none;
+    border: 2px solid #555;
+    padding: 0;
+}
+
+#eventOptionsUL li {
+    padding: 15px;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+#eventOptionsUL li:hover {
+    background-color: #ddd;
+}
 </style>

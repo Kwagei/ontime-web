@@ -6,7 +6,7 @@
             </div>
             <div>
                 <RefreshList />
-                <Options />
+                <Options class="mx-2" />
                 <router-link :to="{ name: 'add-event' }">
                     <button class="btn btn-primary">Add Event</button>
                 </router-link>

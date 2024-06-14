@@ -31,7 +31,7 @@
                         <span class="visually-hidden">Close</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div v-if="data.pageLink || data.message" class="modal-body">
                     <div v-if="data.message != data.title" class="mt-2 mb-3">
                         {{ data.message }}
                     </div>
@@ -45,8 +45,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-
 const props = defineProps({
     data: { type: Object, required: true },
 });

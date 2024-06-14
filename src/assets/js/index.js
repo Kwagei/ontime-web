@@ -1,4 +1,5 @@
 const API = "http://127.0.0.1:3000/api";
+const API_URL = "https://ontime-kit.glitch.me/api/";
 
 const registerVisitor = async (data) => {
     try {
@@ -44,4 +45,20 @@ function formatDate(date) {
     return rawDate.toString().split(" 0")[0];
 }
 
-export { registerVisitor, getVisitors, formatDate };
+function visuallyHideModalBackdrop() {
+    const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
+
+    if (modalsBackdrops.length) {
+        modalsBackdrops.forEach((modal) =>
+            modal.classList.add("visually-hidden")
+        );
+    }
+}
+
+export {
+    registerVisitor,
+    getVisitors,
+    formatDate,
+    visuallyHideModalBackdrop,
+    API_URL,
+};

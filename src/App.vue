@@ -52,6 +52,8 @@ aside {
 
 main {
     margin-left: 20rem;
+    overflow-y: scroll;
+    padding-bottom: 3rem;
 }
 
 /* Tablet Styles */

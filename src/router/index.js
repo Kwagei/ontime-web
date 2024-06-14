@@ -1,13 +1,25 @@
+// Event Components
 import AddEvent from "../components/events/AddEvent.vue";
 import Events from "../views/Events.vue";
 import Event from "../components/events/Event.vue";
+import EventParticipants from "@/components/events/EventParticipants.vue";
+
+// Visitors Components
+import VisitorDetail from "../components/visitors/VisitorDetail.vue";
 import Visitors from "../views/Visitors.vue";
 import AddVisitors from "../components/visitors/AddVisitors.vue";
+
+// Visit Components
 import Visits from "../views/Visits.vue";
+
+// Users Components
 import Users from "../views/Users.vue";
+
+// Other Components
 import Dashboard from "../views/Dashboard.vue";
 import EventParticipants from "@/components/events/EventParticipants.vue";
 
+// Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -16,21 +28,37 @@ const routes = [
         component: Dashboard,
         name: "dashboard",
     },
-    {
-        path: "/visitors",
+	  {
+    path: "/visitors",
+    children: [
+      {
+        path: "",
+        component: Visitors,
+        name: "visitors",
+      },
+      {
+        path: "new-visitor",
+        component: AddVisitors,
+        name: "add-visitor",
+        prop: true,
+      },
+      {
+        path: ":id",
         children: [
-            {
-                path: "",
-                component: Visitors,
-                name: "visitors",
-            },
-            {
-                path: "new-visitor",
-                component: AddVisitors,
-                name: "add-visitor",
-            },
+          {
+            path: "",
+            component: VisitorDetail,
+            name: "visitorDetail",
+          },
+          {
+            path: "edit-visitor",
+            component: AddVisitors,
+            name: "edit-visitor",
+          },
         ],
-    },
+      },
+    ],
+	},
     {
         path: "/visits",
         component: Visits,

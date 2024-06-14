@@ -71,43 +71,6 @@ const formatDetails = (detail) => {
 	return words.length > 7 ? `${words.slice(0, 7).join(" ")}...` : detail;
 };
 
-<<<<<<< HEAD
-=======
-function formatDate(date) {
-    const rawDate = new Date(date);
->>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
-
-const hasEvents = ref(false);
-
-const formatDetails = (detail) => {
-    let words = detail.split(" ");
-
-<<<<<<< HEAD
-    return words.length > 7 ? `${words.slice(0, 7).join(" ")}...` : detail;
-=======
-        req.onload = () => {
-            const res = req.response;
-
-<<<<<<< HEAD
-            if (req.readyState === 4 && req.status === 200) {
-                this.events = res;
-            } else {
-                console.error("Error getting events: ", res);
-                this.events = res;
-            }
-        };
-    },
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
-};
-<<<<<<< HEAD
-
-function formatDate(date) {
-    const rawDate = new Date(date);
-
-            return rawDate.toString().split(" 0")[0];
-}
-
->>>>>>> 9832b8e (Updated Interface design to follow Boosted style guide)
 onMounted(async () => {
 	await getEvents();
 });
@@ -168,12 +131,8 @@ async function moreEvents(
 		// do nothing
 	}
 }
-<<<<<<< HEAD
 </script>
 
-<<<<<<< HEAD
-<style scoped></style>
-=======
 <style scoped>
 #eventsTableContainer {
 	max-height: 63vh;
@@ -181,5 +140,3 @@ async function moreEvents(
 	margin-bottom: 30px;
 }
 </style>
->>>>>>> c4b8253 (completed displaying events and pagination, moving to Event
-page creation)

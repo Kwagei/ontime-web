@@ -17,11 +17,6 @@ import AddWorkspace from "@/components/visits/AddWorkspace.vue";
 
 // Users Components
 import Users from "../views/Users.vue";
-import Events from "../views/Events.vue";
-import AddVisitors from "../components/visitors/AddVisitors.vue";
-import AddMeeting from "../components/visits/AddMeeting.vue";
-import AddEvents from "../components/visits/AddEvents.vue";
-import AddWorkspace from "../components/visits/AddWorkspace.vue";
 
 // Dashboard Components
 import Dashboard from "../views/Dashboard.vue";
@@ -31,54 +26,6 @@ import Dashboard from "../views/Dashboard.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
-	{
-		path: "/dashboard",
-		component: Dashboard,
-		name: "dashboard",
-	},
-	{
-		path: "/visitors",
-		children: [
-			{
-				path: "",
-				component: Visitors,
-				name: "visitors",
-			},
-			{
-				path: "new-visitor",
-				component: AddVisitors,
-				name: "add-visitor",
-			},
-		],
-	},
-	{
-		// path: "/visits",
-		// component: Visits,
-		// name: "visits",
-		path: "/visits",
-		children: [
-			{
-				path: "",
-				component: Visits,
-				name: "visits",
-			},
-			{
-				path: "new-visit",
-				component: AddVisits,
-				name: "add-visit",
-			},
-		],
-	},
-	{
-		path: "/users",
-		component: Users,
-		name: "users",
-	},
-	{
-		path: "/events",
-		component: Events,
-		name: "events",
-	},
 	{
 		path: "/dashboard",
 		component: Dashboard,

@@ -33,6 +33,7 @@ const breadCrumbs = ref([]);
 #wrapper {
     height: 100vh;
     width: 100vw;
+    position: fixed;
 }
 
 /* Section Scrolling Media Query */

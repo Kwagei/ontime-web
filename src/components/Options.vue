@@ -1,5 +1,5 @@
 <template>
-    <button id="list-options" class="hover-btn btn mx-2 bg-white">
+    <button id="list-options" class="hover-btn btn bg-white">
         <svg
             width="100"
             height="100"

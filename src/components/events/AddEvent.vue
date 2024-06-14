@@ -157,9 +157,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import BreadCrumbs from "../BreadCrumbs.vue";
+import { ref, defineProps, onMounted } from "vue";
 import $ from "jquery";
+
+import { visuallyHideModalBackdrop, API_URL } from "../../assets/js/index.js";
+
+import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import Alert from "../Alert.vue";
 >>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
@@ -177,10 +180,10 @@ const details = ref("");
 
 // Modal Data
 const successModalData = ref({
-  title: "",
-  status: "",
-  message: "",
-  pageLink: "",
+    title: "",
+    status: "",
+    message: "",
+    pageLink: "",
 });
 
 // Error Alert Data
@@ -216,111 +219,102 @@ const detailsError = ref("");
 
 >>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
 const props = defineProps({
-  breadCrumbs: {
-    type: Array,
-    required: true,
-  },
+    breadCrumbs: {
+        type: Array,
+        required: true,
+    },
 });
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "add-event"];
 
 async function postEvent() {
-  const body = {
-    title: title.value,
-    facilitator: facilitator.value,
-    start_date: startDate.value,
-    end_date: endDate.value,
-    type: type.value,
-    details: details.value,
-  };
+    const body = {
+        title: title.value,
+        facilitator: facilitator.value,
+        start_date: startDate.value,
+        end_date: endDate.value,
+        type: type.value,
+        details: details.value,
+    };
 
-  const modal = new boosted.Modal("#exampleModal");
+    try {
+        await $.post(API_URL + "events/", body, (data) => {
+            console.log("Boosted: ", boosted);
+            const modal = new boosted.Modal("#exampleModal");
+            modal.show(document.querySelector("#toggleMyModal"));
 
-  try {
-    await $.post("http://localhost:3000/api/events/", body, (data) => {
-      console.log("Data: ", data);
+            // set modal data
+            successModalData.value.message = data.message;
+            successModalData.value.status = "success";
+            successModalData.value.title = "Event Created";
+            successModalData.value.pageLink = `/events/${data.data.id}`;
 
-      // show modal
-      modal.show(document.querySelector("#toggleMyModal"));
+            visuallyHideModalBackdrop();
+        });
 
-      // set modal data
-      successModalData.value.message = data.message;
-      successModalData.value.status = "success";
-      successModalData.value.title = "Event Created";
-      successModalData.value.pageLink = "/events/";
-
-      visuallyHideModalBackdrop();
-    });
-
-    clearInputs();
-    clearErrors();
-  } catch (error) {
-    console.log("Error creating event: ", error);
-    clearErrors();
-    displayErrorMessage(error.responseJSON.message);
-  }
-}
-
-function visuallyHideModalBackdrop() {
-  const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
-
-  if (modalsBackdrops.length) {
-    modalsBackdrops.forEach((modal) => modal.classList.add("visually-hidden"));
-  }
+        clearInputs();
+        clearErrors();
+    } catch (error) {
+        console.log("Error creating event: ", error.responseJSON);
+        clearErrors();
+        displayErrorMessage(error.responseJSON.message);
+    }
 }
 
 function displayErrorMessage(msg) {
-  const tmpMsg = msg.toLowerCase();
+    const tmpMsg = msg.toLowerCase();
 
-  if (tmpMsg.includes("title")) titleError.value = msg;
-  else if (tmpMsg.includes("facilitator")) facilitatorError.value = msg;
-  else if (tmpMsg.includes("start date")) startDateError.value = msg;
-  else if (tmpMsg.includes("end date")) endDateError.value = msg;
-  else if (tmpMsg.includes("type")) typeError.value = msg;
-  else if (tmpMsg.includes("details")) detailsError.value = msg;
+    if (tmpMsg.includes("title")) titleError.value = msg;
+    else if (tmpMsg.includes("facilitator")) facilitatorError.value = msg;
+    else if (tmpMsg.includes("start date")) startDateError.value = msg;
+    else if (tmpMsg.includes("end date")) endDateError.value = msg;
+    else if (tmpMsg.includes("type")) typeError.value = msg;
+    else if (tmpMsg.includes("details")) detailsError.value = msg;
 }
 
 function clearInputs() {
-  // clear inputs
-  title.value = "";
-  facilitator.value = "";
-  startDate.value = "";
-  endDate.value = "";
-  type.value = "";
-  details.value = "";
+    // clear inputs
+    title.value = "";
+    facilitator.value = "";
+    startDate.value = "";
+    endDate.value = "";
+    type.value = "";
+    details.value = "";
 
-  document.querySelector(".needs-validation").classList.remove("was-validated");
+    document
+        .querySelector(".needs-validation")
+        .classList.remove("was-validated");
 }
 
 function clearErrors() {
-  // clear errors
-  titleError.value = "";
-  facilitatorError.value = "";
-  startDateError.value = "";
-  endDateError.value = "";
-  typeError.value = "";
-  detailsError.value = "";
+    // clear errors
+    titleError.value = "";
+    facilitatorError.value = "";
+    startDateError.value = "";
+    endDateError.value = "";
+    typeError.value = "";
+    detailsError.value = "";
 }
 
 onMounted(() => {
-  (() => {
-    "use strict";
+    (() => {
+        "use strict";
 
-    const form = document.querySelector(".needs-validation");
+        const form = document.querySelector(".needs-validation");
 
-    form.addEventListener(
-      "submit",
-      (event) => {
-        if (!form.checkValidity()) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
+        form.addEventListener(
+            "submit",
+            (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
 
-        form.classList.add("was-validated");
-      },
-      false
-    );
-  })();
+                form.classList.add("was-validated");
+            },
+            false
+        );
+    })();
 });
 </script>
 

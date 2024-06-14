@@ -1,5 +1,5 @@
 <template>
-    <div id="alertWrapper" class="alert alert-danger" role="alert" v-if="title">
+    <div class="alert alert-danger alertWrapper" role="alert" v-if="title">
         <span class="alert-icon">
             <span class="visually-hidden">Error</span>
         </span>
@@ -14,7 +14,7 @@ const props = defineProps({
 </script>
 
 <style scoped>
-#alertWrapper {
+.alertWrapper {
     border: none !important;
     margin-bottom: -15px;
     padding-bottom: 0;

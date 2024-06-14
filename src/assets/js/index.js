@@ -1,6 +1,7 @@
 const API = import.meta.env.VITE_API_URL;
+const API_URL = "https://ontime-kit.glitch.me/api/";
 
-export const registerVisitor = async (data) => {
+const registerVisitor = async (data) => {
 	try {
 		const options = {
 			method: "POST",
@@ -20,7 +21,7 @@ export const registerVisitor = async (data) => {
 	}
 };
 
-export const editVisitor = async (id, data) => {
+const editVisitor = async (id, data) => {
 	try {
 		const options = {
 			method: "PUT",
@@ -40,27 +41,27 @@ export const editVisitor = async (id, data) => {
 	}
 };
 
-export const getSingleVisitor = async (data) => {
-  const { id, msisdn } = data;
-  let response;
+const getSingleVisitor = async (data) => {
+	const { id, msisdn } = data;
+	let response;
 
-  try {
-    if (id) {
-      response = await fetch(`${API}/visitors/${id}`);
-    } else if (msisdn) {
-      response = await fetch(`${API}/visitors?search=${msisdn}`);
-    }
+	try {
+		if (id) {
+			response = await fetch(`${API}/visitors/${id}`);
+		} else if (msisdn) {
+			response = await fetch(`${API}/visitors?search=${msisdn}`);
+		}
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
+		if (!response.ok) {
+			throw new Error("Network response was not ok");
+		}
 
-    const { data } = await response.json();
-    return data[0];
-  } catch (error) {}
+		const { data } = await response.json();
+		return data[0];
+	} catch (error) {}
 };
 
-export const getVisitors = async (query) => {
+const getVisitors = async (query) => {
 	try {
 		const {
 			search = "",
@@ -93,7 +94,7 @@ export const getVisitors = async (query) => {
 	}
 };
 
-export const getVisitorWithVisits = async (id, query) => {
+const getVisitorWithVisits = async (id, query) => {
 	try {
 		const {
 			search = "",
@@ -125,4 +126,25 @@ export const getVisitorWithVisits = async (id, query) => {
 	} catch (error) {
 		console.error("Error: ", error);
 	}
+};
+
+function visuallyHideModalBackdrop() {
+	const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
+
+	if (modalsBackdrops.length) {
+		modalsBackdrops.forEach((modal) =>
+			modal.classList.add("visually-hidden")
+		);
+	}
+}
+
+export default {
+	editVisitor,
+	getSingleVisitor,
+	getVisitorWithVisits,
+	registerVisitor,
+	getVisitors,
+	formatDate,
+	visuallyHideModalBackdrop,
+	API_URL,
 };

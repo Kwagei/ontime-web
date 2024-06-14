@@ -1,26 +1,6 @@
 <template>
     <div id="eventsTableContainer">
-<<<<<<< HEAD
-<<<<<<< HEAD
-        <table class="table table-hover mb-0">
-            <thead>
-                <tr>
-                    <th scope="col">
-<<<<<<< HEAD
-                        <input type="checkbox" class="form-check-input" />
-=======
-                        <input type="checkbox" />
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
-=======
-=======
->>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
-        <table
-            v-if="allEvents.data && allEvents.data.length >= 1"
-            class="table table-hover"
-        >
-=======
-        <table class="table table-hover mb-0">
->>>>>>> 1ef147a (Updated Interface design to follow Boosted style guide)
+        <table v-if="allEvents.length" class="table table-hover mb-0">
             <thead>
                 <tr>
                     <th scope="col">
@@ -71,37 +51,21 @@
                 </tr>
             </tbody>
         </table>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
-        <div
-            v-if="hasEvents"
-            style="
-                height: 50vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            "
-        >
-            <h2>No Events Currently!</h2>
-        </div>
-<<<<<<< HEAD
-=======
-        <h2 v-else-if="events.data && events.data.length <= 0">
-=======
-        <h2 v-else-if="allEvents.data && allEvents.data.length <= 0">
->>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
+        <h2 v-else-if="Array.isArray(allEvents) && allEvents.length <= 0">
             No Events Currently!
         </h2>
-        <h2 v-else-if="Object.keys(allEvents).length <= 0">
-            Loading Events...
-        </h2>
+        <div
+            class="d-flex justify-content-center"
+            v-else-if="allEvents == 'loading'"
+        >
+            <div
+                class="spinner-border spinner-border-lg position-absolute top-50"
+                role="status"
+            >
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
         <h2 v-else>Error Loading Events, Try again!</h2>
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
-=======
->>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
     </div>
     <Pagination v-model="paginationStart" />
 </template>
@@ -111,31 +75,12 @@ import Pagination from "../Pagination.vue";
 import { ref, onMounted, watch } from "vue";
 import $ from "jquery";
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+import { formatDate, API_URL } from "../../assets/js/index.js";
+
 const paginationStart = ref(0);
 const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX = ref(10);
-=======
-export default {
-    name: "EventsList",
-    data() {
-        return {
-            events: ref({}),
-        };
-    },
-    methods: {
-        formatDate(date) {
-            const rawDate = new Date(date);
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
-=======
-const paginationStart = ref(0);
-const allEvents = ref({});
-const eventsToShow = ref([]);
-const MAX = ref(10);
-
-const hasEvents = ref(false);
 
 const formatDetails = (detail) => {
     let words = detail.split(" ");
@@ -174,7 +119,7 @@ const formatDetails = (detail) => {
 function formatDate(date) {
     const rawDate = new Date(date);
 
-            return rawDate.toString().split(" 0")[0];
+    return rawDate.toString().split(" 0")[0];
 }
 
 onMounted(async () => {
@@ -184,9 +129,8 @@ onMounted(async () => {
 watch(paginationStart, (newValue) => {
     eventsToShow.value = allEvents.value.slice(newValue, MAX.value + newValue);
 
-=======
-=======
->>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
+    // get more events if we're on the last page of the
+    // pagination and we still have events to fetch
     if (allEvents.value.length - newValue == 10) moreEvents();
 });
 
@@ -199,7 +143,7 @@ async function getEvents(
 ) {
     // Get Events from API on `localhost:3000`
     try {
-        let url = `http://localhost:3000/api/events?start=${start}&limit=${limit}`;
+        const url = API_URL + `events?start=${start}&limit=${limit}`;
 
         if (search) url += `&search=${search}`;
         if (from) url += `&from=${from}`;

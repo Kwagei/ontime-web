@@ -1,28 +1,25 @@
 <template>
-	<div id="eventsWrapper" class="d-flex flex-column container">
-		<div
-			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-		>
-			<BreadCrumbs :breadCrumbs="breadCrumbs" />
-
-			<div class="d-flex" style="gap: 0.521rem">
-				<RefreshList />
-				<Options />
-
-				<router-link :to="{ name: 'add-event' }">
-					<button
-						type="button"
-						class="btn btn-primary"
-						id="new-visitor"
-						style="
-							padding: 0.7rem 2rem !important;
-							font-weight: 600;
-						"
-					>
-						Add Event
-					</button>
-				</router-link>
+	<div>
+		<div id="eventsWrapper">
+			<div class="d-flex justify-content-between my-4">
+				<div>
+					<BreadCrumbs :breadCrumbs="breadCrumbs" />
+				</div>
+				<div>
+					<RefreshList />
+					<Options class="mx-2" />
+					<router-link :to="{ name: 'add-event' }">
+						<button class="btn btn-primary">Add Event</button>
+					</router-link>
+				</div>
 			</div>
+			<div class="d-flex justify-content-between my-4">
+				<Search />
+				<Filter />
+				<Sort />
+			</div>
+			<EventsList />
+			<RouterView :breadCrumbs="breadCrumbs" />
 		</div>
 
 		<div class="row justify-content-between container p-0 mx-auto">
@@ -57,12 +54,12 @@ const props = defineProps({
 follow Boosted style guide)
 <style scoped>
 svg {
-  height: 20px !important;
-  margin: 0 !important;
+    height: 20px !important;
+    margin: 0 !important;
 }
 
 #new-visitor:hover {
-  color: white !important;
+    color: white !important;
 }
 
 <<<<<<< HEAD
@@ -101,28 +98,28 @@ svg {
 >>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
 =======
 #eventsWrapper {
-  padding-top: 2rem;
-  gap: 1.5rem;
+    padding-top: 2rem;
+    gap: 1.5rem;
 }
 
 .btn {
-  padding: 0.5rem !important;
+    padding: 0.5rem !important;
 }
 .btn:hover {
-  border: 0.125rem solid black !important;
+    border: 0.125rem solid black !important;
 }
 
 .btn:hover g {
-  fill: white;
+    fill: white;
 }
 .list-options svg {
-  height: 20px !important;
-  margin: 0 !important;
+    height: 20px !important;
+    margin: 0 !important;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {
-  #eventsWrapper {
-    padding: 1rem 3rem 0 3rem;
-  }
+    #eventsWrapper {
+        padding: 1rem 3rem 0 3rem;
+    }
 }
 </style>

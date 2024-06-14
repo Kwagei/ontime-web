@@ -1,14 +1,24 @@
-import AddEvent from "../components/events/AddEvent.vue";
-import { createRouter, createWebHistory } from "vue-router";
-import Dashboard from "../views/Dashboard.vue";
-import Visitors from "../views/Visitors.vue";
-import Visits from "../views/Visits.vue";
-import Users from "../views/Users.vue";
+// Events Components
 import Events from "../views/Events.vue";
+import AddEvent from "../components/events/AddEvent.vue";
+import EventParticipants from "@/components/events/EventParticipants.vue";
+
+// Visits Components
+import Visits from "../views/Visits.vue";
+
+// Users Components
+import Users from "../views/Users.vue";
+
+// Visitors Components
 import AddVisitors from "../components/visitors/AddVisitors.vue";
-import AddMeeting from "../components/visits/AddMeeting.vue";
-import AddEvents from "../components/visits/AddEvents.vue";
-import AddWorkspace from "../components/visits/AddWorkspace.vue";
+import Visitors from "../views/Visitors.vue";
+import VisitorDetail from "../components/visitors/VisitorDetail.vue";
+
+// Other Components
+import Dashboard from "../views/Dashboard.vue";
+
+// Dependencies Imports
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
 	{
@@ -28,38 +38,29 @@ const routes = [
 				path: "new-visitor",
 				component: AddVisitors,
 				name: "add-visitor",
+				prop: true,
 			},
 			{
-				path: "purpose-event",
-				component: AddVisitors,
-				name: "add-visitor",
+				path: ":id",
+				children: [
+					{
+						path: "",
+						component: VisitorDetail,
+						name: "visitorDetail",
+					},
+					{
+						path: "edit-visitor",
+						component: AddVisitors,
+						name: "edit-visitor",
+					},
+				],
 			},
 		],
 	},
 	{
 		path: "/visits",
-		children: [
-			{
-				path: "",
-				component: Visits,
-				name: "visits",
-			},
-			{
-				path: "purpose-meeting",
-				component: AddMeeting,
-				name: "add-meeting",
-			},
-			{
-				path: "purpose-event",
-				component: AddEvents,
-				name: "visits-event",
-			},
-			{
-				path: "purpose-workspace",
-				component: AddWorkspace,
-				name: "add-workspace",
-			},
-		],
+		component: Visits,
+		name: "visits",
 	},
 	{
 		path: "/users",
@@ -74,6 +75,16 @@ const routes = [
 				path: "/events/add-event",
 				component: AddEvent,
 				name: "add-event",
+			},
+			{
+				path: "/events/:id",
+				component: Event,
+				name: "specific-event",
+			},
+			{
+				path: "/events/:id/participants",
+				component: EventParticipants,
+				name: "specific-event-participants",
 			},
 		],
 	},

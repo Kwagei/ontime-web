@@ -143,6 +143,8 @@ export default {
 	getSingleVisitor,
 	getVisitorWithVisits,
 	registerVisitor,
+	editVisitor,
+	getSingleVisitor,
 	getVisitors,
 	formatDate,
 	visuallyHideModalBackdrop,

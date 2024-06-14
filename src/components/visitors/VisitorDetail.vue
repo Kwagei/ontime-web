@@ -197,12 +197,9 @@ const sortTerms = ref([
 const sortTerm = defineModel("term");
 sortTerm.value = "created_at";
 const directionTerm = defineModel("direction");
-directionTerm.value = "desc";
+// directionTerm.value = "desc";
 
 const route = useRoute();
-
-// const activeBreadCrumbs = ref([]);
-// const breadCrumbs = defineModel("breadCrumbs");
 
 const id = ref(route.params.id);
 const visitorInfo = defineModel("visitor-info");

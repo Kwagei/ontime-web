@@ -1,23 +1,25 @@
-// Events Components
-import Events from "../views/Events.vue";
+// Event Components
 import AddEvent from "../components/events/AddEvent.vue";
+import Events from "../views/Events.vue";
+import Event from "../components/events/Event.vue";
 import EventParticipants from "@/components/events/EventParticipants.vue";
 
-// Visits Components
+// Visitors Components
+import VisitorDetail from "../components/visitors/VisitorDetail.vue";
+import Visitors from "../views/Visitors.vue";
+import AddVisitors from "../components/visitors/AddVisitors.vue";
+
+// Visit Components
 import Visits from "../views/Visits.vue";
 
 // Users Components
 import Users from "../views/Users.vue";
 
-// Visitors Components
-import AddVisitors from "../components/visitors/AddVisitors.vue";
-import Visitors from "../views/Visitors.vue";
-import VisitorDetail from "../components/visitors/VisitorDetail.vue";
-
 // Other Components
 import Dashboard from "../views/Dashboard.vue";
+import EventParticipants from "@/components/events/EventParticipants.vue";
 
-// Dependencies Imports
+// Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [

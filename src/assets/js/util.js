@@ -30,10 +30,7 @@ export const msisdnValidation = (msisdns) => {
 		const countryCode = contact.slice(0, 3);
 
 		if (countryCode !== "231")
-			return {
-				valid: false,
-				message: "Phone number should start with 231",
-			};
+			throw new Error("Phone number should start with 231");
 
 		// Remove country code from the msisdn if added to the msisdn.
 		const contactNumber = contact.slice(3);
@@ -48,21 +45,7 @@ export const msisdnValidation = (msisdns) => {
 
 		// Msisdn range must be 9 digits.
 		if (contactRange !== 9 || !validCode || !+contactNumber) {
-			return { valid: false, message: "Invalid phone number!" };
+			throw new Error("Invalid phone number!");
 		}
 	}
-
-	return { valid: true };
-};
-
-/**
- * Validating a valid email address, if email address is valid return true else return false
- *
- * @param {String} - User email address to be validated.
- * @returns {boolean} - true / false
- */
-export const emailValidation = (mail) => {
-	const validEmail =
-		/^[a-zA-Z0-9.!#$%&'*+/=?^/_`{|}~-]+@[a-z]+(?:\.[a-zA-Z0-9]+)*$/;
-	return mail.match(validEmail) ? true : false;
 };

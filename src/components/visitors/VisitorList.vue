@@ -110,7 +110,7 @@ watch(
       direction: directionValue,
       limit: limit.value,
     });
-    visitors.value = data;
+    visitors.value = formatDateTime(data);
   }
 );
 
@@ -124,8 +124,16 @@ const fetchVisitors = async () => {
     direction: directionTerm.value,
     limit: limit.value,
   });
-  visitors.value = data;
+  visitors.value = formatDateTime(data);
   loader.value = false;
+};
+
+const formatDateTime = (visitors) => {
+  return visitors.map((visitor) => {
+    const [date] = visitor.created_at.split("T");
+    visitor.created_at = date;
+    return visitor;
+  });
 };
 
 onMounted(() => {

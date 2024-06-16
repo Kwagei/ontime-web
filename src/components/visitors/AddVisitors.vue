@@ -45,6 +45,7 @@
               id="phone_number"
               aria-describedby="inputGroupPrepend"
               required
+              @blur="contactValidation"
             />
             <div class="invalid-feedback">Please provide a phone number.</div>
           </div>
@@ -115,6 +116,8 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import {
@@ -122,25 +125,30 @@ import {
   editVisitor,
   getSingleVisitor,
 } from "@/assets/js/index.js";
+import { msisdnValidation } from "@/assets/js/util.js";
 
-import { useRoute } from "vue-router";
-
+// Route and State
 const route = useRoute();
-
-import { ref, onMounted } from "vue";
-
 const first_name = ref("");
 const middle_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
-
 const status = ref("");
 const message = ref("");
 const title = ref("");
 const buttonLabel = ref("Save");
 let visitorInfo;
 
+// Form status and breadcrumbs
+const activeBreadCrumbs = ref([]);
+const breadCrumbs = defineModel("breadCrumbs");
+breadCrumbs.value = route.path.split("/").slice(1);
+activeBreadCrumbs.value = breadCrumbs.value;
+const tem = [...breadCrumbs.value];
+const formStatus = tem.pop();
+
+// Functions
 const onSubmit = async () => {
   if (!first_name.value || !last_name.value || !msisdn.value) {
     return;
@@ -159,31 +167,18 @@ const onSubmit = async () => {
     : await editVisitor(visitorInfo.id, visitor);
 
   const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-
-  if (!response.ok) {
-    myModal.show(document.querySelector("#toggleMyModal"));
-    status.value = "danger";
-    message.value = response.result.message;
-    title.value = "Error";
-  } else {
-    myModal.show(document.querySelector("#toggleMyModal"));
-    status.value = "success";
-    message.value = response.result.message;
-    title.value = "Success";
-  }
+  myModal.show(document.querySelector("#toggleMyModal"));
+  status.value = response.ok ? "success" : "danger";
+  message.value = response.result.message;
+  title.value = response.ok ? "Success" : "Error";
 
   visuallyHideModalBackdrop();
-  if (formStatus.startsWith("new")) {
+
+  // Reset form if the response is successful
+  if (response.ok) {
     resetForm();
   }
 };
-
-const activeBreadCrumbs = ref([]);
-const breadCrumbs = defineModel("breadCrumbs");
-breadCrumbs.value = route.path.split("/").slice(1);
-activeBreadCrumbs.value = breadCrumbs.value;
-const tem = [...breadCrumbs.value];
-const formStatus = tem.pop();
 
 const fetchVisitor = async () => {
   if (formStatus.startsWith("edit")) {
@@ -198,35 +193,24 @@ const fetchVisitor = async () => {
   }
 };
 
-const formValidation = onMounted(() => {
-  (() => {
-    "use strict";
-    fetchVisitor();
+const visuallyHideModalBackdrop = () => {
+  document
+    .querySelectorAll(".modal-backdrop")
+    .forEach((modal) => modal.classList.add("visually-hidden"));
+};
 
-    const form = document.querySelector(".needs-validation");
+const contactValidation = () => {
+  const msisdnFeedBackElement =
+    document.querySelector("#phone_number").nextElementSibling;
 
-    form.addEventListener(
-      "submit",
-      (event) => {
-        if (!form.checkValidity()) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-
-        form.classList.add("was-validated");
-      },
-      false
-    );
-  })();
-});
-
-function visuallyHideModalBackdrop() {
-  const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
-
-  if (modalsBackdrops.length) {
-    modalsBackdrops.forEach((modal) => modal.classList.add("visually-hidden"));
+  try {
+    msisdnValidation([msisdn.value]);
+    msisdnFeedBackElement.style.display = "none";
+  } catch (error) {
+    console.log({ error });
+    msisdnFeedBackElement.style.display = "flex";
   }
-}
+};
 
 const resetForm = () => {
   first_name.value = "";
@@ -234,7 +218,30 @@ const resetForm = () => {
   last_name.value = "";
   msisdn.value = "";
   email.value = "";
+  buttonLabel.value = "Save";
+
+  // Remove validation classes
+  const form = document.querySelector(".needs-validation");
+  form.classList.remove("was-validated");
 };
+
+// Lifecycle Hooks
+onMounted(() => {
+  fetchVisitor();
+
+  const form = document.querySelector(".needs-validation");
+  form.addEventListener(
+    "submit",
+    (event) => {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add("was-validated");
+    },
+    false
+  );
+});
 </script>
 
 <style scoped>

@@ -115,7 +115,7 @@
 
                 <!-- Submit Button -->
                 <div class="col-12">
-                    <button class="btn btn-primary mt-2" type="submit">
+                    <button class="btn btn-primary mt-2" @click="onSubmit">
                         Save
                     </button>
                 </div>

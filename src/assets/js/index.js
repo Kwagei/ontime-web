@@ -1,6 +1,7 @@
 const API = import.meta.env.VITE_API_URL;
 export const API_URL = API;
 
+<<<<<<< HEAD
 export const registerVisit = async (data) => {
 	try {
 		const options = {
@@ -21,6 +22,8 @@ export const registerVisit = async (data) => {
 	}
 };
 
+=======
+>>>>>>> ece4a61 (Completed the validation for adding a visitor)
 export const registerVisitor = async (data) => {
 	try {
 		const options = {
@@ -61,6 +64,7 @@ export const editVisitor = async (id, data) => {
 	}
 };
 
+<<<<<<< HEAD
 export const getUsers = async (data) => {
 	try {
 		const response = await fetch(`${API}/users`);
@@ -73,6 +77,8 @@ export const getUsers = async (data) => {
 	} catch (error) {}
 };
 
+=======
+>>>>>>> ece4a61 (Completed the validation for adding a visitor)
 export const getSingleVisitor = async (data) => {
 	const { id, msisdn } = data;
 	let response;
@@ -93,6 +99,7 @@ export const getSingleVisitor = async (data) => {
 	} catch (error) {}
 };
 
+<<<<<<< HEAD
 export const getVisits = async (query = {}) => {
 	try {
 		const {
@@ -125,6 +132,8 @@ export const getVisits = async (query = {}) => {
 	}
 };
 
+=======
+>>>>>>> ece4a61 (Completed the validation for adding a visitor)
 export const getVisitors = async (query) => {
 	try {
 		const {

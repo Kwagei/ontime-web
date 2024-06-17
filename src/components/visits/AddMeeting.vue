@@ -1,5 +1,6 @@
 <template>
-    <div id="visitor-view" class="d-flex flex-column container">
+    <Modal :data="{ title, message, status }" />
+    <div id="visit-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
             style="margin-top: 0.3rem"
@@ -11,106 +12,15 @@
             class="mt-4 form-control input"
             style="margin: auto; padding: 3rem"
         >
-            <!-- Button trigger modal -->
-            <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#exampleModal"
-            >
-                Launch demo modal
-            </button>
-
-            <!-- Modal -->
-            <div
-                class="modal fade"
-                id="exampleModal"
-                tabindex="-1"
-                aria-labelledby="exampleModalLabel"
-                aria-hidden="true"
-            >
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title h5" id="exampleModalLabel">
-                                Modal title
-                            </h1>
-                            <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="bottom"
-                                data-bs-title="Close"
-                            >
-                                <span class="visually-hidden">Close</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">...</div>
-                        <div class="modal-footer">
-                            <button
-                                type="button"
-                                class="btn btn-outline-secondary"
-                                data-bs-dismiss="modal"
-                            >
-                                Close
-                            </button>
-                            <button type="button" class="btn btn-primary">
-                                Save changes
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <form
                 class="row g-3 needs-validation"
                 novalidate
                 @submit.prevent="onSubmit"
             >
-                <!-- NEW VISITOR -->
-                <div class="col-md-6">
-                    <label
-                        for="validationCustom01"
-                        class="form-label is-required"
-                        >Visitor<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="validationCustomNewVisitor"
-                            aria-describedby="inputGroupPrepend"
-                            v-model="new_visitor"
-                            required
-                        />
-                        <div class="invalid-feedback">
-                            Please provide a visitor name.
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Arrival Time -->
-                <div class="col-md-6">
-                  <label for="validationCustomUsername" class="form-label"
-                  >Arrival Time</label
-                  >
-                  <input
-                  type="time"
-                  class="form-control"
-                  id="validationCustomVisitorArrivalTime"
-                  v-model="arrival_time"
-                  aria-describedby="inputGroupPrepend"
-                  disabled
-                  />
-                </div>
-
                 <!-- PHONE NUMBER -->
                 <div class="col-md-6">
                     <label
-                        for="validationCustom02"
+                        for="validationCustomVisitorNumber"
                         class="form-label is-required"
                         >Phone number<span class="visually-hidden">
                             (required)</span
@@ -118,6 +28,7 @@
                     >
                     <div class="input-group has-validation">
                         <input
+                            @blur="getVisitor"
                             type="text"
                             class="form-control"
                             v-model="msisdn"
@@ -130,25 +41,35 @@
                         </div>
                     </div>
                 </div>
-                <!-- Departural Time -->
+
+                <!-- NEW VISITOR -->
                 <div class="col-md-6">
-                    <label for="validationCustom03" class="form-label"
-                        >Departural Time</label
+                    <label
+                        for="validationCustomNewVisitor"
+                        class="form-label is-required"
+                        >Visitor<span class="visually-hidden">
+                            (required)</span
+                        ></label
                     >
-                    <input
-                        type="time"
-                        class="form-control"
-                        id="validationCustomUsername"
-                        v-model="email"
-                        aria-describedby="inputGroupPrepend"
-                        disabled
-                    />
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="validationCustomNewVisitor"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="visitor"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Please provide a visitor name.
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Host -->
                 <div class="col-md-6">
                     <label
-                        for="validationCustom02"
+                        for="validationCustomHost"
                         class="form-label is-required"
                         >Host<span class="visually-hidden">
                             (required)</span
@@ -158,7 +79,7 @@
                         <input
                             type="text"
                             class="form-control"
-                            id="validationCustom02"
+                            id="validationCustomHost"
                             v-model="host_name"
                             required
                         />
@@ -168,28 +89,98 @@
                     </div>
                 </div>
 
-                 <!-- Current Date -->
-                <div class="col-md-6 has-validation">
-                  <label for="validationCustomCurrentDate" class="form-label"
-                  >Date</label
-                  >
-                  <input
-                  type="Date"
-                  class="form-control"
-                  id="validationCustomVisitorArrivalTime"
-                  v-model="date"
-                  aria-describedby="inputGroupPrepend"
-                  required
-                  />
-                  <div class="invalid-feedback">
-                      Please provide the current date.
-                  </div>
+                <!-- Belonging -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustomBelonging"
+                        class="form-label is-required"
+                        >Belonging<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="validationCustomBelonging"
+                            v-model="belonging"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Please provide a belonging name.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Institution -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustomInstitution"
+                        class="form-label"
+                        >Institution<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="validationCustomInstitution"
+                            v-model="institution"
+                        />
+                    </div>
+                </div>
+
+                <!-- Room -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustomRoom"
+                        class="form-label is-required"
+                        >Room<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="validationCustomRoom"
+                            v-model="room"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Please provide a room name.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustomAddress"
+                        class="form-label is-required"
+                        >Address<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="validationCustomAddress"
+                            v-model="visit_address"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Please provide an address.
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Purpose -->
                 <div class="col-12">
                     <label
-                        for="validationCustom02"
+                        for="validationCustomPurpose"
                         class="form-label is-required"
                         >Purpose<span class="visually-hidden">
                             (required)</span
@@ -198,17 +189,19 @@
                     <div class="input-group has-validation">
                         <textarea
                             class="form-control"
-                            id="validationCustom02"
+                            id="validationCustomPurpose"
                             required
                             v-model="purpose"
                         ></textarea>
                         <div class="invalid-feedback">
-                            Please provide an purpose.
+                            Please provide a purpose.
                         </div>
                     </div>
                 </div>
+
+                <!-- Submit Button -->
                 <div class="col-12">
-                    <button class="btn btn-primary mt-2" type="submit">
+                    <button class="btn btn-primary mt-2" @click="onSubmit">
                         Save
                     </button>
                 </div>
@@ -217,58 +210,80 @@
     </div>
 </template>
 
-<style scoped>
-.input {
-    border: 0.0125rem solid #ccc;
-    border-radius: 0.25rem !important;
-}
-</style>
-
 <script setup>
-import BreadCrumbs from "../BreadCrumbs.vue";
-import { registerVisitor } from "@/assets/js/index.js";
-
 import { ref, defineProps, onMounted } from "vue";
+import BreadCrumbs from "../BreadCrumbs.vue";
+import Modal from "../Modal.vue";
+import { registerVisit, getSingleVisitor } from "@/assets/js/index.js";
 
-const new_visitor = ref("");
-const arrival_time = ref("");
-const host_name = ref("");
 const msisdn = ref("");
-const email = ref("");
+const visitor = ref("");
+const visitorId = ref("");
+const host_name = ref("");
+const belonging = ref("");
+const institution = ref("");
+const room = ref("");
+const visit_address = ref("");
 const purpose = ref("");
+const status = ref("");
+const message = ref("");
+const title = ref("");
 
-const emit = defineEmits(["visitorFormSubmitted"]);
+
+
+const getVisitor = async function() {
+    try {
+        
+        // Call getSingleVisitor with the msisdn value
+        const visitorData = await getSingleVisitor({
+            msisdn: msisdn.value
+        });
+
+        if(!visitorData){
+            visitor.value = "";
+            alert("please enter a register visitor")
+            return;
+        }
+
+        visitor.value = visitorData.first_name + " " + visitorData.last_name;
+        visitorId.value = visitorData.id;
+       
+    } catch (error) {
+        console.error("Error retrieving visitor:", error);
+        
+    }
+
+}
+
 
 const onSubmit = async () => {
-    if (
-        !new_visitor.value ||
-        !host_name.value ||
-        !msisdn.value ||
-        !purpose.value
-    ) {
-        return;
+    if(!msisdn.value || !visitor.value || !host_name.value || !belonging.value || !room.value || !visit_address.value || !purpose.value){
+        return
     }
 
-    const visitor = {
-        new_visitor: new_visitor.value,
-        arrival_time: arrival_time.value,
-        host_name: host_name.value,
-        msisdn: msisdn.value,
-        email: email.value,
+    const visitData = {
+        visitor_id: visitorId.value,
         purpose: purpose.value,
+        institution: institution.value,
+        address: visit_address.value
     };
+    console.log(visitData);
 
-    const response = await registerVisitor(visitor);
-
+    const response = await registerVisit(visitData);
+    const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
     if (!response.ok) {
-        console.log("");
-        onMounted(() => {
-            document.querySelector("#exampleModal").classList.toggle("show");
-        });
+        myModal.show(document.querySelector("#toggleMyModal"));
+        status.value = "danger";
+        message.value = response.result.message;
+        title.value = "Error";
+    } else {
+        myModal.show(document.querySelector("#toggleMyModal"));
+        status.value = "success";
+        message.value = response.result.message;
+        title.value = "Success";
     }
-    console.log({ response });
 
-    emit("visitorFormSubmitted", visitor);
+    visuallyHideModalBackdrop();
 };
 
 const activeBreadCrumbs = ref([]);
@@ -280,54 +295,44 @@ const props = defineProps({
     },
 });
 
-activeBreadCrumbs.value = [...props.breadCrumbs, "new-visit"];
+activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
 
-const formValidation = onMounted(() => {
+onMounted(() => {
     (() => {
         "use strict";
 
-        const form = document.querySelector(".needs-validation");
+        const forms = document.querySelectorAll(".needs-validation");
 
-        form.addEventListener(
-            "submit",
-            (event) => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-
-                form.classList.add("was-validated");
-            },
-            false
-        );
+        Array.prototype.slice.call(forms).forEach((form) => {
+            form.addEventListener(
+                "submit",
+                (event) => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add("was-validated");
+                },
+                false
+            );
+        });
     })();
 });
+
+function visuallyHideModalBackdrop() {
+    const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
+
+    if (modalsBackdrops.length) {
+        modalsBackdrops.forEach((modal) =>
+            modal.classList.add("visually-hidden")
+        );
+    }
+}
 </script>
 
 <style scoped>
-#list-options {
-    padding: 0.6rem 0.5rem;
-    font-weight: 400;
+.input {
     border: 0.0125rem solid #ccc;
     border-radius: 0.25rem !important;
-}
-svg {
-    height: 20px !important;
-    margin: 0 !important;
-}
-
-#new-visitor:hover {
-    color: white !important;
-}
-
-#visitor-view {
-    padding-top: 2rem;
-    gap: 1.5rem;
-}
-
-@media (min-width: 768px) and (max-width: 1440px) {
-    #visitor-view {
-        padding: 1rem 3rem 0 3rem;
-    }
 }
 </style>

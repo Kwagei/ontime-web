@@ -33,6 +33,19 @@ const getVisitors = async (start = 0, limit = 10) => {
     }
 };
 
+const getUsers = async (data) => {
+    try {
+        const response = await fetch(`${API}/users`);
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const { data: result } = await response.json();
+        return result;
+    } catch (error) {
+        console.error("Error:", error);
+    }
+};
+
 const getSingleVisitor = async (data) => {
     try {
         const {id, msisdn} = data;
@@ -51,40 +64,18 @@ const getSingleVisitor = async (data) => {
 
         }
     } catch (error) {
-        // console.error("Error:", error);
+        console.error("Error:", error);
     }
 }
 
-// const getSingleVisitor = async (data) => {
-//     try {
-//         const {id, msisdn} = data;
-//         if (id) {
-//             console.log({id});
-//             return {id};
-//         } else {
-//             const response = await fetch(`${API}/visitors?search=${msisdn}`);
-//             if (!response.ok) {
-//                 throw new Error("Network response was not ok");
-//             }
-//             const jsonData = await response.json();
-//             console.log(jsonData);
-//             return jsonData;
-//         }
-//     } catch (error) {
-//         console.error("Error:", error);
-//     }
-// };
-
-
-
-const registerVisit = async (visitdata) => {
+const registerVisit = async (data) => {
     try {
         const options = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(visitdata),
+            body: JSON.stringify(data),
         };
 
         const response = await fetch(`${API}/visits`, options);
@@ -110,4 +101,4 @@ const getVisits = async (start = 0, limit = 10) => {
     }
 };
 
-export { registerVisitor, getVisitors, getVisits, registerVisit, getSingleVisitor };
+export { registerVisitor, getVisitors, getVisits, registerVisit, getSingleVisitor, getUsers };

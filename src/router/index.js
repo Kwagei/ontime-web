@@ -17,7 +17,7 @@ import Users from "../views/Users.vue";
 
 // Other Components
 import Dashboard from "../views/Dashboard.vue";
-import EventParticipants from "@/components/events/EventParticipants.vue";
+// import EventParticipants from "@/components/events/EventParticipants.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";

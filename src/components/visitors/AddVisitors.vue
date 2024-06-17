@@ -57,7 +57,7 @@
 							@blur="contactValidation"
 						/>
 						<div class="invalid-feedback">
-							Please provide a phone number.
+							Please provide a phone number
 						</div>
 					</div>
 					<div id="emailHelp" class="form-text">
@@ -158,6 +158,9 @@ const email = ref("");
 const status = ref("");
 const message = ref("");
 const title = ref("");
+const isValid = ref(true);
+const isTouched = ref(false);
+
 const buttonLabel = ref("Save");
 let visitorInfo;
 
@@ -221,15 +224,33 @@ const visuallyHideModalBackdrop = () => {
 };
 
 const contactValidation = () => {
-	const msisdnFeedBackElement =
+	const msisdnInputElement =
 		document.querySelector("#phone_number").nextElementSibling;
+	console.log(msisdnInputElement);
+	const msisdnFeedBackElement =
+		msisdnInputElement.nextElementSibling.querySelector(
+			".invalid-feedback"
+		);
+
+	// console.log(msisdnFeedBackElement);
 
 	try {
+		if (!msisdn.value.trim()) {
+			isTouched.value = true;
+			isValid.value = false;
+			msisdnFeedBackElement.textContent =
+				"Please provide a phone number.";
+			return;
+		}
+
 		msisdnValidation([msisdn.value]);
-		msisdnFeedBackElement.style.display = "none";
+		isTouched.value = true;
+		isValid.value = true;
+		msisdnFeedBackElement.textContent = "";
 	} catch (error) {
-		console.log({ error });
-		msisdnFeedBackElement.style.display = "flex";
+		isTouched.value = true;
+		isValid.value = false;
+		msisdnFeedBackElement.textContent = error.message;
 	}
 };
 

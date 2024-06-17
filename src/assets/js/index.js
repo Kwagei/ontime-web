@@ -1,7 +1,7 @@
 const API = import.meta.env.VITE_API_URL;
-const API_URL = "https://ontime-kit.glitch.me/api/";
+export const API_URL = API;
 
-const registerVisitor = async (data) => {
+export const registerVisitor = async (data) => {
 	try {
 		const options = {
 			method: "POST",
@@ -21,7 +21,7 @@ const registerVisitor = async (data) => {
 	}
 };
 
-const editVisitor = async (id, data) => {
+export const editVisitor = async (id, data) => {
 	try {
 		const options = {
 			method: "PUT",
@@ -41,7 +41,7 @@ const editVisitor = async (id, data) => {
 	}
 };
 
-const getSingleVisitor = async (data) => {
+export const getSingleVisitor = async (data) => {
 	const { id, msisdn } = data;
 	let response;
 
@@ -61,7 +61,7 @@ const getSingleVisitor = async (data) => {
 	} catch (error) {}
 };
 
-const getVisitors = async (query) => {
+export const getVisitors = async (query) => {
 	try {
 		const {
 			search = "",
@@ -94,7 +94,7 @@ const getVisitors = async (query) => {
 	}
 };
 
-const getVisitorWithVisits = async (id, query) => {
+export const getVisitorWithVisits = async (id, query) => {
 	try {
 		const {
 			search = "",
@@ -128,7 +128,7 @@ const getVisitorWithVisits = async (id, query) => {
 	}
 };
 
-function visuallyHideModalBackdrop() {
+export function visuallyHideModalBackdrop() {
 	const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
 
 	if (modalsBackdrops.length) {
@@ -138,15 +138,21 @@ function visuallyHideModalBackdrop() {
 	}
 }
 
-export default {
-	editVisitor,
-	getSingleVisitor,
-	getVisitorWithVisits,
-	registerVisitor,
-	editVisitor,
-	getSingleVisitor,
-	getVisitors,
-	formatDate,
-	visuallyHideModalBackdrop,
-	API_URL,
-};
+export function formatDate(date) {
+	const rawDate = new Date(date);
+
+	return rawDate.toString().split(" 0")[0];
+}
+
+// export default {
+//   editVisitor,
+//   getSingleVisitor,
+//   getVisitorWithVisits,
+//   registerVisitor,
+//   editVisitor,
+//   getSingleVisitor,
+//   getVisitors,
+//   formatDate,
+//   visuallyHideModalBackdrop,
+//   API_URL,
+// };

@@ -1,73 +1,56 @@
 <template>
-    <div id="eventsTableContainer">
-        <table v-if="allEvents.length" class="table table-hover mb-0">
-            <thead>
-                <tr>
-                    <th scope="col">
-                        <input type="checkbox" class="form-check-input" />
->>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
-                    </th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Start Date</th>
-                    <th scope="col">End Date</th>
-                    <th scope="col">Facilitator</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Details</th>
-                </tr>
-            </thead>
-            <tbody>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                <tr v-for="event in eventsToShow">
-=======
-                <tr v-for="(event, index) in events.data">
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
-=======
-                <tr v-for="event in eventsToShow">
->>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
-                    <td>
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="{{ event.id }}"
-                        />
-                    </td>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    <td>{{ event.title }}</td>
-=======
-                    <td class="bold">{{ event.title }}</td>
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
-=======
-                    <td>{{ event.title }}</td>
->>>>>>> c83ae74 (Updated Interface design to follow Boosted style guide)
-                    <td>
-                        {{ formatDate(event.start_date) }}
-                    </td>
-                    <td>{{ formatDate(event.end_date) }}</td>
-                    <td>{{ event.facilitator }}</td>
-                    <td>{{ event.type }}</td>
-                    <td>{{ formatDetails(event.details) }}</td>
-                </tr>
-            </tbody>
-        </table>
-        <h2 v-else-if="Array.isArray(allEvents) && allEvents.length <= 0">
-            No Events Currently!
-        </h2>
-        <div
-            class="d-flex justify-content-center"
-            v-else-if="allEvents == 'loading'"
-        >
-            <div
-                class="spinner-border spinner-border-lg position-absolute top-50"
-                role="status"
-            >
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
-        <h2 v-else>Error Loading Events, Try again!</h2>
+  <div id="eventsTableContainer">
+    <table v-if="allEvents.length" class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th scope="col">
+            <input type="checkbox" class="form-check-input" />
+          </th>
+          <th scope="col">Title</th>
+          <th scope="col">Start Date</th>
+          <th scope="col">End Date</th>
+          <th scope="col">Facilitator</th>
+          <th scope="col">Type</th>
+          <th scope="col">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="event in eventsToShow">
+          <td>
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="{{ event.id }}"
+            />
+          </td>
+          <td>{{ event.title }}</td>
+          <td>
+            {{ formatDate(event.start_date) }}
+          </td>
+          <td>{{ formatDate(event.end_date) }}</td>
+          <td>{{ event.facilitator }}</td>
+          <td>{{ event.type }}</td>
+          <td>{{ formatDetails(event.details) }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2 v-else-if="Array.isArray(allEvents) && allEvents.length <= 0">
+      No Events Currently!
+    </h2>
+    <div
+      class="d-flex justify-content-center"
+      v-else-if="allEvents == 'loading'"
+    >
+      <div
+        class="spinner-border spinner-border-lg position-absolute top-50"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
     </div>
-    <Pagination v-model="paginationStart" />
+    <h2 v-else>Error Loading Events, Try again!</h2>
+  </div>
+  <Pagination v-model="paginationStart" />
 </template>
 
 <script setup>
@@ -83,104 +66,70 @@ const eventsToShow = ref([]);
 const MAX = ref(10);
 
 const formatDetails = (detail) => {
-    let words = detail.split(" ");
+  let words = detail.split(" ");
 
-    return words.length > 7 ? `${words.slice(0, 7).join(" ")}...` : detail;
+  return words.length > 7 ? `${words.slice(0, 7).join(" ")}...` : detail;
 };
-
-function formatDate(date) {
-    const rawDate = new Date(date);
->>>>>>> c4b8253 (completed displaying events and pagination, moving to Event page creation)
-
-const hasEvents = ref(false);
-
-const formatDetails = (detail) => {
-    let words = detail.split(" ");
-
-<<<<<<< HEAD
-    return words.length > 7 ? `${words.slice(0, 7).join(" ")}...` : detail;
-=======
-        req.onload = () => {
-            const res = req.response;
-
-<<<<<<< HEAD
-            if (req.readyState === 4 && req.status === 200) {
-                this.events = res;
-            } else {
-                console.error("Error getting events: ", res);
-                this.events = res;
-            }
-        };
-    },
->>>>>>> ff015c8 (completed creating and retrieving events from database, pulling code to use Modal for displaying messages)
-};
-<<<<<<< HEAD
-
-function formatDate(date) {
-    const rawDate = new Date(date);
-
-    return rawDate.toString().split(" 0")[0];
-}
 
 onMounted(async () => {
-    await getEvents();
+  await getEvents();
 });
 
 watch(paginationStart, (newValue) => {
-    eventsToShow.value = allEvents.value.slice(newValue, MAX.value + newValue);
+  eventsToShow.value = allEvents.value.slice(newValue, MAX.value + newValue);
 
-    // get more events if we're on the last page of the
-    // pagination and we still have events to fetch
-    if (allEvents.value.length - newValue == 10) moreEvents();
+  // get more events if we're on the last page of the
+  // pagination and we still have events to fetch
+  if (allEvents.value.length - newValue == 10) moreEvents();
 });
 
 async function getEvents(
-    search = "",
-    start = 0,
-    limit = 20,
-    from = "",
-    to = ""
+  search = "",
+  start = 0,
+  limit = 20,
+  from = "",
+  to = ""
 ) {
-    // Get Events from API on `localhost:3000`
-    try {
-        const url = API_URL + `events?start=${start}&limit=${limit}`;
+  // Get Events from API on `localhost:3000`
+  try {
+    const url = API_URL + `events?start=${start}&limit=${limit}`;
 
-        if (search) url += `&search=${search}`;
-        if (from) url += `&from=${from}`;
-        if (to) url += `&to=${to}`;
+    if (search) url += `&search=${search}`;
+    if (from) url += `&from=${from}`;
+    if (to) url += `&to=${to}`;
 
-        await $.get(url, (data) => {
-            allEvents.value = data.data;
-            hasEvents.value = allEvents.value.length ? false : true;
-            eventsToShow.value = allEvents.value.slice(0, 10);
-        });
-    } catch (error) {
-        // do nothing
-        allEvents.value = "error";
-    }
+    await $.get(url, (data) => {
+      allEvents.value = data.data;
+      hasEvents.value = allEvents.value.length ? false : true;
+      eventsToShow.value = allEvents.value.slice(0, 10);
+    });
+  } catch (error) {
+    // do nothing
+    allEvents.value = "error";
+  }
 }
 
 async function moreEvents(
-    search = "",
-    start = allEvents.value.length,
-    limit = 20,
-    from = "",
-    to = ""
+  search = "",
+  start = allEvents.value.length,
+  limit = 20,
+  from = "",
+  to = ""
 ) {
-    // Get Events from API on `localhost:3000`
-    try {
-        let url = `http://localhost:3000/api/events?start=${start}&limit=${limit}`;
+  // Get Events from API on `localhost:3000`
+  try {
+    let url = `http://localhost:3000/api/events?start=${start}&limit=${limit}`;
 
-        if (search) url += `&search=${search}`;
-        if (from) url += `&from=${from}`;
-        if (to) url += `&to=${to}`;
+    if (search) url += `&search=${search}`;
+    if (from) url += `&from=${from}`;
+    if (to) url += `&to=${to}`;
 
-        await $.get(url, (data) => {
-            allEvents.value.push(...data.data);
-        });
-    } catch (error) {
-        // do nothing
-    }
+    await $.get(url, (data) => {
+      allEvents.value.push(...data.data);
+    });
+  } catch (error) {
+    // do nothing
+  }
 }
 <<<<<<< HEAD
 </script>

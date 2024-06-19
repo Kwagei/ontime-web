@@ -40,14 +40,16 @@
           <div class="input-group has-validation">
             <input
               type="tel"
-              class="form-control"
+              :class="[validMsisdn && 'validated', 'form-control']"
               v-model="msisdn"
               id="phone_number"
               aria-describedby="inputGroupPrepend"
               required
               @blur="contactValidation"
             />
-            <div class="invalid-feedback">Please provide a phone number</div>
+            <div :class="['invalid-feedback', validMsisdn && 'show-feedback']">
+              {{ validMsisdnMessage }}
+            </div>
           </div>
           <div id="emailHelp" class="form-text">
             Please enter your phone number starting with 231. For example:
@@ -73,11 +75,15 @@
           <div class="input-group">
             <input
               type="email"
-              class="form-control"
+              :class="[validEmail && 'validated', 'form-control']"
               v-model="email"
               id="email"
               aria-describedby="inputGroupPrepend"
+              @blur="validateEmail"
             />
+            <div :class="['invalid-feedback', validEmail && 'show-feedback']">
+              Please provide a valid email address
+            </div>
           </div>
           <div id="emailHelp" class="form-text">
             Please enter a valid email address. For example: example@example.com
@@ -116,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
@@ -125,7 +131,7 @@ import {
   editVisitor,
   getSingleVisitor,
 } from "@/assets/js/index.js";
-import { msisdnValidation } from "@/assets/js/util.js";
+import { msisdnValidation, emailValidation } from "@/assets/js/util.js";
 
 // Route and State
 const route = useRoute();
@@ -169,6 +175,8 @@ const onSubmit = async () => {
     ? await registerVisitor(visitor)
     : await editVisitor(visitorInfo.id, visitor);
 
+  console.log(response);
+
   const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
   myModal.show(document.querySelector("#toggleMyModal"));
   status.value = response.ok ? "success" : "danger";
@@ -202,32 +210,30 @@ const visuallyHideModalBackdrop = () => {
     .forEach((modal) => modal.classList.add("visually-hidden"));
 };
 
+const validEmail = ref(false);
+const validMsisdn = ref(false);
+const validMsisdnMessage = ref("Please provide a phone number");
+
 const contactValidation = () => {
-  const msisdnInputElement =
-    document.querySelector("#phone_number").nextElementSibling;
-  console.log(msisdnInputElement);
-  const msisdnFeedBackElement =
-    msisdnInputElement.nextElementSibling.querySelector(".invalid-feedback");
+  if (!msisdn.value) {
+    validMsisdn.value = false;
+    validMsisdnMessage.value = "Please provide a phone number";
 
-  // console.log(msisdnFeedBackElement);
-
-  try {
-    if (!msisdn.value.trim()) {
-      isTouched.value = true;
-      isValid.value = false;
-      msisdnFeedBackElement.textContent = "Please provide a phone number.";
-      return;
-    }
-
-    msisdnValidation([msisdn.value]);
-    isTouched.value = true;
-    isValid.value = true;
-    msisdnFeedBackElement.textContent = "";
-  } catch (error) {
-    isTouched.value = true;
-    isValid.value = false;
-    msisdnFeedBackElement.textContent = error.message;
+    return;
   }
+
+  const isvalid = msisdnValidation([msisdn.value]);
+
+  if (!isvalid.valid) {
+    validMsisdn.value = true;
+    validMsisdnMessage.value = isvalid.message;
+  } else {
+    validMsisdn.value = false;
+  }
+};
+
+const validateEmail = () => {
+  validEmail.value = emailValidation(email.value) ? false : true;
 };
 
 const resetForm = () => {
@@ -263,6 +269,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.show-feedback {
+  display: flex;
+}
+
+.validated {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
 #list-options {
   padding: 0.6rem 0.5rem;
   font-weight: 400;

@@ -38,15 +38,14 @@
             <span class="visually-hidden">Close</span>
           </button>
         </div>
-        <div v-if="data.pageLink || data.message" class="modal-body">
+        <!-- <div v-if="data.pageLink || data.message" class="modal-body">
           <div v-if="data.message != data.title" class="mt-2 mb-3">
             {{ data.message }}
           </div>
           <router-link v-if="data.pageLink" :to="data.pageLink">
             <button class="btn btn-primary d-block">View</button>
           </router-link>
-        </div>
-        updates per feedback from show and tell with Nathan June 14)
+        </div> -->
       </div>
     </div>
   </div>

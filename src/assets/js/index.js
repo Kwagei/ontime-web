@@ -1,5 +1,5 @@
 const API = import.meta.env.VITE_API_URL;
-const API_URL = "https://ontime-kit.glitch.me/api/";
+const API_URL = "http://localhost:3000/api/";
 
 const registerVisitor = async (data) => {
     try {
@@ -138,7 +138,13 @@ function visuallyHideModalBackdrop() {
     }
 }
 
-export default {
+function formatDate(date) {
+    const rawDate = new Date(date);
+
+    return rawDate.toString().split(" 0")[0];
+}
+
+export {
     editVisitor,
     getSingleVisitor,
     getVisitorWithVisits,

@@ -1,6 +1,9 @@
 <template>
-    <div id="eventsTableContainer">
-        <table v-if="allEvents.length" class="table table-hover mb-0">
+    <div class="mb-3">
+        <table
+            v-if="Array.isArray(allEvents) && allEvents.length"
+            class="table table-hover mb-0"
+        >
             <thead>
                 <tr>
                     <th scope="col">
@@ -15,19 +18,26 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="event in eventsToShow">
+                <tr
+                    v-for="event in eventsToShow"
+                    @click="displayEvent(event.id)"
+                    class="cursorPointer"
+                >
                     <td>
                         <input
                             class="form-check-input"
                             type="checkbox"
                             name="{{ event.id }}"
+                            @click.stop
                         />
                     </td>
                     <td>{{ event.title }}</td>
-                    <td>
+                    <td style="min-width: 150px">
                         {{ formatDate(event.start_date) }}
                     </td>
-                    <td>{{ formatDate(event.end_date) }}</td>
+                    <td style="min-width: 150px">
+                        {{ formatDate(event.end_date) }}
+                    </td>
                     <td>{{ event.facilitator }}</td>
                     <td>{{ event.type }}</td>
                     <td>{{ formatDetails(event.details) }}</td>
@@ -39,18 +49,19 @@
         </h2>
         <div
             class="d-flex justify-content-center"
+            style="margin: 75px 0"
             v-else-if="allEvents == 'loading'"
         >
-            <div
-                class="spinner-border spinner-border-lg position-absolute top-50"
-                role="status"
-            >
+            <div class="spinner-border spinner-border-lg" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
         <h2 v-else>Error Loading Events, Try again!</h2>
     </div>
-    <Pagination v-model="paginationStart" />
+    <Pagination
+        v-if="Array.isArray(allEvents) && !!allEvents.length"
+        v-model="paginationStart"
+    />
 </template>
 
 <script setup>
@@ -59,35 +70,45 @@ import { ref, onMounted, watch } from "vue";
 import $ from "jquery";
 
 import { formatDate, API_URL } from "../../assets/js/index.js";
+import { useRouter } from "vue-router";
 
 const paginationStart = ref(0);
 const allEvents = ref("loading");
 const eventsToShow = ref([]);
-const MAX = ref(10);
+const MAX_EVENTS_TO_SHOW = ref(10);
+const router = useRouter();
+const MAX_DETAIL_LEN = 110;
 
-const formatDetails = (detail) => {
-    let words = detail.split(" ");
-
-    return words.length > 7 ? `${words.slice(0, 7).join(" ")}...` : detail;
-};
-
-function formatDate(date) {
-    const rawDate = new Date(date);
-
-    return rawDate.toString().split(" 0")[0];
-}
+const props = defineProps({
+    searchQuery: String,
+});
 
 onMounted(async () => {
     await getEvents();
 });
 
+// Watch Pagination Switches
 watch(paginationStart, (newValue) => {
-    eventsToShow.value = allEvents.value.slice(newValue, MAX.value + newValue);
+    eventsToShow.value = allEvents.value.slice(
+        newValue,
+        MAX_EVENTS_TO_SHOW.value + newValue
+    );
 
     // get more events if we're on the last page of the
     // pagination and we still have events to fetch
     if (allEvents.value.length - newValue == 10) moreEvents();
 });
+
+// Watch Input into the Events Search Input
+watch(
+    () => props.searchQuery,
+    async (newValue) => {
+        if (!props.searchQuery) await getEvents();
+
+        // pass search query to events retrieval function
+        await getEvents(newValue, 0, 30);
+    }
+);
 
 async function getEvents(
     search = "",
@@ -96,9 +117,10 @@ async function getEvents(
     from = "",
     to = ""
 ) {
-    // Get Events from API on `localhost:3000`
+    allEvents.value = "loading";
+    // Get Events from API
     try {
-        const url = API_URL + `events?start=${start}&limit=${limit}`;
+        let url = API_URL + `events?start=${start}&limit=${limit}`;
 
         if (search) url += `&search=${search}`;
         if (from) url += `&from=${from}`;
@@ -106,7 +128,6 @@ async function getEvents(
 
         await $.get(url, (data) => {
             allEvents.value = data.data;
-            hasEvents.value = allEvents.value.length ? false : true;
             eventsToShow.value = allEvents.value.slice(0, 10);
         });
     } catch (error) {
@@ -115,6 +136,15 @@ async function getEvents(
     }
 }
 
+function formatDetails(detail) {
+    let newDetail = detail.slice(0, MAX_DETAIL_LEN);
+
+    return newDetail.length >= MAX_DETAIL_LEN ? `${newDetail}...` : newDetail;
+}
+
+function displayEvent(eventId) {
+    router.push({ name: "specific-event", params: { id: eventId } });
+}
 async function moreEvents(
     search = "",
     start = allEvents.value.length,
@@ -124,13 +154,14 @@ async function moreEvents(
 ) {
     // Get Events from API on `localhost:3000`
     try {
-        let url = `http://localhost:3000/api/events?start=${start}&limit=${limit}`;
+        let url = API_URL + `events?start=${start}&limit=${limit}`;
 
         if (search) url += `&search=${search}`;
         if (from) url += `&from=${from}`;
         if (to) url += `&to=${to}`;
 
         await $.get(url, (data) => {
+            console.log("More Events: ", data);
             allEvents.value.push(...data.data);
         });
     } catch (error) {
@@ -139,4 +170,8 @@ async function moreEvents(
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.cursorPointer {
+    cursor: pointer;
+}
+</style>

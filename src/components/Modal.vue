@@ -6,26 +6,23 @@
         aria-labelledby="exampleModalLabel"
         aria-hidden="true"
     >
-        <div class="modal-dialog modal-lg" id="toggleMyModal">
-            <div class="modal-content">
-                <div
-                    :class="`alert alert-${data.status}`"
-                    role="alert"
-                    style="background-color: white"
-                >
-                    <span class="alert-icon"></span>
-                    <div>
-                        <h4 class="alert-heading">
-                            {{ data.message }}
-                        </h4>
-                        <p v-if="data.title === 'success'">
-                            <span style="font-size: small">
-                                Please visit link to view detail
-                                <a href="#">here</a>
-                            </span>
-                            <!-- <span v-else>{{ data.message }}</span> -->
-                        </p>
+        <div
+            class="modal-dialog modal-lg"
+            id="toggleMyModal"
+            style="background-color: white"
+        >
+            <div class="modal-content py-1">
+                <div class="modal-header">
+                    <div
+                        :class="`alert alert-${data.status} mb-0`"
+                        style="border: none; padding-right: 0"
+                        role="alert"
+                    >
+                        <span class="alert-icon"></span>
                     </div>
+                    <h3 class="mb-0">
+                        {{ data.title }}
+                    </h3>
                     <button
                         type="button"
                         class="btn-close"
@@ -39,25 +36,41 @@
                     </button>
                 </div>
                 <div v-if="data.pageLink || data.message" class="modal-body">
-                    <div v-if="data.message != data.title" class="mt-2 mb-3">
+                    <div
+                        v-if="data.message && data.message != data.title"
+                        class="mt-2 mb-3"
+                    >
                         {{ data.message }}
                     </div>
-                    <router-link v-if="data.pageLink" :to="data.pageLink">
-                        <button class="btn btn-primary d-block">View</button>
-                    </router-link>
+                    <button
+                        class="btn btn-primary d-block"
+                        @click="goToPage(data.pageLink)"
+                    >
+                        View
+                    </button>
                 </div>
-                updates per feedback from show and tell with Nathan June 14)
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
     data: { type: Object, required: true },
 });
+
+const router = useRouter();
+
+function goToPage(link) {
+    // go to a dummy route before to go to the target route
+    // because the browser will ignore the routing if the target route
+    // is the same as the current route
+    router.replace({ path: "/null" }).then(() => {
+        router.replace({ path: link });
+    });
+}
 </script>
 
 <style scoped>

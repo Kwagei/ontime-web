@@ -24,8 +24,7 @@
                     <th scope="col">Host</th>
                     <th scope="col">Date</th>
                     <th scope="col">Room</th>
-                    <th scope="col">Institution</th>
-                    <th scope="col">Belonging</th>
+                    <th scope="col">Items</th>
                     <th scope="col">Address</th>
                     <th scope="col">Purpose</th>
                 </tr>
@@ -49,7 +48,6 @@
                     <td>{{ visit.host_name }}</td>
                     <td>{{ visit.date }}</td>
                     <td>{{ visit.room_name }}</td>
-                    <td>{{ visit.institution }}</td>
                     <td>{{ visit.items }}</td>
                     <td>{{ visit.address }}</td>
                     <td>{{ visit.purpose }}</td>
@@ -60,8 +58,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
-import { getVisits, registerVisitor } from "@/assets/js/index.js";
+import { ref, computed } from "vue";
+import { getVisits } from "@/assets/js/index.js";
 
 const visits = ref([]);
 
@@ -76,12 +74,32 @@ const fetchData = async () => {
 
 const formatDateTime = (visits) => {
     return visits.map(visit => {
+        let date = "", arrival_time = "", items = "";
+
         if (visit.date_time) {
-            const [date, time] = visit.date_time.split('T');
-            const arrival_time = time.split('.')[0];
-            return { ...visit, date, arrival_time, selected: false };
-        } else {
-            return { ...visit, selected: false };
+            [date, arrival_time] = visit.date_time.split('T');
+            arrival_time = arrival_time.split('.')[0];
+        }
+
+        if (Array.isArray(visit.items)) {
+            items = visit.items.join(', ');
+        }
+
+        return { 
+            ...visit, 
+            date, 
+            arrival_time, 
+            items, 
+            selected: false 
+        };
+    });
+};
+
+const formatItems = (visits) => {
+    visits.forEach(visit => {
+        if (visit.items && Array.isArray(visit.items)) {
+            const commaSeparatedString = visit.items.join(", ");
+            console.log(commaSeparatedString);
         }
     });
 };

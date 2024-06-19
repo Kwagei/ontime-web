@@ -187,7 +187,7 @@ const getUserOptions = async () => {
             value: user.id,
             text: user.username
         }));
-        console.log(options.value);
+        // console.log(options.value);
     } catch (error) {
         console.error("Error retrieving users:", error);
     }
@@ -214,7 +214,7 @@ watch(host_name, (newValue) => {
     if (selectedUser) {
         console.log(`Selected username: ${selectedUser.text}`);
         host_id.value = selectedUser.value;
-        console.log(host_id.value);
+        // console.log(host_id.value);
     }
 });
 
@@ -239,10 +239,10 @@ const onSubmit = async () => {
         host_id: host_id.value,
         purpose: purpose.value
     };
-    console.log(visitData);
+    // console.log(visitData);
     const response = await registerVisit(visitData);
 
-    console.log(response);
+    // console.log(response);
     
     const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
     if (!response.ok) {

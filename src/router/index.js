@@ -2,7 +2,6 @@
 import AddEvent from "../components/events/AddEvent.vue";
 import Events from "../views/Events.vue";
 import Event from "../components/events/Event.vue";
-import EventParticipants from "@/components/events/EventParticipants.vue";
 
 // Visitors Components
 import VisitorDetail from "../components/visitors/VisitorDetail.vue";
@@ -17,7 +16,6 @@ import Users from "../views/Users.vue";
 
 // Other Components
 import Dashboard from "../views/Dashboard.vue";
-// import EventParticipants from "@/components/events/EventParticipants.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
@@ -82,11 +80,6 @@ const routes = [
                 path: "/events/:id",
                 component: Event,
                 name: "specific-event",
-            },
-            {
-                path: "/events/:id/participants",
-                component: EventParticipants,
-                name: "specific-event-participants",
             },
         ],
     },

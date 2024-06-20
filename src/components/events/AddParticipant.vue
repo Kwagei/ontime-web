@@ -1,8 +1,9 @@
 <template>
     <div class="w-75 d-flex flex-column align-items-center">
         <div class="d-flex justify-content-between align-items-center p-3 w-75">
-            <div class="pt-3">
-                <h3>Add Participant</h3>
+            <div class="d-flex align-items-center gap-4">
+                <BackArrow @click="emit('switch', 'details')" />
+                <h3 class="m-0">Add Participant</h3>
             </div>
             <div>
                 <button
@@ -13,7 +14,15 @@
                 </button>
             </div>
         </div>
-        <form @submit.prevent="postParticipant" class="w-75 container gap-5">
+        <form
+            @submit.prevent="postParticipant"
+            class="w-75 container gap-5 p-4"
+            style="
+                background-color: #fff;
+                border-radius: 10px;
+                outline: 1px solid #aaa;
+            "
+        >
             <div class="row mb-3">
                 <div class="col">
                     <label class="p-2 is-required" for="firstName">
@@ -123,7 +132,7 @@
                     </label>
                     <input
                         type="tel"
-                        placeholder="231770894295"
+                        placeholder="0770894295"
                         class="form-control"
                         id="msisdn"
                         v-model="newParticipant.msisdn"
@@ -140,17 +149,6 @@
             <!-- Will not show, just added so the for could submit by pressing enter -->
             <button class="visually-hidden" type="submit">Submit</button>
         </form>
-        <div class="d-flex gap-3 pt-3 text-center justify-content-center">
-            <button class="btn btn-primary" @click="$emit('switch', 'details')">
-                View Details
-            </button>
-            <button
-                class="btn btn-primary"
-                @click="$emit('switch', 'importParticipants')"
-            >
-                Import Participants
-            </button>
-        </div>
     </div>
 </template>
 
@@ -161,6 +159,7 @@ import $ from "jquery";
 
 import { API_URL } from "../../assets/js/index.js";
 import Alert from "../Alert.vue";
+import BackArrow from "../BackArrow.vue";
 
 const router = useRoute();
 const eventId = router.params.id;
@@ -174,7 +173,7 @@ const emptyParticipant = {
     msisdn: "",
 };
 
-const emit = defineEmits(["errorCreatingParticipant", "participantCreated"]);
+const emit = defineEmits(["errorCreatingParticipant", "participantAdded"]);
 
 const newParticipant = ref({ ...emptyParticipant });
 const participantError = ref({ ...emptyParticipant });
@@ -186,19 +185,18 @@ async function postParticipant() {
             event_participants: formatEventParticipants(),
         };
 
+        $("body").css("pointer-events", "none");
+
         try {
-            await $.post(
-                API_URL + "event_participants/",
-                data,
-                (createdParticipant) => {
-                    emit("participantCreated", {
-                        status: "success",
-                        title: createdParticipant.message,
-                        pageLink: `/events/${eventId}/participants`,
-                    });
-                    newParticipant.value = { ...emptyParticipant };
-                }
-            );
+            await $.post(API_URL + "event_participants/", data, () => {
+                emit("participantAdded", {
+                    status: "success",
+                    title: "Participant Added",
+                    pageLink: `/events/${eventId}`,
+                });
+                newParticipant.value = { ...emptyParticipant };
+                $("body").css("pointer-events", "auto");
+            });
         } catch (error) {
             console.log("Error creating participant: ", error);
 
@@ -209,6 +207,7 @@ async function postParticipant() {
                         ? "Error Creating Participant, try again"
                         : error.responseJSON.message,
             });
+            $("body").css("pointer-events", "auto");
         }
     }
 }
@@ -273,7 +272,7 @@ function validateParticipant(participant) {
 
     // ensure msisdn is atleast 10 chars long and it's a number
     if (
-        newParticipant.value.msisdn.length <= 11 ||
+        newParticipant.value.msisdn.length < 10 ||
         !Number(newParticipant.value.msisdn)
     ) {
         participantError.value.msisdn = "Participant's `msisdn` is invalid";
@@ -291,7 +290,7 @@ function formatEventParticipants() {
             last_name: newParticipant.value.lastName,
             email: newParticipant.value.email,
             address: newParticipant.value.address,
-            msisdn: newParticipant.value.msisdn,
+            msisdn: "231" + newParticipant.value.msisdn.slice(1),
         },
     ];
 }

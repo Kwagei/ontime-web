@@ -1,35 +1,23 @@
 <template>
-    <div>
-        <div id="eventsWrapper">
-            <div class="d-flex justify-content-between my-4">
-                <div>
-                    <BreadCrumbs :breadCrumbs="breadCrumbs" />
-                </div>
-                <div>
-                    <RefreshList />
-                    <Options class="mx-2" />
-                    <router-link :to="{ name: 'add-event' }">
-                        <button class="btn btn-primary">Add Event</button>
-                    </router-link>
-                </div>
+    <div id="eventsWrapper">
+        <div class="d-flex justify-content-between my-4">
+            <div>
+                <BreadCrumbs :breadCrumbs="breadCrumbs" />
             </div>
-            <div class="d-flex justify-content-between my-4">
-                <Search />
-                <Filter />
-                <Sort />
+            <div>
+                <RefreshList />
+                <Options class="mx-2" />
+                <router-link :to="{ name: 'add-event' }">
+                    <button class="px-3 btn btn-primary">Add Event</button>
+                </router-link>
             </div>
-            <EventsList />
-            <RouterView :breadCrumbs="breadCrumbs" />
         </div>
-
-        <div class="row justify-content-between container p-0 mx-auto">
-            <Search v-model:search="searchTerms" />
+        <div class="d-flex justify-content-between my-4">
+            <Search v-model:search="searchQuery" />
             <Filter />
-            <Sort v-model:sort="sortTerms" v-model:direction="directionTerms" />
+            <Sort :sortTerms="sortTerms" />
         </div>
-
-        <EventsList />
-        <RouterView :breadCrumbs="breadCrumbs" />
+        <EventsList :searchQuery="searchQuery" />
     </div>
 </template>
 
@@ -41,6 +29,7 @@ import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import EventsList from "../components/events/EventsList.vue";
+import { ref } from "vue";
 
 const props = defineProps({
     breadCrumbs: {
@@ -48,6 +37,15 @@ const props = defineProps({
         required: true,
     },
 });
+
+const sortTerms = ref([
+    { type: "Title", term: "title" },
+    { type: "Start Date", term: "start_date" },
+    { type: "End Date", term: "end_date" },
+    { type: "Type", term: "type" },
+    { type: "Facilitator", term: "facilitator" },
+]);
+const searchQuery = ref("");
 </script>
 
 <style scoped>
@@ -61,13 +59,14 @@ svg {
 }
 
 #eventsWrapper {
-    padding-top: 2rem;
     gap: 1.5rem;
+    margin: 0 9rem;
 }
 
 .btn {
     padding: 0.5rem !important;
 }
+
 .btn:hover {
     border: 0.125rem solid black !important;
 }
@@ -75,6 +74,7 @@ svg {
 .btn:hover g {
     fill: white;
 }
+
 .list-options svg {
     height: 20px !important;
     margin: 0 !important;

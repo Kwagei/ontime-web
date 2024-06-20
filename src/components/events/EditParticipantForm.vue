@@ -96,8 +96,8 @@
             </div>
         </div>
         <div class="d-flex justify-content-between gap-3 pt-2">
-            <button class="btn btn-primary w-50" @click="update">Update</button>
-            <button class="btn btn-primary w-50" @click="closeForm">
+            <button class="btn btn-success w-50" @click="update">Update</button>
+            <button class="btn btn-secondary w-50" @click="closeForm">
                 Cancel
             </button>
         </div>
@@ -163,7 +163,7 @@ function closeForm() {
     position: absolute;
     z-index: 99999;
     top: 10vh;
-    left: 25vw;
+    left: 34vw;
     width: 50vw;
     height: auto;
     background-color: #eee;

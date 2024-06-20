@@ -21,41 +21,39 @@
 								@change="selectAll"
 								:checked="allSelected"
 							/>
-							<label class="form-check-label" for="customCheck">
+							<label class="form-check-label" for="selectAll">
 								<span class="visually-hidden">Select all</span>
 							</label>
 						</div>
 					</th>
-					<th scope="col">First name</th>
-					<th scope="col">Middle name</th>
-					<th scope="col">Last name</th>
-					<th scope="col">Contact</th>
-					<th scope="col">Email</th>
-					<th scope="col">Created At</th>
+					<th scope="col">Date</th>
+					<th scope="col">Visitor</th>
+					<th scope="col">Arrival time</th>
+					<th scope="col">Departure time</th>
+					<th scope="col">Phone number</th>
+					<th scope="col">Purpose</th>
+					<th scope="col">Items</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr
-					v-for="visitor in visitors"
-					:key="visitor.id"
-					@click="visitorDetail(visitor.id)"
-				>
+				<tr v-for="visit in visits" :key="visit.id" :id="visit">
 					<td>
 						<div class="form-check mb-0">
 							<input
 								class="form-check-input"
 								type="checkbox"
-								:id="`checkbox-${visitor.id}`"
-								v-model="visitor.selected"
+								:id="`checkbox-${visit.id}`"
+								v-model="visit.selected"
 							/>
 						</div>
 					</td>
-					<td>{{ visitor.first_name }}</td>
-					<td>{{ visitor.middle_name }}</td>
-					<td>{{ visitor.last_name }}</td>
-					<td>{{ visitor.msisdn }}</td>
-					<td>{{ visitor.email }}</td>
-					<td>{{ visitor.created_at }}</td>
+					<td>{{ visit.date }}</td>
+					<td>{{ visit.first_name + " " + visit.last_name }}</td>
+					<td>{{ visit.arrival_time }}</td>
+					<td>{{ visit.departure_time }}</td>
+					<td>{{ visit.msisdn }}</td>
+					<td>{{ visit.purpose }}</td>
+					<td>{{ visit.items }}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -69,22 +67,19 @@
 			</div>
 		</div>
 	</div>
-
 	<Pagination v-model="start" />
 </template>
 
 <script setup>
-import { onMounted, ref, watch, computed } from "vue";
-import { getVisitors } from "@/assets/js/index.js";
 import Pagination from "../Pagination.vue";
 import Search from "../Search.vue";
 import Filter from "../Filter.vue";
 import Sort from "../Sort.vue";
 
-import { useRouter } from "vue-router";
-const router = useRouter();
+import { ref, computed, watch } from "vue";
+import { getVisits } from "@/assets/js/index.js";
 
-const visitors = ref([]);
+const visits = ref([]);
 const start = ref(0);
 const limit = ref(10);
 const loader = ref(true);
@@ -93,12 +88,11 @@ const sort = ref("");
 const searchTerms = ref("");
 
 const sortTerms = ref([
-	{ type: "Created At", term: "created_at" },
-	{ type: "First Name", term: "first_name" },
-	{ type: "Middle Name", term: "middle_name" },
-	{ type: "Last Name", term: "last_name" },
+	{ type: "Date", term: "date_time" },
+	{ type: "Arrival Time", term: "arrival_time" },
+	{ type: "Departure Time", term: "departure_time" },
+	{ type: "Purpose", term: "purpose" },
 	{ type: "Phone Number", term: "msisdn" },
-	{ type: "Email", term: "email" },
 ]);
 const sortTerm = defineModel("term");
 sortTerm.value = "created_at";
@@ -109,52 +103,76 @@ directionTerm.value = "desc";
 watch(
 	() => [searchTerms.value, sortTerm.value, directionTerm.value, start.value],
 	async ([searchValue, sortValue, directionValue, startValue]) => {
-		const data = await getVisitors({
+		const data = await getVisits({
 			start: startValue,
 			search: searchValue,
 			sort: sortValue,
 			direction: directionValue,
 			limit: limit.value,
 		});
-		visitors.value = formatDateTime(data);
+		visits.value = formatDateTime(data);
 	}
 );
 
-const visitorDetail = (id) => {
-	router.push({ name: "visitorDetail", params: { id } });
+const fetchData = async () => {
+	try {
+		const data = await getVisits({
+			sort: sortTerm.value,
+			direction: directionTerm.value,
+			limit: limit.value,
+		});
+		visits.value = formatDateTime(data);
+		loader.value = false;
+	} catch (error) {
+		console.error("Error fetching visits:", error);
+	}
 };
 
-const fetchVisitors = async () => {
-	const data = await getVisitors({
-		sort: sortTerm.value,
-		direction: directionTerm.value,
-		limit: limit.value,
+const formatDateTime = (visits) => {
+	return visits.map((visit) => {
+		let date = "",
+			arrival_time = "",
+			items = "";
+
+		if (visit.date_time) {
+			[date, arrival_time] = visit.date_time.split("T");
+			arrival_time = arrival_time.split(".")[0];
+		}
+
+		if (Array.isArray(visit.items)) {
+			items = visit.items.join(", ");
+		}
+
+		return {
+			...visit,
+			date,
+			arrival_time,
+			items,
+			selected: false,
+		};
 	});
-	visitors.value = formatDateTime(data);
-	loader.value = false;
 };
 
-const formatDateTime = (visitors) => {
-	return visitors.map((visitor) => {
-		const [date] = visitor.created_at.split("T");
-		visitor.created_at = date;
-		return { ...visitor, seleted: false };
+const formatItems = (visits) => {
+	visits.forEach((visit) => {
+		if (visit.items && Array.isArray(visit.items)) {
+			const commaSeparatedString = visit.items.join(", ");
+			console.log(commaSeparatedString);
+		}
 	});
 };
 
-onMounted(() => {
-	fetchVisitors();
-});
+fetchData();
 
 const allSelected = computed({
 	get() {
 		return (
-			visitors.value.length > 0 &&
-			visitors.value.every((visit) => visit.selected)
+			visits.value.length > 0 &&
+			visits.value.every((visit) => visit.selected)
 		);
 	},
 	set(value) {
-		visitors.value.forEach((visit) => {
+		visits.value.forEach((visit) => {
 			visit.selected = value;
 		});
 	},
@@ -163,17 +181,15 @@ const allSelected = computed({
 const selectAll = (event) => {
 	allSelected.value = event.target.checked;
 };
+
+// Optional: Remove or comment out after debugging
+console.log(visits);
 </script>
 
 <style scoped>
 table {
 	margin: 0;
 }
-
-tr {
-	cursor: pointer;
-}
-
 th,
 td {
 	padding: 0.9rem;
@@ -184,10 +200,5 @@ td {
 	td {
 		padding: 0.7rem;
 	}
-}
-
-svg.solaris-icon {
-	width: 1.2rem;
-	height: 1.2rem;
 }
 </style>

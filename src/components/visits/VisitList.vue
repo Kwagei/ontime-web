@@ -1,4 +1,13 @@
 <template>
+	<div class="row justify-content-between container p-0 mx-auto">
+		<Search v-model:search="searchTerms" />
+		<Filter />
+		<Sort
+			:sortTerms="sortTerms"
+			v-model:term="sortTerm"
+			v-model:direction="directionTerm"
+		/>
+	</div>
 	<div class="table-responsive container p-0">
 		<table class="table table-sm table-hover has-checkbox">
 			<thead>
@@ -8,23 +17,22 @@
 							<input
 								class="form-check-input"
 								type="checkbox"
-								id="customCheck"
+								id="selectAll"
+								@change="selectAll"
+								:checked="allSelected"
 							/>
-							<label class="form-check-label" for="customCheck">
+							<label class="form-check-label" for="selectAll">
 								<span class="visually-hidden">Select all</span>
 							</label>
 						</div>
 					</th>
+					<th scope="col">Date</th>
 					<th scope="col">Visitor</th>
 					<th scope="col">Arrival time</th>
-					<th scope="col">Contact</th>
-					<th scope="col">Departural time</th>
-					<th scope="col">Host</th>
-					<th scope="col">Date</th>
-					<th scope="col">Room</th>
-					<th scope="col">Institution</th>
-					<th scope="col">Belonging</th>
+					<th scope="col">Departure time</th>
+					<th scope="col">Phone number</th>
 					<th scope="col">Purpose</th>
+					<th scope="col">Items</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -34,153 +42,163 @@
 							<input
 								class="form-check-input"
 								type="checkbox"
-								id="customCheck3"
+								:id="`checkbox-${visit.id}`"
+								v-model="visit.selected"
 							/>
 						</div>
 					</td>
-					<td>{{ visit.name }}</td>
-					<td>{{ visit.arrival_time }}</td>
-					<td>{{ visit.contact }}</td>
-					<td>{{ visit.departural_time }}</td>
-					<td>{{ visit.host }}</td>
 					<td>{{ visit.date }}</td>
-					<td>{{ visit.room }}</td>
-					<td>{{ visit.institution }}</td>
-					<td>{{ visit.belonging }}</td>
+					<td>{{ visit.first_name + " " + visit.last_name }}</td>
+					<td>{{ visit.arrival_time }}</td>
+					<td>{{ visit.departure_time }}</td>
+					<td>{{ visit.msisdn }}</td>
 					<td>{{ visit.purpose }}</td>
+					<td>{{ visit.items }}</td>
 				</tr>
 			</tbody>
 		</table>
+		<div
+			id="spinner"
+			v-if="loader"
+			class="d-flex justify-content-center p-4"
+		>
+			<div class="spinner-border" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
 	</div>
+	<Pagination v-model="start" />
 </template>
 
 <script setup>
-import { ref } from "vue";
+import Pagination from "../Pagination.vue";
+import Search from "../Search.vue";
+import Filter from "../Filter.vue";
+import Sort from "../Sort.vue";
 
-const visits = ref([
-	{
-		id: 1,
-		name: "John Doe",
-		arrival_time: "08:00 AM",
-		contact: "1234567890",
-		departural_time: "09:00 AM",
-		host: "Alice Johnson",
-		date: "2024-05-29",
-		room: "101",
-		institution: "ABC Corp",
-		belonging: "Laptop",
-		purpose: "Meeting",
-	},
-	{
-		id: 2,
-		name: "Jane Smith",
-		arrival_time: "09:30 AM",
-		contact: "2345678901",
-		departural_time: "10:30 AM",
-		host: "Bob Brown",
-		date: "2024-05-29",
-		room: "102",
-		institution: "XYZ Inc",
-		belonging: "Notebook",
-		purpose: "Interview",
-	},
-	{
-		id: 3,
-		name: "Michael Johnson",
-		arrival_time: "10:00 AM",
-		contact: "3456789012",
-		departural_time: "11:00 AM",
-		host: "Carol White",
-		date: "2024-05-29",
-		room: "103",
-		institution: "Tech Solutions",
-		belonging: "Tablet",
-		purpose: "Presentation",
-	},
-	{
-		id: 4,
-		name: "Emily Brown",
-		arrival_time: "11:30 AM",
-		contact: "4567890123",
-		departural_time: "12:30 PM",
-		host: "David Black",
-		date: "2024-05-29",
-		room: "104",
-		institution: "Health Corp",
-		belonging: "Documents",
-		purpose: "Consultation",
-	},
-	{
-		id: 5,
-		name: "David Wilson",
-		arrival_time: "12:00 PM",
-		contact: "5678901234",
-		departural_time: "01:00 PM",
-		host: "Eve Green",
-		date: "2024-05-29",
-		room: "105",
-		institution: "Edu Academy",
-		belonging: "Briefcase",
-		purpose: "Training",
-	},
-	{
-		id: 6,
-		name: "Emma Lee",
-		arrival_time: "01:30 PM",
-		contact: "6789012345",
-		departural_time: "02:30 PM",
-		host: "Frank Brown",
-		date: "2024-05-29",
-		room: "106",
-		institution: "Finance Ltd",
-		belonging: "Folder",
-		purpose: "Discussion",
-	},
-	{
-		id: 7,
-		name: "Daniel Taylor",
-		arrival_time: "02:00 PM",
-		contact: "7890123456",
-		departural_time: "03:00 PM",
-		host: "Grace Davis",
-		date: "2024-05-29",
-		room: "107",
-		institution: "Govt Office",
-		belonging: "ID Card",
-		purpose: "Inspection",
-	},
-	{
-		id: 8,
-		name: "Olivia Clark",
-		arrival_time: "03:30 PM",
-		contact: "8901234567",
-		departural_time: "04:30 PM",
-		host: "Henry Adams",
-		date: "2024-05-29",
-		room: "108",
-		institution: "Legal Firm",
-		belonging: "Files",
-		purpose: "Legal Advice",
-	},
-	{
-		id: 9,
-		name: "Matthew Martinez",
-		arrival_time: "04:00 PM",
-		contact: "9012345678",
-		departural_time: "05:00 PM",
-		host: "Ivy Smith",
-		date: "2024-05-29",
-		room: "109",
-		institution: "Retail Co",
-		belonging: "Package",
-		purpose: "Delivery",
-	},
+import { ref, computed, watch } from "vue";
+import { getVisits } from "@/assets/js/index.js";
+
+const visits = ref([]);
+const start = ref(0);
+const limit = ref(10);
+const loader = ref(true);
+const sort = ref("");
+
+const searchTerms = ref("");
+
+const sortTerms = ref([
+	{ type: "Date", term: "date_time" },
+	{ type: "Arrival Time", term: "arrival_time" },
+	{ type: "Departure Time", term: "departure_time" },
+	{ type: "Purpose", term: "purpose" },
+	{ type: "Phone Number", term: "msisdn" },
 ]);
+const sortTerm = defineModel("term");
+sortTerm.value = "created_at";
+
+const directionTerm = defineModel("direction");
+directionTerm.value = "desc";
+
+watch(
+	() => [searchTerms.value, sortTerm.value, directionTerm.value, start.value],
+	async ([searchValue, sortValue, directionValue, startValue]) => {
+		const data = await getVisits({
+			start: startValue,
+			search: searchValue,
+			sort: sortValue,
+			direction: directionValue,
+			limit: limit.value,
+		});
+		visits.value = formatDateTime(data);
+	}
+);
+
+const fetchData = async () => {
+	try {
+		const data = await getVisits({
+			sort: sortTerm.value,
+			direction: directionTerm.value,
+			limit: limit.value,
+		});
+		visits.value = formatDateTime(data);
+		loader.value = false;
+	} catch (error) {
+		console.error("Error fetching visits:", error);
+	}
+};
+
+const formatDateTime = (visits) => {
+	return visits.map((visit) => {
+		let date = "",
+			arrival_time = "",
+			items = "";
+
+		if (visit.date_time) {
+			[date, arrival_time] = visit.date_time.split("T");
+			arrival_time = arrival_time.split(".")[0];
+		}
+
+		if (Array.isArray(visit.items)) {
+			items = visit.items.join(", ");
+		}
+
+		return {
+			...visit,
+			date,
+			arrival_time,
+			items,
+			selected: false,
+		};
+	});
+};
+
+const formatItems = (visits) => {
+	visits.forEach((visit) => {
+		if (visit.items && Array.isArray(visit.items)) {
+			const commaSeparatedString = visit.items.join(", ");
+			console.log(commaSeparatedString);
+		}
+	});
+};
+
+fetchData();
+
+const allSelected = computed({
+	get() {
+		return (
+			visits.value.length > 0 &&
+			visits.value.every((visit) => visit.selected)
+		);
+	},
+	set(value) {
+		visits.value.forEach((visit) => {
+			visit.selected = value;
+		});
+	},
+});
+
+const selectAll = (event) => {
+	allSelected.value = event.target.checked;
+};
+
+// Optional: Remove or comment out after debugging
+console.log(visits);
 </script>
 
 <style scoped>
+table {
+	margin: 0;
+}
 th,
 td {
-	padding: 1rem;
+	padding: 0.9rem;
+}
+
+@media (min-width: 768px) and (max-width: 1440px) {
+	th,
+	td {
+		padding: 0.7rem;
+	}
 }
 </style>

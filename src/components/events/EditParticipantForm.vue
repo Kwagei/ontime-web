@@ -111,21 +111,21 @@ import { ref, onMounted } from "vue";
 import $ from "jquery";
 
 const props = defineProps({
-    data: {
-        type: Object,
-        required: true,
-    },
+	data: {
+		type: Object,
+		required: true,
+	},
 });
 
 const emit = defineEmits(["updated", "cancel"]);
 
 const updatedParticipant = {
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    address: "",
-    email: "",
-    msisdn: "",
+	first_name: "",
+	middle_name: "",
+	last_name: "",
+	address: "",
+	email: "",
+	msisdn: "",
 };
 
 const firstNameError = ref(props.data.errorMessage.includes("first_name"));
@@ -136,24 +136,24 @@ const msisdnError = ref(props.data.errorMessage.includes("hone number"));
 const addressError = ref(props.data.errorMessage.includes("address"));
 
 onMounted(() => {
-    $("body").css("pointerEvents", "none");
+	$("body").css("pointerEvents", "none");
 });
 
 function update() {
-    updatedParticipant.first_name = $("#firstName").val();
-    updatedParticipant.middle_name = $("#middleName").val();
-    updatedParticipant.last_name = $("#lastName").val();
-    updatedParticipant.address = $("#address").val();
-    updatedParticipant.msisdn = $("#msisdn").val();
-    updatedParticipant.email = $("#email").val();
+	updatedParticipant.first_name = $("#firstName").val();
+	updatedParticipant.middle_name = $("#middleName").val();
+	updatedParticipant.last_name = $("#lastName").val();
+	updatedParticipant.address = $("#address").val();
+	updatedParticipant.msisdn = $("#msisdn").val();
+	updatedParticipant.email = $("#email").val();
 
-    $("body").css("pointerEvents", "auto");
-    emit("updated", updatedParticipant);
+	$("body").css("pointerEvents", "auto");
+	emit("updated", updatedParticipant);
 }
 
 function closeForm() {
-    $("body").css("pointerEvents", "auto");
-    emit("cancel");
+	$("body").css("pointerEvents", "auto");
+	emit("cancel");
 }
 </script>
 

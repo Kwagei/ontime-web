@@ -1,38 +1,38 @@
 <template>
-    <button
-        class="btn btn-secondary refresh"
-        style="border: 0.125rem solid black"
-        type="button"
-        data-bs-theme="dark"
-    >
-        <svg
-            width="100"
-            height="100"
-            viewBox="0 0 100 100"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <path
-                fill="#000000"
-                fill-rule="evenodd"
-                d="m78.286 21.717-.002-.001a40 40 0 00-56.568 0c-15.621 15.62-15.621 40.947 0 56.568a40 40 0 0056.568 0L67.678 67.678a25 25 0 110-35.356l.003.003L57.507 42.5H82.5a5 5 0 005-5v-25Z"
-            />
-        </svg>
-    </button>
+	<button
+		class="btn btn-secondary refresh"
+		style="border: 0.125rem solid black"
+		type="button"
+		data-bs-theme="dark"
+	>
+		<svg
+			width="100"
+			height="100"
+			viewBox="0 0 100 100"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path
+				fill="#000000"
+				fill-rule="evenodd"
+				d="m78.286 21.717-.002-.001a40 40 0 00-56.568 0c-15.621 15.62-15.621 40.947 0 56.568a40 40 0 0056.568 0L67.678 67.678a25 25 0 110-35.356l.003.003L57.507 42.5H82.5a5 5 0 005-5v-25Z"
+			/>
+		</svg>
+	</button>
 </template>
 
 <style scoped>
 .btn {
-    padding: 0.5rem !important;
+	padding: 0.5rem !important;
 }
 .btn:hover {
-    border: 0.125rem solid black !important;
+	border: 0.125rem solid black !important;
 }
 
 .btn:hover path {
-    fill: white;
+	fill: white;
 }
 .refresh svg {
-    height: 20px !important;
-    margin: 0 !important;
+	height: 20px !important;
+	margin: 0 !important;
 }
 </style>

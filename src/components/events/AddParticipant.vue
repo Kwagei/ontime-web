@@ -165,12 +165,12 @@ const router = useRoute();
 const eventId = router.params.id;
 
 const emptyParticipant = {
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    address: "",
-    email: "",
-    msisdn: "",
+	firstName: "",
+	middleName: "",
+	lastName: "",
+	address: "",
+	email: "",
+	msisdn: "",
 };
 
 const emit = defineEmits(["errorCreatingParticipant", "participantAdded"]);
@@ -179,11 +179,11 @@ const newParticipant = ref({ ...emptyParticipant });
 const participantError = ref({ ...emptyParticipant });
 
 async function postParticipant() {
-    if (validateParticipant(newParticipant.value)) {
-        const data = {
-            event_id: router.params.id,
-            event_participants: formatEventParticipants(),
-        };
+	if (validateParticipant(newParticipant.value)) {
+		const data = {
+			event_id: router.params.id,
+			event_participants: formatEventParticipants(),
+		};
 
         $("body").css("pointer-events", "none");
 
@@ -213,62 +213,62 @@ async function postParticipant() {
 }
 
 function validateParticipant(participant) {
-    participantError.value = { ...emptyParticipant };
+	participantError.value = { ...emptyParticipant };
 
-    // ensure `first_name` was given
-    if (!newParticipant.value.firstName || participant.firstName.length <= 1) {
-        participantError.value.firstName =
-            "Participant's `first_name` is invalid";
-        return false;
-    }
+	// ensure `first_name` was given
+	if (!newParticipant.value.firstName || participant.firstName.length <= 1) {
+		participantError.value.firstName =
+			"Participant's `first_name` is invalid";
+		return false;
+	}
 
-    // if middle_name was given
-    // ensure it's atleast two characters
-    if (participant.middleName && participant.middleName.length <= 1) {
-        participantError.value.middleName =
-            "Participant's `middle_name` is invalid";
-        return false;
-    }
+	// if middle_name was given
+	// ensure it's atleast two characters
+	if (participant.middleName && participant.middleName.length <= 1) {
+		participantError.value.middleName =
+			"Participant's `middle_name` is invalid";
+		return false;
+	}
 
-    // ensure `last_name` was given
-    if (!newParticipant.value.lastName || participant.lastName.length <= 1) {
-        participantError.value.lastName =
-            "Participant's `last_name` is invalid";
-        return false;
-    }
+	// ensure `last_name` was given
+	if (!newParticipant.value.lastName || participant.lastName.length <= 1) {
+		participantError.value.lastName =
+			"Participant's `last_name` is invalid";
+		return false;
+	}
 
-    // ensure `email` was given
-    if (!newParticipant.value.email) {
-        participantError.value.email = "Participant's `email` is required";
-        return false;
-    }
+	// ensure `email` was given
+	if (!newParticipant.value.email) {
+		participantError.value.email = "Participant's `email` is required";
+		return false;
+	}
 
-    // ensure `email` is atleast six chars
-    if (newParticipant.value.email.length <= 5) {
-        participantError.value.email = "Participant's `email` is invalid";
-        return false;
-    }
+	// ensure `email` is atleast six chars
+	if (newParticipant.value.email.length <= 5) {
+		participantError.value.email = "Participant's `email` is invalid";
+		return false;
+	}
 
-    // ensure address was given
-    if (!newParticipant.value.address) {
-        participantError.value.address = "Participant's `address` is required";
-        return false;
-    }
+	// ensure address was given
+	if (!newParticipant.value.address) {
+		participantError.value.address = "Participant's `address` is required";
+		return false;
+	}
 
-    // ensure address is atleast 12 chars with two spaces
-    if (
-        newParticipant.value.address.length <= 11 ||
-        newParticipant.value.address.split(" ").length <= 1
-    ) {
-        participantError.value.address = "Participant's address is invalid";
-        return false;
-    }
+	// ensure address is atleast 12 chars with two spaces
+	if (
+		newParticipant.value.address.length <= 11 ||
+		newParticipant.value.address.split(" ").length <= 1
+	) {
+		participantError.value.address = "Participant's address is invalid";
+		return false;
+	}
 
-    // ensure msisdn was given
-    if (!newParticipant.value.msisdn) {
-        participantError.value.msisdn = "Participant's `msisdn` is required";
-        return false;
-    }
+	// ensure msisdn was given
+	if (!newParticipant.value.msisdn) {
+		participantError.value.msisdn = "Participant's `msisdn` is required";
+		return false;
+	}
 
     // ensure msisdn is atleast 10 chars long and it's a number
     if (
@@ -279,7 +279,7 @@ function validateParticipant(participant) {
         return false;
     }
 
-    return true;
+	return true;
 }
 
 function formatEventParticipants() {

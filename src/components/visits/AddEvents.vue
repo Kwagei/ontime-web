@@ -1,9 +1,12 @@
 <template>
-    <Modal :data="{ title, message, status }" />
-    <div id="visit-view" class="d-flex flex-column container">
-        <div class="d-flex justify-content-between align-items-center container p-0 mx-auto" style="margin-top: 0.3rem">
-            <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
-        </div>
+	<Modal :data="{ title, message, status }" />
+	<div id="visit-view" class="d-flex flex-column container">
+		<div
+			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
+			style="margin-top: 0.3rem"
+		>
+			<BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
+		</div>
 
         <div class="mt-4 form-control input" style="margin: auto; padding: 3rem">
             <form class="row g-3 needs-validation" novalidate @submit.prevent="onSubmit">
@@ -128,7 +131,11 @@
 import { ref, defineProps, watch, onMounted } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
-import { registerVisit, getSingleVisitor, getUsers } from "@/assets/js/index.js";
+import {
+	registerVisit,
+	getSingleVisitor,
+	getUsers,
+} from "@/assets/js/index.js";
 
 const msisdn = ref("");
 const visitor = ref("");
@@ -148,10 +155,10 @@ const title = ref("");
 const activeBreadCrumbs = ref([]);
 
 const props = defineProps({
-    breadCrumbs: {
-        type: Array,
-        required: true,
-    },
+	breadCrumbs: {
+		type: Array,
+		required: true,
+	},
 });
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
@@ -181,91 +188,103 @@ onMounted(() => {
 
 // function for inserting each username in the select element
 const getUserOptions = async () => {
-    try {
-        const users = await getUsers();
-        options.value = users.map(user => ({
-            value: user.id,
-            text: user.username
-        }));
-        // console.log(options.value);
-    } catch (error) {
-        console.error("Error retrieving users:", error);
-    }
+	try {
+		const users = await getUsers();
+		options.value = users.map((user) => ({
+			value: user.id,
+			text: user.username,
+		}));
+		// console.log(options.value);
+	} catch (error) {
+		console.error("Error retrieving users:", error);
+	}
 };
 
 // function to get visitor bt MSISDN
 const getVisitor = async () => {
-    try {
-        const visitorData = await getSingleVisitor({ msisdn: msisdn.value });
-        if (!visitorData) {
-            visitor.value = "";
-            return;
-        }
-        visitor.value = `${visitorData.first_name} ${visitorData.last_name}`;
-        visitorId.value = visitorData.id;
-    } catch (error) {
-        console.error("Error retrieving visitor:", error);
-    }
+	try {
+		const visitorData = await getSingleVisitor({ msisdn: msisdn.value });
+		if (!visitorData) {
+			visitor.value = "";
+			return;
+		}
+		visitor.value = `${visitorData.first_name} ${visitorData.last_name}`;
+		visitorId.value = visitorData.id;
+	} catch (error) {
+		console.error("Error retrieving visitor:", error);
+	}
 };
 
 // watching selected host name to update host ID
 watch(host_name, (newValue) => {
-    const selectedUser = options.value.find(option => option.value === newValue);
-    if (selectedUser) {
-        console.log(`Selected username: ${selectedUser.text}`);
-        host_id.value = selectedUser.value;
-        // console.log(host_id.value);
-    }
+	const selectedUser = options.value.find(
+		(option) => option.value === newValue
+	);
+	if (selectedUser) {
+		console.log(`Selected username: ${selectedUser.text}`);
+		host_id.value = selectedUser.value;
+		// console.log(host_id.value);
+	}
 });
 
 const room_id = "01d95aba-31c4-48d3-8b03-2587d8bb5730";
 
-// function to validate form before it submit the form 
+// function to validate form before it submit the form
 const onSubmit = async () => {
-    if (!msisdn.value || !visitor.value || !host_name.value || !belonging.value || !room.value || !visit_address.value || !purpose.value) {
-        return;
-    }
+	if (
+		!msisdn.value ||
+		!visitor.value ||
+		!host_name.value ||
+		!belonging.value ||
+		!room.value ||
+		!visit_address.value ||
+		!purpose.value
+	) {
+		return;
+	}
 
-    // plitting text into array by using command as the deleminator 
-    const formatedItems = belonging.value.split(",").map(item => item.trim());
+	// plitting text into array by using command as the deleminator
+	const formatedItems = belonging.value.split(",").map((item) => item.trim());
 
-    // require values for the submittion of the form
-    const visitData = {
-        visitor_id: visitorId.value,
-        institution: institution.value,
-        address: visit_address.value,
-        items: formatedItems,
-        room_id: room_id,
-        host_id: host_id.value,
-        purpose: purpose.value
-    };
-    // console.log(visitData);
-    const response = await registerVisit(visitData);
+	// require values for the submittion of the form
+	const visitData = {
+		visitor_id: visitorId.value,
+		institution: institution.value,
+		address: visit_address.value,
+		items: formatedItems,
+		room_id: room_id,
+		host_id: host_id.value,
+		purpose: purpose.value,
+	};
+	// console.log(visitData);
+	const response = await registerVisit(visitData);
 
-    // console.log(response);
-    
-    const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-    if (!response.ok) {
-        myModal.show(document.querySelector("#toggleMyModal"));
-        status.value = "danger";
-        message.value = response.result.message;
-        title.value = "Error";
-    } else {
-        myModal.show(document.querySelector("#toggleMyModal"));
-        status.value = "success";
-        message.value = response.result.message;
-        title.value = "Success";
-    }
-    
-    visuallyHideModalBackdrop();
+	// console.log(response);
+
+	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
+	if (!response.ok) {
+		myModal.show(document.querySelector("#toggleMyModal"));
+		status.value = "danger";
+		message.value = response.result.message;
+		title.value = "Error";
+	} else {
+		myModal.show(document.querySelector("#toggleMyModal"));
+		status.value = "success";
+		message.value = response.result.message;
+		title.value = "Success";
+	}
+
+	visuallyHideModalBackdrop();
 };
 
 function visuallyHideModalBackdrop() {
-    const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
+	const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
 
-    if (modalsBackdrops.length) {
-        modalsBackdrops.forEach((modal) => modal.classList.add("visually-hidden"));
-    }
+	if (modalsBackdrops.length) {
+		modalsBackdrops.forEach((modal) =>
+			modal.classList.add("visually-hidden")
+		);
+	}
 }
 </script>
 

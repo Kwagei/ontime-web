@@ -92,21 +92,21 @@ async function getParticipants() {
 }
 
 function switchState(newState) {
-    state.value = newState;
+	state.value = newState;
 }
 
 function setModalData(newData) {
-    modalData.value = newData;
+	modalData.value = newData;
 
-    // wait a little bit for I don't know what
-    // still tryna understand this part
-    // but that's the only way it'll work
-    setTimeout(() => {
-        const modal = new boosted.Modal("#exampleModal");
-        modal.show("#toggleMyModal");
+	// wait a little bit for I don't know what
+	// still tryna understand this part
+	// but that's the only way it'll work
+	setTimeout(() => {
+		const modal = new boosted.Modal("#exampleModal");
+		modal.show("#toggleMyModal");
 
-        visuallyHideModalBackdrop();
-    }, 500);
+		visuallyHideModalBackdrop();
+	}, 500);
 }
 </script>
 

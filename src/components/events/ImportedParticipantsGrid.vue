@@ -49,10 +49,10 @@ import Delete from "../Delete.vue";
 import { computed, ref } from "vue";
 
 const props = defineProps({
-    participants: {
-        type: Array,
-        required: true,
-    },
+	participants: {
+		type: Array,
+		required: true,
+	},
 });
 
 const query = ref("");
@@ -83,26 +83,26 @@ function search() {
 
 <style scoped>
 #importedParticipantsGridWrapper {
-    min-width: 75%;
+	min-width: 75%;
 }
 
 #importedParticipantsGridContainer {
-    display: grid;
-    grid-template-columns: repeat(3, 31%);
-    justify-content: center;
-    gap: 30px;
-    overflow-y: scroll;
-    max-height: 68vh;
-    min-width: 73%;
-    padding: 10px 5px;
-    margin-top: 15px;
+	display: grid;
+	grid-template-columns: repeat(3, 31%);
+	justify-content: center;
+	gap: 30px;
+	overflow-y: scroll;
+	max-height: 68vh;
+	min-width: 73%;
+	padding: 10px 5px;
+	margin-top: 15px;
 }
 
 .boxShadow {
-    box-shadow: -1.5px -1.5px 5px 3px #ddd;
+	box-shadow: -1.5px -1.5px 5px 3px #ddd;
 }
 
 .boxShadow:hover {
-    box-shadow: -1.5px -1.5px 5px 8px #ccc;
+	box-shadow: -1.5px -1.5px 5px 8px #ccc;
 }
 </style>

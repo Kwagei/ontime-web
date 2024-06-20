@@ -56,10 +56,10 @@ import EventParticipants from "./EventParticipants.vue";
 import { formatDate } from "../../assets/js/index.js";
 
 const props = defineProps({
-    event: {
-        type: Object,
-        required: true,
-    },
+	event: {
+		type: Object,
+		required: true,
+	},
 });
 
 const emit = defineEmits(["switch"]);
@@ -67,21 +67,21 @@ const emit = defineEmits(["switch"]);
 
 <style scoped>
 #eventOptionsUL {
-    position: absolute;
-    z-index: 9999;
-    background-color: #eee;
-    list-style: none;
-    border: 2px solid #555;
-    padding: 0;
+	position: absolute;
+	z-index: 9999;
+	background-color: #eee;
+	list-style: none;
+	border: 2px solid #555;
+	padding: 0;
 }
 
 #eventOptionsUL li {
-    padding: 15px;
-    cursor: pointer;
-    font-weight: 800;
+	padding: 15px;
+	cursor: pointer;
+	font-weight: 800;
 }
 
 #eventOptionsUL li:hover {
-    background-color: #ddd;
+	background-color: #ddd;
 }
 </style>

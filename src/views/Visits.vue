@@ -50,7 +50,7 @@ import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
-import Pagination from "../components/Pagination.vue";
+import Options from "@/components/Options.vue";
 
 import { RouterLink, RouterView } from "vue-router";
 

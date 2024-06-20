@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-3">
+    <div class="mb-3 d-flex justify-content-center">
         <table
             v-if="Array.isArray(allEvents) && allEvents.length"
             class="table table-hover mb-0"
@@ -44,7 +44,11 @@
                 </tr>
             </tbody>
         </table>
-        <h2 v-else-if="Array.isArray(allEvents) && allEvents.length <= 0">
+        <h2
+            class="w-75 text-center"
+            v-else-if="Array.isArray(allEvents) && allEvents.length <= 0"
+        >
+            <hr />
             No Events Currently!
         </h2>
         <div
@@ -56,7 +60,14 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
-        <h2 v-else>Error Loading Events, Try again!</h2>
+        <h2 class="w-75 text-center" v-else-if="allEvents == 'noMatch'">
+            <hr />
+            No match!
+        </h2>
+        <h2 class="w-75 text-center" v-else>
+            <hr />
+            Error Loading Events, Try again!
+        </h2>
     </div>
     <Pagination
         v-if="Array.isArray(allEvents) && !!allEvents.length"
@@ -71,9 +82,6 @@ import { useRouter } from "vue-router";
 import { formatDate, API_URL } from "../../assets/js/index.js";
 import $ from "jquery";
 
-import { formatDate, API_URL } from "../../assets/js/index.js";
-import { useRouter } from "vue-router";
-
 const paginationStart = ref(0);
 const allEvents = ref("loading");
 const eventsToShow = ref([]);
@@ -83,10 +91,13 @@ const MAX_DETAIL_LEN = 110;
 
 const props = defineProps({
     searchQuery: String,
+    refresh: Boolean,
 });
 
+const emit = defineEmits(["refreshComplete"]);
+
 onMounted(async () => {
-  await getEvents();
+    await getEvents();
 });
 
 // Watch Pagination Switches
@@ -96,9 +107,9 @@ watch(paginationStart, (newValue) => {
         MAX_EVENTS_TO_SHOW.value + newValue
     );
 
-  // get more events if we're on the last page of the
-  // pagination and we still have events to fetch
-  if (allEvents.value.length - newValue == 10) moreEvents();
+    // get more events if we're on the last page of the
+    // pagination and we still have events to fetch
+    if (allEvents.value.length - newValue == 10) moreEvents();
 });
 
 // Watch Input into the Events Search Input
@@ -112,25 +123,42 @@ watch(
     }
 );
 
+// Watch Refresh Prop to refresh events accordingly
+watch(
+    () => props.refresh,
+    async () => {
+        if (props.refresh) {
+            await getEvents();
+            emit("refreshComplete");
+        }
+    }
+);
+
 async function getEvents(
-  search = "",
-  start = 0,
-  limit = 20,
-  from = "",
-  to = ""
+    search = "",
+    start = 0,
+    limit = 20,
+    from = "",
+    to = ""
 ) {
     allEvents.value = "loading";
+
     // Get Events from API
     try {
         let url = API_URL + `events?start=${start}&limit=${limit}`;
 
-		if (search) url += `&search=${search}`;
-		if (from) url += `&from=${from}`;
-		if (to) url += `&to=${to}`;
+        if (search) url += `&search=${search}`;
+        if (from) url += `&from=${from}`;
+        if (to) url += `&to=${to}`;
 
         await $.get(url, (data) => {
-            allEvents.value = data.data;
-            eventsToShow.value = allEvents.value.slice(0, 10);
+            // display no match if there was no result from the search
+            if (search && !data.data.length) {
+                allEvents.value = "noMatch";
+            } else {
+                allEvents.value = data.data;
+                eventsToShow.value = allEvents.value.slice(0, 10);
+            }
         });
     } catch (error) {
         // do nothing
@@ -147,20 +175,20 @@ function formatDetails(detail) {
 function displayEvent(eventId) {
     router.push({ name: "specific-event", params: { id: eventId } });
 }
+
 async function moreEvents(
-  search = "",
-  start = allEvents.value.length,
-  limit = 20,
-  from = "",
-  to = ""
+    search = "",
+    start = allEvents.value.length,
+    limit = 20,
+    from = "",
+    to = ""
 ) {
-    // Get Events from API on `localhost:3000`
     try {
         let url = API_URL + `events?start=${start}&limit=${limit}`;
 
-    if (search) url += `&search=${search}`;
-    if (from) url += `&from=${from}`;
-    if (to) url += `&to=${to}`;
+        if (search) url += `&search=${search}`;
+        if (from) url += `&from=${from}`;
+        if (to) url += `&to=${to}`;
 
         await $.get(url, (data) => {
             console.log("More Events: ", data);

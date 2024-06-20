@@ -1,33 +1,42 @@
 <template>
-    <div v-if="hasParticipants">
-        <div class="mt-3" style="width: 67.5vw">
-            <div class="d-flex justify-content-between mb-3">
-                <Search v-model:search="searchQuery" />
-                <Filter />
-                <Sort :sortTerms="participantsSortTerms" />
-            </div>
-            <ParticipantsTable :participants="participantsToShow" />
+    <div
+        v-show="
+            (participants == 'loading' && searchQuery) ||
+            participants == 'noMatch' ||
+            hasParticipants
+        "
+        class="mt-3"
+        style="width: 70vw"
+    >
+        <div class="d-flex justify-content-between mb-3 mx-2">
+            <Search v-model:search="searchQuery" />
+            <Filter />
+            <Sort :sortTerms="participantsSortTerms" />
         </div>
+    </div>
+    <div style="width: 70vw" v-if="hasParticipants">
+        <ParticipantsTable :participants="participantsToShow" />
         <Pagination
+            class="mx-2"
             v-if="Array.isArray(participants) && !!participants.length"
             v-model="paginationStart"
         />
     </div>
     <div
-        class="d-flex justify-content-center"
-        style="margin: 75px 0"
+        class="d-flex justify-content-center mt-5"
         v-else-if="participants == 'loading'"
     >
-        <div
-            class="spinner-border spinner-border-lg position-absolute top-75"
-            role="status"
-        >
+        <div class="spinner-border spinner-border-lg" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
     <h2 class="w-75 text-center" v-else-if="participants == 'error'">
         <hr />
         Error Loading Event Participants, Try again!
+    </h2>
+    <h2 class="w-75 text-center" v-else-if="participants == 'noMatch'">
+        <hr />
+        No match!
     </h2>
     <h2 class="w-75 text-center" v-else>
         <hr />
@@ -90,30 +99,32 @@ watch(paginationStart, (newValue) => {
 
 // Watch Search Input for Input
 watch(searchQuery, async (newValue) => {
+    participants.value = "loading";
+
     if (!searchQuery) {
-        participantsToShow.value = participants.value.slice(
-            0,
-            MAX_PARTICIPANTS_TO_SHOW
-        );
+        getParticipants();
         return;
     }
 
     // pass search query to events retrieval function
-    search(newValue);
+    getParticipants(newValue, 0, 30);
 });
 
-async function getParticipants() {
+async function getParticipants(search = "", start = 0, limit = 20) {
     try {
-        await $.get(API_URL + `events/${eventId}/participants`, (data) => {
-            console.log("Retrieved Participants: ", data);
-            participants.value = data.data;
-            participantsToShow.value = participants.value.slice(0, 10);
-        });
-    } catch (error) {
-        console.log(
-            "Error retrieving event participants: ",
-            error.responseJSON
+        await $.get(
+            API_URL +
+                `events/${eventId}/participants?search=${search}&start=${start}&limit=${limit}`,
+            (data) => {
+                // display 'No match' if there was no result from the search
+                if (search && !data.data.length) participants.value = "noMatch";
+                else {
+                    participants.value = data.data;
+                    participantsToShow.value = participants.value.slice(0, 10);
+                }
+            }
         );
+    } catch (error) {
         participants.value = "error";
     }
 }
@@ -121,7 +132,6 @@ async function getParticipants() {
 async function getEvent() {
     try {
         await $.get(API_URL + `events/${eventId}/`, (data) => {
-            console.log("Retrieved Event Data: ", data.data[0]);
             currentEvent.value = data.data[0];
         });
     } catch (error) {
@@ -150,24 +160,6 @@ async function moreParticipants(
     } catch (error) {
         // do nothing
     }
-}
-
-function search(query) {
-    participantsToShow.value = participants.value.filter((participant) => {
-        return (
-            participant.first_name
-                .toLowerCase()
-                .includes(query.toLowerCase()) ||
-            (participant.middle_name &&
-                participant.middle_name
-                    .toLowerCase()
-                    .includes(query.toLowerCase())) ||
-            participant.last_name.toLowerCase().includes(query.toLowerCase()) ||
-            participant.address.toLowerCase().includes(query.toLowerCase()) ||
-            participant.msisdn.toLowerCase().includes(query.toLowerCase()) ||
-            participant.email.toLowerCase().includes(query.toLowerCase())
-        );
-    });
 }
 </script>
 

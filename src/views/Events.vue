@@ -5,10 +5,21 @@
                 <BreadCrumbs :breadCrumbs="breadCrumbs" />
             </div>
             <div>
-                <RefreshList />
-                <Options class="mx-2" />
+                <RefreshList
+                    style="height: 50px !important; width: 55px !important"
+                    @click="refreshEvents"
+                />
+                <Options
+                    style="height: 50px !important; width: 55px !important"
+                    class="mx-2"
+                />
                 <router-link :to="{ name: 'add-event' }">
-                    <button class="px-3 btn btn-primary">Add Event</button>
+                    <button
+                        style="height: 50px !important; width: 150px !important"
+                        class="btn btn-primary"
+                    >
+                        Add Event
+                    </button>
                 </router-link>
             </div>
         </div>
@@ -17,7 +28,11 @@
             <Filter />
             <Sort :sortTerms="sortTerms" />
         </div>
-        <EventsList :searchQuery="searchQuery" />
+        <EventsList
+            :searchQuery="searchQuery"
+            :refresh="refresh"
+            @refreshComplete="stopEventsRefresh"
+        />
     </div>
 </template>
 
@@ -29,7 +44,9 @@ import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import EventsList from "../components/events/EventsList.vue";
+
 import { ref } from "vue";
+import $ from "jquery";
 
 const props = defineProps({
     breadCrumbs: {
@@ -46,6 +63,19 @@ const sortTerms = ref([
     { type: "Facilitator", term: "facilitator" },
 ]);
 const searchQuery = ref("");
+
+const refresh = ref(false);
+
+function refreshEvents() {
+    refresh.value = true;
+    $(".refresh").css("pointer-events", "none");
+}
+
+function stopEventsRefresh() {
+    // refresh and then set refresh back to false
+    refresh.value = false;
+    $(".refresh").css("pointer-events", "auto");
+}
 </script>
 
 <style scoped>

@@ -63,7 +63,7 @@
                     class="dropdown-item"
                     v-for="sort in sortTerms"
                     :key="sort.term"
-                    @click="updateSortTerms(sort)"
+                    @click="updateSortTerm(sort)"
                 >
                     {{ sort.type }}
                 </li>
@@ -74,29 +74,30 @@
 
 <script setup>
 import { ref, watch } from "vue";
-const sortTerms = defineModel("sort");
-const sortType = ref("Created At");
-const directionTerms = defineModel("direction");
-const directionType = ref("desc");
+const sortTerm = defineModel("term");
+const directionTerm = defineModel("direction");
+const ascending = ref(true);
+const descending = ref(false);
 
-watch(
-    () => directionTerms.value,
-    (n, o) => {
-        console.log({ n, o });
-    }
-);
+const props = defineProps({
+    sortTerms: {
+        type: Array,
+        required: true,
+    },
+});
 
-const updateSortTerms = (sort) => {
-    sortTerms.value = sort.term;
+const sortType = ref(props.sortTerms[0].type);
+
+const updateSortTerm = (sort) => {
+    sortTerm.value = sort.term;
     sortType.value = sort.type;
-    directionTerms.value = directionType.value;
 };
 
 const toggleDirection = () => {
-    directionType.value = directionType.value !== "asc" ? "asc" : "desc";
-    directionTerms.value = directionType.value;
-    sortTerms.value = sortTerms.value;
+    directionTerm.value = directionTerm.value !== "asc" ? "asc" : "desc";
     sortType.value = sortType.value;
+    ascending.value = ascending.value === true ? false : true;
+    descending.value = descending.value === false ? true : false;
 };
 </script>
 

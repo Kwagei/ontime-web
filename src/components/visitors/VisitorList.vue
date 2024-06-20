@@ -88,49 +88,38 @@ const limit = ref(10);
 const loader = ref(true);
 const sort = ref("");
 
-const props = defineProps({
-    searchTerms: {
-        type: String,
-        required: true,
-    },
-    sortTerms: {
-        type: String,
-        required: true,
-    },
-    directionTerms: {
-        type: String,
-        required: true,
-    },
-});
+const searchTerms = ref("");
 
-const visitorDetail = (id) => {
-    router.push({ name: "visitorDetail", params: { id } });
-};
+const sortTerms = ref([
+    { type: "Created At", term: "created_at" },
+    { type: "First Name", term: "first_name" },
+    { type: "Middle Name", term: "middle_name" },
+    { type: "Last Name", term: "last_name" },
+    { type: "Phone Number", term: "msisdn" },
+    { type: "Email", term: "email" },
+]);
+const sortTerm = defineModel("term");
+sortTerm.value = "created_at";
+
+const directionTerm = defineModel("direction");
+directionTerm.value = "desc";
 
 watch(
-    () => [
-        start.value,
-        props.searchTerms,
-        props.sortTerms,
-        props.directionTerms,
-    ],
-    async ([startValue, searchValue, sortValue, directionValue]) => {
-        visitors.value = await getVisitors({
-            search: searchValue,
+    () => [searchTerms.value, sortTerm.value, directionTerm.value, start.value],
+    async ([searchValue, sortValue, directionValue, startValue]) => {
+        const data = await getVisitors({
             start: startValue,
+            search: searchValue,
             sort: sortValue,
             direction: directionValue,
+            limit: limit.value,
         });
+        visitors.value = formatDateTime(data);
     }
 );
 
-const fetchData = async () => {
-    visitors.value = await getVisitors({
-        search: props.searchTerms,
-        sort: props.sortTerms,
-        start: start.value,
-        direction: props.directionTerms,
-    });
+const visitorDetail = (id) => {
+    router.push({ name: "visitorDetail", params: { id } });
 };
 
 const fetchVisitors = async () => {

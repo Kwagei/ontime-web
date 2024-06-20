@@ -24,22 +24,10 @@
                 </router-link>
             </div>
         </div>
-        <div class="row justify-content-between container p-0 mx-auto">
-            <Search v-model:search="searchTerms" />
-            <Filter />
-            <Sort v-model:sort="sortTerms" v-model:direction="directionTerms" />
-        </div>
 
-        <VisitorList
-            :searchTerms="searchTerms"
-            :sortTerms="sortTerms"
-            :directionTerms="directionTerms"
-        />
+        <VisitorList />
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
-
-    <VisitorList />
-    <RouterView :breadCrumbs="breadCrumbs" />
 </template>
 
 <script setup>
@@ -52,11 +40,13 @@ import { RouterLink, RouterView } from "vue-router";
 import { ref, watch } from "vue";
 
 const breadCrumbs = defineModel("breadCrumbs");
-import { ref, defineProps, watch } from "vue";
-const searchTerms = ref("");
-const sortTerms = ref("");
-const directionTerms = ref("desc");
-const filterTerms = defineModel([]);
+
+// const props = defineProps({
+//   breadCrumbs: {
+//     type: Array,
+//     required: true,
+//   },
+// });
 </script>
 
 <style scoped>

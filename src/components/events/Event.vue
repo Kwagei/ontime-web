@@ -19,6 +19,7 @@
         <EventTitle :title="event.title" />
         <EventDetails
             :event="event"
+            v-model:participants="participants"
             v-if="state == 'details'"
             @switch="switchState"
             @displayEventParticipants="switchState"
@@ -26,7 +27,7 @@
         <AddParticipant
             v-if="state == 'addParticipant'"
             @switch="switchState"
-            @participantCreated="setModalData"
+            @participantAdded="setModalData"
             @errorCreatingParticipant="setModalData"
         />
         <ImportParticipant
@@ -52,17 +53,20 @@ import Modal from "../Modal.vue";
 
 import { visuallyHideModalBackdrop, API_URL } from "@/assets/js";
 
-const event = ref("loading");
-const eventId = ref("");
-const state = ref("details");
-
-const modalData = ref({});
-
 const router = useRouter();
 
-onMounted(async () => {
-    eventId.value = router.currentRoute.value.params.id;
+const event = ref("loading");
+const eventId = ref(router.currentRoute.value.params.id);
+const state = ref("details");
+const participants = ref("loading");
+const modalData = ref({});
 
+onMounted(async () => {
+    getEvent();
+    getParticipants();
+});
+
+async function getEvent() {
     try {
         await $.get(API_URL + `events/${eventId.value}`, (data) => {
             event.value = data.data[0];
@@ -71,7 +75,21 @@ onMounted(async () => {
         event.value = "error";
         // do nothing
     }
-});
+}
+
+async function getParticipants() {
+    try {
+        await $.get(
+            API_URL + `events/${eventId.value}/participants`,
+            (data) => {
+                participants.value = data.data;
+            }
+        );
+    } catch {
+        participants.value = "error";
+        // do nothing
+    }
+}
 
 function switchState(newState) {
     state.value = newState;

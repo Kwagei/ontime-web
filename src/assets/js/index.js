@@ -1,7 +1,7 @@
 const API = import.meta.env.VITE_API_URL;
-const API_URL = "https://ontime-kit.glitch.me/api/";
+export const API_URL = "http://localhost:3000/api/";
 
-const registerVisitor = async (data) => {
+export const registerVisitor = async (data) => {
     try {
         const options = {
             method: "POST",
@@ -21,7 +21,7 @@ const registerVisitor = async (data) => {
     }
 };
 
-const editVisitor = async (id, data) => {
+export const editVisitor = async (id, data) => {
     try {
         const options = {
             method: "PUT",
@@ -41,7 +41,7 @@ const editVisitor = async (id, data) => {
     }
 };
 
-const getSingleVisitor = async (data) => {
+export const getSingleVisitor = async (data) => {
     const { id, msisdn } = data;
     let response;
 
@@ -61,7 +61,7 @@ const getSingleVisitor = async (data) => {
     } catch (error) {}
 };
 
-const getVisitors = async (query) => {
+export const getVisitors = async (query) => {
     try {
         const {
             search = "",
@@ -85,28 +85,46 @@ const getVisitors = async (query) => {
     }
 };
 
-function formatDate(date) {
+export const getVisitorWithVisits = async (id, query) => {
+    try {
+        const {
+            search = "",
+            start = 0,
+            limit = 20,
+            sort = "",
+            direction = "",
+        } = query;
+
+        let url = `${API}/visitors/${id}/visits?&start=${start}&limit=${limit}`;
+
+        if (search) {
+            url += `&search=${search}`;
+        }
+
+        if (sort) {
+            url += `&sort=${sort}&direction=${direction}`;
+        }
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+
+        const { data } = await response.json();
+
+        return data;
+    } catch (error) {
+        console.error("Error: ", error);
+    }
+};
+
+export function visuallyHideModalBackdrop() {
+    $(".modal-backdrop").addClass("visually-hidden");
+}
+
+export function formatDate(date) {
     const rawDate = new Date(date);
 
     return rawDate.toString().split(" 0")[0];
 }
-
-function visuallyHideModalBackdrop() {
-    const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
-
-    if (modalsBackdrops.length) {
-        modalsBackdrops.forEach((modal) =>
-            modal.classList.add("visually-hidden")
-        );
-    }
-}
-
-export {
-    registerVisitor,
-    editVisitor,
-    getSingleVisitor,
-    getVisitors,
-    formatDate,
-    visuallyHideModalBackdrop,
-    API_URL,
-};

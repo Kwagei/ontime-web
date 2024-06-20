@@ -24,17 +24,8 @@
                 </router-link>
             </div>
         </div>
-        <div class="row justify-content-between container p-0 mx-auto">
-            <Search v-model:search="searchTerms" />
-            <Filter />
-            <Sort v-model:sort="sortTerms" v-model:direction="directionTerms" />
-        </div>
 
-        <VisitorList
-            :searchTerms="searchTerms"
-            :sortTerms="sortTerms"
-            :directionTerms="directionTerms"
-        />
+        <VisitorList />
         <RouterView :breadCrumbs="breadCrumbs" />
     </div>
 </template>
@@ -42,26 +33,19 @@
 <script setup>
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import VisitorList from "../components/visitors/VisitorList.vue";
-import Search from "../components/Search.vue";
-import Filter from "../components/Filter.vue";
-import Sort from "../components/Sort.vue";
 import RefreshList from "../components/RefreshList.vue";
 import Options from "@/components/Options.vue";
 
 import { RouterLink, RouterView } from "vue-router";
 
-import { ref, defineProps, watch } from "vue";
-const searchTerms = ref("");
-const sortTerms = ref("");
-const directionTerms = ref("desc");
-const filterTerms = defineModel([]);
+const breadCrumbs = defineModel("breadCrumbs");
 
-const props = defineProps({
-    breadCrumbs: {
-        type: Array,
-        required: true,
-    },
-});
+// const props = defineProps({
+//   breadCrumbs: {
+//     type: Array,
+//     required: true,
+//   },
+// });
 </script>
 
 <style scoped>

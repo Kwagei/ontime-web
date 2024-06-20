@@ -26,22 +26,8 @@ const routes = [
         component: Dashboard,
         name: "dashboard",
     },
-	  {
-    path: "/visitors",
-    children: [
-      {
-        path: "",
-        component: Visitors,
-        name: "visitors",
-      },
-      {
-        path: "new-visitor",
-        component: AddVisitors,
-        name: "add-visitor",
-        prop: true,
-      },
-      {
-        path: ":id",
+    {
+        path: "/visitors",
         children: [
             {
                 path: "",
@@ -70,9 +56,7 @@ const routes = [
                 ],
             },
         ],
-      },
-    ],
-	},
+    },
     {
         path: "/visits",
         component: Visits,

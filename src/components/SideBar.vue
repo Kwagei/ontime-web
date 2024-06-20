@@ -1,51 +1,51 @@
 <template>
-    <div
-        class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
-        style="height: 100%"
+  <div
+    class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
+    style="height: 100%"
+  >
+    <a
+      href="/"
+      class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
     >
-        <a
-            href="/"
-            class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
+      <h2 class="m-0 px-4">OnTime</h2>
+    </a>
+    <hr />
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item" v-for="item in navItems" :key="item.name">
+        <router-link
+          class="nav-link text-white"
+          :to="{ name: item.name }"
+          :id="item.name"
         >
-            <h2 class="m-0 px-4">OnTime</h2>
-        </a>
-        <hr />
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item" v-for="item in navItems" :key="item.name">
-                <router-link
-                    class="nav-link text-white"
-                    :to="{ name: item.name }"
-                    :id="item.name"
-                >
-                    <span v-html="item.svg"></span>
-                    {{ item.name }}
-                </router-link>
-            </li>
-        </ul>
-        <hr />
+          <span v-html="item.svg"></span>
+          {{ item.name }}
+        </router-link>
+      </li>
+    </ul>
+    <hr />
 
-        <div>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item">
-                    <a href="#" class="nav-link" aria-current="page">
-                        <svg
-                            width="100"
-                            height="100"
-                            viewBox="0 0 100 100"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                fill="#FFFFFF"
-                                fill-rule="evenodd"
-                                d="M72.623 85H27.377A2.377 2.377 0 0125 82.623V17.377A2.377 2.377 0 0127.377 15h45.246A2.377 2.377 0 0175 17.377v5.246A2.377 2.377 0 0077.377 25h2.746a2.377 2.377 0 002.377-2.377v-9.9A5.223 5.223 0 0077.277 7.5H22.424a4.924 4.924 0 00-4.924 4.924v74.654a5.42 5.42 0 005.422 5.422h54.343a5.235 5.235 0 005.235-5.235v-9.888A2.377 2.377 0 0080.123 75h-2.746A2.377 2.377 0 0075 77.377v5.246A2.377 2.377 0 0172.623 85M57.5 62.5H40c-2.514 0-5-2.569-5-5v-15c0-2.431 2.486-5 5-5h17.5V25l23.346 21.05a5.68 5.68 0 011.654 4 5.68 5.68 0 01-1.654 4L57.5 75z"
-                            />
-                        </svg>
-                        Log Out
-                    </a>
-                </li>
-            </ul>
-        </div>
+    <div>
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+          <a href="#" class="nav-link" aria-current="page">
+            <svg
+              width="100"
+              height="100"
+              viewBox="0 0 100 100"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill="#FFFFFF"
+                fill-rule="evenodd"
+                d="M72.623 85H27.377A2.377 2.377 0 0125 82.623V17.377A2.377 2.377 0 0127.377 15h45.246A2.377 2.377 0 0175 17.377v5.246A2.377 2.377 0 0077.377 25h2.746a2.377 2.377 0 002.377-2.377v-9.9A5.223 5.223 0 0077.277 7.5H22.424a4.924 4.924 0 00-4.924 4.924v74.654a5.42 5.42 0 005.422 5.422h54.343a5.235 5.235 0 005.235-5.235v-9.888A2.377 2.377 0 0080.123 75h-2.746A2.377 2.377 0 0075 77.377v5.246A2.377 2.377 0 0172.623 85M57.5 62.5H40c-2.514 0-5-2.569-5-5v-15c0-2.431 2.486-5 5-5h17.5V25l23.346 21.05a5.68 5.68 0 011.654 4 5.68 5.68 0 01-1.654 4L57.5 75z"
+              />
+            </svg>
+            Log Out
+          </a>
+        </li>
+      </ul>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -60,18 +60,18 @@ const activeSection = defineModel("activeSection");
 activeSection.value = route.path.split("/")[1];
 
 watch(
-    () => route.path,
-    (newPath, oldPath) => {
-        const currentSection = newPath.split("/")[1];
-        activeSection.value = currentSection;
-        breadCrumbs.value = [currentSection];
-    }
+  () => route.path,
+  (newPath, oldPath) => {
+    const currentSection = newPath.split("/")[1];
+    activeSection.value = currentSection;
+    breadCrumbs.value = [currentSection];
+  }
 );
 
 const navItems = [
-    {
-        name: "dashboard",
-        svg: `<svg
+  {
+    name: "dashboard",
+    svg: `<svg
                         viewBox="0 0 24 24"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -89,10 +89,10 @@ const navItems = [
                             fill="#eee"
                         />
                     </svg>`,
-    },
-    {
-        name: "visitors",
-        svg: `<svg
+  },
+  {
+    name: "visitors",
+    svg: `<svg
                         width="100"
                         height="100"
                         viewBox="0 0 100 100"
@@ -104,10 +104,10 @@ const navItems = [
                             d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"
                         />
                     </svg>`,
-    },
-    {
-        name: "visits",
-        svg: `<svg
+  },
+  {
+    name: "visits",
+    svg: `<svg
                         width="100"
                         height="100"
                         viewBox="0 0 100 100"
@@ -119,10 +119,10 @@ const navItems = [
                             d="M82.5 37.5V35l-15-15H60v-3.75A1.25 1.25 0 0058.75 15h-2.5A1.25 1.25 0 0055 16.25V20H40v-3.75A1.25 1.25 0 0038.75 15h-2.5A1.25 1.25 0 0035 16.25V20h-7.5l-15 15v2.5h5V85H15v2.5h65V85h-2.5V37.5zM35 77.5H25V70a5 5 0 015-5 5 5 0 015 5zm0-25H25V45a5 5 0 015-5 5 5 0 015 5zM52.5 85h-10V70a5 5 0 015-5 5 5 0 015 5zm0-32.5h-10V45a5 5 0 015-5 5 5 0 015 5zm17.5 25H60V70a5 5 0 015-5 5 5 0 015 5zm0-25H60V45a5 5 0 015-5 5 5 0 015 5z"
                         />
                     </svg>`,
-    },
-    {
-        name: "users",
-        svg: `<svg
+  },
+  {
+    name: "users",
+    svg: `<svg
                         width="100"
                         height="100"
                         viewBox="0 0 100 100"
@@ -134,10 +134,10 @@ const navItems = [
                             d="M72.25 19.786a11.56 11.56 0 00-5.26 1.258 17.97 17.97 0 01-3.204 17.528 27 27 0 015.406 3.993l.04.038a11.608 11.608 0 103.018-22.817M23 59a2 2 0 01.064-.503 23.9 23.9 0 013.623-11.07c.391-.617.813-1.212 1.257-1.786l-.194.002a15.12 15.12 0 01-10.125-3.872 15.18 15.18 0 00-8.598 12.8H9V69.75A6.25 6.25 0 0015.25 76H23zm7.768-16.397.04-.038a27 27 0 015.406-3.993 18.02 18.02 0 01-3.203-17.528 11.607 11.607 0 10-2.244 21.559m60.206 11.968a15.18 15.18 0 00-8.597-12.8 15.12 15.12 0 01-10.126 3.872l-.194-.002c.444.574.866 1.169 1.257 1.787a23.9 23.9 0 013.623 11.07A2 2 0 0177 59v17h14V54.572zM74.964 59c-.427-7.74-4.8-14.366-11.038-17.699a21.17 21.17 0 01-13.435 5.193q-.245.006-.491.006h-.002q-.245 0-.49-.006a21.16 21.16 0 01-13.434-5.193C29.837 44.634 25.464 51.26 25.036 59H25v21.25c0 4.833 3.731 8.75 8.333 8.75H75V59zM66 27a16 16 0 11-16-16 16 16 0 0116 16"
                         />
                     </svg>`,
-    },
-    {
-        name: "events",
-        svg: ` <svg
+  },
+  {
+    name: "events",
+    svg: ` <svg
                         width="100"
                         height="100"
                         viewBox="0 0 100 100"
@@ -149,16 +149,21 @@ const navItems = [
                             d="M80 17.5H70v-3.8c0-2.071-1.679-3.7-3.75-3.7a3.75 3.75 0 00-3.75 3.75v3.75H35.001L35 13.75a3.75 3.75 0 00-7.5 0v3.75H10V80a7.5 7.5 0 007.5 7.5h70V25a7.5 7.5 0 00-7.5-7.5m2.5 65H18.75A3.75 3.75 0 0115 78.75V40h63.75a3.75 3.75 0 013.75 3.75zM25 26.25a6.24 6.24 0 012.5-5v5a3.75 3.75 0 007.5 0V25h.001v-3.75a6.25 6.25 0 11-10.001 5m35 0a6.24 6.24 0 012.5-5v5a3.75 3.75 0 007.5 0L69.999 25H70v-3.7a6.15 6.15 0 012.5 4.95 6.25 6.25 0 01-12.5 0M23.75 45a3.75 3.75 0 103.75 3.75A3.75 3.75 0 0023.75 45m48.75 1.2H35c-1.38 0-2.5 1.17-2.5 2.55s1.12 2.45 2.5 2.45h37.5c1.38 0 2.5-1.07 2.5-2.45s-1.12-2.55-2.5-2.55M23.75 57.5a3.75 3.75 0 103.75 3.75 3.75 3.75 0 00-3.75-3.75m48.75 1.2H35c-1.38 0-2.5 1.17-2.5 2.55s1.12 2.45 2.5 2.45h37.5c1.38 0 2.5-1.07 2.5-2.45s-1.12-2.55-2.5-2.55M23.75 70a3.75 3.75 0 103.75 3.75A3.75 3.75 0 0023.75 70m48.75 1.2H35c-1.38 0-2.5 1.17-2.5 2.55s1.12 2.45 2.5 2.45h37.5c1.38 0 2.5-1.07 2.5-2.45s-1.12-2.55-2.5-2.55"
                         />
                     </svg>`,
-    },
+  },
 ];
 </script>
 
 <style scoped>
+.nav-pills svg {
+  width: 30px !important;
+  height: 30px !important;
+  margin-right: 0.5rem;
+}
 .nav-link {
-    text-transform: capitalize !important;
+  text-transform: capitalize !important;
 }
 
 .nav-item {
-    margin: 0 !important;
+  margin: 0 !important;
 }
 </style>

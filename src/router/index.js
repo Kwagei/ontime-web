@@ -20,7 +20,6 @@ import Users from "../views/Users.vue";
 
 // Dashboard Components
 import Dashboard from "../views/Dashboard.vue";
-// import EventParticipants from "@/components/events/EventParticipants.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";

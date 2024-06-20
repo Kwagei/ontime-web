@@ -1,36 +1,39 @@
 <template>
-	<div>
-		<div id="eventsWrapper">
-			<div class="d-flex justify-content-between my-4">
-				<div>
-					<BreadCrumbs :breadCrumbs="breadCrumbs" />
-				</div>
-				<div>
-					<RefreshList />
-					<Options class="mx-2" />
-					<router-link :to="{ name: 'add-event' }">
-						<button class="btn btn-primary">Add Event</button>
-					</router-link>
-				</div>
-			</div>
-			<div class="d-flex justify-content-between my-4">
-				<Search />
-				<Filter />
-				<Sort />
-			</div>
-			<EventsList />
-			<RouterView :breadCrumbs="breadCrumbs" />
-		</div>
-
-		<div class="row justify-content-between container p-0 mx-auto">
-			<Search v-model:search="searchTerms" />
-			<Filter />
-			<Sort v-model:sort="sortTerms" v-model:direction="directionTerms" />
-		</div>
-
-		<EventsList />
-		<RouterView :breadCrumbs="breadCrumbs" />
-	</div>
+    <div id="eventsWrapper">
+        <div class="d-flex justify-content-between my-4">
+            <div>
+                <BreadCrumbs :breadCrumbs="breadCrumbs" />
+            </div>
+            <div>
+                <RefreshList
+                    style="height: 50px !important; width: 55px !important"
+                    @click="refreshEvents"
+                />
+                <Options
+                    style="height: 50px !important; width: 55px !important"
+                    class="mx-2"
+                />
+                <router-link :to="{ name: 'add-event' }">
+                    <button
+                        style="height: 50px !important; width: 150px !important"
+                        class="btn btn-primary"
+                    >
+                        Add Event
+                    </button>
+                </router-link>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between my-4">
+            <Search v-model:search="searchQuery" />
+            <Filter />
+            <Sort :sortTerms="sortTerms" />
+        </div>
+        <EventsList
+            :searchQuery="searchQuery"
+            :refresh="refresh"
+            @refreshComplete="stopEventsRefresh"
+        />
+    </div>
 </template>
 
 <script setup>
@@ -42,12 +45,37 @@ import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
 import EventsList from "../components/events/EventsList.vue";
 
+import { ref } from "vue";
+import $ from "jquery";
+
 const props = defineProps({
 	breadCrumbs: {
 		type: Array,
 		required: true,
 	},
 });
+
+const sortTerms = ref([
+    { type: "Title", term: "title" },
+    { type: "Start Date", term: "start_date" },
+    { type: "End Date", term: "end_date" },
+    { type: "Type", term: "type" },
+    { type: "Facilitator", term: "facilitator" },
+]);
+const searchQuery = ref("");
+
+const refresh = ref(false);
+
+function refreshEvents() {
+    refresh.value = true;
+    $(".refresh").css("pointer-events", "none");
+}
+
+function stopEventsRefresh() {
+    // refresh and then set refresh back to false
+    refresh.value = false;
+    $(".refresh").css("pointer-events", "auto");
+}
 </script>
 
 <style scoped>
@@ -61,13 +89,14 @@ svg {
 }
 
 #eventsWrapper {
-	padding-top: 2rem;
-	gap: 1.5rem;
+    gap: 1.5rem;
+    margin: 0 9rem;
 }
 
 .btn {
 	padding: 0.5rem !important;
 }
+
 .btn:hover {
 	border: 0.125rem solid black !important;
 }
@@ -75,6 +104,7 @@ svg {
 .btn:hover g {
 	fill: white;
 }
+
 .list-options svg {
 	height: 20px !important;
 	margin: 0 !important;

@@ -1,5 +1,6 @@
-const API = import.meta.env.VITE_API_URL;
-export const API_URL = API;
+import $ from "jquery";
+
+export const API_URL = import.meta.env.VITE_API_URL;
 
 export const registerVisit = async (data) => {
 	try {
@@ -11,7 +12,7 @@ export const registerVisit = async (data) => {
 			body: JSON.stringify(data),
 		};
 
-		const response = await fetch(`${API}/visits`, options);
+		const response = await fetch(`${API_URL}/visits`, options);
 
 		const result = await response.json();
 
@@ -31,7 +32,7 @@ export const registerVisitor = async (data) => {
 			body: JSON.stringify(data),
 		};
 
-		const response = await fetch(`${API}/visitors`, options);
+		const response = await fetch(`${API_URL}/visitors`, options);
 
 		const result = await response.json();
 
@@ -51,7 +52,7 @@ export const editVisitor = async (id, data) => {
 			body: JSON.stringify(data),
 		};
 
-		const response = await fetch(`${API}/visitors/${id}`, options);
+		const response = await fetch(`${API_URL}/visitors/${id}`, options);
 
 		const result = await response.json();
 
@@ -63,7 +64,7 @@ export const editVisitor = async (id, data) => {
 
 export const getUsers = async (data) => {
 	try {
-		const response = await fetch(`${API}/users`);
+		const response = await fetch(`${API_URL}/users`);
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
 		}
@@ -79,9 +80,9 @@ export const getSingleVisitor = async (data) => {
 
 	try {
 		if (id) {
-			response = await fetch(`${API}/visitors/${id}`);
+			response = await fetch(`${API_URL}/visitors/${id}`);
 		} else if (msisdn) {
-			response = await fetch(`${API}/visitors?search=${msisdn}`);
+			response = await fetch(`${API_URL}/visitors?search=${msisdn}`);
 		}
 
 		if (!response.ok) {
@@ -103,7 +104,7 @@ export const getVisits = async (query = {}) => {
 			direction = "",
 		} = query;
 
-		let url = `${API}/visits?start=${start}&limit=${limit}`;
+		let url = `${API_URL}/visits?start=${start}&limit=${limit}`;
 
 		if (search) {
 			url += `&search=${search}`;
@@ -135,7 +136,7 @@ export const getVisitors = async (query) => {
 			direction = "",
 		} = query;
 
-		let url = `${API}/visitors?start=${start}&limit=${limit}`;
+		let url = `${API_URL}/visitors?start=${start}&limit=${limit}`;
 
 		if (search) {
 			url += `&search=${search}`;
@@ -168,7 +169,7 @@ export const getVisitorWithVisits = async (id, query) => {
 			direction = "",
 		} = query;
 
-		let url = `${API}/visitors/${id}/visits?&start=${start}&limit=${limit}`;
+		let url = `${API_URL}/visitors/${id}/visits?&start=${start}&limit=${limit}`;
 
 		if (search) {
 			url += `&search=${search}`;

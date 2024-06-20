@@ -52,11 +52,22 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
 	data: { type: Object, required: true },
 });
+
+const router = useRouter();
+
+function goToPage(link) {
+    // go to a dummy route before to go to the target route
+    // because the browser will ignore the routing if the target route
+    // is the same as the current route
+    router.replace({ path: "/null" }).then(() => {
+        router.replace({ path: link });
+    });
+}
 </script>
 
 <style scoped>

@@ -289,7 +289,7 @@ onMounted(() => {
 });
 </script>
 
-<style>
+<style scoped>
 #eventsWrapper {
 	margin: 50px 125px;
 }

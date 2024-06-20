@@ -37,7 +37,6 @@ import RefreshList from "../components/RefreshList.vue";
 import Options from "@/components/Options.vue";
 
 import { RouterLink, RouterView } from "vue-router";
-import { ref, watch } from "vue";
 
 const breadCrumbs = defineModel("breadCrumbs");
 

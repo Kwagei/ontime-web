@@ -1,65 +1,60 @@
 <template>
-	<div class="w-100 d-flex align-items-center flex-column">
-		<div class="d-flex justify-content-between w-50 mt-3 gap-4">
-			<div class="d-flex flex-column align-items-start">
-				<span class="fs-5">Facilitator</span>
-				<h3>{{ event.facilitator }}</h3>
-				<span class="fs-5">Type</span>
-				<h3>{{ event.type }}</h3>
-			</div>
-			<div class="d-flex flex-column align-items-end">
-				<span class="fs-5">Start Date</span>
-				<h3>{{ formatDate(event.start_date) }}</h3>
-				<span class="fs-5">End Date</span>
-				<h3>{{ formatDate(event.end_date) }}</h3>
-			</div>
-		</div>
-		<div class="w-50 pt-2 text-center">
-			<h4>{{ event.details }}</h4>
-		</div>
-
-		<div class="d-flex gap-3" id="detailsOptionsContainer">
-			<button
-				class="btn btn-primary"
-				@click="$emit('switch', 'addParticipant')"
-			>
-				Add Participant
-			</button>
-			<button
-				class="btn btn-primary"
-				@click="$emit('switch', 'importParticipants')"
-			>
-				Import Participants
-			</button>
-			<Options @click="displayOptions" />
-			<ul class="d-none" id="eventOptionsUL">
-				<a
-					class="link-underline link-underline-opacity-0"
-					href="http://localhost:5173/participants_template.csv"
-					download="participants_template.csv"
-				>
-					<li>Download CSV Template</li>
-				</a>
-				<a
-					class="link-underline link-underline-opacity-0"
-					:href="`/events/${eventId}/participants`"
-				>
-					<li>View Participants</li>
-				</a>
-			</ul>
-		</div>
-	</div>
+    <div class="w-100 d-flex align-items-center flex-column">
+        <div
+            class="d-flex justify-content-between gap-4 pt-3"
+            style="width: 81%"
+        >
+            <BreadCrumbs :breadCrumbs="['events', event.title]" />
+            <div class="d-flex gap-3">
+                <button
+                    @click="emit('switch', 'importParticipants')"
+                    class="btn btn-secondary"
+                >
+                    Import Participants
+                </button>
+                <button
+                    @click="emit('switch', 'addParticipant')"
+                    class="btn btn-primary"
+                >
+                    Add Participant
+                </button>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between gap-4" style="width: 81%">
+            <div
+                class="d-flex justify-content-between mt-3 gap-4 mx-auto"
+                style="width: 70%"
+            >
+                <div class="d-flex flex-column align-items-start">
+                    <span class="fs-5">Facilitator</span>
+                    <h3>{{ event.facilitator }}</h3>
+                    <span class="fs-5">Type</span>
+                    <h3>{{ event.type }}</h3>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <span class="fs-5">Start Date</span>
+                    <h3>{{ formatDate(event.start_date) }}</h3>
+                    <span class="fs-5">End Date</span>
+                    <h3>{{ formatDate(event.end_date) }}</h3>
+                </div>
+            </div>
+            <div class="border border-1"></div>
+            <div v-if="event.details" class="w-50 pt-2 text-left flex-grow-1">
+                <span class="fs-5">Details</span>
+                <vr />
+                <h5 class="mt-2 mb-0">{{ event.details }}</h5>
+            </div>
+        </div>
+        <EventParticipants />
+    </div>
 </template>
 
 <script setup>
-import Options from "../Options.vue";
+import BreadCrumbs from "../BreadCrumbs.vue";
+import EventParticipants from "./EventParticipants.vue";
 
 import { formatDate } from "../../assets/js/index.js";
-import $ from "jquery";
-import { useRoute } from "vue-router";
 
-const router = useRoute();
-const eventId = router.params.id;
 const props = defineProps({
 	event: {
 		type: Object,
@@ -67,18 +62,7 @@ const props = defineProps({
 	},
 });
 
-$(document).on("click", () => {
-	$("#eventOptionsUL").addClass("d-none");
-});
-
-function displayOptions(event) {
-	// show drop down list of options
-	const eventsOptionsUL = $("#eventOptionsUL");
-	eventsOptionsUL.toggleClass("d-none");
-	event.stopPropagation();
-	eventsOptionsUL[0].style.left = `${event.clientX - 130}px`;
-	eventsOptionsUL[0].style.top = `${event.clientY + 10}px`;
-}
+const emit = defineEmits(["switch"]);
 </script>
 
 <style scoped>

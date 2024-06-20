@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref } from "vue";
 const sortTerm = defineModel("term");
 const directionTerm = defineModel("direction");
 const ascending = ref(true);

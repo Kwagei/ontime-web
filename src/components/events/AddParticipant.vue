@@ -187,6 +187,8 @@ async function postParticipant() {
 
         $("body").css("pointer-events", "none");
 
+        $("body").css("pointer-events", "none");
+
         try {
             await $.post(API_URL + "event_participants/", data, () => {
                 emit("participantAdded", {

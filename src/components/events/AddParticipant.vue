@@ -149,7 +149,7 @@
             <!-- Will not show, just added so the for could submit by pressing enter -->
             <button class="visually-hidden" type="submit">Submit</button>
         </form>
-        </div>
+    </div>
 </template>
 
 <script setup>

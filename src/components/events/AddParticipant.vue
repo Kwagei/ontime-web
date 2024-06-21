@@ -149,7 +149,7 @@
             <!-- Will not show, just added so the for could submit by pressing enter -->
             <button class="visually-hidden" type="submit">Submit</button>
         </form>
-        </div>
+    </div>
 </template>
 
 <script setup>
@@ -184,6 +184,8 @@ async function postParticipant() {
 			event_id: router.params.id,
 			event_participants: formatEventParticipants(),
 		};
+
+        $("body").css("pointer-events", "none");
 
         $("body").css("pointer-events", "none");
 

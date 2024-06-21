@@ -20,15 +20,15 @@
         <div id="importedParticipantsGridContainer">
             <div
                 class="p-3 boxShadow"
-                v-for="(participant, idx) in participantsToDisplay"
+                v-if="
+                    Array.isArray(participantsToDisplay) &&
+                    !!participantsToDisplay.length
+                "
+                v-for="participant in participantsToDisplay"
             >
-                <div class="float-end">
-                    <button
-                        @click="emit('edit', idx)"
-                        class="btn btn-secondary"
-                    >
-                        Edit
-                    </button>
+                <div class="d-flex flex-column gap-2 float-end">
+                    <Edit @click="emit('edit', participant.msisdn)" />
+                    <Delete @click="emit('delete', participant.msisdn)" />
                 </div>
                 <h5>{{ participant.first_name }}</h5>
                 <h5>{{ participant.middle_name }}</h5>
@@ -37,11 +37,15 @@
                 <h5>{{ participant.email }}</h5>
                 <h5>+{{ participant.msisdn }}</h5>
             </div>
+            <h3 v-else>No match found!</h3>
         </div>
     </div>
 </template>
 
 <script setup>
+import Edit from "../Edit.vue";
+import Delete from "../Delete.vue";
+
 import { computed, ref } from "vue";
 
 const props = defineProps({
@@ -57,10 +61,13 @@ const type = ref("first_name");
 
 // display query results if any, otherwise, display the participants
 const participantsToDisplay = computed(() => {
-    return queryResults.value.length ? queryResults.value : props.participants;
+    if (queryResults.value.length) return queryResults.value;
+    else if (query.value && !queryResults.value.length)
+        return "No match found!";
+    return props.participants;
 });
 
-const emit = defineEmits(["edit"]);
+const emit = defineEmits(["edit", "delete"]);
 
 function search() {
     // query the original participants array for matching values
@@ -69,6 +76,8 @@ function search() {
             .toLowerCase()
             .includes(query.value.toLowerCase())
     );
+
+    if (queryResults.value.length) participantsToDisplay = "No match found!";
 }
 </script>
 

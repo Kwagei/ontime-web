@@ -13,6 +13,7 @@ dist-ssr
 coverage
 *.local
 .env
+create_csv.py
 
 /cypress/videos/
 /cypress/screenshots/

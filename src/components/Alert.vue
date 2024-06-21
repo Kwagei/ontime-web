@@ -1,9 +1,11 @@
 <template>
-    <div class="alert alert-danger alertWrapper" role="alert" v-if="title">
-        <span class="alert-icon">
-            <span class="visually-hidden">Error</span>
+    <div id="alertWrapper" class="alert alert-danger" role="alert" v-if="title">
+        <span
+            class="text-danger-emphasis"
+            style="font-weight: 800; margin-bottom: 12px; margin-top: -8px"
+        >
+            {{ title }}
         </span>
-        <p class="text-danger-emphasis">{{ title }}</p>
     </div>
 </template>
 
@@ -14,7 +16,7 @@ const props = defineProps({
 </script>
 
 <style scoped>
-.alertWrapper {
+#alertWrapper {
     border: none !important;
     margin-bottom: -15px;
     padding-bottom: 0;

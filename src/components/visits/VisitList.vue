@@ -33,6 +33,7 @@
 					<th scope="col">Phone number</th>
 					<th scope="col">Purpose</th>
 					<th scope="col">Items</th>
+					<th scope="col">Checkout</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -54,6 +55,10 @@
 					<td>{{ visit.msisdn }}</td>
 					<td>{{ visit.purpose }}</td>
 					<td>{{ visit.items }}</td>
+					<td>
+
+						<button type="button" class="btn btn-primary">Checkout</button>
+					</td>
 				</tr>
 			</tbody>
 		</table>

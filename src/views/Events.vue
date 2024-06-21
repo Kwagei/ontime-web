@@ -59,10 +59,10 @@ import { ref } from "vue";
 import $ from "jquery";
 
 const props = defineProps({
-	breadCrumbs: {
-		type: Array,
-		required: true,
-	},
+    breadCrumbs: {
+        type: Array,
+        required: true,
+    },
 });
 
 const sortTerms = ref([
@@ -93,12 +93,12 @@ function stopEventsRefresh() {
 
 <style scoped>
 svg {
-	height: 20px !important;
-	margin: 0 !important;
+    height: 20px !important;
+    margin: 0 !important;
 }
 
 #new-visitor:hover {
-	color: white !important;
+    color: white !important;
 }
 
 #eventsWrapper {
@@ -107,25 +107,25 @@ svg {
 }
 
 .btn {
-	padding: 0.5rem !important;
+    padding: 0.5rem !important;
 }
 
 .btn:hover {
-	border: 0.125rem solid black !important;
+    border: 0.125rem solid black !important;
 }
 
 .btn:hover g {
-	fill: white;
+    fill: white;
 }
 
 .list-options svg {
-	height: 20px !important;
-	margin: 0 !important;
+    height: 20px !important;
+    margin: 0 !important;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {
-	#eventsWrapper {
-		padding: 1rem 3rem 0 3rem;
-	}
+    #eventsWrapper {
+        padding: 1rem 3rem 0 3rem;
+    }
 }
 </style>

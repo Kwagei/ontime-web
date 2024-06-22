@@ -162,6 +162,7 @@ import {
     registerVisitor,
     editVisitor,
     getSingleVisitor,
+    visuallyHideModalBackdrop,
 } from "@/assets/js/index.js";
 import { msisdnValidation, emailValidation } from "@/assets/js/util.js";
 
@@ -234,12 +235,6 @@ const fetchVisitor = async () => {
         msisdn.value = visitorInfo.msisdn;
         email.value = visitorInfo.email;
     }
-};
-
-const visuallyHideModalBackdrop = () => {
-    document
-        .querySelectorAll(".modal-backdrop")
-        .forEach((modal) => modal.classList.add("visually-hidden"));
 };
 
 const validEmail = ref(false);

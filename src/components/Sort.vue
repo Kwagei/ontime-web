@@ -91,14 +91,13 @@ const sortType = ref(props.sortTerms[0].type);
 const updateSortTerm = (sort) => {
     sortTerm.value = sort.term;
     sortType.value = sort.type;
-    directionTerms.value = directionType.value;
 };
 
 const toggleDirection = () => {
     directionTerm.value = directionTerm.value !== "asc" ? "asc" : "desc";
     sortType.value = sortType.value;
-    ascending.value = ascending.value === true ? false : true;
-    descending.value = descending.value === false ? true : false;
+    ascending.value = !ascending.value;
+    descending.value = !descending.value;
 };
 </script>
 

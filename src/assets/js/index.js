@@ -1,7 +1,24 @@
-import $ from "jquery";
-
-export const API = import.meta.env.VITE_API_URL;
 export const API_URL = import.meta.env.VITE_API_URL;
+
+export const registerVisit = async (data) => {
+    try {
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
+
+        const response = await fetch(`${API_URL}/visits`, options);
+
+        const result = await response.json();
+
+        return { ok: response.ok, result };
+    } catch (error) {
+        console.error("Error: ", error);
+    }
+};
 
 export const registerVisitor = async (data) => {
     try {
@@ -13,7 +30,7 @@ export const registerVisitor = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API}/visitors`, options);
+        const response = await fetch(`${API_URL}/visitors`, options);
 
         const result = await response.json();
 
@@ -33,7 +50,7 @@ export const editVisitor = async (id, data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API}/visitors/${id}`, options);
+        const response = await fetch(`${API_URL}/visitors/${id}`, options);
 
         const result = await response.json();
 
@@ -43,15 +60,27 @@ export const editVisitor = async (id, data) => {
     }
 };
 
+export const getUsers = async (data) => {
+    try {
+        const response = await fetch(`${API_URL}/users`);
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+
+        const { data } = await response.json();
+        return data;
+    } catch (error) {}
+};
+
 export const getSingleVisitor = async (data) => {
     const { id, msisdn } = data;
     let response;
 
     try {
         if (id) {
-            response = await fetch(`${API}/visitors/${id}`);
+            response = await fetch(`${API_URL}/visitors/${id}`);
         } else if (msisdn) {
-            response = await fetch(`${API}/visitors?search=${msisdn}`);
+            response = await fetch(`${API_URL}/visitors?search=${msisdn}`);
         }
 
         if (!response.ok) {
@@ -63,19 +92,60 @@ export const getSingleVisitor = async (data) => {
     } catch (error) {}
 };
 
+export const getVisits = async (query = {}) => {
+    try {
+        const {
+            search = "",
+            start = 0,
+            limit = 20,
+            sort = "",
+            direction = "",
+        } = query;
+
+        let url = `${API_URL}/visits?start=${start}&limit=${limit}`;
+
+        if (search) {
+            url += `&search=${search}`;
+        }
+
+        if (sort) {
+            url += `&sort=${sort}&direction=${direction}`;
+        }
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const { data } = await response.json();
+
+        return data;
+    } catch (error) {
+        console.error("Error: ", error);
+    }
+};
+
 export const getVisitors = async (query) => {
     try {
         const {
             search = "",
             start = 0,
-            limit = 10,
+            limit = 20,
             sort = "",
             direction = "",
         } = query;
 
-        const response = await fetch(
-            `${API}/visitors/?search=${search}&start=${start}&limit=${limit}&sort=${sort}&direction=${direction}`
-        );
+        let url = `${API_URL}/visitors?start=${start}&limit=${limit}`;
+
+        if (search) {
+            url += `&search=${search}`;
+        }
+
+        if (sort) {
+            url += `&sort=${sort}&direction=${direction}`;
+        }
+
+        const response = await fetch(url);
+
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
@@ -97,7 +167,7 @@ export const getVisitorWithVisits = async (id, query) => {
             direction = "",
         } = query;
 
-        let url = `${API}/visitors/${id}/visits?&start=${start}&limit=${limit}`;
+        let url = `${API_URL}/visitors/${id}/visits?&start=${start}&limit=${limit}`;
 
         if (search) {
             url += `&search=${search}`;
@@ -122,7 +192,13 @@ export const getVisitorWithVisits = async (id, query) => {
 };
 
 export function visuallyHideModalBackdrop() {
-    $(".modal-backdrop").addClass("visually-hidden");
+    const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
+
+    if (modalsBackdrops.length) {
+        modalsBackdrops.forEach((modal) =>
+            modal.classList.add("visually-hidden")
+        );
+    }
 }
 
 export function formatDate(date) {

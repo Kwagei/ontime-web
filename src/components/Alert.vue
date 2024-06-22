@@ -16,7 +16,7 @@ const props = defineProps({
 </script>
 
 <style scoped>
-.alertWrapper {
+#alertWrapper {
     border: none !important;
     margin-bottom: -15px;
     padding-bottom: 0;

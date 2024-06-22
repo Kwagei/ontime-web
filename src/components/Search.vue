@@ -28,7 +28,7 @@ onMounted(() => {
     inputEl.value.addEventListener("keyup", handleKeyUp);
 });
 
-function handleKeyUp(event) {
+function handleKeyUp() {
     searchTerms.value = inputEl.value.value;
 }
 </script>

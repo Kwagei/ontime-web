@@ -20,7 +20,7 @@
             <tbody>
                 <tr
                     v-for="event in eventsToShow"
-                    @click="displayEvent(event.id)"
+                    @click="displayEventPage(event.id)"
                     class="cursorPointer"
                 >
                     <td>
@@ -92,12 +92,14 @@ const MAX_DETAIL_LEN = 110;
 const props = defineProps({
     searchQuery: String,
     refresh: Boolean,
+    sort: String,
+    direction: String,
 });
 
 const emit = defineEmits(["refreshComplete"]);
 
 onMounted(async () => {
-    await getEvents();
+    await getEvents(props.searchQuery, 0, 20, props.sort, props.direction);
 });
 
 // Watch Pagination Switches
@@ -134,10 +136,20 @@ watch(
     }
 );
 
+// Watch for Changes in the Sort and Direction
+watch(
+    () => [props.sort, props.direction],
+    ([newSort, newDirection]) => {
+        getEvents(props.searchQuery, 0, 30, newSort, newDirection);
+    }
+);
+
 async function getEvents(
     search = "",
     start = 0,
     limit = 20,
+    sortTerm = props.sort,
+    direction = props.direction,
     from = "",
     to = ""
 ) {
@@ -145,7 +157,9 @@ async function getEvents(
 
     // Get Events from API
     try {
-        let url = API_URL + `events?start=${start}&limit=${limit}`;
+        let url =
+            API_URL +
+            `events?start=${start}&limit=${limit}&sort=${sortTerm}&direction=${direction}`;
 
         if (search) url += `&search=${search}`;
         if (from) url += `&from=${from}`;
@@ -172,19 +186,19 @@ function formatDetails(detail) {
     return newDetail.length >= MAX_DETAIL_LEN ? `${newDetail}...` : newDetail;
 }
 
-function displayEvent(eventId) {
-    router.push({ name: "specific-event", params: { id: eventId } });
-}
-
 async function moreEvents(
-    search = "",
+    search = props.searchQuery,
     start = allEvents.value.length,
     limit = 20,
+    sortTerm = props.sort,
+    direction = props.direction,
     from = "",
     to = ""
 ) {
     try {
-        let url = API_URL + `events?start=${start}&limit=${limit}`;
+        let url =
+            API_URL +
+            `events?start=${start}&limit=${limit}&sort=${sortTerm}&direction=${direction}`;
 
         if (search) url += `&search=${search}`;
         if (from) url += `&from=${from}`;

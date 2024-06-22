@@ -38,8 +38,8 @@
                     <h3>{{ formatDate(event.end_date) }}</h3>
                 </div>
             </div>
-            <div class="border border-1"></div>
-            <div v-if="event.details" class="w-50 pt-2 text-left flex-grow-1">
+            <div v-show="event.details" class="border border-1"></div>
+            <div v-show="event.details" class="w-50 pt-2 text-left flex-grow-1">
                 <span class="fs-5">Details</span>
                 <vr />
                 <h5 class="mt-2 mb-0">{{ event.details }}</h5>

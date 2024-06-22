@@ -17,7 +17,9 @@
                             <input
                                 class="form-check-input"
                                 type="checkbox"
-                                id="customCheck"
+                                id="selectAll"
+                                @change="selectAll"
+                                :checked="allSelected"
                             />
                             <label class="form-check-label" for="customCheck">
                                 <span class="visually-hidden">Select all</span>
@@ -43,8 +45,8 @@
                             <input
                                 class="form-check-input"
                                 type="checkbox"
-                                id="customCheck3"
-                                @click.stop
+                                :id="`checkbox-${visitor.id}`"
+                                v-model="visitor.selected"
                             />
                         </div>
                     </td>
@@ -72,7 +74,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import { getVisitors } from "@/assets/js/index.js";
 import Pagination from "../Pagination.vue";
 import Search from "../Search.vue";
@@ -82,7 +84,7 @@ import Sort from "../Sort.vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-const visitors = defineModel();
+const visitors = ref([]);
 const start = ref(0);
 const limit = ref(10);
 const loader = ref(true);
@@ -136,13 +138,31 @@ const formatDateTime = (visitors) => {
     return visitors.map((visitor) => {
         const [date] = visitor.created_at.split("T");
         visitor.created_at = date;
-        return visitor;
+        return { ...visitor, seleted: false };
     });
 };
 
 onMounted(() => {
     fetchVisitors();
 });
+
+const allSelected = computed({
+    get() {
+        return (
+            visitors.value.length > 0 &&
+            visitors.value.every((visit) => visit.selected)
+        );
+    },
+    set(value) {
+        visitors.value.forEach((visit) => {
+            visit.selected = value;
+        });
+    },
+});
+
+const selectAll = (event) => {
+    allSelected.value = event.target.checked;
+};
 </script>
 
 <style scoped>

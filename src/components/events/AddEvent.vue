@@ -213,9 +213,8 @@ async function postEvent() {
 
     try {
         await $.post(API_URL + "events/", body, (data) => {
-            console.log("Boosted: ", boosted);
             const modal = new boosted.Modal("#exampleModal");
-            modal.show(document.querySelector("#toggleMyModal"));
+            modal.show($("#toggleMyModal")[0]);
 
             // set modal data
             successModalData.value.message = data.message;

@@ -167,6 +167,7 @@ async function postParticipants() {
                 pageLink: `/events/${eventId}`,
             });
         });
+        $("body").css("pointer-events", "auto");
     } catch (error) {
         $("body").css("pointer-events", "auto");
         if (error.responseJSON.status === 500) {

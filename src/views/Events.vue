@@ -26,11 +26,21 @@
         <div class="d-flex justify-content-between my-4">
             <Search v-model:search="searchQuery" />
             <Filter />
+            <<<<<<< HEAD
             <Sort :sortTerms="sortTerms" />
+            =======
+            <Sort
+                :sortTerms="sortTerms"
+                v-model:term="sort"
+                v-model:direction="direction"
+            />
+            >>>>>>> development
         </div>
         <EventsList
             :searchQuery="searchQuery"
             :refresh="refresh"
+            :sort="sort"
+            :direction="direction"
             @refreshComplete="stopEventsRefresh"
         />
     </div>
@@ -62,6 +72,9 @@ const sortTerms = ref([
     { type: "Type", term: "type" },
     { type: "Facilitator", term: "facilitator" },
 ]);
+const sort = ref("title");
+const direction = ref("asc");
+
 const searchQuery = ref("");
 
 const refresh = ref(false);

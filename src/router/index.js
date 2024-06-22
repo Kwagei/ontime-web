@@ -10,11 +10,14 @@ import AddVisitors from "../components/visitors/AddVisitors.vue";
 
 // Visit Components
 import Visits from "../views/Visits.vue";
+import AddMeeting from "@/components/visits/AddMeeting.vue";
+import AddEvents from "@/components/visits/AddEvents.vue";
+import AddWorkspace from "@/components/visits/AddWorkspace.vue";
 
 // Users Components
 import Users from "../views/Users.vue";
 
-// Other Components
+// Dashboard Components
 import Dashboard from "../views/Dashboard.vue";
 
 // Dependecies Imports
@@ -59,8 +62,28 @@ const routes = [
     },
     {
         path: "/visits",
-        component: Visits,
-        name: "visits",
+        children: [
+            {
+                path: "",
+                component: Visits,
+                name: "visits",
+            },
+            {
+                path: "purpose-meeting",
+                component: AddMeeting,
+                name: "add-meeting",
+            },
+            {
+                path: "purpose-event",
+                component: AddEvents,
+                name: "visits-event",
+            },
+            {
+                path: "purpose-workspace",
+                component: AddWorkspace,
+                name: "add-workspace",
+            },
+        ],
     },
     {
         path: "/users",
@@ -80,6 +103,11 @@ const routes = [
                 path: "/events/:id",
                 component: Event,
                 name: "specific-event",
+            },
+            {
+                path: "/events/:id/participants",
+                component: EventParticipants,
+                name: "specific-event-participants",
             },
         ],
     },

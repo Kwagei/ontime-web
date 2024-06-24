@@ -87,19 +87,19 @@ const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX_EVENTS_TO_SHOW = ref(10);
 const router = useRouter();
-const MAX_DETAIL_LEN = 110;
+const MAX_DETAIL_LEN = 115;
 
 const props = defineProps({
     searchQuery: String,
     refresh: Boolean,
-    sort: String,
+    term: String,
     direction: String,
 });
 
 const emit = defineEmits(["refreshComplete"]);
 
 onMounted(async () => {
-    await getEvents(props.searchQuery, 0, 20, props.sort, props.direction);
+    await getEvents(props.searchQuery, 0, 20, props.term, props.direction);
 });
 
 // Watch Pagination Switches
@@ -138,9 +138,9 @@ watch(
 
 // Watch for Changes in the Sort and Direction
 watch(
-    () => [props.sort, props.direction],
-    ([newSort, newDirection]) => {
-        getEvents(props.searchQuery, 0, 30, newSort, newDirection);
+    () => [props.term, props.direction],
+    ([newTerm, newDirection]) => {
+        getEvents(props.searchQuery, 0, 30, newTerm, newDirection);
     }
 );
 
@@ -148,7 +148,7 @@ async function getEvents(
     search = "",
     start = 0,
     limit = 20,
-    sortTerm = props.sort,
+    sortTerm = props.term,
     direction = props.direction,
     from = "",
     to = ""
@@ -186,21 +186,15 @@ function formatDetails(detail) {
     return newDetail.length >= MAX_DETAIL_LEN ? `${newDetail}...` : newDetail;
 }
 
-function formatDetails(detail) {
-	let newDetail = detail.slice(0, MAX_DETAIL_LEN);
-
-	return newDetail.length >= MAX_DETAIL_LEN ? `${newDetail}...` : newDetail;
-}
-
-function displayEvent(eventId) {
-	router.push({ name: "specific-event", params: { id: eventId } });
+function displayEventPage(eventId) {
+    router.push({ name: "specific-event", params: { id: eventId } });
 }
 
 async function moreEvents(
     search = props.searchQuery,
     start = allEvents.value.length,
     limit = 20,
-    sortTerm = props.sort,
+    sortTerm = props.term,
     direction = props.direction,
     from = "",
     to = ""
@@ -221,14 +215,6 @@ async function moreEvents(
     } catch (error) {
         // do nothing
     }
-}
-
-function displayEventPage(pageId) {
-    router.push({ name: "specific-event", params: { id: pageId } });
-}
-
-function displayEventPage(pageId) {
-	router.push({ name: "specific-event", params: { id: pageId } });
 }
 </script>
 

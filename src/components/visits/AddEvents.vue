@@ -212,7 +212,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, watch, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import {

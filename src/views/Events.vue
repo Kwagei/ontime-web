@@ -36,10 +36,10 @@
             />
             >>>>>>> development
         </div>
-        <EventsList
+        <EventsTable
             :searchQuery="searchQuery"
             :refresh="refresh"
-            :sort="sort"
+            :term="term"
             :direction="direction"
             @refreshComplete="stopEventsRefresh"
         />
@@ -53,7 +53,7 @@ import Options from "../components/Options.vue";
 import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
-import EventsList from "../components/events/EventsList.vue";
+import EventsTable from "../components/events/EventsTable.vue";
 
 import { ref } from "vue";
 import $ from "jquery";
@@ -66,13 +66,14 @@ const props = defineProps({
 });
 
 const sortTerms = ref([
+    { type: "Created At", term: "created_at" },
     { type: "Title", term: "title" },
     { type: "Start Date", term: "start_date" },
     { type: "End Date", term: "end_date" },
     { type: "Type", term: "type" },
     { type: "Facilitator", term: "facilitator" },
 ]);
-const sort = ref("title");
+const term = ref("created_at");
 const direction = ref("asc");
 
 const searchQuery = ref("");

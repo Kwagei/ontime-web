@@ -43,6 +43,7 @@
                         {{ data.message }}
                     </div>
                     <button
+                        v-if="data.pageLink"
                         class="btn btn-primary d-block"
                         @click="goToPage(data.pageLink)"
                     >
@@ -64,6 +65,8 @@ const props = defineProps({
 const router = useRouter();
 
 function goToPage(link) {
+    if (!link) return;
+
     // go to a dummy route before to go to the target route
     // because the browser will ignore the routing if the target route
     // is the same as the current route

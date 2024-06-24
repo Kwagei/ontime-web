@@ -1,5 +1,5 @@
 <template>
-    <Modal :data="{ title, message, status }" />
+    <Modal :data="{ title, message, status, pageLink }" />
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -176,6 +176,7 @@ const email = ref("");
 const status = ref("");
 const message = ref("");
 const title = ref("");
+const pageLink = ref("");
 const isValid = ref(true);
 const isTouched = ref(false);
 
@@ -215,6 +216,7 @@ const onSubmit = async () => {
     status.value = response.ok ? "success" : "danger";
     message.value = response.result.message;
     title.value = response.ok ? "Success" : "Error";
+    pageLink.value = `/visitors/${response.result.data[0].id}`;
 
     visuallyHideModalBackdrop();
 

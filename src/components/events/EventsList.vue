@@ -87,7 +87,7 @@ const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX_EVENTS_TO_SHOW = ref(10);
 const router = useRouter();
-const MAX_DETAIL_LEN = 110;
+const MAX_DETAIL_LEN = 7;
 
 const props = defineProps({
 	searchQuery: String,
@@ -168,9 +168,13 @@ async function getEvents(
 }
 
 function formatDetails(detail) {
-	let newDetail = detail.slice(0, MAX_DETAIL_LEN);
+	const detailLen = detail.split(" ").length;
+	const newDetail =
+		detailLen >= MAX_DETAIL_LEN
+			? `${detail.split(" ").slice(0, MAX_DETAIL_LEN).join(" ")}...`
+			: detail;
 
-	return newDetail.length >= MAX_DETAIL_LEN ? `${newDetail}...` : newDetail;
+	return newDetail;
 }
 
 function displayEvent(eventId) {

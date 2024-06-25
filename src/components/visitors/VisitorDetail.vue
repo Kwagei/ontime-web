@@ -95,7 +95,7 @@
             </div>
         </div>
 
-        <div class="row justify-content-between container p-0 mx-auto">
+        <div class="row justify-content-between container p-0 my-4 mx-auto">
             <Search v-model:search="searchTerms" />
             <Filter />
             <Sort

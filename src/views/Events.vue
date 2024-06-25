@@ -6,16 +6,16 @@
             </div>
             <div>
                 <RefreshList
-                    style="height: 50px !important; width: 55px !important"
+                    style="height: 45px !important; width: 55px !important"
                     @click="refreshEvents"
                 />
                 <Options
-                    style="height: 50px !important; width: 55px !important"
+                    style="height: 45px !important; width: 55px !important"
                     class="mx-2"
                 />
                 <router-link :to="{ name: 'add-event' }">
                     <button
-                        style="height: 50px !important; width: 150px !important"
+                        style="height: 45px !important; width: 150px !important"
                         class="btn btn-primary"
                     >
                         Add Event
@@ -26,15 +26,11 @@
         <div class="d-flex justify-content-between my-4">
             <Search v-model:search="searchQuery" />
             <Filter />
-            <<<<<<< HEAD
-            <Sort :sortTerms="sortTerms" />
-            =======
             <Sort
                 :sortTerms="sortTerms"
                 v-model:term="sort"
                 v-model:direction="direction"
             />
-            >>>>>>> development
         </div>
         <EventsTable
             :searchQuery="searchQuery"

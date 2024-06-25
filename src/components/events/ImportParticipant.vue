@@ -18,7 +18,7 @@
             <div>
                 <a
                     class="link-underline link-underline-opacity-0"
-                    href="/participants_template.csv"
+                    href="/docs/participants_template.csv"
                     download="participants_template.csv"
                 >
                     <button class="btn btn-primary">

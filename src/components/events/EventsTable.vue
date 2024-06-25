@@ -186,6 +186,10 @@ function formatDetails(detail) {
     return newDetail.length >= MAX_DETAIL_LEN ? `${newDetail}...` : newDetail;
 }
 
+function displayEventPage(eventId) {
+    router.push({ name: "specific-event", params: { id: eventId } });
+}
+
 async function moreEvents(
     search = props.searchQuery,
     start = allEvents.value.length,
@@ -211,10 +215,6 @@ async function moreEvents(
     } catch (error) {
         // do nothing
     }
-}
-
-function displayEventPage(pageId) {
-    router.push({ name: "specific-event", params: { id: pageId } });
 }
 </script>
 

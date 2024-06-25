@@ -31,9 +31,8 @@ const breadCrumbs = ref([]);
 
 <style scoped>
 #wrapper {
-    height: 100vh;
-    width: 100vw;
-    position: fixed;
+	height: 100vh;
+	width: 100vw;
 }
 
 /* Section Scrolling Media Query */

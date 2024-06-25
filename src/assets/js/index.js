@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 export const API_URL = import.meta.env.VITE_API_URL;
 
 export const registerVisit = async (data) => {
@@ -11,26 +13,6 @@ export const registerVisit = async (data) => {
         };
 
         const response = await fetch(`${API_URL}/visits`, options);
-
-        const result = await response.json();
-
-        return { ok: response.ok, result };
-    } catch (error) {
-        console.error("Error: ", error);
-    }
-};
-
-export const registerVisit = async (data) => {
-	try {
-		const options = {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
-		};
-
-		const response = await fetch(`${API}/visits`, options);
 
         const result = await response.json();
 

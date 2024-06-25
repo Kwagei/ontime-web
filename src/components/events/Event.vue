@@ -7,11 +7,13 @@
     <h2 v-if="event == 'error'" class="d-flex justify-content-center pt-5">
         Error Loading Event, Try again
     </h2>
-    <div v-else-if="event == 'loading'" class="text-center" role="status">
-        <div
-            class="spinner-border spinner-border-lg position-absolute top-50"
-            role="status"
-        >
+    <div
+        v-else-if="event == 'loading'"
+        class="text-center d-flex justify-content-center align-items-center"
+        role="status"
+        style="height: 85vh"
+    >
+        <div class="spinner-border spinner-border-lg" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>

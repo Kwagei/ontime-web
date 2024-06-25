@@ -6,16 +6,16 @@
             </div>
             <div>
                 <RefreshList
-                    style="height: 50px !important; width: 55px !important"
+                    style="height: 45px !important; width: 55px !important"
                     @click="refreshEvents"
                 />
                 <Options
-                    style="height: 50px !important; width: 55px !important"
+                    style="height: 45px !important; width: 55px !important"
                     class="mx-2"
                 />
                 <router-link :to="{ name: 'add-event' }">
                     <button
-                        style="height: 50px !important; width: 150px !important"
+                        style="height: 45px !important; width: 150px !important"
                         class="btn btn-primary"
                     >
                         Add Event

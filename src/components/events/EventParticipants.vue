@@ -3,6 +3,7 @@
         v-show="
             (participants == 'loading' && searchQuery) ||
             participants == 'noMatch' ||
+            sorting ||
             hasParticipants
         "
         class="mt-3"
@@ -67,6 +68,8 @@ const participants = ref("loading");
 const participantsToShow = ref([]);
 const paginationStart = ref(0);
 const MAX_PARTICIPANTS_TO_SHOW = 10;
+const sorting = ref(false);
+
 const searchQuery = ref("");
 const term = ref("created_at");
 const direction = ref("ASC");
@@ -120,9 +123,21 @@ watch(searchQuery, async (newValue) => {
 // Watch for Changes in the Sort and Direction
 watch(
     () => [term.value, direction.value],
-    ([newTerm, newDirection]) => {
-        if (newTerm && newDirection)
-            getParticipants(searchQuery.value, 0, 30, newTerm, newDirection);
+    async ([newTerm, newDirection]) => {
+        if (newTerm && newDirection) {
+            sorting.value = true;
+            participants.value = "loading";
+
+            await getParticipants(
+                searchQuery.value,
+                0,
+                30,
+                newTerm,
+                newDirection
+            );
+
+            sorting.value = false;
+        }
     }
 );
 
@@ -140,9 +155,6 @@ async function getParticipants(
         url += `&limit=${limit}`;
         url += `&term=${sortTerm}`;
         url += `&direction=${sortDirection}`;
-
-        console.log("URL: ", url);
-        console.log("Search: ", search);
 
         await $.get(url, (data) => {
             // display 'No match' if there was no result from the search

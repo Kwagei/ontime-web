@@ -87,7 +87,7 @@ const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX_EVENTS_TO_SHOW = ref(10);
 const router = useRouter();
-const MAX_DETAIL_LEN = 7;
+const MAX_DETAIL_LEN = 115;
 
 const props = defineProps({
     searchQuery: String,
@@ -161,11 +161,9 @@ async function getEvents(
             API_URL +
             `events?start=${start}&limit=${limit}&sort=${sortTerm}&direction=${direction}`;
 
-    // Get Events from API
-    try {
-        let url =
-            API_URL +
-            `events?start=${start}&limit=${limit}&sort=${sortTerm}&direction=${direction}`;
+        if (search) url += `&search=${search}`;
+        if (from) url += `&from=${from}`;
+        if (to) url += `&to=${to}`;
 
         await $.get(url, (data) => {
             // display no match if there was no result from the search
@@ -188,18 +186,8 @@ function formatDetails(detail) {
     return newDetail.length >= MAX_DETAIL_LEN ? `${newDetail}...` : newDetail;
 }
 
-function formatDetails(detail) {
-	const detailLen = detail.split(" ").length;
-	const newDetail =
-		detailLen >= MAX_DETAIL_LEN
-			? `${detail.split(" ").slice(0, MAX_DETAIL_LEN).join(" ")}...`
-			: detail;
-
-	return newDetail;
-}
-
-function displayEvent(eventId) {
-	router.push({ name: "specific-event", params: { id: eventId } });
+function displayEventPage(eventId) {
+    router.push({ name: "specific-event", params: { id: eventId } });
 }
 
 async function moreEvents(

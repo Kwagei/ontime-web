@@ -180,7 +180,7 @@ const newParticipant = ref({ ...emptyParticipant });
 const participantError = ref({ ...emptyParticipant });
 
 async function postParticipant() {
-    if (validateParticipant(newParticipant.value)) {
+    if (validateParticipant()) {
         const data = {
             event_id: router.params.id,
             event_participants: formatEventParticipants(),
@@ -217,11 +217,14 @@ async function postParticipant() {
     }
 }
 
-function validateParticipant(participant) {
+function validateParticipant() {
     participantError.value = { ...emptyParticipant };
 
     // ensure `first_name` was given
-    if (!newParticipant.value.firstName || participant.firstName.length <= 1) {
+    if (
+        !newParticipant.value.firstName ||
+        newParticipant.value.firstName.length <= 1
+    ) {
         participantError.value.firstName =
             "Participant's `first_name` is invalid";
         return false;
@@ -229,14 +232,20 @@ function validateParticipant(participant) {
 
     // if middle_name was given
     // ensure it's atleast two characters
-    if (participant.middleName && participant.middleName.length <= 1) {
+    if (
+        newParticipant.value.middleName &&
+        newParticipant.value.middleName.length <= 1
+    ) {
         participantError.value.middleName =
             "Participant's `middle_name` is invalid";
         return false;
     }
 
     // ensure `last_name` was given
-    if (!newParticipant.value.lastName || participant.lastName.length <= 1) {
+    if (
+        !newParticipant.value.lastName ||
+        newParticipant.value.lastName.length <= 1
+    ) {
         participantError.value.lastName =
             "Participant's `last_name` is invalid";
         return false;

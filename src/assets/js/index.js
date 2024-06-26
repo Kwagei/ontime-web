@@ -1,6 +1,7 @@
 import $ from "jquery";
 
 export const API_URL = process.env.VITE_VERCEL_ENV;
+console.log({API_URL})
 
 export const registerVisit = async (data) => {
     try {

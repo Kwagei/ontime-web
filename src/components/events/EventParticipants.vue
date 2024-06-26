@@ -3,6 +3,7 @@
         v-show="
             (participants == 'loading' && searchQuery) ||
             participants == 'noMatch' ||
+            sorting ||
             hasParticipants
         "
         class="mt-3"
@@ -11,7 +12,11 @@
         <div class="d-flex justify-content-between mb-3 mx-2">
             <Search v-model:search="searchQuery" />
             <Filter />
-            <Sort :sortTerms="participantsSortTerms" />
+            <Sort
+                v-model:term="term"
+                v-model:direction="direction"
+                :sortTerms="participantsSortTerms"
+            />
         </div>
     </div>
     <div style="width: 70vw" v-if="hasParticipants">
@@ -63,9 +68,14 @@ const participants = ref("loading");
 const participantsToShow = ref([]);
 const paginationStart = ref(0);
 const MAX_PARTICIPANTS_TO_SHOW = 10;
+const sorting = ref(false);
+
 const searchQuery = ref("");
+const term = ref("created_at");
+const direction = ref("ASC");
 
 const participantsSortTerms = [
+    { type: "Created At", term: "created_at" },
     { type: "First Name", term: "first_name" },
     { type: "Middle Name", term: "middle_name" },
     { type: "Last Name", term: "last_name" },
@@ -110,20 +120,50 @@ watch(searchQuery, async (newValue) => {
     getParticipants(newValue, 0, 30);
 });
 
-async function getParticipants(search = "", start = 0, limit = 20) {
+// Watch for Changes in the Sort and Direction
+watch(
+    () => [term.value, direction.value],
+    async ([newTerm, newDirection]) => {
+        if (newTerm && newDirection) {
+            sorting.value = true;
+            participants.value = "loading";
+
+            await getParticipants(
+                searchQuery.value,
+                0,
+                30,
+                newTerm,
+                newDirection
+            );
+
+            sorting.value = false;
+        }
+    }
+);
+
+async function getParticipants(
+    search = "",
+    start = 0,
+    limit = 20,
+    sortTerm = term.value,
+    sortDirection = direction.value
+) {
     try {
-        await $.get(
-            API_URL +
-                `events/${eventId}/participants?search=${search}&start=${start}&limit=${limit}`,
-            (data) => {
-                // display 'No match' if there was no result from the search
-                if (search && !data.data.length) participants.value = "noMatch";
-                else {
-                    participants.value = data.data;
-                    participantsToShow.value = participants.value.slice(0, 10);
-                }
+        let url = API_URL + `events/${eventId}/participants`;
+        url += `?search=${search}`;
+        url += `&start=${start}`;
+        url += `&limit=${limit}`;
+        url += `&term=${sortTerm}`;
+        url += `&direction=${sortDirection}`;
+
+        await $.get(url, (data) => {
+            // display 'No match' if there was no result from the search
+            if (search && !data.data.length) participants.value = "noMatch";
+            else {
+                participants.value = data.data;
+                participantsToShow.value = participants.value.slice(0, 10);
             }
-        );
+        });
     } catch (error) {
         participants.value = "error";
     }

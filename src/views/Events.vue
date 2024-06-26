@@ -4,54 +4,33 @@
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
 		>
 			<BreadCrumbs :breadCrumbs="breadCrumbs" />
-
 			<div class="d-flex" style="gap: 0.521rem">
 				<RefreshList @click="refreshEvents" />
 				<Options />
-
 				<router-link :to="{ name: 'add-event' }">
 					<button
-						type="button"
+						style="height: 45px !important; width: 150px !important"
 						class="btn btn-primary"
-						id="new-visitor"
-						style="
-							padding: 0.7rem 2rem !important;
-							font-weight: 600;
-						"
 					>
 						Add Event
 					</button>
 				</router-link>
 			</div>
 		</div>
-		<!-- <div class="d-flex justify-content-between my-4">
-			<div>
-				<BreadCrumbs :breadCrumbs="breadCrumbs" />
-			</div>
-			<div>
-				<RefreshList @click="refreshEvents" />
-				<Options class="mx-2" />
-				<router-link :to="{ name: 'add-event' }">
-					<button
-						style="
-							padding: 0.7rem 2rem !important;
-							font-weight: 600;
-						"
-						class="btn btn-primary"
-					>
-						Add Event
-					</button>
-				</router-link>
-			</div>
-		</div> -->
 		<div class="d-flex justify-content-between my-4">
 			<Search v-model:search="searchQuery" />
 			<Filter />
-			<Sort :sortTerms="sortTerms" />
+			<Sort
+				:sortTerms="sortTerms"
+				v-model:term="sort"
+				v-model:direction="direction"
+			/>
 		</div>
-		<EventsList
+		<EventsTable
 			:searchQuery="searchQuery"
 			:refresh="refresh"
+			:term="term"
+			:direction="direction"
 			@refreshComplete="stopEventsRefresh"
 		/>
 	</div>
@@ -64,7 +43,7 @@ import Options from "../components/Options.vue";
 import Search from "../components/Search.vue";
 import Filter from "../components/Filter.vue";
 import Sort from "../components/Sort.vue";
-import EventsList from "../components/events/EventsList.vue";
+import EventsTable from "../components/events/EventsTable.vue";
 
 import { ref } from "vue";
 import $ from "jquery";
@@ -77,12 +56,16 @@ const props = defineProps({
 });
 
 const sortTerms = ref([
+	{ type: "Created At", term: "created_at" },
 	{ type: "Title", term: "title" },
 	{ type: "Start Date", term: "start_date" },
 	{ type: "End Date", term: "end_date" },
 	{ type: "Type", term: "type" },
 	{ type: "Facilitator", term: "facilitator" },
 ]);
+const term = ref("created_at");
+const direction = ref("asc");
+
 const searchQuery = ref("");
 
 const refresh = ref(false);

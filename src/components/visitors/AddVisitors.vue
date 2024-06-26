@@ -1,5 +1,5 @@
 <template>
-	<Modal :data="{ title, message, status }" />
+	<Modal :data="{ title, message, status, pageLink }" />
 	<div id="visitor-view" class="d-flex flex-column container">
 		<div
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -162,6 +162,7 @@ import {
 	registerVisitor,
 	editVisitor,
 	getSingleVisitor,
+	visuallyHideModalBackdrop,
 } from "@/assets/js/index.js";
 import { msisdnValidation, emailValidation } from "@/assets/js/util.js";
 
@@ -175,6 +176,7 @@ const email = ref("");
 const status = ref("");
 const message = ref("");
 const title = ref("");
+const pageLink = ref("");
 
 const buttonLabel = ref("Save");
 let visitorInfo;
@@ -210,6 +212,7 @@ const onSubmit = async () => {
 	status.value = response.ok ? "success" : "danger";
 	message.value = response.result.message;
 	title.value = response.ok ? "Success" : "Error";
+	pageLink.value = `/visitors/${response.result.data[0].id}`;
 
 	visuallyHideModalBackdrop();
 
@@ -230,12 +233,6 @@ const fetchVisitor = async () => {
 		msisdn.value = visitorInfo.msisdn;
 		email.value = visitorInfo.email;
 	}
-};
-
-const visuallyHideModalBackdrop = () => {
-	document
-		.querySelectorAll(".modal-backdrop")
-		.forEach((modal) => modal.classList.add("visually-hidden"));
 };
 
 const validEmail = ref(false);

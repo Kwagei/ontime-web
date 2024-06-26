@@ -2,7 +2,6 @@
 import AddEvent from "../components/events/AddEvent.vue";
 import Events from "../views/Events.vue";
 import Event from "../components/events/Event.vue";
-import EventParticipants from "@/components/events/EventParticipants.vue";
 
 // Visitors Components
 import VisitorDetail from "../components/visitors/VisitorDetail.vue";
@@ -86,11 +85,6 @@ const routes = [
 				component: AddWorkspace,
 				name: "add-workspace",
 			},
-			{
-				path: "new-host",
-				component: Host,
-				name: "new-host",
-			},
 		],
 	},
 	{
@@ -109,13 +103,18 @@ const routes = [
 			},
 			{
 				path: "/events/:id",
-				component: Event,
-				name: "specific-event",
-			},
-			{
-				path: "/events/:id/participants",
-				component: EventParticipants,
-				name: "specific-event-participants",
+				children: [
+					{
+						path: "",
+						component: Event,
+						name: "specific-event",
+					},
+					{
+						path: "edit",
+						component: AddEvent,
+						name: "specific-event-participants",
+					},
+				],
 			},
 			{
 				path: "new-host",

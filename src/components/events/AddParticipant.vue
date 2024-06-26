@@ -16,6 +16,7 @@
         </div>
         <form
             @submit.prevent="postParticipant"
+            @input="validateParticipant"
             class="w-75 container gap-5 p-4"
             style="
                 background-color: #fff;
@@ -149,7 +150,7 @@
             <!-- Will not show, just added so the for could submit by pressing enter -->
             <button class="visually-hidden" type="submit">Submit</button>
         </form>
-        </div>
+    </div>
 </template>
 
 <script setup>
@@ -179,11 +180,15 @@ const newParticipant = ref({ ...emptyParticipant });
 const participantError = ref({ ...emptyParticipant });
 
 async function postParticipant() {
-	if (validateParticipant(newParticipant.value)) {
-		const data = {
-			event_id: router.params.id,
-			event_participants: formatEventParticipants(),
-		};
+    if (validateParticipant()) {
+        const data = {
+            event_id: router.params.id,
+            event_participants: formatEventParticipants(),
+        };
+
+        $("body").css("pointer-events", "none");
+
+        $("body").css("pointer-events", "none");
 
         $("body").css("pointer-events", "none");
 
@@ -212,30 +217,39 @@ async function postParticipant() {
     }
 }
 
-function validateParticipant(participant) {
-	participantError.value = { ...emptyParticipant };
+function validateParticipant() {
+    participantError.value = { ...emptyParticipant };
 
-	// ensure `first_name` was given
-	if (!newParticipant.value.firstName || participant.firstName.length <= 1) {
-		participantError.value.firstName =
-			"Participant's `first_name` is invalid";
-		return false;
-	}
+    // ensure `first_name` was given
+    if (
+        !newParticipant.value.firstName ||
+        newParticipant.value.firstName.length <= 1
+    ) {
+        participantError.value.firstName =
+            "Participant's `first_name` is invalid";
+        return false;
+    }
 
-	// if middle_name was given
-	// ensure it's atleast two characters
-	if (participant.middleName && participant.middleName.length <= 1) {
-		participantError.value.middleName =
-			"Participant's `middle_name` is invalid";
-		return false;
-	}
+    // if middle_name was given
+    // ensure it's atleast two characters
+    if (
+        newParticipant.value.middleName &&
+        newParticipant.value.middleName.length <= 1
+    ) {
+        participantError.value.middleName =
+            "Participant's `middle_name` is invalid";
+        return false;
+    }
 
-	// ensure `last_name` was given
-	if (!newParticipant.value.lastName || participant.lastName.length <= 1) {
-		participantError.value.lastName =
-			"Participant's `last_name` is invalid";
-		return false;
-	}
+    // ensure `last_name` was given
+    if (
+        !newParticipant.value.lastName ||
+        newParticipant.value.lastName.length <= 1
+    ) {
+        participantError.value.lastName =
+            "Participant's `last_name` is invalid";
+        return false;
+    }
 
 	// ensure `email` was given
 	if (!newParticipant.value.email) {

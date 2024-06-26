@@ -95,7 +95,7 @@
 			</div>
 		</div>
 
-		<div class="row justify-content-between container p-0 mx-auto">
+		<div class="row justify-content-between container p-0 my-4 mx-auto">
 			<Search v-model:search="searchTerms" />
 			<Filter />
 			<Sort
@@ -329,12 +329,12 @@ const visitDetail = () => {};
 	height: 1.2rem;
 }
 
-tr {
-	cursor: pointer;
+.edit-btn:hover {
+	border: 2px solid black !important;
 }
 
-th,
-td {
-	padding: 0.9rem;
+.edit-btn svg {
+	width: 1.2rem;
+	height: 1.2rem;
 }
 </style>

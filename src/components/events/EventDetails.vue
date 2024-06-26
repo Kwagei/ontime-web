@@ -18,6 +18,10 @@
                 >
                     Add Participant
                 </button>
+                <Edit
+                    style="height: 45px; width: 50px; background-color: #ddd"
+                    @click="$emit('editEvent')"
+                />
             </div>
         </div>
         <div class="d-flex justify-content-between gap-4" style="width: 81%">
@@ -38,8 +42,8 @@
                     <h3>{{ formatDate(event.end_date) }}</h3>
                 </div>
             </div>
-            <div class="border border-1"></div>
-            <div v-if="event.details" class="w-50 pt-2 text-left flex-grow-1">
+            <div v-show="event.details" class="border border-1"></div>
+            <div v-show="event.details" class="w-50 pt-2 text-left flex-grow-1">
                 <span class="fs-5">Details</span>
                 <vr />
                 <h5 class="mt-2 mb-0">{{ event.details }}</h5>
@@ -54,12 +58,13 @@ import BreadCrumbs from "../BreadCrumbs.vue";
 import EventParticipants from "./EventParticipants.vue";
 
 import { formatDate } from "../../assets/js/index.js";
+import Edit from "../Edit.vue";
 
 const props = defineProps({
-	event: {
-		type: Object,
-		required: true,
-	},
+    event: {
+        type: Object,
+        required: true,
+    },
 });
 
 const emit = defineEmits(["switch"]);
@@ -67,21 +72,21 @@ const emit = defineEmits(["switch"]);
 
 <style scoped>
 #eventOptionsUL {
-	position: absolute;
-	z-index: 9999;
-	background-color: #eee;
-	list-style: none;
-	border: 2px solid #555;
-	padding: 0;
+    position: absolute;
+    z-index: 9999;
+    background-color: #eee;
+    list-style: none;
+    border: 2px solid #555;
+    padding: 0;
 }
 
 #eventOptionsUL li {
-	padding: 15px;
-	cursor: pointer;
-	font-weight: 800;
+    padding: 15px;
+    cursor: pointer;
+    font-weight: 800;
 }
 
 #eventOptionsUL li:hover {
-	background-color: #ddd;
+    background-color: #ddd;
 }
 </style>

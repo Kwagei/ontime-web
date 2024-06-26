@@ -147,21 +147,21 @@ onMounted(() => {
 });
 
 const allSelected = computed({
-	get() {
-		return (
-			visitors.value.length > 0 &&
-			visitors.value.every((visit) => visit.selected)
-		);
-	},
-	set(value) {
-		visitors.value.forEach((visit) => {
-			visit.selected = value;
-		});
-	},
+    get() {
+        return (
+            visitors.value.length > 0 &&
+            visitors.value.every((visit) => visit.selected)
+        );
+    },
+    set(value) {
+        visitors.value.forEach((visit) => {
+            visit.selected = value;
+        });
+    },
 });
 
 const selectAll = (event) => {
-	allSelected.value = event.target.checked;
+    allSelected.value = event.target.checked;
 };
 </script>
 

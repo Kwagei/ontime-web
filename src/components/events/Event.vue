@@ -13,7 +13,7 @@
 		role="status"
 		style="height: 85vh"
 	>
-		<div class="spinner-border" role="status">
+		<div class="spinner-border spinner-border-lg" role="status">
 			<span class="visually-hidden">Loading...</span>
 		</div>
 	</div>
@@ -25,6 +25,7 @@
 			v-if="state == 'details'"
 			@switch="switchState"
 			@displayEventParticipants="switchState"
+			@editEvent="editEvent"
 		/>
 		<AddParticipant
 			v-if="state == 'addParticipant'"
@@ -70,7 +71,7 @@ onMounted(async () => {
 
 async function getEvent() {
 	try {
-		await $.get(API_URL + `/events/${eventId.value}`, (data) => {
+		await $.get(API_URL + `events/${eventId.value}`, (data) => {
 			event.value = data.data[0];
 		});
 	} catch {
@@ -109,6 +110,12 @@ function setModalData(newData) {
 
 		visuallyHideModalBackdrop();
 	}, 500);
+}
+
+function editEvent() {
+	router.push(`/events/${eventId.value}/edit`, {
+		params: { id: eventId.value },
+	});
 }
 </script>
 

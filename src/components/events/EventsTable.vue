@@ -94,12 +94,14 @@ const MAX_DETAIL_LEN = 5;
 const props = defineProps({
 	searchQuery: String,
 	refresh: Boolean,
+	term: String,
+	direction: String,
 });
 
 const emit = defineEmits(["refreshComplete"]);
 
 onMounted(async () => {
-	await getEvents();
+	await getEvents(props.searchQuery, 0, 20, props.term, props.direction);
 });
 
 // Watch Pagination Switches
@@ -136,10 +138,20 @@ watch(
 	}
 );
 
+// Watch for Changes in the Sort and Direction
+watch(
+	() => [props.term, props.direction],
+	([newTerm, newDirection]) => {
+		getEvents(props.searchQuery, 0, 30, newTerm, newDirection);
+	}
+);
+
 async function getEvents(
 	search = "",
 	start = 0,
 	limit = 20,
+	sortTerm = props.term,
+	direction = props.direction,
 	from = "",
 	to = ""
 ) {
@@ -147,7 +159,9 @@ async function getEvents(
 
 	// Get Events from API
 	try {
-		let url = API_URL + `/events?start=${start}&limit=${limit}`;
+		let url =
+			API_URL +
+			`events?start=${start}&limit=${limit}&sort=${sortTerm}&direction=${direction}`;
 
 		if (search) url += `&search=${search}`;
 		if (from) url += `&from=${from}`;
@@ -158,7 +172,6 @@ async function getEvents(
 			if (search && !data.data.length) {
 				allEvents.value = "noMatch";
 			} else {
-				console.log(data);
 				allEvents.value = data.data;
 				eventsToShow.value = allEvents.value.slice(0, 10);
 			}
@@ -179,15 +192,23 @@ function formatDetails(detail) {
 	return newDetail;
 }
 
+function displayEventPage(eventId) {
+	router.push({ name: "specific-event", params: { id: eventId } });
+}
+
 async function moreEvents(
-	search = "",
+	search = props.searchQuery,
 	start = allEvents.value.length,
 	limit = 20,
+	sortTerm = props.term,
+	direction = props.direction,
 	from = "",
 	to = ""
 ) {
 	try {
-		let url = API_URL + `events?start=${start}&limit=${limit}`;
+		let url =
+			API_URL +
+			`events?start=${start}&limit=${limit}&sort=${sortTerm}&direction=${direction}`;
 
 		if (search) url += `&search=${search}`;
 		if (from) url += `&from=${from}`;
@@ -201,10 +222,6 @@ async function moreEvents(
 		// do nothing
 	}
 }
-
-function displayEventPage(pageId) {
-	router.push({ name: "specific-event", params: { id: pageId } });
-}
 </script>
 
 <style scoped>
@@ -216,9 +233,5 @@ th,
 td {
 	padding: 0.9rem;
 	font-size: 0.9rem;
-}
-
-.cursorPointer {
-	cursor: pointer;
 }
 </style>

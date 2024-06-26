@@ -25,6 +25,7 @@
             v-if="state == 'details'"
             @switch="switchState"
             @displayEventParticipants="switchState"
+            @editEvent="editEvent"
         />
         <AddParticipant
             v-if="state == 'addParticipant'"
@@ -109,6 +110,12 @@ function setModalData(newData) {
 
         visuallyHideModalBackdrop();
     }, 500);
+}
+
+function editEvent() {
+    router.push(`/events/${eventId.value}/edit`, {
+        params: { id: eventId.value },
+    });
 }
 </script>
 

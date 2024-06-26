@@ -10,11 +10,11 @@
     <div id="eventsWrapper">
         <div class="d-flex justify-content-between">
             <div>
-                <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
+                <BreadCrumbs v-model:breadCrumbs="activeBreadCrumbs" />
             </div>
             <div>
                 <button
-                    @click="postEvent"
+                    @click="mode == 'add' ? postEvent() : putEvent()"
                     class="border-primary btn btn-primary px-5 py-2"
                     type="submit"
                 >
@@ -24,7 +24,7 @@
         </div>
 
         <form
-            @submit.prevent="postEvent"
+            @submit.prevent="mode == 'add' ? postEvent() : putEvent()"
             id="eventsFormWrapper"
             novalidate
             class="my-4 p-5 needs-validation"
@@ -165,8 +165,7 @@ import { visuallyHideModalBackdrop, API_URL } from "../../assets/js/index.js";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import Alert from "../Alert.vue";
-
-const activeBreadCrumbs = ref([]);
+import { useRouter } from "vue-router";
 
 // Event Creation Data
 const title = ref("");
@@ -199,7 +198,16 @@ const props = defineProps({
     },
 });
 
-activeBreadCrumbs.value = [...props.breadCrumbs, "add-event"];
+const router = useRouter();
+const eventId = ref(router.currentRoute.value.params.id);
+const mode = setMode();
+
+// Set breadcrumbs for editing of adding new event
+const activeBreadCrumbs = ref(
+    eventId.value
+        ? [...props.breadCrumbs, eventId.value, "edit-event"]
+        : [...props.breadCrumbs, "add-event"]
+);
 
 async function postEvent() {
     const body = {
@@ -232,6 +240,41 @@ async function postEvent() {
         clearErrors();
         displayErrorMessage(error.responseJSON.message);
     }
+}
+
+async function putEvent() {
+    const body = {
+        title: title.value,
+        facilitator: facilitator.value,
+        start_date: startDate.value,
+        end_date: endDate.value,
+        type: type.value,
+        details: details.value,
+    };
+
+    // PUT request to Edit the Event with the given
+    // data from the form
+
+    $.ajax({
+        url: API_URL + `events/${eventId.value}`,
+        type: "PUT",
+        data: body,
+        success: () => {
+            clearInputs();
+            clearErrors();
+
+            // redirect the user to the edited event page
+            // so they can see the updates
+            router.push({
+                name: "specific-event",
+                params: { id: eventId.value },
+            });
+        },
+        error: (err) => {
+            clearErrors();
+            displayErrorMessage(err.responseJSON.message);
+        },
+    });
 }
 
 function displayErrorMessage(msg) {
@@ -269,26 +312,56 @@ function clearErrors() {
     detailsError.value = "";
 }
 
-onMounted(() => {
-    (() => {
-        "use strict";
+onMounted(async () => {
+    // get event to edit if we're trying to edit
+    if (mode == "edit") await getEventToEdit();
 
-        const form = document.querySelector(".needs-validation");
+    ("use strict");
 
-        form.addEventListener(
-            "submit",
-            (event) => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
+    $(".needs-validation").on(
+        "submit",
+        (event) => {
+            if (!form[0].checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
 
-                form.classList.add("was-validated");
-            },
-            false
-        );
-    })();
+            this.addClass("was-validated");
+        },
+        false
+    );
 });
+
+function setMode() {
+    return eventId.value ? "edit" : "add";
+}
+
+async function getEventToEdit() {
+    try {
+        $.get(API_URL + `events/${eventId.value}/`, (data) => {
+            const retrievedEvent = data.data[0];
+
+            title.value = retrievedEvent.title;
+            type.value = retrievedEvent.type;
+            facilitator.value = retrievedEvent.facilitator;
+            details.value = retrievedEvent.details;
+
+            // format date before setting it as the value
+            // start date input field in the form
+            startDate.value = new Date(retrievedEvent.start_date)
+                .toISOString()
+                .split("T")[0];
+
+            // format date before setting it as the value
+            // end date input field in the form
+            endDate.value = new Date(retrievedEvent.end_date)
+                .toISOString()
+                .split("T")[0];
+        });
+    } catch (error) {
+        console.log("Error getting event to edit: ", error.responseJSON);
+    }
+}
 </script>
 
 <style scoped>

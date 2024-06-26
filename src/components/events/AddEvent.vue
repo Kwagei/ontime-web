@@ -23,6 +23,15 @@
             </div>
         </div>
 
+        <h3
+            v-if="errorGettingEventToEdit"
+            class="text-center mt-3 d-flex align-items-center flex-column text-danger"
+            style="margin-bottom: -21px"
+        >
+            Error getting event to edit, please try again!
+            <hr class="text-center w-75" />
+        </h3>
+
         <form
             @submit.prevent="mode == 'add' ? postEvent() : putEvent()"
             id="eventsFormWrapper"
@@ -201,6 +210,7 @@ const props = defineProps({
 const router = useRouter();
 const eventId = ref(router.currentRoute.value.params.id);
 const mode = setMode();
+const errorGettingEventToEdit = ref("");
 
 // Set breadcrumbs for editing of adding new event
 const activeBreadCrumbs = ref(
@@ -357,9 +367,15 @@ async function getEventToEdit() {
             endDate.value = new Date(retrievedEvent.end_date)
                 .toISOString()
                 .split("T")[0];
+
+            errorGettingEventToEdit.value = false;
+        }).fail((error) => {
+            console.log("Error getting event to edit: ", error.responseJSON);
+            errorGettingEventToEdit.value = true;
         });
     } catch (error) {
         console.log("Error getting event to edit: ", error.responseJSON);
+        errorGettingEventToEdit.value = true;
     }
 }
 </script>

@@ -1,39 +1,60 @@
 <template>
-    <div id="eventsWrapper">
-        <div class="d-flex justify-content-between my-4">
-            <div>
-                <BreadCrumbs :breadCrumbs="breadCrumbs" />
-            </div>
-            <div>
-                <RefreshList
-                    style="height: 50px !important; width: 55px !important"
-                    @click="refreshEvents"
-                />
-                <Options
-                    style="height: 50px !important; width: 55px !important"
-                    class="mx-2"
-                />
-                <router-link :to="{ name: 'add-event' }">
-                    <button
-                        style="height: 50px !important; width: 150px !important"
-                        class="btn btn-primary"
-                    >
-                        Add Event
-                    </button>
-                </router-link>
-            </div>
-        </div>
-        <div class="d-flex justify-content-between my-4">
-            <Search v-model:search="searchQuery" />
-            <Filter />
-            <Sort :sortTerms="sortTerms" />
-        </div>
-        <EventsList
-            :searchQuery="searchQuery"
-            :refresh="refresh"
-            @refreshComplete="stopEventsRefresh"
-        />
-    </div>
+	<div id="eventsWrapper" class="d-flex flex-column container">
+		<div
+			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
+		>
+			<BreadCrumbs :breadCrumbs="breadCrumbs" />
+
+			<div class="d-flex" style="gap: 0.521rem">
+				<RefreshList @click="refreshEvents" />
+				<Options />
+
+				<router-link :to="{ name: 'add-event' }">
+					<button
+						type="button"
+						class="btn btn-primary"
+						id="new-visitor"
+						style="
+							padding: 0.7rem 2rem !important;
+							font-weight: 600;
+						"
+					>
+						Add Event
+					</button>
+				</router-link>
+			</div>
+		</div>
+		<!-- <div class="d-flex justify-content-between my-4">
+			<div>
+				<BreadCrumbs :breadCrumbs="breadCrumbs" />
+			</div>
+			<div>
+				<RefreshList @click="refreshEvents" />
+				<Options class="mx-2" />
+				<router-link :to="{ name: 'add-event' }">
+					<button
+						style="
+							padding: 0.7rem 2rem !important;
+							font-weight: 600;
+						"
+						class="btn btn-primary"
+					>
+						Add Event
+					</button>
+				</router-link>
+			</div>
+		</div> -->
+		<div class="d-flex justify-content-between my-4">
+			<Search v-model:search="searchQuery" />
+			<Filter />
+			<Sort :sortTerms="sortTerms" />
+		</div>
+		<EventsList
+			:searchQuery="searchQuery"
+			:refresh="refresh"
+			@refreshComplete="stopEventsRefresh"
+		/>
+	</div>
 </template>
 
 <script setup>
@@ -56,25 +77,25 @@ const props = defineProps({
 });
 
 const sortTerms = ref([
-    { type: "Title", term: "title" },
-    { type: "Start Date", term: "start_date" },
-    { type: "End Date", term: "end_date" },
-    { type: "Type", term: "type" },
-    { type: "Facilitator", term: "facilitator" },
+	{ type: "Title", term: "title" },
+	{ type: "Start Date", term: "start_date" },
+	{ type: "End Date", term: "end_date" },
+	{ type: "Type", term: "type" },
+	{ type: "Facilitator", term: "facilitator" },
 ]);
 const searchQuery = ref("");
 
 const refresh = ref(false);
 
 function refreshEvents() {
-    refresh.value = true;
-    $(".refresh").css("pointer-events", "none");
+	refresh.value = true;
+	$(".refresh").css("pointer-events", "none");
 }
 
 function stopEventsRefresh() {
-    // refresh and then set refresh back to false
-    refresh.value = false;
-    $(".refresh").css("pointer-events", "auto");
+	// refresh and then set refresh back to false
+	refresh.value = false;
+	$(".refresh").css("pointer-events", "auto");
 }
 </script>
 
@@ -89,8 +110,8 @@ svg {
 }
 
 #eventsWrapper {
-    gap: 1.5rem;
-    margin: 0 9rem;
+	gap: 1.5rem;
+	padding-top: 2rem;
 }
 
 .btn {

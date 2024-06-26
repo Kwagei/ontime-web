@@ -1,6 +1,10 @@
 <template>
 	<Modal :data="{ title, message, status }" />
-	<div id="visit-view" class="d-flex flex-column container">
+	<div
+		id="visit-view"
+		class="d-flex flex-column container"
+		style="padding-top: 2rem"
+	>
 		<div
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
 			style="margin-top: 0.3rem"
@@ -43,7 +47,7 @@
 					</div>
 				</div>
 
-				<!-- NEW VISITOR -->
+				<!-- VISITOR -->
 				<div class="col-md-6">
 					<label
 						for="validationCustomNewVisitor"
@@ -67,72 +71,41 @@
 				</div>
 
 				<!-- Host -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomHost"
-						class="form-label is-required"
-					>
-						Host<span class="visually-hidden">(required)</span>
+				<div class="dropdown col-md-6">
+					<label for="typeInput" class="form-label is-required">
+						Event
+						<span class="visually-hidden">(required)</span>
 					</label>
-					<div class="input-group has-validation">
-						<select
-							v-model="host_name"
-							class="form-select"
-							id="validationCustomHost"
-							required
-						>
-							<option value="" disabled>Select a host</option>
-							<option
-								v-for="option in options"
-								:key="option.value"
-								:value="option.value"
+					<input
+						type="text"
+						class="form-control"
+						id="host"
+						:id="eventID"
+						:value="eventValue"
+						aria-expanded="false"
+						data-bs-toggle="dropdown"
+						autocomplete="off"
+						required
+					/>
+					<ul class="dropdown-menu" style="width: 97%">
+						<template v-for="(option, index) in options">
+							<li
+								class="dropdown-item"
+								:value="option.id"
+								@click="updateHostTerm(option)"
 							>
 								{{ option.text }}
-							</option>
-						</select>
-						<div class="invalid-feedback">
-							Please provide a host name.
-						</div>
-					</div>
-				</div>
-
-				<!-- Belonging -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomBelonging"
-						class="form-label is-required"
-					>
-						Belonging<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomBelonging"
-							v-model="belonging"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a belonging name.
-						</div>
-					</div>
-				</div>
-
-				<!-- Institution -->
-				<div class="col-md-6">
-					<label for="validationCustomInstitution" class="form-label">
-						Institution<span class="visually-hidden"
-							>(required)</span
-						>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomInstitution"
-							v-model="institution"
-						/>
-					</div>
+							</li>
+							<router-link :to="{ name: 'add-event' }">
+								<li
+									class="dropdown-item"
+									v-if="!options[index + 1]"
+								>
+									Create new event
+								</li>
+							</router-link>
+						</template>
+					</ul>
 				</div>
 
 				<!-- Room -->
@@ -157,6 +130,38 @@
 					</div>
 				</div>
 
+				<!-- Belonging -->
+				<div class="col-md-6">
+					<label for="validationCustomBelonging" class="form-label">
+						Items
+					</label>
+					<div class="input-group">
+						<input
+							type="text"
+							class="form-control"
+							id="validationCustomBelonging"
+							v-model="belonging"
+						/>
+					</div>
+				</div>
+
+				<!-- Institution -->
+				<div class="col-md-6">
+					<label for="validationCustomInstitution" class="form-label">
+						Institution<span class="visually-hidden"
+							>(required)</span
+						>
+					</label>
+					<div class="input-group has-validation">
+						<input
+							type="text"
+							class="form-control"
+							id="validationCustomInstitution"
+							v-model="institution"
+						/>
+					</div>
+				</div>
+
 				<!-- Address -->
 				<div class="col-md-6">
 					<label
@@ -170,32 +175,11 @@
 							type="text"
 							class="form-control"
 							id="validationCustomAddress"
-							v-model="visit_address"
+							v-model="address"
 							required
 						/>
 						<div class="invalid-feedback">
 							Please provide an address.
-						</div>
-					</div>
-				</div>
-
-				<!-- Purpose -->
-				<div class="col-12">
-					<label
-						for="validationCustomPurpose"
-						class="form-label is-required"
-					>
-						Purpose<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<textarea
-							class="form-control"
-							id="validationCustomPurpose"
-							required
-							v-model="purpose"
-						></textarea>
-						<div class="invalid-feedback">
-							Please provide a purpose.
 						</div>
 					</div>
 				</div>
@@ -218,19 +202,22 @@ import Modal from "../Modal.vue";
 import {
 	registerVisit,
 	getSingleVisitor,
-	getUsers,
+	getEvents,
 } from "@/assets/js/index.js";
 
 const msisdn = ref("");
 const visitor = ref("");
 const visitorId = ref("");
-const host_name = ref("");
+const events = ref(null);
 const belonging = ref("");
 const options = ref([]);
+const eventValue = ref("");
+const eventID = ref("");
 const host_id = ref("");
-const institution = ref("");
+const room_id = ref("");
 const room = ref("");
-const visit_address = ref("");
+const institution = ref("");
+const address = ref("");
 const purpose = ref("");
 const status = ref("");
 const message = ref("");
@@ -267,18 +254,30 @@ onMounted(() => {
 			);
 		});
 	})();
-	getUserOptions();
+	getEventsOptions();
 });
 
+const updateHostTerm = (host) => {
+	eventValue.value = host.text;
+	eventID.value = host.value;
+	purpose.value = host.text;
+
+	const selectedHost = events.value.find((val) => val.id === eventID.value);
+
+	if (selectedHost) {
+		room.value = selectedHost.room;
+	}
+};
+
 // function for inserting each username in the select element
-const getUserOptions = async () => {
+const getEventsOptions = async () => {
 	try {
-		const users = await getUsers();
-		options.value = users.map((user) => ({
-			value: user.id,
-			text: user.username,
+		events.value = await getEvents();
+
+		options.value = events.value.map((event) => ({
+			value: event.id,
+			text: event.title,
 		}));
-		// console.log(options.value);
 	} catch (error) {
 		console.error("Error retrieving users:", error);
 	}
@@ -300,65 +299,55 @@ const getVisitor = async () => {
 };
 
 // watching selected host name to update host ID
-watch(host_name, (newValue) => {
-	const selectedUser = options.value.find(
-		(option) => option.value === newValue
-	);
-	if (selectedUser) {
-		console.log(`Selected username: ${selectedUser.text}`);
-		host_id.value = selectedUser.value;
-		// console.log(host_id.value);
+watch(purpose, (title) => {
+	const selectedEvent = events.value.find((event) => event.title === title);
+	if (selectedEvent) {
+		host_id.value = selectedEvent.host_id;
+		room_id.value = selectedEvent.room_id;
+		room.value = selectedEvent.room;
 	}
 });
-
-const room_id = "01d95aba-31c4-48d3-8b03-2587d8bb5730";
 
 // function to validate form before it submit the form
 const onSubmit = async () => {
 	if (
 		!msisdn.value ||
 		!visitor.value ||
-		!host_name.value ||
-		!belonging.value ||
+		!purpose.value ||
 		!room.value ||
-		!visit_address.value ||
-		!purpose.value
+		!address.value
 	) {
 		return;
 	}
 
 	// plitting text into array by using command as the deleminator
-	const formatedItems = belonging.value.split(",").map((item) => item.trim());
+	const items = belonging.value.split(",").map((item) => item.trim());
 
 	// require values for the submittion of the form
 	const visitData = {
 		visitor_id: visitorId.value,
 		institution: institution.value,
-		address: visit_address.value,
-		items: formatedItems,
-		room_id: room_id,
+		address: address.value,
+		items,
+		room_id: room_id.value,
 		host_id: host_id.value,
 		purpose: purpose.value,
 	};
-	// console.log(visitData);
+
 	const response = await registerVisit(visitData);
 
-	// console.log(response);
-
 	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-	if (!response.ok) {
-		myModal.show(document.querySelector("#toggleMyModal"));
-		status.value = "danger";
-		message.value = response.result.message;
-		title.value = "Error";
-	} else {
-		myModal.show(document.querySelector("#toggleMyModal"));
-		status.value = "success";
-		message.value = response.result.message;
-		title.value = "Success";
-	}
+	myModal.show(document.querySelector("#toggleMyModal"));
+	status.value = response.ok ? "success" : "danger";
+	message.value = response.result.message;
+	title.value = response.ok ? "Success" : "Error";
 
 	visuallyHideModalBackdrop();
+
+	// Reset form if the response is successful
+	if (response.ok) {
+		resetForm();
+	}
 };
 
 function visuallyHideModalBackdrop() {
@@ -370,11 +359,28 @@ function visuallyHideModalBackdrop() {
 		);
 	}
 }
+
+const resetForm = () => {
+	visitor.value = "";
+	purpose.value = "";
+	room.value = "";
+	msisdn.value = "";
+	address.value = "";
+	eventValue.value = "";
+	belonging.value = "";
+	institution.value = "";
+
+	// Remove validation classes
+	const form = document.querySelector(".needs-validation");
+	form.classList.remove("was-validated");
+};
 </script>
 
 <style scoped>
-.input {
-	border: 0.0125rem solid #ccc;
-	border-radius: 0.25rem !important;
+a {
+	text-decoration: none;
+}
+.form-select {
+	padding: calc(1rem - 1px) 1rem calc(0.5rem + 1px);
 }
 </style>

@@ -10,6 +10,7 @@
 						<input type="checkbox" class="form-check-input" />
 					</th>
 					<th scope="col">Title</th>
+					<th scope="col">Host</th>
 					<th scope="col">Start Date</th>
 					<th scope="col">End Date</th>
 					<th scope="col">Facilitator</th>
@@ -32,6 +33,7 @@
 						/>
 					</td>
 					<td>{{ event.title }}</td>
+					<td>{{ event.host }}</td>
 					<td style="min-width: 150px">
 						{{ formatDate(event.start_date) }}
 					</td>
@@ -87,7 +89,7 @@ const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX_EVENTS_TO_SHOW = ref(10);
 const router = useRouter();
-const MAX_DETAIL_LEN = 7;
+const MAX_DETAIL_LEN = 5;
 
 const props = defineProps({
 	searchQuery: String,
@@ -212,6 +214,12 @@ function displayEventPage(pageId) {
 <style scoped>
 .cursorPointer {
 	cursor: pointer;
+}
+
+th,
+td {
+	padding: 0.9rem;
+	font-size: 0.9rem;
 }
 
 .cursorPointer {

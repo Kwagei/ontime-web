@@ -27,7 +27,7 @@
 						</div>
 					</th>
 					<th scope="col">First name</th>
-					<th scope="col">Middle name</th>
+					<!-- <th scope="col">Middle name</th> -->
 					<th scope="col">Last name</th>
 					<th scope="col">Contact</th>
 					<th scope="col">Email</th>
@@ -51,7 +51,7 @@
 						</div>
 					</td>
 					<td>{{ visitor.first_name }}</td>
-					<td>{{ visitor.middle_name }}</td>
+					<!-- <td>{{ visitor.middle_name }}</td> -->
 					<td>{{ visitor.last_name }}</td>
 					<td>{{ visitor.msisdn }}</td>
 					<td>{{ visitor.email }}</td>
@@ -177,6 +177,7 @@ tr {
 th,
 td {
 	padding: 0.9rem;
+	font-size: 0.9rem;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {

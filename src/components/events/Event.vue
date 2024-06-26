@@ -70,7 +70,7 @@ onMounted(async () => {
 
 async function getEvent() {
 	try {
-		await $.get(API_URL + `events/${eventId.value}`, (data) => {
+		await $.get(API_URL + `/events/${eventId.value}`, (data) => {
 			event.value = data.data[0];
 		});
 	} catch {

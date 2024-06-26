@@ -19,7 +19,9 @@ import AddWorkspace from "@/components/visits/AddWorkspace.vue";
 import Users from "../views/Users.vue";
 
 // Dashboard Components
+
 import Dashboard from "../views/Dashboard.vue";
+import Host from "@/components/Host.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
@@ -84,6 +86,11 @@ const routes = [
 				component: AddWorkspace,
 				name: "add-workspace",
 			},
+			{
+				path: "new-host",
+				component: Host,
+				name: "new-host",
+			},
 		],
 	},
 	{
@@ -109,6 +116,11 @@ const routes = [
 				path: "/events/:id/participants",
 				component: EventParticipants,
 				name: "specific-event-participants",
+			},
+			{
+				path: "new-host",
+				component: Host,
+				name: "new-host",
 			},
 		],
 	},

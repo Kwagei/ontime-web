@@ -17,10 +17,10 @@
 				novalidate
 				@submit.prevent="onSubmit"
 			>
-				<!-- FIRST NAME -->
+				<!-- NAME -->
 				<div class="col-md-6">
-					<label for="first_name" class="form-label is-required"
-						>First name<span class="visually-hidden">
+					<label for="name" class="form-label is-required"
+						>Name<span class="visually-hidden">
 							(required)</span
 						></label
 					>
@@ -28,13 +28,13 @@
 						<input
 							type="text"
 							class="form-control"
-							id="first_name"
+							id="name"
 							aria-describedby="inputGroupPrepend"
-							v-model="first_name"
+							v-model="name"
 							required
 						/>
 						<div class="invalid-feedback">
-							Please provide a first name.
+							Please provide a host name.
 						</div>
 					</div>
 				</div>
@@ -74,66 +74,35 @@
 					</div>
 				</div>
 
-				<!-- MIDDLE NAME -->
-				<div class="col-md-6">
-					<label for="middle_name" class="form-label"
-						>Middle name</label
-					>
-					<input
-						type="text"
-						class="form-control"
-						id="middle_name"
-						v-model="middle_name"
-						aria-describedby="inputGroupPrepend"
-					/>
-				</div>
-
-				<!-- EMAIL -->
-				<div class="col-md-6">
-					<label for="email" class="form-label">Email</label>
-					<div class="input-group">
-						<input
-							type="email"
-							:class="[validEmail && 'validated', 'form-control']"
-							v-model="email"
-							id="email"
-							aria-describedby="inputGroupPrepend"
-							@blur="validateEmail"
-						/>
-						<div
-							:class="[
-								'invalid-feedback',
-								validEmail && 'show-feedback',
-							]"
-						>
-							Please provide a valid email address
-						</div>
-					</div>
-					<div id="emailHelp" class="form-text">
-						Please enter a valid email address. For example:
-						example@example.com
-					</div>
-				</div>
-
-				<!-- LAST NAME -->
-				<div class="col-md-6">
-					<label for="last_name" class="form-label is-required"
-						>Last name<span class="visually-hidden">
+				<!-- HOST TYPE -->
+				<div class="">
+					<label for="host_type" class="form-label is-required"
+						>Host Type<span class="visually-hidden">
 							(required)</span
 						></label
 					>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="last_name"
-							v-model="last_name"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a last name.
-						</div>
+					<div class="form-check mb-0">
+						<input class="form-check-input" type="checkbox" />
+						<label for="">Individual</label>
 					</div>
+					<div class="form-check mb-0">
+						<input class="form-check-input" type="checkbox" />
+						<label for="">Company</label>
+					</div>
+				</div>
+
+				<!-- Details -->
+				<div class="col-md-6">
+					<label for="detailsTextarea" class="form-label"
+						>Details</label
+					>
+					<textarea
+						placeholder="Enter details..."
+						class="form-control"
+						id="detailsTextarea"
+						v-model="details"
+						rows="4"
+					></textarea>
 				</div>
 
 				<div class="col-md-12">
@@ -156,28 +125,22 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
-import BreadCrumbs from "../BreadCrumbs.vue";
-import Modal from "../Modal.vue";
-import {
-	registerVisitor,
-	editVisitor,
-	getSingleVisitor,
-} from "@/assets/js/index.js";
-import { msisdnValidation, emailValidation } from "@/assets/js/util.js";
+import BreadCrumbs from "../components/BreadCrumbs.vue";
+import Modal from "../components/Modal.vue";
+import { registerHost, editHost, getHosts } from "@/assets/js/index.js";
+import { msisdnValidation } from "@/assets/js/util.js";
 
 // Route and State
 const route = useRoute();
-const first_name = ref("");
-const middle_name = ref("");
-const last_name = ref("");
+const name = ref("");
 const msisdn = ref("");
-const email = ref("");
+const details = ref("");
 const status = ref("");
 const message = ref("");
 const title = ref("");
 
 const buttonLabel = ref("Save");
-let visitorInfo;
+let hostInfo;
 
 // Form status and breadcrumbs
 const activeBreadCrumbs = ref([]);
@@ -189,21 +152,21 @@ const formStatus = tem.pop();
 
 // Functions
 const onSubmit = async () => {
-	if (!first_name.value || !last_name.value || !msisdn.value) {
+	if (!name.value || !msisdn.value) {
 		return;
 	}
 
-	const visitor = {
-		first_name: first_name.value,
-		middle_name: middle_name.value,
-		last_name: last_name.value,
+	const host = {
+		name: name.value,
 		msisdn: msisdn.value,
-		email: email.value,
+		details: details.value,
 	};
 
 	const response = formStatus.startsWith("new")
-		? await registerVisitor(visitor)
-		: await editVisitor(visitorInfo.id, visitor);
+		? await registerHost(host)
+		: await editHost(hostInfo.id, host);
+
+	console.log(response);
 
 	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
 	myModal.show(document.querySelector("#toggleMyModal"));
@@ -219,16 +182,15 @@ const onSubmit = async () => {
 	}
 };
 
-const fetchVisitor = async () => {
+const fetchHost = async () => {
 	if (formStatus.startsWith("edit")) {
 		buttonLabel.value = "Update";
 		const id = breadCrumbs.value[1];
-		visitorInfo = await getSingleVisitor({ id });
-		first_name.value = visitorInfo.first_name;
-		middle_name.value = visitorInfo.middle_name;
-		last_name.value = visitorInfo.last_name;
-		msisdn.value = visitorInfo.msisdn;
-		email.value = visitorInfo.email;
+		hostInfo = await getHosts({ id });
+
+		name.value = hostInfo.name;
+		msisdn.value = hostInfo.msisdn;
+		details.value = hostInfo.details;
 	}
 };
 
@@ -238,7 +200,6 @@ const visuallyHideModalBackdrop = () => {
 		.forEach((modal) => modal.classList.add("visually-hidden"));
 };
 
-const validEmail = ref(false);
 const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
 
@@ -249,7 +210,6 @@ const contactValidation = () => {
 
 		return;
 	}
-
 	const isvalid = msisdnValidation([msisdn.value]);
 
 	if (!isvalid.valid) {
@@ -260,16 +220,10 @@ const contactValidation = () => {
 	}
 };
 
-const validateEmail = () => {
-	validEmail.value = emailValidation(email.value) ? false : true;
-};
-
 const resetForm = () => {
-	first_name.value = "";
-	middle_name.value = "";
-	last_name.value = "";
+	name.value = "";
 	msisdn.value = "";
-	email.value = "";
+	details.value = "";
 	buttonLabel.value = "Save";
 
 	// Remove validation classes
@@ -279,7 +233,7 @@ const resetForm = () => {
 
 // Lifecycle Hooks
 onMounted(() => {
-	fetchVisitor();
+	fetchHost();
 
 	const form = document.querySelector(".needs-validation");
 	form.addEventListener(

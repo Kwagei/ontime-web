@@ -15,6 +15,7 @@
 					data-bs-toggle="offcanvas"
 					data-bs-target="#offcanvasExample"
 					aria-controls="offcanvasExample"
+					style="padding: 0.7rem 2rem !important; font-weight: 600"
 				>
 					Add visit
 				</button>

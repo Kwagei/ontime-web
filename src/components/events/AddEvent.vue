@@ -29,6 +29,7 @@
 			novalidate
 			class="my-4 p-5 needs-validation"
 		>
+			<!-- Title -->
 			<div>
 				<label for="titleInput" class="form-label is-required">
 					Title
@@ -49,6 +50,52 @@
 
 				<Alert :title="titleError" />
 			</div>
+
+			<!-- Host -->
+			<div class="dropdown">
+				<label for="typeInput" class="form-label is-required">
+					Host
+					<span class="visually-hidden">(required)</span>
+				</label>
+				<input
+					type="text"
+					class="form-control"
+					id="facilitatorInput"
+					:class="{
+						border: facilitatorError,
+						'border-danger': facilitatorError,
+					}"
+					:id="hostID"
+					:value="hostValue"
+					aria-expanded="false"
+					data-bs-toggle="dropdown"
+					autocomplete="off"
+					required
+				/>
+				<ul class="dropdown-menu w-100">
+					<template v-for="(host, index) in hosts">
+						<li
+							class="dropdown-item"
+							:value="host.id"
+							@click="updateHostTerm(host)"
+						>
+							{{ host.name }}
+						</li>
+						<router-link
+							:to="{ name: 'new-host' }"
+							class="text-primary"
+						>
+							<li class="dropdown-item" v-if="!hosts[index + 1]">
+								create new host
+							</li>
+						</router-link>
+					</template>
+				</ul>
+
+				<Alert :title="typeError" />
+			</div>
+
+			<!-- Facilitator -->
 			<div>
 				<label for="facilitatorInput" class="form-label is-required">
 					Facilitator
@@ -69,6 +116,8 @@
 
 				<Alert :title="facilitatorError" />
 			</div>
+
+			<!-- Start Date -->
 			<div>
 				<label for="startDateInput" class="form-label is-required">
 					Start Date
@@ -89,6 +138,8 @@
 
 				<Alert :title="startDateError" />
 			</div>
+
+			<!-- End Date -->
 			<div>
 				<label for="endDateInput" class="form-label is-required">
 					End Date
@@ -109,6 +160,8 @@
 
 				<Alert :title="endDateError" />
 			</div>
+
+			<!-- Type -->
 			<div>
 				<label for="typeInput" class="form-label is-required">
 					Type
@@ -133,6 +186,32 @@
 
 				<Alert :title="typeError" />
 			</div>
+
+			<!-- Rooms -->
+			<div>
+				<label for="typeInput" class="form-label is-required">
+					Rooms
+					<span class="visually-hidden">(required)</span>
+				</label>
+				<select
+					class="form-select"
+					v-model="room"
+					:class="{
+						border: typeError,
+						'border-danger': typeError,
+					}"
+					aria-label="Select Event Type"
+					required
+				>
+					<option value="FabLab">FabLab</option>
+					<option value="Super Coders">Super Coders</option>
+					<option value="Conference Hall">Conference Hall</option>
+				</select>
+
+				<Alert :title="typeError" />
+			</div>
+
+			<!-- Details -->
 			<div>
 				<label for="detailsTextarea" class="form-label">Details</label>
 				<textarea
@@ -160,11 +239,17 @@
 import { ref, defineProps, onMounted } from "vue";
 import $ from "jquery";
 
-import { visuallyHideModalBackdrop, API_URL } from "../../assets/js/index.js";
+import {
+	visuallyHideModalBackdrop,
+	API_URL,
+	getHosts,
+} from "../../assets/js/index.js";
 
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import Alert from "../Alert.vue";
+
+import { RouterLink } from "vue-router";
 
 const activeBreadCrumbs = ref([]);
 
@@ -173,6 +258,13 @@ const title = ref("");
 const facilitator = ref("");
 const startDate = ref("");
 const endDate = ref("");
+const hostValue = ref("");
+const hostID = ref("");
+const hosts = ref("");
+const type = ref("");
+const room = ref("");
+const details = ref("");
+
 // Modal Data
 const successModalData = ref({
 	title: "",
@@ -198,6 +290,11 @@ const props = defineProps({
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "add-event"];
 
+const updateHostTerm = (host) => {
+	hostValue.value = host.name;
+	hostID.value = host.id;
+};
+
 async function postEvent() {
 	const body = {
 		title: title.value,
@@ -205,12 +302,13 @@ async function postEvent() {
 		start_date: startDate.value,
 		end_date: endDate.value,
 		type: type.value,
+		host: hostValue.value,
+		room: room.value,
 		details: details.value,
 	};
 
 	try {
-		await $.post(API_URL + "events/", body, (data) => {
-			console.log("Boosted: ", boosted);
+		await $.post(API_URL + "/events/", body, (data) => {
 			const modal = new boosted.Modal("#exampleModal");
 			modal.show(document.querySelector("#toggleMyModal"));
 
@@ -267,7 +365,7 @@ function clearErrors() {
 	detailsError.value = "";
 }
 
-onMounted(() => {
+onMounted(async () => {
 	(() => {
 		"use strict";
 
@@ -286,10 +384,28 @@ onMounted(() => {
 			false
 		);
 	})();
+
+	hosts.value = await getHosts();
 });
 </script>
 
 <style scoped>
+.form-select {
+	padding: calc(1rem - 1px) 1rem calc(0.5rem + 1px);
+}
+
+.dropdown-item {
+	cursor: pointer;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	color: #ff7900 !important;
+}
+
 #eventsWrapper {
 	margin: 50px 125px;
 }

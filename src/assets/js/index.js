@@ -193,6 +193,88 @@ export const getVisitorWithVisits = async (id, query) => {
 	}
 };
 
+export const getEvents = async (id) => {
+	try {
+		let url = `${API_URL}/events`;
+
+		if (id) {
+			url += `/${id}`;
+		}
+
+		const response = await fetch(url);
+
+		if (!response.ok) {
+			throw new Error("Network response was not ok");
+		}
+		const { data: events } = await response.json();
+
+		return events;
+	} catch (error) {
+		console.error("Error: ", error);
+	}
+};
+
+export const getHosts = async (id) => {
+	try {
+		let url = `${API_URL}/hosts`;
+
+		if (id) {
+			url += `/${id}`;
+		}
+
+		const response = await fetch(url);
+
+		if (!response.ok) {
+			throw new Error("Network response was not ok");
+		}
+		const { data: hosts } = await response.json();
+
+		console.log({ hosts });
+
+		return hosts;
+	} catch (error) {}
+};
+
+export const registerHost = async (data) => {
+	try {
+		const options = {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		};
+
+		const response = await fetch(`${API_URL}/hosts`, options);
+
+		const result = await response.json();
+
+		return { ok: response.ok, result };
+	} catch (error) {
+		console.error("Error:", error);
+	}
+};
+
+export const editHost = async (id, data) => {
+	try {
+		const options = {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		};
+
+		const response = await fetch(`${API_URL}/hosts/${id}`, options);
+
+		const result = await response.json();
+
+		return { ok: response.ok, result };
+	} catch (error) {
+		console.error("Error:", error);
+	}
+};
+
 export function visuallyHideModalBackdrop() {
 	const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
 
@@ -208,3 +290,27 @@ export function formatDate(date) {
 
 	return rawDate.toString().split(" 0")[0];
 }
+
+export const updateDepartureTime = async (id, data) => {
+	try {
+		const options = {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		};
+		const response = await fetch(`${API_URL}/visits/${id}`, options);
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		const result = await response.json();
+
+		return { ok: response.ok, result };
+	} catch (error) {
+		console.error("Error in updateDepartureTime: ", error);
+		return { ok: false, result: error.message };
+	}
+};

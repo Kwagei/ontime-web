@@ -27,16 +27,28 @@ export const msisdnValidation = (msisdns) => {
 	];
 
 	for (const contact of contacts) {
+		// 0770237596
+		// 231770237596
 		const countryCode = contact.slice(0, 3);
+		const code = contact.slice(0, 1);
 
-		if (countryCode !== "231")
-			return {
-				valid: false,
-				message: "Phone number should start with 231",
-			};
+		if (code !== "0") {
+			if (countryCode !== "231") {
+				return {
+					valid: false,
+					message: "Phone number should start with 0",
+				};
+			}
+		}
 
 		// Remove country code from the msisdn if added to the msisdn.
-		const contactNumber = contact.slice(3);
+		let contactNumber;
+
+		if (code === "0") {
+			contactNumber = contact.slice(1);
+		} else if (countryCode === "231") {
+			contactNumber = contact.slice(3);
+		}
 
 		// Getting the range of the msisdn
 		const contactRange = contactNumber.length;
@@ -64,5 +76,12 @@ export const msisdnValidation = (msisdns) => {
 export const emailValidation = (mail) => {
 	const validEmail =
 		/^[a-zA-Z0-9.!#$%&'*+/=?^/_`{|}~-]+@[a-z]+(?:\.[a-zA-Z0-9]+)*$/;
-	return mail.match(validEmail) ? true : false;
+
+	const isValid = mail.match(validEmail);
+
+	if (!isValid) {
+		return { valid: false, message: "Invalid email address!" };
+	} else {
+		return { valid: true };
+	}
 };

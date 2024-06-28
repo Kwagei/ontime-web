@@ -13,6 +13,7 @@ import Visits from "../views/Visits.vue";
 import AddMeeting from "@/components/visits/AddMeeting.vue";
 import AddEvents from "@/components/visits/AddEvents.vue";
 import AddWorkspace from "@/components/visits/AddWorkspace.vue";
+import AddVisits from "@/components/visits/AddVisits.vue";
 
 // Users Components
 import Users from "../views/Users.vue";
@@ -69,6 +70,11 @@ const routes = [
 				path: "",
 				component: Visits,
 				name: "visits",
+			},
+			{
+				path: "new-visit",
+				component: AddVisits,
+				name: "add-visit",
 			},
 			{
 				path: "purpose-meeting",

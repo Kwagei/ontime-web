@@ -11,17 +11,6 @@
 					></span>
 				</li>
 
-				<li class="page-item" v-for="page in pages" :key="page">
-					<span
-						@click="pagination"
-						:data-value="page"
-						class="page-link"
-						:class="page === activePage ? 'active' : ''"
-					>
-						{{ page }}
-					</span>
-				</li>
-
 				<li class="page-item">
 					<span
 						@click="pagination"
@@ -42,11 +31,9 @@
 </style>
 
 <script setup>
-import { ref, computed } from "vue";
-import { RouterLink, useRoute } from "vue-router";
+import { ref } from "vue";
 
 const activePage = ref(1);
-const pages = ref(5);
 const position = ref(0);
 const rows = ref(10);
 const start = defineModel();
@@ -64,9 +51,9 @@ const pagination = (event) => {
 			break;
 	}
 
-	position.value = page;
-	page = page < 0 ? 0 : page - 1;
+	page = page <= 0 ? 0 : page - 1;
 	activePage.value = page + 1;
+	position.value = activePage.value;
 
 	start.value = +page * rows.value;
 };

@@ -1,14 +1,12 @@
 <template>
-	<div class="row justify-content-between container p-0 mx-auto">
-		<Search v-model:search="searchTerms" />
-		<Filter />
-		<Sort
-			:sortTerms="sortTerms"
-			v-model:term="sortTerm"
-			v-model:direction="directionTerm"
-		/>
-	</div>
-	<div class="table-responsive container p-0">
+	<div
+		class="table-responsive container p-0 d-flex flex-column"
+		style="gap: 0.9rem"
+	>
+		<div class="row justify-content-between container p-0 mx-auto">
+			<Search v-model:search="searchTerms" />
+			<Sort v-model:direction="directionTerm" />
+		</div>
 		<table class="table table-sm table-hover has-checkbox">
 			<thead>
 				<tr>
@@ -90,13 +88,21 @@
 				</tr>
 			</tbody>
 		</table>
-		<div
-			id="spinner"
-			v-if="loader"
-			class="d-flex justify-content-center p-4"
-		>
-			<div class="spinner-border" role="status">
-				<span class="visually-hidden">Loading...</span>
+		<div>
+			<div
+				id="spinner"
+				v-if="loader"
+				class="d-flex justify-content-center p-4"
+			>
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+			<div
+				v-if="fetchError"
+				class="invalid-feedback show-feedback m-auto"
+			>
+				{{ errorMessage }}
 			</div>
 		</div>
 	</div>
@@ -104,6 +110,13 @@
 </template>
 
 <style scoped>
+.show-feedback {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: larger;
+	padding: 4rem;
+}
 table {
 	margin: 0;
 }
@@ -138,8 +151,21 @@ const loader = ref(true);
 const sort = ref("");
 const MAX_ITEMS_LEN = 3;
 
-const searchTerms = ref("");
+const fetchError = ref(false);
+const errorMessage = ref("Error Loading Visits, Try Again!");
 
+const searchTerms = ref("");
+const refresh = defineModel("refresh");
+
+watch(
+	() => refresh.value,
+	async () => {
+		visits.value = [];
+		loader.value = true;
+		await fetchVisits();
+		refresh.value = false;
+	}
+);
 const sortTerms = ref([
 	{ type: "Date", term: "date_time" },
 	{ type: "Arrival Time", term: "arrival_time" },
@@ -205,7 +231,7 @@ watch(
 	}
 );
 
-const fetchData = async () => {
+const fetchVisits = async () => {
 	try {
 		const data = await getVisits({
 			sort: sortTerm.value,
@@ -215,7 +241,8 @@ const fetchData = async () => {
 		visits.value = formatDateTime(data);
 		loader.value = false;
 	} catch (error) {
-		console.error("Error fetching visits:", error);
+		loader.value = false;
+		fetchError.value = true;
 	}
 };
 
@@ -253,7 +280,7 @@ const formatDateTime = (visits) => {
 	});
 };
 
-fetchData();
+fetchVisits();
 
 const allSelected = computed({
 	get() {

@@ -133,15 +133,13 @@
 						>
 							{{ host.name }}
 						</li>
-						<router-link
-							:to="{ name: 'new-host' }"
-							class="text-primary"
-						>
-							<li class="dropdown-item" v-if="!hosts[index + 1]">
-								create new host
-							</li>
-						</router-link>
 					</template>
+					<router-link
+						:to="{ name: 'new-host' }"
+						class="text-primary"
+					>
+						<li class="dropdown-item">create new host</li>
+					</router-link>
 				</ul>
 
 				<Alert :title="hostError" />
@@ -169,10 +167,10 @@
 				<Alert :title="endDateError" />
 			</div>
 
-			<!-- Rooms -->
+			<!-- Room -->
 			<div>
 				<label for="typeInput" class="form-label is-required">
-					Rooms
+					Room
 					<span class="visually-hidden">(required)</span>
 				</label>
 				<select
@@ -439,6 +437,7 @@ onMounted(async () => {
 	);
 
 	hosts.value = await getHosts();
+	console.log(hosts.value);
 });
 
 function setMode() {

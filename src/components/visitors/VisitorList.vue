@@ -1,14 +1,13 @@
 <template>
-	<div class="row justify-content-between container p-0 mx-auto">
-		<Search v-model:search="searchTerms" />
-		<Filter />
-		<Sort
-			:sortTerms="sortTerms"
-			v-model:term="sortTerm"
-			v-model:direction="directionTerm"
-		/>
-	</div>
-	<div class="table-responsive container p-0">
+	<div
+		class="table-responsive container p-0 d-flex flex-column"
+		style="gap: 0.9rem"
+	>
+		<div class="row justify-content-between container p-0 mx-auto">
+			<Search v-model:search="searchTerms" />
+			<Sort v-model:direction="directionTerm" />
+		</div>
+
 		<table class="table table-sm table-hover has-checkbox">
 			<thead>
 				<tr>
@@ -27,7 +26,7 @@
 						</div>
 					</th>
 					<th scope="col">First name</th>
-					<!-- <th scope="col">Middle name</th> -->
+					<th scope="col">Middle name</th>
 					<th scope="col">Last name</th>
 					<th scope="col">Contact</th>
 					<th scope="col">Email</th>
@@ -51,7 +50,7 @@
 						</div>
 					</td>
 					<td>{{ visitor.first_name }}</td>
-					<!-- <td>{{ visitor.middle_name }}</td> -->
+					<td>{{ visitor.middle_name }}</td>
 					<td>{{ visitor.last_name }}</td>
 					<td>{{ visitor.msisdn }}</td>
 					<td>{{ visitor.email }}</td>
@@ -67,6 +66,9 @@
 			<div class="spinner-border" role="status">
 				<span class="visually-hidden">Loading...</span>
 			</div>
+		</div>
+		<div v-if="fetchError" class="invalid-feedback show-feedback m-auto">
+			{{ errorMessage }}
 		</div>
 	</div>
 
@@ -92,6 +94,20 @@ const sort = ref("");
 
 const searchTerms = ref("");
 
+const refresh = defineModel("refresh");
+const fetchError = ref(false);
+const errorMessage = ref("Error Loading Visits, Try Again!");
+
+watch(
+	() => refresh.value,
+	async () => {
+		visitors.value = [];
+		loader.value = true;
+		await fetchVisitors();
+		refresh.value = false;
+	}
+);
+
 const sortTerms = ref([
 	{ type: "Created At", term: "created_at" },
 	{ type: "First Name", term: "first_name" },
@@ -116,6 +132,11 @@ watch(
 			direction: directionValue,
 			limit: limit.value,
 		});
+
+		if (!data.length) {
+			console.log(start.value);
+			console.log({ data });
+		}
 		visitors.value = formatDateTime(data);
 	}
 );
@@ -125,13 +146,18 @@ const visitorDetail = (id) => {
 };
 
 const fetchVisitors = async () => {
-	const data = await getVisitors({
-		sort: sortTerm.value,
-		direction: directionTerm.value,
-		limit: limit.value,
-	});
-	visitors.value = formatDateTime(data);
-	loader.value = false;
+	try {
+		const data = await getVisitors({
+			sort: sortTerm.value,
+			direction: directionTerm.value,
+			limit: limit.value,
+		});
+		visitors.value = formatDateTime(data);
+		loader.value = false;
+	} catch (error) {
+		loader.value = false;
+		fetchError.value = true;
+	}
 };
 
 const formatDateTime = (visitors) => {
@@ -147,25 +173,32 @@ onMounted(() => {
 });
 
 const allSelected = computed({
-    get() {
-        return (
-            visitors.value.length > 0 &&
-            visitors.value.every((visit) => visit.selected)
-        );
-    },
-    set(value) {
-        visitors.value.forEach((visit) => {
-            visit.selected = value;
-        });
-    },
+	get() {
+		return (
+			visitors.value.length > 0 &&
+			visitors.value.every((visit) => visit.selected)
+		);
+	},
+	set(value) {
+		visitors.value.forEach((visit) => {
+			visit.selected = value;
+		});
+	},
 });
 
 const selectAll = (event) => {
-    allSelected.value = event.target.checked;
+	allSelected.value = event.target.checked;
 };
 </script>
 
 <style scoped>
+.show-feedback {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: larger;
+	padding: 4rem;
+}
 table {
 	margin: 0;
 }

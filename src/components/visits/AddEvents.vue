@@ -13,68 +13,13 @@
 		</div>
 
 		<div
-			class="mt-4 form-control input"
-			style="margin: auto; padding: 3rem"
+			class="mt-4 p-0 d-flex flex-column"
+			style="border: none; background-color: transparent; gap: 3rem"
 		>
-			<form
-				class="row g-3 needs-validation"
-				novalidate
-				@submit.prevent="onSubmit"
-			>
-				<!-- PHONE NUMBER -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomVisitorNumber"
-						class="form-label is-required"
-					>
-						Phone number<span class="visually-hidden"
-							>(required)</span
-						>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							@blur="getVisitor"
-							type="text"
-							class="form-control"
-							v-model="msisdn"
-							id="validationCustomVisitorNumber"
-							aria-describedby="inputGroupPrepend"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a valid phone number.
-						</div>
-					</div>
-				</div>
-
-				<!-- VISITOR -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomNewVisitor"
-						class="form-label is-required"
-					>
-						Visitor<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomNewVisitor"
-							aria-describedby="inputGroupPrepend"
-							v-model="visitor"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a visitor name.
-						</div>
-					</div>
-				</div>
-
-				<!-- Host -->
-				<div class="dropdown col-md-6">
+			<form class="row g-3">
+				<div class="dropdown" style="width: 42.5%">
 					<label for="typeInput" class="form-label is-required">
-						Event
-						<span class="visually-hidden">(required)</span>
+						Select Event:
 					</label>
 					<input
 						type="text"
@@ -85,20 +30,20 @@
 						aria-expanded="false"
 						data-bs-toggle="dropdown"
 						autocomplete="off"
-						required
 					/>
-					<ul class="dropdown-menu" style="width: 97%">
+					<ul class="dropdown-menu" style="width: 96.5%">
 						<template v-for="(option, index) in options">
 							<li
 								class="dropdown-item"
 								:value="option.id"
-								@click="updateHostTerm(option)"
+								@click="updateEventTerm(option)"
 							>
 								{{ option.text }}
 							</li>
 							<router-link :to="{ name: 'add-event' }">
 								<li
 									class="dropdown-item"
+									style="color: #ff7900"
 									v-if="!options[index + 1]"
 								>
 									Create new event
@@ -107,90 +52,91 @@
 						</template>
 					</ul>
 				</div>
-
-				<!-- Room -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomRoom"
-						class="form-label is-required"
-					>
-						Room<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomRoom"
-							v-model="room"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a room name.
-						</div>
-					</div>
-				</div>
-
-				<!-- Belonging -->
-				<div class="col-md-6">
-					<label for="validationCustomBelonging" class="form-label">
-						Items
-					</label>
-					<div class="input-group">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomBelonging"
-							v-model="belonging"
-						/>
-					</div>
-				</div>
-
-				<!-- Institution -->
-				<div class="col-md-6">
-					<label for="validationCustomInstitution" class="form-label">
-						Institution<span class="visually-hidden"
-							>(required)</span
-						>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomInstitution"
-							v-model="institution"
-						/>
-					</div>
-				</div>
-
-				<!-- Address -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomAddress"
-						class="form-label is-required"
-					>
-						Address<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomAddress"
-							v-model="address"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide an address.
-						</div>
-					</div>
-				</div>
-
-				<!-- Submit Button -->
-				<div class="col-12">
-					<button class="btn btn-primary mt-2" type="submit">
-						Save
-					</button>
-				</div>
 			</form>
+
+			<!-- All Participants -->
+			<div
+				class="table-responsive container p-0 d-flex flex-column"
+				style="gap: 0.9rem"
+			>
+				<div class="row justify-content-between container p-0 mx-auto">
+					<Search v-model:search="searchTerms" />
+					<Sort v-model:direction="directionTerm" />
+				</div>
+
+				<table class="table table-sm table-hover has-checkbox">
+					<thead>
+						<tr>
+							<th scope="col">
+								<div class="form-check mb-0">
+									<input
+										class="form-check-input"
+										type="checkbox"
+										id="selectAll"
+										@change="selectAll"
+									/>
+									<label
+										class="form-check-label"
+										for="customCheck"
+									>
+										<span class="visually-hidden"
+											>Select all</span
+										>
+									</label>
+								</div>
+							</th>
+							<th scope="col">First name</th>
+							<th scope="col">Middle name</th>
+							<th scope="col">Last name</th>
+							<th scope="col">Contact</th>
+							<th scope="col">Email</th>
+							<th scope="col">Address</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr
+							v-for="participant in participants"
+							:key="participant.id"
+							@click="visitorDetail(participant.id)"
+						>
+							<td>
+								<div class="form-check mb-0">
+									<input
+										class="form-check-input"
+										type="checkbox"
+										:id="`checkbox-${participant.id}`"
+										v-model="participant.selected"
+									/>
+								</div>
+							</td>
+							<td>{{ participant.first_name }}</td>
+							<td>{{ participant.middle_name }}</td>
+							<td>{{ participant.last_name }}</td>
+							<td>{{ participant.msisdn }}</td>
+							<td>{{ participant.email }}</td>
+							<td>{{ participant.address }}</td>
+						</tr>
+					</tbody>
+				</table>
+				<div>
+					<div
+						id="spinner"
+						v-if="loader"
+						class="d-flex justify-content-center p-4"
+					>
+						<div class="spinner-border" role="status">
+							<span class="visually-hidden">Loading...</span>
+						</div>
+					</div>
+					<div
+						v-if="fetchError"
+						class="invalid-feedback show-feedback m-auto"
+					>
+						{{ errorMessage }}
+					</div>
+				</div>
+			</div>
+			<Pagination v-model="start" />
 		</div>
 	</div>
 </template>
@@ -203,7 +149,11 @@ import {
 	registerVisit,
 	getSingleVisitor,
 	getEvents,
+	getParticipants,
 } from "@/assets/js/index.js";
+import Pagination from "../Pagination.vue";
+import Search from "../Search.vue";
+import Sort from "../Sort.vue";
 
 const msisdn = ref("");
 const visitor = ref("");
@@ -222,6 +172,20 @@ const purpose = ref("");
 const status = ref("");
 const message = ref("");
 const title = ref("");
+const participants = ref("");
+const start = ref(0);
+const limit = ref(10);
+const loader = ref(false);
+const sort = ref("");
+const sortTerm = defineModel("term");
+sortTerm.value = "created_at";
+const fetchError = ref(false);
+const errorMessage = ref("Error Loading Visits, Try Again!");
+
+const directionTerm = defineModel("direction");
+directionTerm.value = "desc";
+
+const searchTerms = ref("");
 
 const activeBreadCrumbs = ref([]);
 
@@ -257,7 +221,7 @@ onMounted(() => {
 	getEventsOptions();
 });
 
-const updateHostTerm = (host) => {
+const updateEventTerm = (host) => {
 	eventValue.value = host.text;
 	eventID.value = host.value;
 	purpose.value = host.text;
@@ -299,14 +263,53 @@ const getVisitor = async () => {
 };
 
 // watching selected host name to update host ID
-watch(purpose, (title) => {
-	const selectedEvent = events.value.find((event) => event.title === title);
-	if (selectedEvent) {
-		host_id.value = selectedEvent.host_id;
-		room_id.value = selectedEvent.room_id;
-		room.value = selectedEvent.room;
+// watch(purpose, (title) => {
+// 	const selectedEvent = events.value.find((event) => event.title === title);
+// 	if (selectedEvent) {
+// 		host_id.value = selectedEvent.host_id;
+// 		room_id.value = selectedEvent.room_id;
+// 		room.value = selectedEvent.room;
+// 	}
+// });
+
+// watch(
+// 	() => eventID.value,
+// 	async (id) => {
+// 		loader.value = true;
+// 		const data = await getParticipants(id, {
+// 			sort: sortTerm.value,
+// 			direction: directionTerm.value,
+// 			limit: limit.value,
+// 		});
+// 		participants.value = data;
+// 		loader.value = false;
+// 		fetchError.value = true;
+// 	}
+// );
+
+watch(
+	() => [
+		searchTerms.value,
+		sortTerm.value,
+		eventID.value,
+		directionTerm.value,
+		start.value,
+	],
+	async ([searchValue, sortValue, id, directionValue, startValue]) => {
+		loader.value = true;
+		const data = await getParticipants(id, {
+			start: startValue,
+			search: searchValue,
+			sort: sortValue,
+			direction: directionValue,
+			limit: limit.value,
+		});
+
+		participants.value = data;
+		loader.value = false;
+		fetchError.value = true;
 	}
-});
+);
 
 // function to validate form before it submit the form
 const onSubmit = async () => {

@@ -57,7 +57,7 @@
 							id="phone_number"
 							aria-describedby="inputGroupPrepend"
 							required
-							@blur="contactValidation"
+							autocomplete="off"
 						/>
 						<div
 							:class="[
@@ -69,8 +69,8 @@
 						</div>
 					</div>
 					<div id="emailHelp" class="form-text">
-						Please enter your phone number starting with 231. For
-						example: 231123456789
+						Phone number should start with 0. For example:
+						0778675908
 					</div>
 				</div>
 
@@ -98,7 +98,7 @@
 							v-model="email"
 							id="email"
 							aria-describedby="inputGroupPrepend"
-							@blur="validateEmail"
+							autocomplete="off"
 						/>
 						<div
 							:class="[
@@ -106,12 +106,12 @@
 								validEmail && 'show-feedback',
 							]"
 						>
-							Please provide a valid email address
+							{{ validEmailMessage }}
 						</div>
 					</div>
 					<div id="emailHelp" class="form-text">
-						Please enter a valid email address. For example:
-						example@example.com
+						Enter a valid email address. For example:
+						john12@gmail.com
 					</div>
 				</div>
 
@@ -136,13 +136,14 @@
 					</div>
 				</div>
 
-				<div class="col-md-12">
+				<div class="col-md-12 d-flex">
 					<button
 						type="submit"
 						class="btn btn-primary"
 						style="
 							padding: 0.7rem 2rem !important;
 							font-weight: 600;
+							margin-left: auto;
 						"
 					>
 						{{ buttonLabel }}
@@ -199,7 +200,9 @@ const onSubmit = async () => {
 		first_name: first_name.value,
 		middle_name: middle_name.value,
 		last_name: last_name.value,
-		msisdn: msisdn.value,
+		msisdn: msisdn.value.startsWith("0")
+			? `231${msisdn.value.slice(1)}`
+			: msisdn.value,
 		email: email.value,
 	};
 
@@ -238,27 +241,53 @@ const fetchVisitor = async () => {
 const validEmail = ref(false);
 const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
+const validEmailMessage = ref("Please provide a valid email address");
 
-const contactValidation = () => {
-	if (!msisdn.value) {
+const contactValidation = (number) => {
+	if (!number) {
 		validMsisdn.value = false;
 		validMsisdnMessage.value = "Please provide a phone number";
 
 		return;
 	}
 
-	const isvalid = msisdnValidation([msisdn.value]);
+	const isValid = msisdnValidation([number]);
 
-	if (!isvalid.valid) {
+	if (!isValid.valid) {
 		validMsisdn.value = true;
-		validMsisdnMessage.value = isvalid.message;
+		validMsisdnMessage.value = isValid.message;
 	} else {
 		validMsisdn.value = false;
 	}
 };
 
-const validateEmail = () => {
-	validEmail.value = emailValidation(email.value) ? false : true;
+watch(
+	() => msisdn.value,
+	(n) => {
+		contactValidation(n);
+	}
+);
+
+watch(
+	() => email.value,
+	(n) => {
+		validateEmail(n);
+	}
+);
+
+const validateEmail = (mail) => {
+	if (!mail) {
+		validEmail.value = false;
+		validEmailMessage.value = "Please provide a valid email address";
+	}
+	const isValid = emailValidation(mail);
+
+	if (!isValid.valid) {
+		validEmail.value = true;
+		validEmailMessage.value = isValid.message;
+	} else {
+		validEmail.value = false;
+	}
 };
 
 const resetForm = () => {

@@ -210,7 +210,7 @@ const onSubmit = async () => {
 		? await registerVisitor(visitor)
 		: await editVisitor(visitorInfo.id, visitor);
 
-	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
+	const myModal = new boosted.Modal("#exampleModal");
 	myModal.show(document.querySelector("#toggleMyModal"));
 	status.value = response.ok ? "success" : "danger";
 	message.value = response.result.message;
@@ -347,9 +347,9 @@ svg {
 	gap: 1.5rem;
 }
 
-@media (min-width: 768px) and (max-width: 1440px) {
+/* @media (min-width: 768px) and (max-width: 1440px) {
 	#visitor-view {
 		padding: 1rem 3rem 0 3rem;
 	}
-}
+} */
 </style>

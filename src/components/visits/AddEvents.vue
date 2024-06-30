@@ -1,5 +1,87 @@
 <template>
 	<Modal :data="{ title, message, status }" />
+
+	<!-- BELONGING MODAL -->
+	<div
+		class="modal fade"
+		id="visitModal"
+		tabindex="-1"
+		aria-hidden="true"
+		aria-labelledby="visitModalLabel"
+		style="z-index: 2000"
+	>
+		<div
+			class="modal-dialog modal-lg modal-dialog-centered"
+			id="modal-dialog"
+		>
+			<div class="modal-content">
+				<div class="modal-header">
+					<button
+						type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						data-bs-toggle="tooltip"
+						data-bs-placement="bottom"
+						data-bs-title="Close"
+					>
+						<span class="visually-hidden">Close</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form class="row g-3" @submit.prevent="onSubmit">
+						<div class="">
+							<label for="belongings" class="form-label"
+								>Belongings</label
+							>
+							<div class="input-group has-validation">
+								<input
+									type="text"
+									class="form-control"
+									id="belongings"
+									aria-describedby="inputGroupPrepend"
+									v-model="temBelonging"
+									@keyup.prevent="addBelongings"
+								/>
+							</div>
+							<div
+								v-for="belonging in belongings"
+								:key="belonging"
+								@click="deleteBelongings(belonging)"
+								class="belonging"
+							>
+								{{ belonging }}
+							</div>
+						</div>
+						<div class="">
+							<label for="institution" class="form-label"
+								>Institution</label
+							>
+							<div class="input-group">
+								<input
+									type="text"
+									class="form-control"
+									id="institution"
+									aria-describedby="inputGroupPrepend"
+									v-model="institution"
+								/>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button
+						type="submit"
+						@click="onSubmit"
+						class="btn btn-primary"
+					>
+						Check In
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- EVENT LIST -->
 	<div
 		id="visit-view"
 		class="d-flex flex-column container"
@@ -72,8 +154,6 @@
 									<input
 										class="form-check-input"
 										type="checkbox"
-										id="selectAll"
-										@change="selectAll"
 									/>
 									<label
 										class="form-check-label"
@@ -97,7 +177,9 @@
 						<tr
 							v-for="participant in participants"
 							:key="participant.id"
-							@click="visitorDetail(participant.id)"
+							@click="participantDetail(participant.id)"
+							data-bs-target="#visitModal"
+							data-bs-toggle="modal"
 						>
 							<td>
 								<div class="form-check mb-0">
@@ -135,8 +217,8 @@
 						{{ errorMessage }}
 					</div>
 				</div>
+				<Pagination v-model="start" />
 			</div>
-			<Pagination v-model="start" />
 		</div>
 	</div>
 </template>
@@ -148,6 +230,7 @@ import Modal from "../Modal.vue";
 import {
 	registerVisit,
 	getSingleVisitor,
+	registerVisitor,
 	getEvents,
 	getParticipants,
 } from "@/assets/js/index.js";
@@ -159,7 +242,8 @@ const msisdn = ref("");
 const visitor = ref("");
 const visitorId = ref("");
 const events = ref(null);
-const belonging = ref("");
+const belongings = ref([]);
+const temBelonging = ref("");
 const options = ref([]);
 const eventValue = ref("");
 const eventID = ref("");
@@ -221,6 +305,31 @@ onMounted(() => {
 	getEventsOptions();
 });
 
+watch(
+	() => [
+		searchTerms.value,
+		sortTerm.value,
+		eventID.value,
+		directionTerm.value,
+		start.value,
+	],
+	async ([searchValue, sortValue, id, directionValue, startValue]) => {
+		loader.value = true;
+
+		const data = await getParticipants(id, {
+			start: startValue,
+			search: searchValue,
+			sort: sortValue,
+			direction: directionValue,
+			limit: limit.value,
+		});
+
+		participants.value = data;
+		loader.value = false;
+		fetchError.value = true;
+	}
+);
+
 const updateEventTerm = (host) => {
 	eventValue.value = host.text;
 	eventID.value = host.value;
@@ -247,143 +356,140 @@ const getEventsOptions = async () => {
 	}
 };
 
-// function to get visitor bt MSISDN
-const getVisitor = async () => {
-	try {
-		const visitorData = await getSingleVisitor({ msisdn: msisdn.value });
-		if (!visitorData) {
-			visitor.value = "";
-			return;
-		}
-		visitor.value = `${visitorData.first_name} ${visitorData.last_name}`;
-		visitorId.value = visitorData.id;
-	} catch (error) {
-		console.error("Error retrieving visitor:", error);
-	}
-};
-
-// watching selected host name to update host ID
-// watch(purpose, (title) => {
-// 	const selectedEvent = events.value.find((event) => event.title === title);
-// 	if (selectedEvent) {
-// 		host_id.value = selectedEvent.host_id;
-// 		room_id.value = selectedEvent.room_id;
-// 		room.value = selectedEvent.room;
-// 	}
-// });
-
-// watch(
-// 	() => eventID.value,
-// 	async (id) => {
-// 		loader.value = true;
-// 		const data = await getParticipants(id, {
-// 			sort: sortTerm.value,
-// 			direction: directionTerm.value,
-// 			limit: limit.value,
-// 		});
-// 		participants.value = data;
-// 		loader.value = false;
-// 		fetchError.value = true;
-// 	}
-// );
-
-watch(
-	() => [
-		searchTerms.value,
-		sortTerm.value,
-		eventID.value,
-		directionTerm.value,
-		start.value,
-	],
-	async ([searchValue, sortValue, id, directionValue, startValue]) => {
-		loader.value = true;
-		const data = await getParticipants(id, {
-			start: startValue,
-			search: searchValue,
-			sort: sortValue,
-			direction: directionValue,
-			limit: limit.value,
-		});
-
-		participants.value = data;
-		loader.value = false;
-		fetchError.value = true;
-	}
-);
-
 // function to validate form before it submit the form
-const onSubmit = async () => {
+const onSubmit = async (event) => {
+	console.group();
+	console.log("msisdn:", msisdn.value);
+	console.log("visitor", visitor.value);
+	console.log("purpose:", purpose.value);
+	console.log("room:", room.value);
+	console.log("address:", address.value);
+	console.groupEnd();
+
 	if (
 		!msisdn.value ||
 		!visitor.value ||
 		!purpose.value ||
 		!room.value ||
-		!address.value
+		!address.value ||
+		event.type === "submit"
 	) {
 		return;
 	}
-
-	// plitting text into array by using command as the deleminator
-	const items = belonging.value.split(",").map((item) => item.trim());
 
 	// require values for the submittion of the form
 	const visitData = {
 		visitor_id: visitorId.value,
 		institution: institution.value,
 		address: address.value,
-		items,
+		items: belongings.value,
 		room_id: room_id.value,
 		host_id: host_id.value,
 		purpose: purpose.value,
 	};
 
+	console.log(visitData);
+
 	const response = await registerVisit(visitData);
 
-	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
+	const myModal = new boosted.Modal("#exampleModal");
 	myModal.show(document.querySelector("#toggleMyModal"));
 	status.value = response.ok ? "success" : "danger";
 	message.value = response.result.message;
 	title.value = response.ok ? "Success" : "Error";
 
-	visuallyHideModalBackdrop();
-
 	// Reset form if the response is successful
 	if (response.ok) {
+		const visitModal = document.querySelector("#visitModal");
+		console.log(visitModal);
+		visitModal.classList.remove("show");
+		visitModal.style.display = "none";
+		visitModal.ariaHidden = true;
+		visitModal.removeAttribute("aria-modal");
+		visitModal.removeAttribute("role");
 		resetForm();
 	}
 };
 
-function visuallyHideModalBackdrop() {
-	const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
-
-	if (modalsBackdrops.length) {
-		modalsBackdrops.forEach((modal) =>
-			modal.classList.add("visually-hidden")
-		);
-	}
-}
-
 const resetForm = () => {
 	visitor.value = "";
-	purpose.value = "";
-	room.value = "";
 	msisdn.value = "";
 	address.value = "";
 	eventValue.value = "";
-	belonging.value = "";
+	belongings.value = [];
+	temBelonging.value = "";
 	institution.value = "";
+};
 
-	// Remove validation classes
-	const form = document.querySelector(".needs-validation");
-	form.classList.remove("was-validated");
+const addBelongings = (event) => {
+	const { key } = event;
+
+	if (key === "Enter" && temBelonging.value) {
+		if (!belongings.value.includes(temBelonging.value)) {
+			belongings.value.push(temBelonging.value);
+		}
+		temBelonging.value = "";
+	}
+};
+
+const deleteBelongings = (item) => {
+	belongings.value = belongings.value.filter((val) => val !== item);
+};
+
+const participantDetail = async (id) => {
+	const event = events.value.find((val) => val.id === eventID.value);
+
+	const participant = participants.value.find((val) => val.id === id);
+	let visitorData = await getSingleVisitor({ msisdn: participant.msisdn });
+
+	if (!visitorData) {
+		const data = await registerVisitor({
+			first_name: participant.first_name,
+			middle_name: participant.middle_name,
+			last_name: participant.last_name,
+			email: participant.email,
+			msisdn: participant.msisdn,
+			address: participant.address,
+		});
+		visitorData = data.result.data[0];
+	}
+
+	visitorId.value = visitorData.id;
+	visitor.value = `${visitorData.first_name} ${visitorData.last_name}`;
+	msisdn.value = visitorData.msisdn;
+	room_id.value = event.room_id;
+	host_id.value = event.host_id;
+	address.value = participant.address;
 };
 </script>
 
 <style scoped>
+.belonging {
+	text-transform: capitalize;
+	display: inline-block;
+	margin: 20px 10px 0 0;
+	padding: 6px 12px;
+	background-color: #eee;
+	border-radius: 20px;
+	font-size: 12px;
+	letter-spacing: 1px;
+	font-weight: bold;
+	color: #777;
+	cursor: pointer;
+}
 a {
 	text-decoration: none;
 }
 .form-select {
 	padding: calc(1rem - 1px) 1rem calc(0.5rem + 1px);
+}
+
+.modal {
+	background-color: #1616157a;
+}
+
+.modal-content {
+	/* border: none !important; */
+	/* z-index: 2000; */
 }
 </style>

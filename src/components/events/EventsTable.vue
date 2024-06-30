@@ -1,5 +1,12 @@
 <template>
-	<div class="mb-3 d-flex justify-content-center">
+	<div
+		class="table-responsive container p-0 d-flex flex-column"
+		style="gap: 0.9rem"
+	>
+		<div class="row justify-content-between container p-0 mx-auto">
+			<Search v-model:search="searchTerms" />
+			<Sort v-model:direction="directionTerm" />
+		</div>
 		<table
 			v-if="Array.isArray(allEvents) && allEvents.length"
 			class="table table-hover mb-0"
@@ -71,6 +78,7 @@
 			Error Loading Events, Try again!
 		</h2>
 	</div>
+
 	<Pagination
 		v-if="Array.isArray(allEvents) && !!allEvents.length"
 		v-model="paginationStart"
@@ -83,25 +91,32 @@ import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { formatDate, API_URL } from "../../assets/js/index.js";
 import $ from "jquery";
+import Search from "../Search.vue";
+import Sort from "../Sort.vue";
 
 const paginationStart = ref(0);
 const allEvents = ref("loading");
 const eventsToShow = ref([]);
 const MAX_EVENTS_TO_SHOW = ref(10);
 const router = useRouter();
-const MAX_DETAIL_LEN = 5;
+const MAX_DETAIL_LEN = 30;
+
+const searchTerms = ref("");
+
+const sortTerm = defineModel("term");
+sortTerm.value = "created_at";
+
+const directionTerm = defineModel("direction");
+directionTerm.value = "desc";
 
 const props = defineProps({
-	searchQuery: String,
 	refresh: Boolean,
-	term: String,
-	direction: String,
 });
 
 const emit = defineEmits(["refreshComplete"]);
 
 onMounted(async () => {
-	await getEvents(props.searchQuery, 0, 20, props.term, props.direction);
+	await getEvents(searchTerms.value, 0, 20, directionTerm.value);
 });
 
 // Watch Pagination Switches
@@ -116,22 +131,11 @@ watch(paginationStart, (newValue) => {
 	if (allEvents.value.length - newValue == 10) moreEvents();
 });
 
-// Watch Input into the Events Search Input
-watch(
-	() => props.searchQuery,
-	async (newValue) => {
-		if (!props.searchQuery) await getEvents();
-
-		// pass search query to events retrieval function
-		await getEvents(newValue, 0, 30);
-	}
-);
-
 // Watch Refresh Prop to refresh events accordingly
 watch(
 	() => props.refresh,
-	async () => {
-		if (props.refresh) {
+	async (n) => {
+		if (n) {
 			await getEvents();
 			emit("refreshComplete");
 		}
@@ -140,9 +144,9 @@ watch(
 
 // Watch for Changes in the Sort and Direction
 watch(
-	() => [props.term, props.direction],
-	([newTerm, newDirection]) => {
-		getEvents(props.searchQuery, 0, 30, newTerm, newDirection);
+	() => [searchTerms.value, , directionTerm.value],
+	([searchValue, directionValue]) => {
+		getEvents(searchValue, 0, 30, directionValue);
 	}
 );
 
@@ -150,8 +154,7 @@ async function getEvents(
 	search = "",
 	start = 0,
 	limit = 20,
-	sortTerm = props.term,
-	direction = props.direction,
+	direction = directionTerm.value,
 	from = "",
 	to = ""
 ) {
@@ -161,7 +164,7 @@ async function getEvents(
 	try {
 		let url =
 			API_URL +
-			`events?start=${start}&limit=${limit}&sort=${sortTerm}&direction=${direction}`;
+			`events?start=${start}&limit=${limit}&sort=${sortTerm.value}&direction=${direction}`;
 
 		if (search) url += `&search=${search}`;
 		if (from) url += `&from=${from}`;
@@ -182,26 +185,22 @@ async function getEvents(
 	}
 }
 
-function formatDetails(detail) {
-	const detailLen = detail.split(" ").length;
-	const newDetail =
-		detailLen >= MAX_DETAIL_LEN
-			? `${detail.split(" ").slice(0, MAX_DETAIL_LEN).join(" ")}...`
-			: detail;
-
-	return newDetail;
-}
+const formatDetails = (detail) => {
+	return detail.length > MAX_DETAIL_LEN
+		? `${detail.slice(0, MAX_DETAIL_LEN)}...`
+		: detail;
+};
 
 function displayEventPage(eventId) {
 	router.push({ name: "specific-event", params: { id: eventId } });
 }
 
 async function moreEvents(
-	search = props.searchQuery,
+	search = searchTerms.value,
 	start = allEvents.value.length,
 	limit = 20,
-	sortTerm = props.term,
-	direction = props.direction,
+	sortTerm = sortTerm.value,
+	direction = directionTerm.value,
 	from = "",
 	to = ""
 ) {

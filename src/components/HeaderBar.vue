@@ -23,8 +23,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-
 const props = defineProps({
 	activeSection: {
 		type: String,
@@ -42,4 +40,10 @@ header {
 .active-section {
 	text-transform: capitalize !important;
 }
+
+/* @media (min-width: 768px) and (max-width: 1440px) {
+	header {
+		padding: 1rem 3rem 0 3rem;
+	}
+} */
 </style>

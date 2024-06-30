@@ -80,7 +80,6 @@ import { onMounted, ref, watch, computed } from "vue";
 import { getVisitors } from "@/assets/js/index.js";
 import Pagination from "../Pagination.vue";
 import Search from "../Search.vue";
-import Filter from "../Filter.vue";
 import Sort from "../Sort.vue";
 
 import { useRouter } from "vue-router";
@@ -90,7 +89,6 @@ const visitors = ref([]);
 const start = ref(0);
 const limit = ref(10);
 const loader = ref(true);
-const sort = ref("");
 
 const searchTerms = ref("");
 
@@ -108,14 +106,6 @@ watch(
 	}
 );
 
-const sortTerms = ref([
-	{ type: "Created At", term: "created_at" },
-	{ type: "First Name", term: "first_name" },
-	{ type: "Middle Name", term: "middle_name" },
-	{ type: "Last Name", term: "last_name" },
-	{ type: "Phone Number", term: "msisdn" },
-	{ type: "Email", term: "email" },
-]);
 const sortTerm = defineModel("term");
 sortTerm.value = "created_at";
 

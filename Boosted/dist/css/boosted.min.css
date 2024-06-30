@@ -6768,7 +6768,7 @@ label.tag:active[disabled] {
 }
 .modal-backdrop {
   --bs-backdrop-zindex: 1050;
-  --bs-backdrop-bg: #000;
+  --bs-backdrop-bg: transparent;
   --bs-backdrop-opacity: 0.5;
   position: fixed;
   top: 0;

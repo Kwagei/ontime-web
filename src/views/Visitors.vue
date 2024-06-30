@@ -73,9 +73,9 @@ svg {
 	margin: 0 !important;
 }
 
-@media (min-width: 768px) and (max-width: 1440px) {
+/* @media (min-width: 768px) and (max-width: 1440px) {
 	#visitor-view {
 		padding: 1rem 3rem 0 3rem;
 	}
-}
+} */
 </style>

@@ -232,8 +232,6 @@ export const getHosts = async (id) => {
 		}
 		const { data: hosts } = await response.json();
 
-		console.log({ hosts });
-
 		return hosts;
 	} catch (error) {}
 };

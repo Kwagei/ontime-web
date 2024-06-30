@@ -12,15 +12,6 @@
 			<div>
 				<BreadCrumbs v-model:breadCrumbs="activeBreadCrumbs" />
 			</div>
-			<div>
-				<button
-					@click="mode == 'add' ? postEvent() : putEvent()"
-					class="border-primary btn btn-primary px-5 py-2"
-					type="submit"
-				>
-					Submit
-				</button>
-			</div>
 		</div>
 
 		<h3
@@ -32,212 +23,237 @@
 			<hr class="text-center w-75" />
 		</h3>
 
-		<form
-			@submit.prevent="mode == 'add' ? postEvent() : putEvent()"
-			id="eventsFormWrapper"
-			novalidate
-			class="my-4 p-5 needs-validation"
+		<div
+			class="mt-4 form-control input"
+			style="margin: auto; padding: 3rem"
 		>
-			<div>
-				<label for="titleInput" class="form-label is-required">
-					Title
-					<span class="visually-hidden">(required)</span>
-				</label>
-				<input
-					type="text"
-					class="form-control"
-					:class="{
-						border: titleError,
-						'border-danger': titleError,
-					}"
-					id="titleInput"
-					placeholder="Title"
-					v-model="title"
-					required
-				/>
-
-				<Alert :title="titleError" />
-			</div>
-
-			<!-- Facilitator -->
-			<div>
-				<label for="facilitatorInput" class="form-label is-required">
-					Facilitator
-					<span class="visually-hidden">(required)</span>
-				</label>
-				<input
-					type="text"
-					class="form-control"
-					id="facilitatorInput"
-					:class="{
-						border: facilitatorError,
-						'border-danger': facilitatorError,
-					}"
-					placeholder="Facilitator"
-					v-model="facilitator"
-					required
-				/>
-
-				<Alert :title="facilitatorError" />
-			</div>
-
-			<!-- Start Date -->
-			<div>
-				<label for="startDateInput" class="form-label is-required">
-					Start Date
-					<span class="visually-hidden">(required)</span>
-				</label>
-				<input
-					type="date"
-					class="form-control"
-					id="startDateInput"
-					:class="{
-						border: startDateError,
-						'border-danger': startDateError,
-					}"
-					placeholder="Start Date"
-					v-model="startDate"
-					required
-				/>
-
-				<Alert :title="startDateError" />
-			</div>
-
-			<!-- Host -->
-			<div class="dropdown">
-				<label for="typeInput" class="form-label is-required">
-					Host
-					<span class="visually-hidden">(required)</span>
-				</label>
-				<input
-					type="text"
-					class="form-control"
-					id="facilitatorInput"
-					:class="{
-						border: facilitatorError,
-						'border-danger': facilitatorError,
-					}"
-					:id="hostID"
-					:value="hostValue"
-					aria-expanded="false"
-					data-bs-toggle="dropdown"
-					autocomplete="off"
-					required
-				/>
-				<ul class="dropdown-menu w-100">
-					<template v-for="(host, index) in hosts">
-						<li
-							class="dropdown-item"
-							:value="host.id"
-							@click="updateHostTerm(host)"
-						>
-							{{ host.name }}
-						</li>
-					</template>
-					<router-link
-						:to="{ name: 'new-host' }"
-						class="text-primary"
+			<form
+				class="row g-3 needs-validation"
+				novalidate
+				@submit.prevent="mode == 'add' ? postEvent() : putEvent()"
+			>
+				<!-- TITLE -->
+				<div class="col-md-6">
+					<label for="title" class="form-label is-required"
+						>Title<span class="visually-hidden">
+							(required)</span
+						></label
 					>
-						<li class="dropdown-item">create new host</li>
-					</router-link>
-				</ul>
+					<div class="input-group has-validation">
+						<input
+							type="text"
+							class="form-control"
+							id="title"
+							aria-describedby="inputGroupPrepend"
+							v-model="title"
+							required
+						/>
 
-				<Alert :title="hostError" />
-			</div>
+						<div class="invalid-feedback">
+							Please provide a title.
+						</div>
+					</div>
+				</div>
 
-			<!-- End Date -->
-			<div>
-				<label for="endDateInput" class="form-label is-required">
-					End Date
-					<span class="visually-hidden">(required)</span>
-				</label>
-				<input
-					type="date"
-					class="form-control"
-					id="endDateInput"
-					:class="{
-						border: endDateError,
-						'border-danger': endDateError,
-					}"
-					placeholder="End Date"
-					v-model="endDate"
-					required
-				/>
+				<!-- FACILITATOR -->
+				<div class="col-md-6">
+					<label for="facilitator" class="form-label is-required"
+						>Facilitator<span class="visually-hidden">
+							(required)</span
+						></label
+					>
+					<div class="input-group has-validation">
+						<input
+							type="text"
+							class="form-control"
+							id="facilitator"
+							aria-describedby="inputGroupPrepend"
+							v-model="facilitator"
+							required
+						/>
 
-				<Alert :title="endDateError" />
-			</div>
+						<div class="invalid-feedback">
+							Please provide a facilitator.
+						</div>
+					</div>
+				</div>
 
-			<!-- Room -->
-			<div>
-				<label for="typeInput" class="form-label is-required">
-					Room
-					<span class="visually-hidden">(required)</span>
-				</label>
-				<select
-					class="form-select"
-					v-model="room"
-					:class="{
-						border: typeError,
-						'border-danger': typeError,
-					}"
-					aria-label="Select Event Type"
-					required
-				>
-					<option value="FabLab">FabLab</option>
-					<option value="Super Coders">Super Coders</option>
-					<option value="Conference Hall">Conference Hall</option>
-				</select>
+				<!-- START DATE -->
+				<div class="col-md-6">
+					<label for="startDate" class="form-label is-required"
+						>Start Date<span class="visually-hidden">
+							(required)</span
+						></label
+					>
+					<div class="input-group has-validation">
+						<input
+							type="date"
+							class="form-control"
+							id="startDate"
+							aria-describedby="inputGroupPrepend"
+							v-model="startDate"
+							required
+						/>
 
-				<Alert :title="typeError" />
-			</div>
+						<div class="invalid-feedback">
+							Please provide a start date.
+						</div>
+					</div>
+				</div>
 
-			<!-- Type -->
-			<div>
-				<label for="typeInput" class="form-label is-required">
-					Type
-					<span class="visually-hidden">(required)</span>
-				</label>
-				<select
-					class="form-select"
-					v-model="type"
-					:class="{
-						border: typeError,
-						'border-danger': typeError,
-					}"
-					aria-label="Select Event Type"
-					required
-				>
-					<option value="Course">Course</option>
-					<option value="Conference">Conference</option>
-					<option value="Hackathon">Hackathon</option>
-					<option value="Workshop">Workshop</option>
-					<option value="Excursion">Excursion</option>
-				</select>
+				<!-- HOST -->
+				<div class="dropdown col-md-6">
+					<label for="first_name" class="form-label is-required"
+						>Host<span class="visually-hidden">
+							(required)</span
+						></label
+					>
 
-				<Alert :title="typeError" />
-			</div>
+					<div class="input-group has-validation">
+						<input
+							type="text"
+							class="form-control"
+							id="facilitatorInput"
+							:id="hostID"
+							:value="hostValue"
+							aria-expanded="false"
+							data-bs-toggle="dropdown"
+							autocomplete="off"
+							required
+						/>
+						<ul class="dropdown-menu w-100">
+							<template v-for="host in hosts">
+								<li
+									class="dropdown-item"
+									:value="host.id"
+									@click="updateHostTerm(host)"
+								>
+									{{ host.name }}
+								</li>
+							</template>
+							<router-link
+								:to="{ name: 'new-host' }"
+								class="text-primary"
+							>
+								<li class="dropdown-item">create new host</li>
+							</router-link>
+						</ul>
 
-			<!-- Details -->
-			<div>
-				<label for="detailsTextarea" class="form-label">Details</label>
-				<textarea
-					placeholder="Enter details..."
-					class="form-control"
-					id="detailsTextarea"
-					:class="{
-						border: detailsError,
-						'border-danger': detailsError,
-					}"
-					v-model="details"
-					rows="4"
-				></textarea>
+						<div class="invalid-feedback">
+							Please provide a host.
+						</div>
+					</div>
+				</div>
 
-				<Alert :title="detailsError" />
-			</div>
-			<button type="submit" class="btn btn-primary visually-hidden">
-				Submit
-			</button>
-		</form>
+				<!-- END DATE -->
+				<div class="col-md-6">
+					<label for="endDate" class="form-label is-required"
+						>End Date<span class="visually-hidden">
+							(required)</span
+						></label
+					>
+					<div class="input-group has-validation">
+						<input
+							type="date"
+							class="form-control"
+							id="endDate"
+							aria-describedby="inputGroupPrepend"
+							v-model="endDate"
+							required
+						/>
+
+						<div class="invalid-feedback">
+							Please provide an end date.
+						</div>
+					</div>
+				</div>
+
+				<!-- ROOM -->
+				<div class="col-md-6">
+					<label for="room" class="form-label is-required"
+						>Room<span class="visually-hidden">
+							(required)</span
+						></label
+					>
+					<div class="input-group has-validation">
+						<select
+							class="form-select"
+							v-model="room"
+							aria-label="Select Event Type"
+							required
+						>
+							<option value="FabLab">FabLab</option>
+							<option value="Super Coders">Super Coders</option>
+							<option value="Conference Hall">
+								Conference Hall
+							</option>
+						</select>
+
+						<div class="invalid-feedback">
+							Please select a room.
+						</div>
+					</div>
+				</div>
+
+				<!-- TYPE -->
+				<div class="col-md-6">
+					<label for="type" class="form-label is-required"
+						>Type<span class="visually-hidden">
+							(required)</span
+						></label
+					>
+					<div class="input-group has-validation">
+						<select
+							class="form-select"
+							v-model="type"
+							aria-label="Select Event Type"
+							required
+						>
+							<option value="Course">Course</option>
+							<option value="Conference">Conference</option>
+							<option value="Workshop">Workshop</option>
+							<option value="Hackathon">Hackathon</option>
+						</select>
+
+						<div class="invalid-feedback">
+							Please select a type.
+						</div>
+					</div>
+				</div>
+
+				<!-- DETAILS -->
+				<div class="">
+					<label for="detail" class="form-label">Details</label>
+					<div class="input-group">
+						<textarea
+							placeholder="Enter details..."
+							class="form-control"
+							id="detailsTextarea"
+							v-model="details"
+							rows="2"
+						></textarea>
+
+						<div class="invalid-feedback">
+							Please enter event details.
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-12 d-flex">
+					<button
+						type="submit"
+						class="btn btn-primary"
+						style="
+							padding: 0.7rem 2rem !important;
+							font-weight: 600;
+							margin-left: auto;
+						"
+					>
+						{{ buttonLabel }}
+					</button>
+				</div>
+			</form>
+		</div>
 	</div>
 </template>
 
@@ -267,6 +283,7 @@ const hosts = ref("");
 const room = ref("");
 const type = ref("");
 const details = ref("");
+const buttonLabel = ref("Save");
 
 // Modal Data
 const successModalData = ref({
@@ -310,6 +327,18 @@ const updateHostTerm = (host) => {
 };
 
 async function postEvent() {
+	if (
+		!title.value ||
+		!facilitator.value ||
+		!startDate.value ||
+		!endDate.value ||
+		!type.value ||
+		!hostValue.value ||
+		!room.value
+	) {
+		return;
+	}
+
 	const body = {
 		title: title.value,
 		facilitator: facilitator.value,
@@ -417,27 +446,26 @@ function clearErrors() {
 	detailsError.value = "";
 }
 
+// Lifecycle Hooks
 onMounted(async () => {
 	// get event to edit if we're trying to edit
 	if (mode == "edit") await getEventToEdit();
 
 	("use strict");
 
-	$(".needs-validation").on(
+	const form = document.querySelector(".needs-validation");
+	form.addEventListener(
 		"submit",
 		(event) => {
-			if (!form[0].checkValidity()) {
+			if (!form.checkValidity()) {
 				event.preventDefault();
 				event.stopPropagation();
 			}
-
-			this.addClass("was-validated");
+			form.classList.add("was-validated");
 		},
 		false
 	);
-
 	hosts.value = await getHosts();
-	console.log(hosts.value);
 });
 
 function setMode() {
@@ -500,12 +528,12 @@ a:hover {
 	gap: 1.5rem;
 }
 
-#eventsFormWrapper {
+/* #eventsFormWrapper {
 	outline: 1px solid #aaa;
 	border-radius: 5px;
 	display: grid;
 	grid-template-columns: repeat(2, 0.5fr);
 	gap: 30px;
 	background-color: #fff;
-}
+} */
 </style>

@@ -62,6 +62,26 @@ export const editVisitor = async (id, data) => {
 	}
 };
 
+export const editVisit = async (id, data) => {
+	try {
+		const options = {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		};
+
+		const response = await fetch(`${API_URL}/visits/${id}`, options);
+
+		const result = await response.json();
+
+		return { ok: response.ok, result };
+	} catch (error) {
+		console.error("Error:", error);
+	}
+};
+
 export const getUsers = async (data) => {
 	try {
 		const response = await fetch(`${API_URL}/users`);
@@ -75,6 +95,26 @@ export const getUsers = async (data) => {
 };
 
 export const getSingleVisitor = async (data) => {
+	const { id, msisdn } = data;
+	let response;
+
+	try {
+		if (id) {
+			response = await fetch(`${API_URL}/visitors/${id}`);
+		} else if (msisdn) {
+			response = await fetch(`${API_URL}/visitors?search=${msisdn}`);
+		}
+
+		if (!response.ok) {
+			throw new Error("Network response was not ok");
+		}
+
+		const { data } = await response.json();
+		return data[0];
+	} catch (error) {}
+};
+
+export const getSingleVisit = async (data) => {
 	const { id, msisdn } = data;
 	let response;
 
@@ -159,6 +199,8 @@ export const getVisitors = async (query) => {
 	}
 };
 
+
+
 export const getVisitorWithVisits = async (id, query) => {
 	try {
 		const {
@@ -192,6 +234,41 @@ export const getVisitorWithVisits = async (id, query) => {
 		console.error("Error: ", error);
 	}
 };
+
+export const getVisitWithVisits = async (id) => {
+	try {
+		// const {
+		// 	search = "",
+		// 	start = 0,
+		// 	limit = 20,
+		// 	sort = "",
+		// 	direction = "",
+		// } = query;
+
+		let url = `${API_URL}/visits/${id}`;
+
+		// if (search) {
+		// 	url += `&search=${search}`;
+		// }
+
+		// if (sort) {
+		// 	url += `&sort=${sort}&direction=${direction}`;
+		// }
+
+		const response = await fetch(url);
+
+		if (!response.ok) {
+			throw new Error("Network response was not ok");
+		}
+
+		const { data } = await response.json();
+
+		return data;
+	} catch (error) {
+		console.error("Error: ", error);
+	}
+};
+
 
 export const getEvents = async (id) => {
 	try {

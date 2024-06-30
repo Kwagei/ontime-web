@@ -42,13 +42,14 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="visit in visits" :key="visit.id" :id="visit.id">
+				<tr v-for="visit in visits" :key="visit.id" :id="visit.id" @click="visitorDetail(visit.id)">
 					<td>
 						<div class="form-check mb-0">
 							<input
 								class="form-check-input"
 								type="checkbox"
-								:id="`checkbox-${visit.id}`"
+
+								@click.stop="`checkbox-${visit.id}`"
 								v-model="visit.selected"
 							/>
 						</div>
@@ -68,7 +69,7 @@
 							type="button"
 							class="btn btn-primary"
 							style="font-size: 0.9rem"
-							@click="handleCheckout(visit.id)"
+							@click.stop="handleCheckout(visit.id)"
 						>
 							Checkout
 						</button>
@@ -130,6 +131,9 @@ import { updateDepartureTime } from "@/assets/js/index";
 
 import { ref, computed, watch } from "vue";
 import { getVisits } from "@/assets/js/index.js";
+
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 const visits = ref([]);
 const start = ref(0);
@@ -204,6 +208,11 @@ watch(
 		visits.value = formatDateTime(data);
 	}
 );
+
+const visitorDetail = (id) => {
+	router.push({ name: "visitDetail", params: { id } });
+	console.log(id)
+};
 
 const fetchData = async () => {
 	try {

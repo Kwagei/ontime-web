@@ -11,6 +11,8 @@ import AddVisitors from "../components/visitors/AddVisitors.vue";
 
 // Visit Components
 import Visits from "../views/Visits.vue";
+import VisitDetail from "@/components/visits/VisitDetail.vue";
+import EditVisit from "@/components/visits/EditVisit.vue"
 import AddMeeting from "@/components/visits/AddMeeting.vue";
 import AddEvents from "@/components/visits/AddEvents.vue";
 import AddWorkspace from "@/components/visits/AddWorkspace.vue";
@@ -90,6 +92,21 @@ const routes = [
 				path: "new-host",
 				component: Host,
 				name: "new-host",
+			},
+			{
+				path: ":id",
+				children: [
+					{
+						path: "",
+						component: VisitDetail,
+						name: "visitDetail",
+					},
+					{
+						path: "edit-visit",
+						component: EditVisit,
+						name: "edit-visit",
+					},
+				],
 			},
 		],
 	},

@@ -32,6 +32,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { ref } from "vue";
 
 const activePage = ref(1);
 const position = ref(0);

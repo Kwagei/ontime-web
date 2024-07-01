@@ -54,7 +54,8 @@ import EventDetails from "./EventDetails.vue";
 import EventTitle from "./EventTitle.vue";
 import Modal from "../Modal.vue";
 
-import { visuallyHideModalBackdrop, API_URL } from "@/assets/js";
+import { API_URL } from "@/assets/js";
+import { showModal } from "@/assets/js/util";
 
 const router = useRouter();
 
@@ -105,15 +106,12 @@ function setModalData(newData) {
 	// still tryna understand this part
 	// but that's the only way it'll work
 	setTimeout(() => {
-		const modal = new boosted.Modal("#exampleModal");
-		modal.show("#toggleMyModal");
-
-		visuallyHideModalBackdrop();
+		showModal("#alertModal", "#alertModalBody");
 	}, 500);
 }
 
 function editEvent() {
-	router.push(`/events/${eventId.value}/edit`, {
+	router.push(`/events/${eventId.value}/edit-event`, {
 		params: { id: eventId.value },
 	});
 }

@@ -87,7 +87,7 @@ import $ from "jquery";
 const paginationStart = ref(0);
 const allEvents = ref("loading");
 const eventsToShow = ref([]);
-const MAX_EVENTS_TO_SHOW = ref(10);
+const MAX_EVENTS_TO_SHOW = ref(30);
 const router = useRouter();
 const MAX_DETAIL_LEN = 5;
 
@@ -170,10 +170,11 @@ async function getEvents(
 }
 
 function formatDetails(detail) {
-	const detailLen = detail.split(" ").length;
+	const detailLen = detail.length;
+	console.log({ detailLen });
 	const newDetail =
 		detailLen >= MAX_DETAIL_LEN
-			? `${detail.split(" ").slice(0, MAX_DETAIL_LEN).join(" ")}...`
+			? `${detail.slice(0, MAX_DETAIL_LEN)}...`
 			: detail;
 
 	return newDetail;

@@ -6,8 +6,7 @@
 			<BreadCrumbs :breadCrumbs="breadCrumbs" />
 
 			<div class="d-flex" style="gap: 0.521rem">
-				<RefreshList />
-				<Options />
+				<RefreshList @click="refresh = true" />
 
 				<button
 					class="btn btn-primary"
@@ -79,7 +78,7 @@
 			</div>
 		</div>
 
-		<VisitList />
+		<VisitList v-model:refresh="refresh" />
 		<RouterView :breadCrumbs="breadCrumbs" />
 	</div>
 </template>
@@ -92,9 +91,9 @@ import Options from "@/components/Options.vue";
 
 import { RouterLink, RouterView } from "vue-router";
 
-import { ref } from "vue";
-
 const breadCrumbs = defineModel("breadCrumbs");
+const refresh = defineModel("refresh");
+refresh.value = false;
 </script>
 
 <style scoped>
@@ -136,9 +135,9 @@ const breadCrumbs = defineModel("breadCrumbs");
 	z-index: 9999;
 }
 
-@media (min-width: 768px) and (max-width: 1440px) {
+/* @media (min-width: 768px) and (max-width: 1440px) {
 	#visit-view {
 		padding: 1rem 3rem 0 3rem;
 	}
-}
+} */
 </style>

@@ -2,7 +2,7 @@
 	<header class="bg-white">
 		<nav class="navbar sticky-top container">
 			<div
-				class="container-fluid d-flex align-items-center justify-content-between"
+				class="container d-flex align-items-center justify-content-between"
 			>
 				<div class="navbar-brand">
 					<h3 class="m-0 active-section">{{ activeSection }}</h3>
@@ -23,8 +23,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-
 const props = defineProps({
 	activeSection: {
 		type: String,

@@ -11,69 +11,15 @@
 			class="mt-4 form-control input"
 			style="margin: auto; padding: 3rem"
 		>
-			<!-- Button trigger modal -->
-			<button
-				type="button"
-				class="btn btn-primary"
-				data-bs-toggle="modal"
-				data-bs-target="#exampleModal"
-			>
-				Launch demo modal
-			</button>
-
-			<!-- Modal -->
-			<div
-				class="modal fade"
-				id="exampleModal"
-				tabindex="-1"
-				aria-labelledby="exampleModalLabel"
-				aria-hidden="true"
-			>
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h1 class="modal-title h5" id="exampleModalLabel">
-								Modal title
-							</h1>
-							<button
-								type="button"
-								class="btn-close"
-								data-bs-dismiss="modal"
-								data-bs-toggle="tooltip"
-								data-bs-placement="bottom"
-								data-bs-title="Close"
-							>
-								<span class="visually-hidden">Close</span>
-							</button>
-						</div>
-						<div class="modal-body">...</div>
-						<div class="modal-footer">
-							<button
-								type="button"
-								class="btn btn-outline-secondary"
-								data-bs-dismiss="modal"
-							>
-								Close
-							</button>
-							<button type="button" class="btn btn-primary">
-								Save changes
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-
 			<form
 				class="row g-3 needs-validation"
 				novalidate
 				@submit.prevent="onSubmit"
 			>
-				<!-- NEW VISITOR -->
+				<!-- FIRST NAME -->
 				<div class="col-md-6">
-					<label
-						for="validationCustom01"
-						class="form-label is-required"
-						>Visitor<span class="visually-hidden">
+					<label for="first_name" class="form-label is-required"
+						>First name<span class="visually-hidden">
 							(required)</span
 						></label
 					>
@@ -81,76 +27,97 @@
 						<input
 							type="text"
 							class="form-control"
-							id="validationCustomNewVisitor"
+							id="first_name"
 							aria-describedby="inputGroupPrepend"
-							v-model="new_visitor"
+							v-model="first_name"
 							required
 						/>
 						<div class="invalid-feedback">
-							Please provide a visitor name.
+							Please provide a first name.
 						</div>
 					</div>
 				</div>
 
-				<!-- Arrival Time -->
-				<div class="col-md-6">
-					<label for="validationCustomUsername" class="form-label"
-						>Arrival Time</label
-					>
-					<input
-						type="time"
-						class="form-control"
-						id="validationCustomVisitorArrivalTime"
-						v-model="arrival_time"
-						aria-describedby="inputGroupPrepend"
-						disabled
-					/>
-				</div>
-
 				<!-- PHONE NUMBER -->
 				<div class="col-md-6">
-					<label
-						for="validationCustom02"
-						class="form-label is-required"
+					<label for="phone_number" class="form-label is-required"
 						>Phone number<span class="visually-hidden">
 							(required)</span
 						></label
 					>
 					<div class="input-group has-validation">
 						<input
-							type="text"
-							class="form-control"
+							type="tel"
+							:class="[
+								validMsisdn && 'validated',
+								'form-control',
+							]"
 							v-model="msisdn"
-							id="validationCustomVisitorNumber"
+							id="phone_number"
 							aria-describedby="inputGroupPrepend"
 							required
+							autocomplete="off"
 						/>
-						<div class="invalid-feedback">
-							Please provide a valid phone number.
+						<div
+							:class="[
+								'invalid-feedback',
+								validMsisdn && 'show-feedback',
+							]"
+						>
+							{{ validMsisdnMessage }}
 						</div>
 					</div>
+					<div id="emailHelp" class="form-text">
+						Phone number should start with 0. For example:
+						0778675908
+					</div>
 				</div>
-				<!-- Departural Time -->
+
+				<!-- MIDDLE NAME -->
 				<div class="col-md-6">
-					<label for="validationCustom03" class="form-label"
-						>Departural Time</label
+					<label for="middle_name" class="form-label"
+						>Middle name</label
 					>
 					<input
-						type="time"
+						type="text"
 						class="form-control"
-						id="validationCustomUsername"
-						v-model="email"
+						id="middle_name"
+						v-model="middle_name"
 						aria-describedby="inputGroupPrepend"
-						disabled
 					/>
 				</div>
 
-				<!-- Host -->
+				<!-- EMAIL -->
 				<div class="col-md-6">
-					<label
-						for="validationCustom02"
-						class="form-label is-required"
-						>Host<span class="visually-hidden">
+					<label for="email" class="form-label">Email</label>
+					<div class="input-group">
+						<input
+							type="email"
+							:class="[validEmail && 'validated', 'form-control']"
+							v-model="email"
+							id="email"
+							aria-describedby="inputGroupPrepend"
+							autocomplete="off"
+						/>
+						<div
+							:class="[
+								'invalid-feedback',
+								validEmail && 'show-feedback',
+							]"
+						>
+							{{ validEmailMessage }}
+						</div>
+					</div>
+					<div id="emailHelp" class="form-text">
+						Enter a valid email address. For example:
+						john12@gmail.com
+					</div>
+				</div>
+
+				<!-- LAST NAME -->
+				<div class="col-md-6">
+					<label for="last_name" class="form-label is-required"
+						>Last name<span class="visually-hidden">
 							(required)</span
 						></label
 					>
@@ -158,58 +125,27 @@
 						<input
 							type="text"
 							class="form-control"
-							id="validationCustom02"
-							v-model="host_name"
+							id="last_name"
+							v-model="last_name"
 							required
 						/>
 						<div class="invalid-feedback">
-							Please provide a host name.
+							Please provide a last name.
 						</div>
 					</div>
 				</div>
 
-				<!-- Current Date -->
-				<div class="col-md-6 has-validation">
-					<label for="validationCustomCurrentDate" class="form-label"
-						>Date</label
+				<div class="col-md-12 d-flex">
+					<button
+						type="submit"
+						class="btn btn-primary"
+						style="
+							padding: 0.7rem 2rem !important;
+							font-weight: 600;
+							margin-left: auto;
+						"
 					>
-					<input
-						type="Date"
-						class="form-control"
-						id="validationCustomVisitorArrivalTime"
-						v-model="date"
-						aria-describedby="inputGroupPrepend"
-						required
-					/>
-					<div class="invalid-feedback">
-						Please provide the current date.
-					</div>
-				</div>
-
-				<!-- Purpose -->
-				<div class="col-12">
-					<label
-						for="validationCustom02"
-						class="form-label is-required"
-						>Purpose<span class="visually-hidden">
-							(required)</span
-						></label
-					>
-					<div class="input-group has-validation">
-						<textarea
-							class="form-control"
-							id="validationCustom02"
-							required
-							v-model="purpose"
-						></textarea>
-						<div class="invalid-feedback">
-							Please provide an purpose.
-						</div>
-					</div>
-				</div>
-				<div class="col-12">
-					<button class="btn btn-primary mt-2" type="submit">
-						Save
+						{{ buttonLabel }}
 					</button>
 				</div>
 			</form>
@@ -226,7 +162,6 @@
 
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
-import ModalTemplate from "../ModalTemplate.vue";
 import { registerVisitor } from "@/assets/js/index.js";
 
 import { ref, defineProps, onMounted } from "vue";
@@ -327,9 +262,9 @@ svg {
 	gap: 1.5rem;
 }
 
-@media (min-width: 768px) and (max-width: 1440px) {
+/* @media (min-width: 768px) and (max-width: 1440px) {
 	#visitor-view {
 		padding: 1rem 3rem 0 3rem;
 	}
-}
+} */
 </style>

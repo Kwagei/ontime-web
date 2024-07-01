@@ -10,7 +10,7 @@
 			<main class="flex-grow-1" style="background-color: #ececec">
 				<HeaderBar :activeSection="activeSection" />
 
-				<section>
+				<section class="">
 					<RouterView :breadCrumbs="breadCrumbs" />
 				</section>
 			</main>
@@ -29,7 +29,7 @@ const activeSection = ref("");
 const breadCrumbs = ref([]);
 </script>
 
-<style scoped>
+<style>
 #wrapper {
 	height: 100vh;
 	width: 100vw;
@@ -55,10 +55,17 @@ main {
 	padding-bottom: 3rem;
 }
 
-/* Tablet Styles */
-@media (min-width: 768px) and (max-width: 1440px) {
-	/* aside {
-        width: 17rem;
-    } */
+.modal-backdrop {
+	display: none !important;
+}
+
+@media (max-width: 1440px) {
+	aside {
+		width: 15rem;
+	}
+
+	main {
+		margin-left: 15rem;
+	}
 }
 </style>

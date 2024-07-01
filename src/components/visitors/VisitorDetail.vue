@@ -26,7 +26,7 @@
 							<div
 								class="d-flex justify-content-between align-items-center"
 							>
-								<h4 class="">Visitor Information</h4>
+								<h4 class="m-0">Visitor Information</h4>
 								<router-link
 									:to="{
 										name: 'edit-visitor',
@@ -34,20 +34,12 @@
 									v-model:visitor-info="visitorInfo"
 								>
 									<button
+										class="btn btn-secondary editBtn"
+										style="border: 0.125rem solid black"
 										type="button"
-										class="edit-btn btn btn-secondary"
+										data-bs-theme="dark"
 									>
-										<svg
-											fill="currentColor"
-											aria-hidden="true"
-											focusable="false"
-											class="me-1"
-										>
-											<use
-												xlink:href="../../assets/svg/solaris-icons-sprite.svg#pencil"
-											/>
-										</svg>
-										Edit
+										<Icons v-model:icon="edit" />
 									</button>
 								</router-link>
 							</div>
@@ -66,7 +58,7 @@
 								</div>
 								<div class="visitor-info">
 									<ul>
-										<li v-for="(v, key) in visitorInfo">
+										<li v-for="(info, key) in visitorInfo">
 											<!-- First name <br /> -->
 											<div
 												class="card-body"
@@ -79,7 +71,7 @@
 
 												<span
 													class="card-text fw-bold"
-													>{{ v }}</span
+													>{{ info }}</span
 												>
 											</div>
 										</li>
@@ -97,12 +89,8 @@
 
 		<div class="row justify-content-between container p-0 my-4 mx-auto">
 			<Search v-model:search="searchTerms" />
-			<Filter />
-			<Sort
-				:sortTerms="sortTerms"
-				v-model:term="sortTerm"
-				v-model:direction="directionTerm"
-			/>
+			<!-- <Filter /> -->
+			<Sort v-model:term="sortTerm" v-model:direction="directionTerm" />
 		</div>
 
 		<div class="table-responsive container p-0">
@@ -171,8 +159,8 @@
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Pagination from "../Pagination.vue";
 import Search from "../Search.vue";
-import Filter from "../Filter.vue";
 import Sort from "../Sort.vue";
+import Icons from "../Icons.vue";
 
 import { useRoute } from "vue-router";
 import { ref, onMounted, watch } from "vue";
@@ -184,15 +172,9 @@ const start = ref(0);
 const limit = ref(20);
 const loader = ref(true);
 const sort = ref("");
+const edit = "pencil";
 
 const searchTerms = ref("");
-const sortTerms = ref([
-	{ type: "Date", term: "date_time" },
-	{ type: "Arrival Time", term: "date_time" },
-	{ type: "Departure Time", term: "date_time" },
-	{ type: "Purpose", term: "purpose" },
-	{ type: "Items", term: "items" },
-]);
 
 const sortTerm = defineModel("term");
 sortTerm.value = "date_time";
@@ -200,6 +182,9 @@ const directionTerm = defineModel("direction");
 directionTerm.value = "desc";
 
 const route = useRoute();
+const breadCrumbs = defineModel("breadCrumbs");
+breadCrumbs.value = route.path.split("/").slice(1);
+console.log(breadCrumbs.value);
 
 const id = ref(route.params.id);
 const visitorInfo = ref("");
@@ -263,9 +248,6 @@ onMounted(async () => {
 	await fetchVisitor();
 });
 
-const breadCrumbs = defineModel("breadCrumbs");
-breadCrumbs.value = route.path.split("/").slice(1);
-
 const formatDateTime = (visits) => {
 	return visits.map((visit) => {
 		if (visit.date_time) {
@@ -320,21 +302,18 @@ const visitDetail = () => {};
 	color: gray;
 }
 
-.edit-btn:hover {
-	border: 2px solid black !important;
+.btn {
+	padding: 0.5rem !important;
+}
+.btn:hover {
+	border: 0.125rem solid black !important;
 }
 
-.edit-btn svg {
-	width: 1.2rem;
-	height: 1.2rem;
+.btn:hover path {
+	fill: white;
 }
-
-.edit-btn:hover {
-	border: 2px solid black !important;
-}
-
-.edit-btn svg {
-	width: 1.2rem;
-	height: 1.2rem;
+.editBtn svg {
+	height: 1.5rem !important;
+	margin: 0 !important;
 }
 </style>

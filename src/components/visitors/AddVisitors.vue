@@ -1,5 +1,12 @@
 <template>
-	<Modal :data="{ title, message, status, pageLink }" />
+	<Modal
+		:data="{
+			title: alert.title,
+			message: alert.message,
+			status: alert.status,
+			pageLink: alert.pageLink,
+		}"
+	/>
 	<div id="visitor-view" class="d-flex flex-column container">
 		<div
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -57,7 +64,7 @@
 							id="phone_number"
 							aria-describedby="inputGroupPrepend"
 							required
-							@blur="contactValidation"
+							autocomplete="off"
 						/>
 						<div
 							:class="[
@@ -69,8 +76,8 @@
 						</div>
 					</div>
 					<div id="emailHelp" class="form-text">
-						Please enter your phone number starting with 231. For
-						example: 231123456789
+						Phone number should start with 0. For example:
+						0778675908
 					</div>
 				</div>
 
@@ -98,7 +105,7 @@
 							v-model="email"
 							id="email"
 							aria-describedby="inputGroupPrepend"
-							@blur="validateEmail"
+							autocomplete="off"
 						/>
 						<div
 							:class="[
@@ -106,12 +113,12 @@
 								validEmail && 'show-feedback',
 							]"
 						>
-							Please provide a valid email address
+							{{ validEmailMessage }}
 						</div>
 					</div>
 					<div id="emailHelp" class="form-text">
-						Please enter a valid email address. For example:
-						example@example.com
+						Enter a valid email address. For example:
+						john12@gmail.com
 					</div>
 				</div>
 
@@ -136,13 +143,39 @@
 					</div>
 				</div>
 
-				<div class="col-md-12">
+				<!-- ADDRESS -->
+				<div class="col-md-6">
+					<label for="address" class="form-label is-required"
+						>Address<span class="visually-hidden">
+							(required)</span
+						></label
+					>
+					<div class="input-group has-validation">
+						<input
+							type="text"
+							class="form-control"
+							id="address"
+							v-model="address"
+							required
+						/>
+						<div class="invalid-feedback">
+							Please provide an address.
+						</div>
+					</div>
+					<div id="emailHelp" class="form-text">
+						Enter descriptive address. For example: Congo Town,
+						Adjacent Satcom, Monrovia, Liberia
+					</div>
+				</div>
+
+				<div class="col-md-12 d-flex">
 					<button
 						type="submit"
 						class="btn btn-primary"
 						style="
 							padding: 0.7rem 2rem !important;
 							font-weight: 600;
+							margin-left: auto;
 						"
 					>
 						{{ buttonLabel }}
@@ -164,7 +197,11 @@ import {
 	getSingleVisitor,
 	visuallyHideModalBackdrop,
 } from "@/assets/js/index.js";
-import { msisdnValidation, emailValidation } from "@/assets/js/util.js";
+import {
+	msisdnValidation,
+	emailValidation,
+	showModal,
+} from "@/assets/js/util.js";
 
 // Route and State
 const route = useRoute();
@@ -173,10 +210,14 @@ const middle_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
-const status = ref("");
-const message = ref("");
-const title = ref("");
-const pageLink = ref("");
+const address = ref("");
+
+const alert = ref({
+	status: "",
+	title: "",
+	message: "",
+	pageLink: "",
+});
 
 const buttonLabel = ref("Save");
 let visitorInfo;
@@ -191,7 +232,12 @@ const formStatus = tem.pop();
 
 // Functions
 const onSubmit = async () => {
-	if (!first_name.value || !last_name.value || !msisdn.value) {
+	if (
+		!first_name.value ||
+		!last_name.value ||
+		!msisdn.value ||
+		!address.value
+	) {
 		return;
 	}
 
@@ -199,22 +245,22 @@ const onSubmit = async () => {
 		first_name: first_name.value,
 		middle_name: middle_name.value,
 		last_name: last_name.value,
-		msisdn: msisdn.value,
+		msisdn: msisdn.value.startsWith("0")
+			? `231${msisdn.value.slice(1)}`
+			: msisdn.value,
 		email: email.value,
+		address: address.value,
 	};
 
 	const response = formStatus.startsWith("new")
 		? await registerVisitor(visitor)
 		: await editVisitor(visitorInfo.id, visitor);
 
-	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-	myModal.show(document.querySelector("#toggleMyModal"));
-	status.value = response.ok ? "success" : "danger";
-	message.value = response.result.message;
-	title.value = response.ok ? "Success" : "Error";
-	pageLink.value = `/visitors/${response.result.data[0].id}`;
-
-	visuallyHideModalBackdrop();
+	showModal("#alertModal", "#alertModalBody");
+	alert.value.status = response.ok ? "success" : "danger";
+	alert.value.message = response.result.message;
+	alert.value.title = response.ok ? "Success" : "Error";
+	alert.value.pageLink = `/visitors/${response.result.data[0].id}`;
 
 	// Reset form if the response is successful
 	if (response.ok) {
@@ -238,27 +284,53 @@ const fetchVisitor = async () => {
 const validEmail = ref(false);
 const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
+const validEmailMessage = ref("Please provide a valid email address");
 
-const contactValidation = () => {
-	if (!msisdn.value) {
+const contactValidation = (number) => {
+	if (!number) {
 		validMsisdn.value = false;
 		validMsisdnMessage.value = "Please provide a phone number";
 
 		return;
 	}
 
-	const isvalid = msisdnValidation([msisdn.value]);
+	const isValid = msisdnValidation([number]);
 
-	if (!isvalid.valid) {
+	if (!isValid.valid) {
 		validMsisdn.value = true;
-		validMsisdnMessage.value = isvalid.message;
+		validMsisdnMessage.value = isValid.message;
 	} else {
 		validMsisdn.value = false;
 	}
 };
 
-const validateEmail = () => {
-	validEmail.value = emailValidation(email.value) ? false : true;
+watch(
+	() => msisdn.value,
+	(n) => {
+		contactValidation(n);
+	}
+);
+
+watch(
+	() => email.value,
+	(n) => {
+		validateEmail(n);
+	}
+);
+
+const validateEmail = (mail) => {
+	if (!mail) {
+		validEmail.value = false;
+		validEmailMessage.value = "Please provide a valid email address";
+	}
+	const isValid = emailValidation(mail);
+
+	if (!isValid.valid) {
+		validEmail.value = true;
+		validEmailMessage.value = isValid.message;
+	} else {
+		validEmail.value = false;
+	}
 };
 
 const resetForm = () => {
@@ -267,6 +339,7 @@ const resetForm = () => {
 	last_name.value = "";
 	msisdn.value = "";
 	email.value = "";
+	address.value = "";
 	buttonLabel.value = "Save";
 
 	// Remove validation classes
@@ -318,9 +391,9 @@ svg {
 	gap: 1.5rem;
 }
 
-@media (min-width: 768px) and (max-width: 1440px) {
-	#visitor-view {
-		padding: 1rem 3rem 0 3rem;
+@media (max-width: 1440px) {
+	#emailHelp {
+		font-size: small;
 	}
 }
 </style>

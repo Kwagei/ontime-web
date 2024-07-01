@@ -20,7 +20,6 @@
 						type="button"
 						class="btn-close"
 						data-bs-dismiss="modal"
-						data-bs-toggle="tooltip"
 						data-bs-placement="bottom"
 						data-bs-title="Close"
 					>
@@ -178,8 +177,6 @@
 							v-for="participant in participants"
 							:key="participant.id"
 							@click="participantDetail(participant.id)"
-							data-bs-target="#visitModal"
-							data-bs-toggle="modal"
 						>
 							<td>
 								<div class="form-check mb-0">
@@ -234,6 +231,9 @@ import {
 	getEvents,
 	getParticipants,
 } from "@/assets/js/index.js";
+
+import { showModal } from "@/assets/js/util";
+
 import Pagination from "../Pagination.vue";
 import Search from "../Search.vue";
 import Sort from "../Sort.vue";
@@ -358,14 +358,6 @@ const getEventsOptions = async () => {
 
 // function to validate form before it submit the form
 const onSubmit = async (event) => {
-	console.group();
-	console.log("msisdn:", msisdn.value);
-	console.log("visitor", visitor.value);
-	console.log("purpose:", purpose.value);
-	console.log("room:", room.value);
-	console.log("address:", address.value);
-	console.groupEnd();
-
 	if (
 		!msisdn.value ||
 		!visitor.value ||
@@ -376,6 +368,8 @@ const onSubmit = async (event) => {
 	) {
 		return;
 	}
+
+	document.body.removeAttribute("style");
 
 	// require values for the submittion of the form
 	const visitData = {
@@ -388,12 +382,9 @@ const onSubmit = async (event) => {
 		purpose: purpose.value,
 	};
 
-	console.log(visitData);
-
 	const response = await registerVisit(visitData);
 
-	const myModal = new boosted.Modal("#exampleModal");
-	myModal.show(document.querySelector("#toggleMyModal"));
+	showModal("#alertModal", "#alertModalBody");
 	status.value = response.ok ? "success" : "danger";
 	message.value = response.result.message;
 	title.value = response.ok ? "Success" : "Error";
@@ -401,12 +392,8 @@ const onSubmit = async (event) => {
 	// Reset form if the response is successful
 	if (response.ok) {
 		const visitModal = document.querySelector("#visitModal");
-		console.log(visitModal);
 		visitModal.classList.remove("show");
 		visitModal.style.display = "none";
-		visitModal.ariaHidden = true;
-		visitModal.removeAttribute("aria-modal");
-		visitModal.removeAttribute("role");
 		resetForm();
 	}
 };
@@ -437,6 +424,7 @@ const deleteBelongings = (item) => {
 };
 
 const participantDetail = async (id) => {
+	showModal("#visitModal", "#modal-dialog");
 	const event = events.value.find((val) => val.id === eventID.value);
 
 	const participant = participants.value.find((val) => val.id === id);
@@ -486,10 +474,5 @@ a {
 
 .modal {
 	background-color: #1616157a;
-}
-
-.modal-content {
-	/* border: none !important; */
-	/* z-index: 2000; */
 }
 </style>

@@ -85,3 +85,8 @@ export const emailValidation = (mail) => {
 		return { valid: true };
 	}
 };
+
+export const showModal = (parent, child) => {
+	const modal = new boosted.Modal(parent, { backdrop: false });
+	modal.show(document.querySelector(child));
+};

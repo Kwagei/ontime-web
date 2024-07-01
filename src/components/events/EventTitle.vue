@@ -1,6 +1,12 @@
 <template>
-	<div class="bg-supporting-purple title-bar w-100" data-bs-theme="light">
-		<div class="container">
+	<div
+		id="title"
+		class="bg-supporting-purple title-bar w-100"
+		data-bs-theme="light"
+	>
+		<div
+			class="d-flex justify-content-between align-items-center container"
+		>
 			<h5 class="display-3">{{ title }}</h5>
 			<picture>
 				<img src="../../assets/images/eventTitleBackdrop.png" />
@@ -19,5 +25,6 @@ const props = defineProps({
 </script>
 
 <style scoped>
-/* code... */
+@media (min-width: 1280px) {
+}
 </style>

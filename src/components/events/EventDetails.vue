@@ -1,9 +1,6 @@
 <template>
-	<div class="w-100 d-flex align-items-center flex-column">
-		<div
-			class="d-flex justify-content-between gap-4 pt-3"
-			style="width: 81%"
-		>
+	<div class="w-100 d-flex align-items-center flex-column container">
+		<div class="w-100 d-flex justify-content-between pt-3">
 			<BreadCrumbs :breadCrumbs="['events', event.title]" />
 			<div class="d-flex gap-3">
 				<button
@@ -12,20 +9,23 @@
 				>
 					Import Participants
 				</button>
-				<button
-					@click="emit('switch', 'addParticipant')"
-					class="btn btn-primary"
+
+				<router-link
+					:to="{
+						name: 'add-event-participant',
+					}"
 				>
-					Add Participant
-				</button>
+					<button class="btn btn-primary">Add Participant</button>
+				</router-link>
 
 				<button
 					class="btn btn-secondary editBtn"
 					style="border: 0.125rem solid black"
 					type="button"
 					data-bs-theme="dark"
+					@click="$emit('editEvent')"
 				>
-					<Icons v-model:icon="edit" @click="$emit('editEvent')" />
+					<Icons v-model:icon="edit" />
 				</button>
 			</div>
 		</div>
@@ -66,7 +66,7 @@ import Icons from "../Icons.vue";
 const edit = "pencil";
 
 import { formatDate } from "../../assets/js/index.js";
-// import Edit from "../Edit.vue";
+import { RouterLink } from "vue-router";
 
 const props = defineProps({
 	event: {

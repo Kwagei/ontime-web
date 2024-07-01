@@ -58,4 +58,14 @@ main {
 .modal-backdrop {
 	display: none !important;
 }
+
+@media (max-width: 1440px) {
+	aside {
+		width: 15rem;
+	}
+
+	main {
+		margin-left: 15rem;
+	}
+}
 </style>

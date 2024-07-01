@@ -25,6 +25,7 @@ import Host from "@/components/Host.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
+import AddParticipant from "@/components/events/AddParticipant.vue";
 
 const routes = [
 	{
@@ -116,9 +117,14 @@ const routes = [
 						name: "specific-event",
 					},
 					{
-						path: "edit",
+						path: "edit-event",
 						component: AddEvent,
 						name: "specific-event-participants",
+					},
+					{
+						path: "add-participant",
+						component: AddParticipant,
+						name: "add-event-participant",
 					},
 				],
 			},

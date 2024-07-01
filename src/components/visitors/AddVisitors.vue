@@ -1,5 +1,12 @@
 <template>
-	<Modal :data="{ title, message, status, pageLink }" />
+	<Modal
+		:data="{
+			title: alert.title,
+			message: alert.message,
+			status: alert.status,
+			pageLink: alert.pageLink,
+		}"
+	/>
 	<div id="visitor-view" class="d-flex flex-column container">
 		<div
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -136,6 +143,31 @@
 					</div>
 				</div>
 
+				<!-- ADDRESS -->
+				<div class="col-md-6">
+					<label for="address" class="form-label is-required"
+						>Address<span class="visually-hidden">
+							(required)</span
+						></label
+					>
+					<div class="input-group has-validation">
+						<input
+							type="text"
+							class="form-control"
+							id="address"
+							v-model="address"
+							required
+						/>
+						<div class="invalid-feedback">
+							Please provide an address.
+						</div>
+					</div>
+					<div id="emailHelp" class="form-text">
+						Enter descriptive address. For example: Congo Town,
+						Adjacent Satcom, Monrovia, Liberia
+					</div>
+				</div>
+
 				<div class="col-md-12 d-flex">
 					<button
 						type="submit"
@@ -165,7 +197,11 @@ import {
 	getSingleVisitor,
 	visuallyHideModalBackdrop,
 } from "@/assets/js/index.js";
-import { msisdnValidation, emailValidation } from "@/assets/js/util.js";
+import {
+	msisdnValidation,
+	emailValidation,
+	showModal,
+} from "@/assets/js/util.js";
 
 // Route and State
 const route = useRoute();
@@ -174,10 +210,14 @@ const middle_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
-const status = ref("");
-const message = ref("");
-const title = ref("");
-const pageLink = ref("");
+const address = ref("");
+
+const alert = ref({
+	status: "",
+	title: "",
+	message: "",
+	pageLink: "",
+});
 
 const buttonLabel = ref("Save");
 let visitorInfo;
@@ -192,7 +232,12 @@ const formStatus = tem.pop();
 
 // Functions
 const onSubmit = async () => {
-	if (!first_name.value || !last_name.value || !msisdn.value) {
+	if (
+		!first_name.value ||
+		!last_name.value ||
+		!msisdn.value ||
+		!address.value
+	) {
 		return;
 	}
 
@@ -204,20 +249,18 @@ const onSubmit = async () => {
 			? `231${msisdn.value.slice(1)}`
 			: msisdn.value,
 		email: email.value,
+		address: address.value,
 	};
 
 	const response = formStatus.startsWith("new")
 		? await registerVisitor(visitor)
 		: await editVisitor(visitorInfo.id, visitor);
 
-	const myModal = new boosted.Modal("#exampleModal");
-	myModal.show(document.querySelector("#toggleMyModal"));
-	status.value = response.ok ? "success" : "danger";
-	message.value = response.result.message;
-	title.value = response.ok ? "Success" : "Error";
-	pageLink.value = `/visitors/${response.result.data[0].id}`;
-
-	visuallyHideModalBackdrop();
+	showModal("#alertModal", "#alertModalBody");
+	alert.value.status = response.ok ? "success" : "danger";
+	alert.value.message = response.result.message;
+	alert.value.title = response.ok ? "Success" : "Error";
+	alert.value.pageLink = `/visitors/${response.result.data[0].id}`;
 
 	// Reset form if the response is successful
 	if (response.ok) {
@@ -296,6 +339,7 @@ const resetForm = () => {
 	last_name.value = "";
 	msisdn.value = "";
 	email.value = "";
+	address.value = "";
 	buttonLabel.value = "Save";
 
 	// Remove validation classes
@@ -347,9 +391,9 @@ svg {
 	gap: 1.5rem;
 }
 
-/* @media (min-width: 768px) and (max-width: 1440px) {
-	#visitor-view {
-		padding: 1rem 3rem 0 3rem;
+@media (max-width: 1440px) {
+	#emailHelp {
+		font-size: small;
 	}
-} */
+}
 </style>

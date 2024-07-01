@@ -55,4 +55,10 @@ button {
 .sort svg {
 	margin: 0 !important;
 }
+
+@media (max-width: 1440px) {
+	.sort {
+		width: 12.333333%;
+	}
+}
 </style>

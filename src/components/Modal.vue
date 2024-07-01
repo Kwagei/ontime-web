@@ -1,14 +1,14 @@
 <template>
 	<div
 		class="modal fade"
-		id="exampleModal"
+		id="alertModal"
 		tabindex="-1"
-		aria-labelledby="exampleModalLabel"
+		aria-labelledby="alertModalLabel"
 		data-bs-backdrop="static"
 		aria-hidden="true"
 		style="z-index: 4000"
 	>
-		<div class="modal-dialog modal-lg" id="toggleMyModal">
+		<div class="modal-dialog modal-lg" id="alertModalBody">
 			<div class="modal-content py-1">
 				<div class="modal-header">
 					<div
@@ -33,21 +33,23 @@
 						<span class="visually-hidden">Close</span>
 					</button>
 				</div>
-				<div v-if="data.pageLink || data.message" class="modal-body">
-					<div
-						v-if="data.message && data.message != data.title"
-						class="mt-2 mb-3"
-						style="padding: 0 1.5rem"
-					>
+				<div
+					v-if="data.pageLink || data.message"
+					class="modal-body d-flex justify-content-between align-items-center"
+				>
+					<div class="mt-2 mb-3" style="padding: 0 1.5rem">
 						{{ data.message }}
 					</div>
-					<button
+
+					<router-link
 						v-if="data.pageLink"
-						class="btn btn-primary d-block"
-						@click="goToPage(data.pageLink)"
+						:to="{
+							path: data.pageLink,
+						}"
+						v-model:visitor-info="visitorInfo"
 					>
-						View
-					</button>
+						view
+					</router-link>
 				</div>
 			</div>
 		</div>
@@ -55,28 +57,23 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
+import { RouterLink } from "vue-router";
 
 const props = defineProps({
 	data: { type: Object, required: true },
 });
-
-const router = useRouter();
-
-function goToPage(link) {
-	if (!link) return;
-
-	// go to a dummy route before to go to the target route
-	// because the browser will ignore the routing if the target route
-	// is the same as the current route
-	router.replace({ path: "/null" }).then(() => {
-		router.replace({ path: link });
-	});
-}
 </script>
 
 <style scoped>
 .modal {
 	background-color: #00000094 !important;
+}
+
+a.router-link-active {
+	font-weight: 700;
+}
+
+a.router-link-active:hover {
+	color: #ff7900 !important;
 }
 </style>

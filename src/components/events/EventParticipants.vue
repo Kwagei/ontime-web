@@ -6,10 +6,9 @@
 			sorting ||
 			hasParticipants
 		"
-		class="mt-3"
-		style="width: 70vw"
+		class="mt-3 w-100"
 	>
-		<div class="d-flex justify-content-between mb-3 mx-2">
+		<div class="d-flex justify-content-between mb-3">
 			<Search v-model:search="searchQuery" />
 			<!-- <Filter /> -->
 			<Sort
@@ -19,7 +18,7 @@
 			/>
 		</div>
 	</div>
-	<div style="width: 70vw" v-if="hasParticipants">
+	<div class="w-100" v-if="hasParticipants">
 		<ParticipantsTable :participants="participantsToShow" />
 		<Pagination
 			class="mx-2"
@@ -57,7 +56,6 @@ import { useRouter } from "vue-router";
 import ParticipantsTable from "./ParticipantsTable.vue";
 import Pagination from "../Pagination.vue";
 import Search from "../Search.vue";
-import Filter from "../Filter.vue";
 import Sort from "../Sort.vue";
 import { API_URL } from "../../assets/js/index.js";
 
@@ -71,7 +69,7 @@ const MAX_PARTICIPANTS_TO_SHOW = 10;
 const sorting = ref(false);
 
 const searchQuery = ref("");
-const term = ref("created_at");
+const sortTern = ref("created_at");
 const direction = ref("ASC");
 
 const participantsSortTerms = [
@@ -122,7 +120,7 @@ watch(searchQuery, async (newValue) => {
 
 // Watch for Changes in the Sort and Direction
 watch(
-	() => [term.value, direction.value],
+	() => [sortTern.value, direction.value],
 	async ([newTerm, newDirection]) => {
 		if (newTerm && newDirection) {
 			sorting.value = true;
@@ -145,7 +143,7 @@ async function getParticipants(
 	search = "",
 	start = 0,
 	limit = 20,
-	sortTerm = term.value,
+	sortTerm = sortTern.value,
 	sortDirection = direction.value
 ) {
 	try {
@@ -153,7 +151,7 @@ async function getParticipants(
 		url += `?search=${search}`;
 		url += `&start=${start}`;
 		url += `&limit=${limit}`;
-		url += `&term=${sortTerm}`;
+		url += `&sort=${sortTerm}`;
 		url += `&direction=${sortDirection}`;
 
 		await $.get(url, (data) => {

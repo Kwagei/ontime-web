@@ -1,10 +1,10 @@
 <template>
 	<Modal
 		:data="{
-			title: successModalData.title,
-			message: successModalData.message,
-			status: successModalData.status,
-			pageLink: successModalData.pageLink,
+			title: alert.title,
+			message: alert.message,
+			status: alert.status,
+			pageLink: alert.pageLink,
 		}"
 	/>
 	<div id="eventsWrapper" class="d-flex flex-column container">
@@ -30,7 +30,7 @@
 			<form
 				class="row g-3 needs-validation"
 				novalidate
-				@submit.prevent="mode == 'add' ? postEvent() : putEvent()"
+				@submit.prevent="onSubmit"
 			>
 				<!-- TITLE -->
 				<div class="col-md-6">
@@ -271,6 +271,7 @@ import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import Alert from "../Alert.vue";
 import { useRouter } from "vue-router";
+import { showModal } from "@/assets/js/util.js";
 
 // Event Creation Data
 const title = ref("");
@@ -281,12 +282,13 @@ const hostValue = ref("");
 const hostID = ref("");
 const hosts = ref("");
 const room = ref("");
+const roomID = ref("");
 const type = ref("");
 const details = ref("");
 const buttonLabel = ref("Save");
 
 // Modal Data
-const successModalData = ref({
+const alert = ref({
 	title: "",
 	status: "",
 	message: "",
@@ -326,7 +328,7 @@ const updateHostTerm = (host) => {
 	hostID.value = host.id;
 };
 
-async function postEvent() {
+const onSubmit = async () => {
 	if (
 		!title.value ||
 		!facilitator.value ||
@@ -350,75 +352,36 @@ async function postEvent() {
 		details: details.value,
 	};
 
-	try {
-		await $.post(API_URL + "events/", body, (data) => {
-			const modal = new boosted.Modal("#exampleModal");
-			modal.show($("#toggleMyModal")[0]);
-
-			// set modal data
-			successModalData.value.message = data.message;
-			successModalData.value.status = "success";
-			successModalData.value.title = "Event Created";
-			successModalData.value.pageLink = `/events/${data.data.id}`;
-
-			visuallyHideModalBackdrop();
-		});
-
-		clearInputs();
-		clearErrors();
-	} catch (error) {
-		console.log("Error creating event: ", error.responseJSON);
-		clearErrors();
-		displayErrorMessage(error.responseJSON.message);
-	}
-}
-
-async function putEvent() {
-	const body = {
-		title: title.value,
-		facilitator: facilitator.value,
-		start_date: startDate.value,
-		end_date: endDate.value,
-		type: type.value,
-		details: details.value,
-	};
-
-	// PUT request to Edit the Event with the given
-	// data from the form
+	const api =
+		setMode() === "edit"
+			? { url: API_URL + `events/${eventId.value}`, type: "PUT" }
+			: { url: API_URL + "events/", type: "POST" };
 
 	$.ajax({
-		url: API_URL + `events/${eventId.value}`,
-		type: "PUT",
+		url: api.url,
+		type: api.type,
 		data: body,
-		success: () => {
+		success: (data) => {
+			showModal("#alertModal", "#alertModalBody");
+
+			alert.value.status = "success";
+			alert.value.title = "Success";
+			alert.value.message = data.message;
+			alert.value.pageLink = `/events/${
+				data.data.length ? data.data[0].id : data.data.id
+			}`;
+
 			clearInputs();
 			clearErrors();
-
-			// redirect the user to the edited event page
-			// so they can see the updates
-			router.push({
-				name: "specific-event",
-				params: { id: eventId.value },
-			});
 		},
-		error: (err) => {
-			clearErrors();
-			displayErrorMessage(err.responseJSON.message);
+		error: (error) => {
+			showModal("#alertModal", "#alertModalBody");
+			alert.value.status = "danger";
+			alert.value.title = "Error";
+			alert.value.message = error.responseJSON.message;
 		},
 	});
-}
-
-function displayErrorMessage(msg) {
-	const tmpMsg = msg.toLowerCase();
-
-	if (tmpMsg.includes("title")) titleError.value = msg;
-	else if (tmpMsg.includes("facilitator")) facilitatorError.value = msg;
-	else if (tmpMsg.includes("start date")) startDateError.value = msg;
-	else if (tmpMsg.includes("end date")) endDateError.value = msg;
-	else if (tmpMsg.includes("type")) typeError.value = msg;
-	else if (tmpMsg.includes("host")) hostError.value = msg;
-	else if (tmpMsg.includes("details")) detailsError.value = msg;
-}
+};
 
 function clearInputs() {
 	// clear inputs
@@ -481,6 +444,10 @@ async function getEventToEdit() {
 			type.value = retrievedEvent.type;
 			facilitator.value = retrievedEvent.facilitator;
 			details.value = retrievedEvent.details;
+			hostValue.value = retrievedEvent.host;
+			hostID.value = retrievedEvent.host_id;
+			room.value = retrievedEvent.room;
+			roomID.value = retrievedEvent.room_id;
 
 			// format date before setting it as the value
 			// start date input field in the form

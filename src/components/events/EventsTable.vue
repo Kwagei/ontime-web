@@ -48,7 +48,7 @@
 						{{ formatDate(event.end_date) }}
 					</td>
 					<td>{{ event.facilitator }}</td>
-					<td>{{ event.type }}</td>
+					<td>{{ event.event_type }}</td>
 					<td>{{ formatDetails(event.details) }}</td>
 				</tr>
 			</tbody>

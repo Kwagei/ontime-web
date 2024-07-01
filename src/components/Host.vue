@@ -1,5 +1,11 @@
 <template>
-	<Modal :data="{ title, message, status }" />
+	<Modal
+		:data="{
+			title: alert.title,
+			message: alert.message,
+			status: alert.status,
+		}"
+	/>
 	<div id="visitor-view" class="d-flex flex-column container">
 		<div
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -39,6 +45,41 @@
 					</div>
 				</div>
 
+				<!-- HOST TYPE -->
+				<div class="col-md-6">
+					<label for="host_type" class="form-label is-required"
+						>Host Type<span class="visually-hidden">
+							(required)</span
+						></label
+					>
+					<div class="form-check">
+						<input
+							class="form-check-input"
+							type="radio"
+							name="flexRadioDefault"
+							id="flexRadioDefault2"
+							value="c"
+							@click="updateHostType('Company')"
+							checked
+						/>
+						<label class="form-check-label" for="flexRadioDefault2">
+							Company
+						</label>
+					</div>
+					<div class="form-check">
+						<input
+							class="form-check-input"
+							type="radio"
+							name="flexRadioDefault"
+							id="flexRadioDefault1"
+							@click="updateHostType('Individual')"
+						/>
+						<label class="form-check-label" for="flexRadioDefault1">
+							Individual
+						</label>
+					</div>
+				</div>
+
 				<!-- PHONE NUMBER -->
 				<div class="col-md-6">
 					<label for="phone_number" class="form-label is-required"
@@ -57,7 +98,7 @@
 							id="phone_number"
 							aria-describedby="inputGroupPrepend"
 							required
-							@blur="contactValidation"
+							autocomplete="off"
 						/>
 						<div
 							:class="[
@@ -69,43 +110,30 @@
 						</div>
 					</div>
 					<div id="emailHelp" class="form-text">
-						Please enter your phone number starting with 231. For
-						example: 231123456789
+						Phone number should start with 0. For example:
+						0778675908
 					</div>
 				</div>
 
-				<!-- HOST TYPE -->
-				<div class="">
-					<label for="host_type" class="form-label is-required"
-						>Host Type<span class="visually-hidden">
-							(required)</span
-						></label
-					>
-					<div class="form-check mb-0">
-						<input class="form-check-input" type="checkbox" />
-						<label for="">Individual</label>
-					</div>
-					<div class="form-check mb-0">
-						<input class="form-check-input" type="checkbox" />
-						<label for="">Company</label>
-					</div>
-				</div>
-
-				<!-- Details -->
+				<!-- DETAILS -->
 				<div class="col-md-6">
-					<label for="detailsTextarea" class="form-label"
-						>Details</label
-					>
-					<textarea
-						placeholder="Enter details..."
-						class="form-control"
-						id="detailsTextarea"
-						v-model="details"
-						rows="4"
-					></textarea>
+					<label for="detail" class="form-label">Details</label>
+					<div class="input-group">
+						<textarea
+							placeholder="Enter details..."
+							class="form-control"
+							id="detailsTextarea"
+							v-model="details"
+							rows="2"
+						></textarea>
+
+						<div class="invalid-feedback">
+							Please enter event details.
+						</div>
+					</div>
 				</div>
 
-				<div class="col-md-12">
+				<div class="col-md-12 d-flex justify-content-end">
 					<button
 						type="submit"
 						class="btn btn-primary"
@@ -128,16 +156,19 @@ import { useRoute } from "vue-router";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import Modal from "../components/Modal.vue";
 import { registerHost, editHost, getHosts } from "@/assets/js/index.js";
-import { msisdnValidation } from "@/assets/js/util.js";
-
+import { msisdnValidation, showModal } from "@/assets/js/util.js";
 // Route and State
 const route = useRoute();
 const name = ref("");
 const msisdn = ref("");
 const details = ref("");
-const status = ref("");
-const message = ref("");
-const title = ref("");
+const type = ref("Company");
+
+const alert = ref({
+	status: "",
+	message: "",
+	title: "",
+});
 
 const buttonLabel = ref("Save");
 let hostInfo;
@@ -160,6 +191,7 @@ const onSubmit = async () => {
 		name: name.value,
 		msisdn: msisdn.value,
 		details: details.value,
+		type: type.value,
 	};
 
 	const response = formStatus.startsWith("new")
@@ -167,20 +199,22 @@ const onSubmit = async () => {
 		: await editHost(hostInfo.id, host);
 
 	console.log(response);
+	showModal("#alertModal", "#alertModalBody");
 
-	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-	myModal.show(document.querySelector("#toggleMyModal"));
-	status.value = response.ok ? "success" : "danger";
-	message.value = response.result.message;
-	title.value = response.ok ? "Success" : "Error";
-
-	visuallyHideModalBackdrop();
+	alert.value.status = response.ok ? "success" : "danger";
+	alert.value.message = response.result.message;
+	alert.value.title = response.ok ? "Success" : "Error";
 
 	// Reset form if the response is successful
 	if (response.ok) {
 		resetForm();
 	}
 };
+
+watch(
+	() => msisdn.value,
+	(n) => contactValidation(n)
+);
 
 const fetchHost = async () => {
 	if (formStatus.startsWith("edit")) {
@@ -194,27 +228,22 @@ const fetchHost = async () => {
 	}
 };
 
-const visuallyHideModalBackdrop = () => {
-	document
-		.querySelectorAll(".modal-backdrop")
-		.forEach((modal) => modal.classList.add("visually-hidden"));
-};
-
 const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
 
-const contactValidation = () => {
-	if (!msisdn.value) {
+const contactValidation = (number) => {
+	if (!number) {
 		validMsisdn.value = false;
 		validMsisdnMessage.value = "Please provide a phone number";
 
 		return;
 	}
-	const isvalid = msisdnValidation([msisdn.value]);
 
-	if (!isvalid.valid) {
+	const isValid = msisdnValidation([number]);
+
+	if (!isValid.valid) {
 		validMsisdn.value = true;
-		validMsisdnMessage.value = isvalid.message;
+		validMsisdnMessage.value = isValid.message;
 	} else {
 		validMsisdn.value = false;
 	}
@@ -248,6 +277,10 @@ onMounted(() => {
 		false
 	);
 });
+
+const updateHostType = (hostType) => {
+	type.value = hostType;
+};
 </script>
 
 <style scoped>

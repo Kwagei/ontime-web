@@ -261,11 +261,7 @@
 import { ref, onMounted } from "vue";
 import $ from "jquery";
 
-import {
-	visuallyHideModalBackdrop,
-	API_URL,
-	getHosts,
-} from "../../assets/js/index.js";
+import { API_URL, getHosts } from "../../assets/js/index.js";
 
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";

@@ -27,13 +27,8 @@ export const msisdnValidation = (msisdns) => {
 	];
 
 	for (const contact of contacts) {
-		// 0770237596
-		// 231770237596
-		const countryCode = contact.slice(0, 3);
-		const code = contact.slice(0, 1);
-
-		if (code !== "0") {
-			if (countryCode !== "231") {
+		if (!contact.startsWith("0")) {
+			if (!contact.startsWith("231")) {
 				return {
 					valid: false,
 					message: "Phone number should start with 0",
@@ -44,9 +39,9 @@ export const msisdnValidation = (msisdns) => {
 		// Remove country code from the msisdn if added to the msisdn.
 		let contactNumber;
 
-		if (code === "0") {
+		if (contact.startsWith("0")) {
 			contactNumber = contact.slice(1);
-		} else if (countryCode === "231") {
+		} else if (contact.startsWith("231")) {
 			contactNumber = contact.slice(3);
 		}
 

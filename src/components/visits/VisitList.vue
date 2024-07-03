@@ -3,80 +3,8 @@
 		class="table-responsive container p-0 d-flex flex-column"
 		style="gap: 0.9rem"
 	>
-		<div class="row justify-content-between container p-0 mx-auto">
-			<Search v-model:search="searchTerms" />
-			<Sort v-model:direction="directionTerm" />
-		</div>
-		<table class="table table-sm table-hover has-checkbox">
-			<thead>
-				<tr>
-					<th scope="col">
-						<div class="form-check mb-0">
-							<input
-								class="form-check-input"
-								type="checkbox"
-								id="selectAll"
-								@change="selectAll"
-								:checked="allSelected"
-							/>
-							<label class="form-check-label" for="selectAll">
-								<span class="visually-hidden">Select all</span>
-							</label>
-						</div>
-					</th>
-					<th scope="col">Date</th>
-					<th scope="col">Visitor</th>
-					<th scope="col">Arrival time</th>
-					<th scope="col">Departure time</th>
-					<th scope="col">Phone number</th>
-					<th scope="col">Purpose</th>
-					<th scope="col">Items</th>
-					<th
-						scope="col"
-						class="d-flex justify-content-center align-items-center"
-					>
-						Checkout
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="visit in visits" :key="visit.id" :id="visit.id">
-					<td>
-						<div class="form-check mb-0">
-							<input
-								class="form-check-input"
-								type="checkbox"
-								:id="`checkbox-${visit.id}`"
-								v-model="visit.selected"
-							/>
-						</div>
-					</td>
-					<td>{{ visit.date }}</td>
-					<td>{{ `${visit.first_name} ${visit.last_name}` }}</td>
-					<td>{{ visit.arrival_time }}</td>
-					<td>{{ visit.departure_time }}</td>
-					<td>{{ visit.msisdn }}</td>
-					<td>{{ visit.purpose }}</td>
-					<td>{{ visit.items }}</td>
-					<td
-						class="d-flex justify-content-center align-items-center"
-					>
-						<button
-							v-if="!visit.departure_time"
-							type="button"
-							class="btn btn-primary"
-							style="font-size: 0.9rem"
-							@click="handleCheckout(visit.id)"
-						>
-							Checkout
-						</button>
-						<span v-else>
-							<Icons v-model:icon="check" />
-						</span>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<table id="visitsTable" class="table table-striped w-100"></table>
+
 		<div>
 			<div
 				id="spinner"
@@ -95,32 +23,26 @@
 			</div>
 		</div>
 	</div>
-	<Pagination v-model="start" />
 </template>
 
 <script setup>
-import Pagination from "../Pagination.vue";
-import Search from "../Search.vue";
-import Sort from "../Sort.vue";
-import Icons from "@/components/Icons.vue";
 import { updateDepartureTime } from "@/assets/js/index";
+import Icons from "../Icons.vue";
+import DataTables from "datatables.net-dt";
+import "datatables.net-responsive-dt";
 
-import { ref, computed, watch } from "vue";
-import { getVisits } from "@/assets/js/index.js";
+import { ref, watch, onMounted } from "vue";
 
 const check = "tick-confirmation";
 
 const visits = ref([]);
-const start = ref(0);
-const limit = ref(10);
 const loader = ref(true);
-const sort = ref("");
+const dataTable = ref(null);
 const MAX_ITEMS_LEN = 30;
 
 const fetchError = ref(false);
 const errorMessage = ref("Error Loading Visits, Try Again!");
 
-const searchTerms = ref("");
 const refresh = defineModel("refresh");
 
 watch(
@@ -132,12 +54,6 @@ watch(
 		refresh.value = false;
 	}
 );
-
-const sortTerm = defineModel("term");
-sortTerm.value = "date_time";
-
-const directionTerm = defineModel("direction");
-directionTerm.value = "desc";
 
 // function to update departure time
 const checkout = async (id) => {
@@ -151,54 +67,24 @@ const checkout = async (id) => {
 	}
 };
 
-const handleCheckout = async (id) => {
+const handleCheckout = async (id, target) => {
 	try {
 		const time = await checkout(id);
-		const tr = document.getElementById(id).children;
-		const checkStatus = tr[8];
-		checkStatus.innerHTML = `<span>
+		const tr = $(target).children("td");
+		const checkStatus = $(tr[6]);
+		checkStatus.html(`<span class="text-center">
 							<svg data-v-61ae8e47="" class="solaris-icon" aria-hidden="true" focusable="false"><use href="/src/assets/svg/solaris-icons-sprite.svg#tick-confirmation"></use></svg>
-						</span>`;
-		const departure_time = tr[4];
-		departure_time.textContent = time;
+						</span>`);
+		const departure_time = $(tr[3]);
+		departure_time.text(time);
 	} catch (error) {
 		console.error("Error updating departure time:", error);
 	}
 };
 
-watch(
-	() => [searchTerms.value, sortTerm.value, directionTerm.value, start.value],
-	async ([searchValue, sortValue, directionValue, startValue]) => {
-		const data = await getVisits({
-			start: startValue,
-			search: searchValue,
-			sort: sortValue,
-			direction: directionValue,
-			limit: limit.value,
-		});
-		visits.value = formatDateTime(data);
-	}
-);
-
-const fetchVisits = async () => {
-	try {
-		const data = await getVisits({
-			sort: sortTerm.value,
-			direction: directionTerm.value,
-			limit: limit.value,
-		});
-		visits.value = formatDateTime(data);
-		loader.value = false;
-	} catch (error) {
-		loader.value = false;
-		fetchError.value = true;
-	}
-};
-
 const formatDateTime = (visits) => {
 	return visits.map((visit) => {
-		let date = "",
-			arrival_time = "";
+		let date, arrival_time;
 
 		if (visit.date_time) {
 			[date, arrival_time] = visit.date_time.split("T");
@@ -221,7 +107,7 @@ const formatDateTime = (visits) => {
 			...visit,
 			date,
 			arrival_time,
-			selected: false,
+			visitor: `${visit.first_name} ${visit.last_name}`,
 		};
 	});
 };
@@ -233,25 +119,81 @@ const formatItems = (belonging) => {
 		: items;
 };
 
-fetchVisits();
+const initializeDataTable = () => {
+	dataTable.value = new DataTables("#visitsTable", {
+		serverSide: true,
+		ajax: {
+			url: `http://localhost:3000/api/visits`,
+			type: "GET",
+			data: (query) => {
+				const order =
+					query.columns[query.order[0].column].data === "date"
+						? "date_time"
+						: query.columns[query.order[0].column].data;
+				return {
+					start: query.start,
+					limit: query.length,
+					search: query.search.value,
+					sort: order,
+					direction: query.order[0].dir,
+				};
+			},
+			dataSrc: (json) => {
+				visits.value = formatDateTime(json.data);
+				loader.value = false;
+				return visits.value;
+			},
+			error: (xhr, error, thrown) => {
+				console.log("Error fetching data:", error);
+			},
+		},
+		columns: [
+			{ data: "date", title: "Date" },
+			{ data: "visitor", title: "Visitor" },
+			{ data: "arrival_time", title: "Arrival Time" },
+			{ data: "departure_time", title: "Departure Time" },
+			{ data: "purpose", title: "Purpose" },
+			{ data: "items", title: "Items" },
+			{
+				title: "Check Out",
+				data: null,
+				className: "text-center",
+				render: (data, type, row) => {
+					return data.departure_time
+						? `<span class="text-center">
+							<svg data-v-61ae8e47="" class="solaris-icon" 
+                            aria-hidden="true" focusable="false">
+                                <use href="/src/assets/svg/solaris-icons-sprite.svg#tick-confirmation"></use>
+                            </svg>
+						</span>`
+						: `<button type="button" class="btn btn-secondary"
+                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+                            Check Out
+                        </button>`;
+				},
+			},
+		],
+		responsive: true,
+		lengthMenu: [10, 25, 50, 100],
+		language: {
+			searchPlaceholder: "Search ...",
+			search: "",
+		},
+	});
 
-const allSelected = computed({
-	get() {
-		return (
-			visits.value.length > 0 &&
-			visits.value.every((visit) => visit.selected)
-		);
-	},
-	set(value) {
-		visits.value.forEach((visit) => {
-			visit.selected = value;
-		});
-	},
-});
-
-const selectAll = (event) => {
-	allSelected.value = event.target.checked;
+	// Handle row click event
+	dataTable.value.on("click", "button", function (event) {
+		const target = $(event.target).closest("tr");
+		const rowData = dataTable.value.row(target).data();
+		if (rowData) {
+			handleCheckout(rowData.id, target);
+		}
+	});
 };
+
+onMounted(async () => {
+	initializeDataTable();
+});
 </script>
 
 <style scoped>

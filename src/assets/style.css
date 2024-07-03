@@ -21,6 +21,63 @@ a.router-link-active path {
 	fill: var(--bs-black) !important;
 }
 
+div.dt-container .dt-search input {
+	padding: calc(1rem - 1px) 1rem calc(0.5rem + 1px);
+	font-family: inherit;
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.25;
+	color: var(--bs-body-color);
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	background-color: var(--bs-body-bg);
+	background-clip: padding-box;
+	border: var(--bs-border-width) solid var(--bs-border-color-subtle);
+	border-radius: 0;
+	transition: border-color 0.2s ease-in-out;
+}
+
+div.dt-container select.dt-input {
+	font-family: inherit;
+	padding: 0.5rem 0.7rem;
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.25;
+	color: var(--bs-body-color);
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	background-color: var(--bs-body-bg);
+	background-clip: padding-box;
+	border-radius: 0;
+	border: 0.125rem solid black;
+	transition: border-color 0.2s ease-in-out;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current {
+	background-color: black;
+	color: #fff !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button:hover {
+	background-color: black !important;
+	color: #fff !important;
+}
+
+div.dt-container select.dt-input:hover {
+	background-color: #000;
+	color: #fff;
+}
+
+div.dt-container select.dt-input + label {
+	display: none;
+}
+
+table tr {
+	cursor: pointer;
+}
+
 @media (hover: hover) {
 	a:hover {
 		background-color: var(--bs-white) !important;

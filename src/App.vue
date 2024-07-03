@@ -8,9 +8,9 @@
 				/>
 			</aside>
 			<main class="flex-grow-1" style="background-color: #ececec">
-				<HeaderBar :activeSection="activeSection" />
+				<HeaderBar class="" :activeSection="activeSection" />
 
-				<section class="">
+				<section class="container">
 					<RouterView :breadCrumbs="breadCrumbs" />
 				</section>
 			</main>
@@ -66,6 +66,14 @@ main {
 
 	main {
 		margin-left: 15rem;
+	}
+
+	section {
+		padding: 0 2rem !important;
+	}
+
+	header {
+		padding: 0 1.275rem !important;
 	}
 }
 </style>

@@ -62,7 +62,12 @@
 											<!-- First name <br /> -->
 											<div
 												class="card-body"
-												v-if="key !== 'id'"
+												v-if="
+													key !== 'id' &&
+													key !== 'middle_name' &&
+													key !== 'created_at' &&
+													key !== 'email'
+												"
 											>
 												<span>{{
 													formatVisitorInfo(key)
@@ -87,60 +92,11 @@
 			</div>
 		</div>
 
-		<div class="row justify-content-between container p-0 my-4 mx-auto">
-			<Search v-model:search="searchTerms" />
-			<!-- <Filter /> -->
-			<Sort v-model:term="sortTerm" v-model:direction="directionTerm" />
-		</div>
-
-		<div class="table-responsive container p-0">
-			<table class="table table-sm table-hover has-checkbox">
-				<thead>
-					<tr>
-						<th scope="col">
-							<div class="form-check mb-0">
-								<input
-									class="form-check-input"
-									type="checkbox"
-									id="customCheck"
-								/>
-								<label
-									class="form-check-label"
-									for="customCheck"
-								>
-									<span class="visually-hidden"
-										>Select all</span
-									>
-								</label>
-							</div>
-						</th>
-						<th scope="col">Date</th>
-						<th scope="col">Arrival Time</th>
-						<th scope="col">Departure Time</th>
-						<th scope="col">Purpose</th>
-						<th scope="col">Items</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="visit in visitsInfo">
-						<td>
-							<div class="form-check mb-0">
-								<input
-									class="form-check-input"
-									type="checkbox"
-									id="customCheck3"
-									@click.stop
-								/>
-							</div>
-						</td>
-						<td>{{ visit.date }}</td>
-						<td>{{ visit.arrival_time }}</td>
-						<td>{{ visit.departure_time }}</td>
-						<td>{{ visit.purpose }}</td>
-						<td>{{ visit.items }}</td>
-					</tr>
-				</tbody>
-			</table>
+		<div>
+			<table
+				id="visitorVisitsTable"
+				class="table table-striped w-100"
+			></table>
 			<div
 				id="spinner"
 				v-if="loader"
@@ -151,89 +107,29 @@
 				</div>
 			</div>
 		</div>
-
-		<Pagination v-model="start" />
 	</div>
 </template>
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
-import Pagination from "../Pagination.vue";
-import Search from "../Search.vue";
-import Sort from "../Sort.vue";
 import Icons from "../Icons.vue";
+
+import DataTables from "datatables.net-dt";
+import "datatables.net-responsive-dt";
 
 import { useRoute } from "vue-router";
 import { ref, onMounted, watch } from "vue";
 import { RouterLink } from "vue-router";
 
-import { getVisitorWithVisits } from "../../assets/js/index";
-
-const start = ref(0);
-const limit = ref(20);
 const loader = ref(true);
-const sort = ref("");
 const edit = "pencil";
-
-const searchTerms = ref("");
-
-const sortTerm = defineModel("term");
-sortTerm.value = "date_time";
-const directionTerm = defineModel("direction");
-directionTerm.value = "desc";
 
 const route = useRoute();
 const breadCrumbs = defineModel("breadCrumbs");
 breadCrumbs.value = route.path.split("/").slice(1);
-console.log(breadCrumbs.value);
 
 const id = ref(route.params.id);
 const visitorInfo = ref("");
-const visitsInfo = ref("");
-let visitorData = "";
-
-watch(
-	() => [searchTerms.value, sortTerm.value, directionTerm.value, start.value],
-	async ([searchValue, sortValue, directionValue, startValue]) => {
-		const data = await getVisitorWithVisits(id.value, {
-			start: startValue,
-			search: searchValue,
-			sort: sortValue,
-			direction: directionValue,
-			limit: limit.value,
-		});
-		const { visits } = data;
-		visitsInfo.value = formatDateTime(visits);
-	}
-);
-
-const fetchVisitor = async () => {
-	const data = await getVisitorWithVisits(id.value, {
-		start: start.value,
-		sort: sort.value,
-		limit: limit.value,
-	});
-
-	if (!data) {
-		loader.value = false;
-		return;
-	}
-
-	const { visitor, visits } = data;
-	visitorData = visitor;
-	visitorInfo.value = {
-		name: `${visitor.first_name} ${visitor?.middle_name || ""} ${
-			visitor.last_name
-		}`,
-		phone_number: visitor.msisdn,
-		email: visitor.email,
-		created: visitor.created_at.split("T")[0],
-	};
-
-	if (visits.length) {
-		loader.value = false;
-	} else if (!visits.length) loader.value = false;
-	visitsInfo.value = formatDateTime(visits);
-};
+const dataTable = ref(null);
 
 const formatVisitorInfo = (key) => {
 	if (!key) return "";
@@ -244,8 +140,54 @@ const formatVisitorInfo = (key) => {
 	return formattedString;
 };
 
+const initializeDataTable = () => {
+	dataTable.value = new DataTables("#visitorVisitsTable", {
+		serverSide: true,
+		ajax: {
+			url: `http://localhost:3000/api/visitors/${id.value}/visits`,
+			type: "GET",
+			data: (query) => {
+				return {
+					start: 0,
+					limit: query.length,
+					search: query.search.value,
+					sort: "date_time",
+					direction: query.order[0].dir,
+				};
+			},
+			dataSrc: (json) => {
+				let { visitor, visits } = json.data;
+				visitorInfo.value = visitor;
+
+				if (visits) {
+					visits = formatDateTime(visits);
+					loader.value = false;
+					return visits;
+				}
+				loader.value = false;
+			},
+			error: (xhr, error, thrown) => {
+				console.log("Error fetching data:", error);
+			},
+		},
+		columns: [
+			{ data: "date", title: "Date" },
+			{ data: "arrival_time", title: "Arrival Time" },
+			{ data: "departure_time", title: "Departure Time" },
+			{ data: "purpose", title: "Purpose" },
+			{ data: "items", title: "Items" },
+		],
+		responsive: true,
+		lengthMenu: [10, 25, 50, 100],
+		language: {
+			searchPlaceholder: "Search ...",
+			search: "",
+		},
+	});
+};
+
 onMounted(async () => {
-	await fetchVisitor();
+	initializeDataTable();
 });
 
 const formatDateTime = (visits) => {

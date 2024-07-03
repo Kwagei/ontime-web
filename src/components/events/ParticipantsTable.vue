@@ -1,61 +1,93 @@
 <template>
-    <div class="table-responsive container p-0">
-        <table class="table table-hover has-checkbox">
-            <thead>
-                <tr>
-                    <th scope="col">
-                        <div class="form-check mb-0">
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="customCheck"
-                            />
-                            <label class="form-check-label" for="customCheck">
-                                <span class="visually-hidden">Select all</span>
-                            </label>
-                        </div>
-                    </th>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Middle Name</th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">Contact</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Address</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr
-                    v-for="participant in props.participants"
-                    :key="participant.id"
-                >
-                    <td>
-                        <div class="form-check mb-0">
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="customCheck3"
-                                @click.stop
-                            />
-                        </div>
-                    </td>
-                    <td>{{ participant.first_name }}</td>
-                    <td>{{ participant.middle_name }}</td>
-                    <td>{{ participant.last_name }}</td>
-                    <td>{{ participant.msisdn }}</td>
-                    <td>{{ participant.email }}</td>
-                    <td>{{ participant.address }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+	<div>
+		<table id="participantsTable" class="table table-striped w-100"></table>
+	</div>
 </template>
 
 <script setup>
+import { onMounted, ref, watch, nextTick } from "vue";
+import DataTables from "datatables.net-dt";
+import "datatables.net-responsive-dt";
+
+const participants = ref([]);
+const dataTable = ref(null);
+const loader = ref(false);
+const MAX_DETAIL_LEN = 30;
+
 const props = defineProps({
-    participants: {
-        type: Array,
-        required: true,
-    },
+	participants: {
+		type: Array,
+		required: true,
+	},
+});
+
+function formatAddress(address) {
+	if (!address) {
+		return "";
+	}
+	const addressLen = address.length;
+	const newAddress =
+		addressLen >= MAX_DETAIL_LEN
+			? `${address.slice(0, MAX_DETAIL_LEN)}...`
+			: address;
+
+	return newAddress;
+}
+
+const initializeDataTable = () => {
+	dataTable.value = new DataTables("#participantsTable", {
+		serverSide: true,
+		ajax: {
+			url: `http://localhost:3000/api/events/${id}/participants`,
+			type: "GET",
+			data: (query) => {
+				return {
+					start: query.start,
+					limit: query.length,
+					search: query.search.value,
+					sort: query.columns[query.order[0].column].data,
+					direction: query.order[0].dir,
+				};
+			},
+			dataSrc: (json) => {
+				visitors.value = json.data;
+				visitors.value.forEach((visitor) => {
+					visitor.address = formatAddress(visitor.address);
+				});
+				return formatDateTime(visitors.value);
+			},
+			error: (xhr, error, thrown) => {
+				console.log("Error fetching data:", error);
+			},
+		},
+		columns: [
+			{ data: "created_at", title: "Created At" },
+			{ data: "first_name", title: "First name" },
+			{ data: "middle_name", title: "Middle name" },
+			{ data: "last_name", title: "Last name" },
+			{ data: "msisdn", title: "Phone number" },
+			{ data: "email", title: "Email" },
+			{ data: "address", title: "Address" },
+		],
+		responsive: true,
+		lengthMenu: [10, 25, 50, 100],
+		language: {
+			searchPlaceholder: "Search ...",
+			search: "",
+		},
+	});
+
+	// Handle row click event
+	dataTable.value.on("click", "tr", function () {
+		const rowData = dataTable.value.row(this).data();
+		if (rowData) {
+			visitorDetail(rowData.id);
+		}
+	});
+};
+
+onMounted(() => {
+	initializeDataTable();
 });
 </script>
 

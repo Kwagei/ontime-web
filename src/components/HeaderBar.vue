@@ -2,7 +2,7 @@
 	<header class="bg-white">
 		<nav class="navbar sticky-top container">
 			<div
-				class="container d-flex align-items-center justify-content-between"
+				class="d-flex align-items-center justify-content-between w-100 px-3"
 			>
 				<div class="navbar-brand">
 					<h3 class="m-0 active-section">{{ activeSection }}</h3>

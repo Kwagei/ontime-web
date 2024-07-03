@@ -1,63 +1,11 @@
 <template>
 	<div
 		class="table-responsive container p-0 d-flex flex-column"
-		style="gap: 0.9rem"
+		style="gap: 0.7rem"
 	>
-		<div class="row justify-content-between container p-0 mx-auto">
-			<Search v-model:search="searchTerms" />
-			<Sort v-model:direction="directionTerm" />
+		<div>
+			<table id="visitorsTable" class="table table-striped w-100"></table>
 		</div>
-
-		<table class="table table-sm table-hover has-checkbox">
-			<thead>
-				<tr>
-					<th scope="col">
-						<div class="form-check mb-0">
-							<input
-								class="form-check-input"
-								type="checkbox"
-								id="selectAll"
-								@change="selectAll"
-								:checked="allSelected"
-							/>
-							<label class="form-check-label" for="customCheck">
-								<span class="visually-hidden">Select all</span>
-							</label>
-						</div>
-					</th>
-					<th scope="col">First name</th>
-					<th scope="col">Middle name</th>
-					<th scope="col">Last name</th>
-					<th scope="col">Contact</th>
-					<th scope="col">Email</th>
-					<th scope="col">Created At</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr
-					v-for="visitor in visitors"
-					:key="visitor.id"
-					@click="visitorDetail(visitor.id)"
-				>
-					<td>
-						<div class="form-check mb-0">
-							<input
-								class="form-check-input"
-								type="checkbox"
-								:id="`checkbox-${visitor.id}`"
-								v-model="visitor.selected"
-							/>
-						</div>
-					</td>
-					<td>{{ visitor.first_name }}</td>
-					<td>{{ visitor.middle_name }}</td>
-					<td>{{ visitor.last_name }}</td>
-					<td>{{ visitor.msisdn }}</td>
-					<td>{{ visitor.email }}</td>
-					<td>{{ visitor.created_at }}</td>
-				</tr>
-			</tbody>
-		</table>
 		<div
 			id="spinner"
 			v-if="loader"
@@ -67,34 +15,24 @@
 				<span class="visually-hidden">Loading...</span>
 			</div>
 		</div>
-		<div v-if="fetchError" class="invalid-feedback show-feedback m-auto">
-			{{ errorMessage }}
-		</div>
 	</div>
-
-	<Pagination v-model="start" />
 </template>
 
 <script setup>
-import { onMounted, ref, watch, computed } from "vue";
-import { getVisitors } from "@/assets/js/index.js";
-import Pagination from "../Pagination.vue";
-import Search from "../Search.vue";
-import Sort from "../Sort.vue";
+import { onMounted, ref, watch, nextTick } from "vue";
+import DataTables from "datatables.net-dt";
+import "datatables.net-responsive-dt";
 
 import { useRouter } from "vue-router";
+
 const router = useRouter();
 
 const visitors = ref([]);
-const start = ref(0);
-const limit = ref(10);
-const loader = ref(true);
-
-const searchTerms = ref("");
+const dataTable = ref(null);
+const loader = ref(false);
+const MAX_DETAIL_LEN = 30;
 
 const refresh = defineModel("refresh");
-const fetchError = ref(false);
-const errorMessage = ref("Error Loading Visits, Try Again!");
 
 watch(
 	() => refresh.value,
@@ -106,91 +44,106 @@ watch(
 	}
 );
 
-const sortTerm = defineModel("term");
-sortTerm.value = "created_at";
-
-const directionTerm = defineModel("direction");
-directionTerm.value = "desc";
-
-watch(
-	() => [searchTerms.value, sortTerm.value, directionTerm.value, start.value],
-	async ([searchValue, sortValue, directionValue, startValue]) => {
-		const data = await getVisitors({
-			start: startValue,
-			search: searchValue,
-			sort: sortValue,
-			direction: directionValue,
-			limit: limit.value,
-		});
-
-		if (!data.length) {
-			console.log(start.value);
-			console.log({ data });
-		}
-		visitors.value = formatDateTime(data);
-	}
-);
-
 const visitorDetail = (id) => {
 	router.push({ name: "visitorDetail", params: { id } });
 };
 
 const fetchVisitors = async () => {
-	try {
-		const data = await getVisitors({
-			sort: sortTerm.value,
-			direction: directionTerm.value,
-			limit: limit.value,
-		});
-		visitors.value = formatDateTime(data);
-		loader.value = false;
-	} catch (error) {
-		loader.value = false;
-		fetchError.value = true;
-	}
+	loader.value = false;
+	nextTick(() => {
+		// Reinitialize DataTables with updated data
+		if (dataTable.value) {
+			dataTable.value.destroy();
+		}
+		initializeDataTable();
+	});
 };
 
 const formatDateTime = (visitors) => {
 	return visitors.map((visitor) => {
 		const [date] = visitor.created_at.split("T");
 		visitor.created_at = date;
-		return { ...visitor, seleted: false };
+		return visitor;
+	});
+};
+
+function formatAddress(address) {
+	if (!address) {
+		return "";
+	}
+	const addressLen = address.length;
+	const newAddress =
+		addressLen >= MAX_DETAIL_LEN
+			? `${address.slice(0, MAX_DETAIL_LEN)}...`
+			: address;
+
+	return newAddress;
+}
+
+const initializeDataTable = () => {
+	dataTable.value = new DataTables("#visitorsTable", {
+		serverSide: true,
+		ajax: {
+			url: "http://localhost:3000/api/visitors",
+			type: "GET",
+			data: (query) => {
+				return {
+					start: query.start,
+					limit: query.length,
+					search: query.search.value,
+					sort: query.columns[query.order[0].column].data,
+					direction: query.order[0].dir,
+				};
+			},
+			dataSrc: (json) => {
+				visitors.value = json.data;
+				visitors.value.forEach((visitor) => {
+					visitor.address = formatAddress(visitor.address);
+				});
+				return formatDateTime(visitors.value);
+			},
+			error: (xhr, error, thrown) => {
+				console.log("Error fetching data:", error);
+			},
+		},
+		columns: [
+			{ data: "created_at", title: "Created At" },
+			{ data: "first_name", title: "First name" },
+			{ data: "middle_name", title: "Middle name" },
+			{ data: "last_name", title: "Last name" },
+			{ data: "msisdn", title: "Phone number" },
+			{ data: "email", title: "Email" },
+			{ data: "address", title: "Address" },
+		],
+		responsive: true,
+		lengthMenu: [10, 25, 50, 100],
+		language: {
+			searchPlaceholder: "Search ...",
+			search: "",
+		},
+	});
+
+	// Handle row click event
+	dataTable.value.on("click", "tr", function () {
+		const rowData = dataTable.value.row(this).data();
+		if (rowData) {
+			visitorDetail(rowData.id);
+		}
 	});
 };
 
 onMounted(() => {
-	fetchVisitors();
+	initializeDataTable();
 });
-
-const allSelected = computed({
-	get() {
-		return (
-			visitors.value.length > 0 &&
-			visitors.value.every((visit) => visit.selected)
-		);
-	},
-	set(value) {
-		visitors.value.forEach((visit) => {
-			visit.selected = value;
-		});
-	},
-});
-
-const selectAll = (event) => {
-	allSelected.value = event.target.checked;
-};
 </script>
 
 <style scoped>
-.show-feedback {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-size: larger;
-	padding: 4rem;
-}
 table {
 	margin: 0;
+}
+
+table input {
+	background-color: red !important;
 }
 
 tr {

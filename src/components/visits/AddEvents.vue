@@ -121,100 +121,26 @@
 							>
 								{{ option.text }}
 							</li>
-							<router-link :to="{ name: 'add-event' }">
-								<li
-									class="dropdown-item"
-									style="color: #ff7900"
-									v-if="!options[index + 1]"
-								>
-									Create new event
-								</li>
-							</router-link>
 						</template>
+						<router-link :to="{ name: 'add-event' }">
+							<li
+								class="dropdown-item"
+								style="color: #ff7900"
+								v-if="!options[index + 1]"
+							>
+								Create new event
+							</li>
+						</router-link>
 					</ul>
 				</div>
 			</form>
 
 			<!-- All Participants -->
-			<div
-				class="table-responsive container p-0 d-flex flex-column"
-				style="gap: 0.9rem"
-			>
-				<div class="row justify-content-between container p-0 mx-auto">
-					<Search v-model:search="searchTerms" />
-					<Sort v-model:direction="directionTerm" />
-				</div>
-
-				<table class="table table-sm table-hover has-checkbox">
-					<thead>
-						<tr>
-							<th scope="col">
-								<div class="form-check mb-0">
-									<input
-										class="form-check-input"
-										type="checkbox"
-									/>
-									<label
-										class="form-check-label"
-										for="customCheck"
-									>
-										<span class="visually-hidden"
-											>Select all</span
-										>
-									</label>
-								</div>
-							</th>
-							<th scope="col">First name</th>
-							<th scope="col">Middle name</th>
-							<th scope="col">Last name</th>
-							<th scope="col">Contact</th>
-							<th scope="col">Email</th>
-							<th scope="col">Address</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr
-							v-for="participant in participants"
-							:key="participant.id"
-							@click="participantDetail(participant.id)"
-						>
-							<td>
-								<div class="form-check mb-0">
-									<input
-										class="form-check-input"
-										type="checkbox"
-										:id="`checkbox-${participant.id}`"
-										v-model="participant.selected"
-									/>
-								</div>
-							</td>
-							<td>{{ participant.first_name }}</td>
-							<td>{{ participant.middle_name }}</td>
-							<td>{{ participant.last_name }}</td>
-							<td>{{ participant.msisdn }}</td>
-							<td>{{ participant.email }}</td>
-							<td>{{ participant.address }}</td>
-						</tr>
-					</tbody>
-				</table>
-				<div>
-					<div
-						id="spinner"
-						v-if="loader"
-						class="d-flex justify-content-center p-4"
-					>
-						<div class="spinner-border" role="status">
-							<span class="visually-hidden">Loading...</span>
-						</div>
-					</div>
-					<div
-						v-if="fetchError"
-						class="invalid-feedback show-feedback m-auto"
-					>
-						{{ errorMessage }}
-					</div>
-				</div>
-				<Pagination v-model="start" />
+			<div class="container">
+				<table
+					id="participantsTable"
+					class="table table-striped w-100"
+				></table>
 			</div>
 		</div>
 	</div>
@@ -233,10 +159,8 @@ import {
 } from "@/assets/js/index.js";
 
 import { showModal } from "@/assets/js/util";
-
-import Pagination from "../Pagination.vue";
-import Search from "../Search.vue";
-import Sort from "../Sort.vue";
+import DataTables from "datatables.net-dt";
+import "datatables.net-responsive-dt";
 
 const msisdn = ref("");
 const visitor = ref("");
@@ -256,20 +180,12 @@ const purpose = ref("");
 const status = ref("");
 const message = ref("");
 const title = ref("");
-const participants = ref("");
-const start = ref(0);
-const limit = ref(10);
+
 const loader = ref(false);
-const sort = ref("");
-const sortTerm = defineModel("term");
-sortTerm.value = "created_at";
-const fetchError = ref(false);
-const errorMessage = ref("Error Loading Visits, Try Again!");
 
-const directionTerm = defineModel("direction");
-directionTerm.value = "desc";
-
-const searchTerms = ref("");
+const participants = ref([]);
+const dataTable = ref(null);
+const MAX_DETAIL_LEN = 30;
 
 const activeBreadCrumbs = ref([]);
 
@@ -302,33 +218,7 @@ onMounted(() => {
 			);
 		});
 	})();
-	getEventsOptions();
 });
-
-watch(
-	() => [
-		searchTerms.value,
-		sortTerm.value,
-		eventID.value,
-		directionTerm.value,
-		start.value,
-	],
-	async ([searchValue, sortValue, id, directionValue, startValue]) => {
-		loader.value = true;
-
-		const data = await getParticipants(id, {
-			start: startValue,
-			search: searchValue,
-			sort: sortValue,
-			direction: directionValue,
-			limit: limit.value,
-		});
-
-		participants.value = data;
-		loader.value = false;
-		fetchError.value = true;
-	}
-);
 
 const updateEventTerm = (host) => {
 	eventValue.value = host.text;
@@ -449,6 +339,74 @@ const participantDetail = async (id) => {
 	host_id.value = event.host_id;
 	address.value = participant.address;
 };
+
+function formatAddress(address) {
+	if (!address) {
+		return "";
+	}
+	const addressLen = address.length;
+	const newAddress =
+		addressLen >= MAX_DETAIL_LEN
+			? `${address.slice(0, MAX_DETAIL_LEN)}...`
+			: address;
+
+	return newAddress;
+}
+
+const initializeDataTable = () => {
+	dataTable.value = new DataTables("#participantsTable", {
+		serverSide: true,
+		ajax: {
+			url: `http://localhost:3000/api/events/${id.value}/participants`,
+			type: "GET",
+			data: (query) => {
+				return {
+					start: query.start,
+					limit: query.length,
+					search: query.search.value,
+					sort: query.columns[query.order[0].column].data,
+					direction: query.order[0].dir,
+				};
+			},
+			dataSrc: (json) => {
+				participants.value = json.data;
+				participants.value.forEach((visitor) => {
+					visitor.address = formatAddress(visitor.address);
+				});
+				return participants.value;
+			},
+			error: (xhr, error, thrown) => {
+				console.log("Error fetching data:", error);
+			},
+		},
+		columns: [
+			{ data: "first_name", title: "First name" },
+			{ data: "middle_name", title: "Middle name" },
+			{ data: "last_name", title: "Last name" },
+			{ data: "msisdn", title: "Phone number" },
+			{ data: "email", title: "Email" },
+			{ data: "address", title: "Address" },
+		],
+		responsive: true,
+		lengthMenu: [10, 25, 50, 100],
+		language: {
+			searchPlaceholder: "Search ...",
+			search: "",
+		},
+	});
+
+	// Handle row click event
+	dataTable.value.on("click", "tr", function () {
+		const rowData = dataTable.value.row(this).data();
+		if (rowData) {
+			visitorDetail(rowData.id);
+		}
+	});
+};
+
+onMounted(() => {
+	initializeDataTable();
+});
 </script>
 
 <style scoped>

@@ -126,7 +126,7 @@ export const getVisits = async (query = {}) => {
 	}
 };
 
-export const getVisitors = async (query) => {
+export const getVisitors = async (query = {}) => {
 	try {
 		const {
 			search = "",

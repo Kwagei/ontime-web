@@ -48,7 +48,7 @@
 						}"
 						v-model:visitor-info="visitorInfo"
 					>
-						view
+						<button type="button" class="btn btn-link">view</button>
 					</router-link>
 				</div>
 			</div>

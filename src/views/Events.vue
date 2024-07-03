@@ -7,10 +7,7 @@
 			<div class="d-flex" style="gap: 0.521rem">
 				<RefreshList @click="refreshEvents" />
 				<router-link :to="{ name: 'add-event' }">
-					<button
-						style="height: 45px !important; width: 150px !important"
-						class="btn btn-primary"
-					>
+					<button type="button" class="btn btn-primary">
 						Add Event
 					</button>
 				</router-link>

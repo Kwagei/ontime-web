@@ -51,9 +51,9 @@ const pagination = (event) => {
 			break;
 	}
 
-	page = page <= 0 ? 0 : page - 1;
+	position.value = page;
+	page = page < 0 ? 0 : page - 1;
 	activePage.value = page + 1;
-	position.value = activePage.value;
 
 	start.value = +page * rows.value;
 };

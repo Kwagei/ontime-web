@@ -1,11 +1,7 @@
 <template>
-    <Modal
-        style="z-index: 999999999"
-        v-if="!!Object.keys(modalData).length"
-        :data="modalData"
-    />
+    <Modal v-if="!!Object.keys(modalData).length" :data="modalData" />
     <h2 v-if="event == 'error'" class="d-flex justify-content-center pt-5">
-        Error Loading Event, Try again
+        Unable to load events, Try again
     </h2>
     <div
         v-else-if="event == 'loading'"
@@ -13,15 +9,11 @@
         role="status"
         style="height: 85vh"
     >
-        <div class="spinner-border spinner-border-lg" role="status">
+        <div class="spinner-border" style="margin-top: -25vh" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    <div
-        v-else
-        style="width: 83.5vw !important; margin-left: -8vw"
-        class="d-flex flex-column align-items-center"
-    >
+    <div v-else class="w-100 d-flex flex-column align-items-center">
         <EventTitle :title="event.title" />
         <EventDetails
             :event="event"
@@ -40,6 +32,7 @@
         <ImportParticipant
             v-if="state == 'importParticipants'"
             :eventId="eventId"
+            :eventTitle="event.title"
             @switch="switchState"
             @participantsImported="setModalData"
             @errorImportingParticipants="setModalData"
@@ -110,12 +103,15 @@ function setModalData(newData) {
     // still tryna understand this part
     // but that's the only way it'll work
     setTimeout(() => {
-        showModal("#alertModal", "#alertModalBody");
+        const modal = new boosted.Modal("#exampleModal");
+        modal.show("#toggleMyModal");
+
+        visuallyHideModalBackdrop();
     }, 500);
 }
 
 function editEvent() {
-    router.push(`/events/${eventId.value}/edit-event`, {
+    router.push(`/events/${eventId.value}/edit`, {
         params: { id: eventId.value },
     });
 }

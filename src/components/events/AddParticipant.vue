@@ -1,194 +1,157 @@
 <template>
-	<Modal
-		:data="{
-			title: alert.title,
-			message: alert.message,
-			status: alert.status,
-			pageLink: alert.pageLink,
-		}"
-	/>
-	<div id="visitor-view" class="d-flex flex-column container">
-		<div
-			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-			style="margin-top: 0.3rem"
-		>
-			<BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
-		</div>
-
-		<div
-			class="mt-4 form-control input"
-			style="margin: auto; padding: 3rem"
-		>
-			<form
-				class="row g-3 needs-validation"
-				novalidate
-				@submit.prevent="onSubmit"
-			>
-				<!-- FIRST NAME -->
-				<div class="col-md-6">
-					<label for="first_name" class="form-label is-required"
-						>First name<span class="visually-hidden">
-							(required)</span
-						></label
-					>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="first_name"
-							aria-describedby="inputGroupPrepend"
-							v-model="first_name"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a first name.
-						</div>
-					</div>
-				</div>
-
-				<!-- PHONE NUMBER -->
-				<div class="col-md-6">
-					<label for="phone_number" class="form-label is-required"
-						>Phone number<span class="visually-hidden">
-							(required)</span
-						></label
-					>
-					<div class="input-group has-validation">
-						<input
-							type="tel"
-							:class="[
-								validMsisdn && 'validated',
-								'form-control',
-							]"
-							v-model="msisdn"
-							id="phone_number"
-							aria-describedby="inputGroupPrepend"
-							required
-							autocomplete="off"
-						/>
-						<div
-							:class="[
-								'invalid-feedback',
-								validMsisdn && 'show-feedback',
-							]"
-						>
-							{{ validMsisdnMessage }}
-						</div>
-					</div>
-					<div id="emailHelp" class="form-text">
-						Phone number should start with 0. For example:
-						0778675908
-					</div>
-				</div>
-
-				<!-- MIDDLE NAME -->
-				<div class="col-md-6">
-					<label for="middle_name" class="form-label"
-						>Middle name</label
-					>
-					<input
-						type="text"
-						class="form-control"
-						id="middle_name"
-						v-model="middle_name"
-						aria-describedby="inputGroupPrepend"
-					/>
-				</div>
-
-				<!-- EMAIL -->
-				<div class="col-md-6">
-					<label for="email" class="form-label is-required"
-						>Email<span class="visually-hidden">
-							(required)</span
-						></label
-					>
-					<div class="input-group has-validation">
-						<input
-							type="email"
-							:class="[validEmail && 'validated', 'form-control']"
-							v-model="email"
-							id="email"
-							aria-describedby="inputGroupPrepend"
-							autocomplete="off"
-							required
-						/>
-						<div
-							:class="[
-								'invalid-feedback',
-								validEmail && 'show-feedback',
-							]"
-						>
-							{{ validEmailMessage }}
-						</div>
-					</div>
-					<div id="emailHelp" class="form-text">
-						Enter a valid email address. For example:
-						john12@gmail.com
-					</div>
-				</div>
-
-				<!-- LAST NAME -->
-				<div class="col-md-6">
-					<label for="last_name" class="form-label is-required"
-						>Last name<span class="visually-hidden">
-							(required)</span
-						></label
-					>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="last_name"
-							v-model="last_name"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a last name.
-						</div>
-					</div>
-				</div>
-
-				<!-- ADDRESS -->
-				<div class="col-md-6">
-					<label for="address" class="form-label is-required"
-						>Address<span class="visually-hidden">
-							(required)</span
-						></label
-					>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="address"
-							v-model="address"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide an address.
-						</div>
-					</div>
-					<div id="emailHelp" class="form-text">
-						Enter descriptive address. For example: Congo Town,
-						Adjacent Satcom, Monrovia, Liberia
-					</div>
-				</div>
-
-				<div class="col-md-12 d-flex">
-					<button
-						type="submit"
-						class="btn btn-primary"
-						style="
-							padding: 0.7rem 2rem !important;
-							font-weight: 600;
-							margin-left: auto;
-						"
-					>
-						{{ buttonLabel }}
-					</button>
-				</div>
-			</form>
-		</div>
-	</div>
+    <div class="w-75 d-flex flex-column align-items-center">
+        <div
+            class="d-flex justify-content-between align-items-center mt-4 w-75"
+        >
+            <BreadCrumbs
+                class="mb-3"
+                :breadCrumbs="['Events', eventId, 'AddParticipant']"
+            />
+        </div>
+        <form
+            @submit.prevent="postParticipant"
+            @input="validateParticipant"
+            class="form-control w-75 container gap-5 p-4"
+        >
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="p-2 is-required" for="firstName">
+                        First Name:
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        placeholder="John"
+                        id="firstName"
+                        v-model="newParticipant.firstName"
+                        :class="{
+                            'border border-danger': participantError.firstName,
+                        }"
+                    />
+                    <Alert
+                        v-if="participantError.firstName"
+                        :title="participantError.firstName"
+                    />
+                </div>
+                <div class="col">
+                    <label class="p-2" for="middle_name">Middle Name:</label>
+                    <input
+                        type="middle_name"
+                        placeholder="Peter"
+                        class="form-control"
+                        id="middle_name"
+                        v-model="newParticipant.middleName"
+                        :class="{
+                            'border border-danger': participantError.middleName,
+                        }"
+                    />
+                    <Alert
+                        v-if="participantError.middleName"
+                        :title="participantError.middleName"
+                    />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="p-2 is-required" for="lastName">
+                        Last Name:
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Browne"
+                        class="form-control"
+                        id="lastName"
+                        v-model="newParticipant.lastName"
+                        :class="{
+                            'border border-danger': participantError.lastName,
+                        }"
+                    />
+                    <Alert
+                        v-if="participantError.lastName"
+                        :title="participantError.lastName"
+                    />
+                </div>
+                <div class="col">
+                    <label class="p-2 is-required" for="email">
+                        Email:
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <input
+                        type="email"
+                        placeholder="johnbrowne@example.com"
+                        class="form-control"
+                        id="email"
+                        v-model="newParticipant.email"
+                        :class="{
+                            'border border-danger': participantError.email,
+                        }"
+                    />
+                    <Alert
+                        v-if="participantError.email"
+                        :title="participantError.email"
+                    />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="p-2 is-required" for="address">
+                        Address:
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="14th Street, Sinkor, Monrovia, Liberia"
+                        class="form-control"
+                        id="address"
+                        v-model="newParticipant.address"
+                        :class="{
+                            'border border-danger': participantError.address,
+                        }"
+                    />
+                    <Alert
+                        v-if="participantError.address"
+                        :title="participantError.address"
+                    />
+                </div>
+                <div class="col">
+                    <label class="p-2 is-required" for="msisdn">
+                        Contact:
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <input
+                        type="tel"
+                        placeholder="0770894295"
+                        class="form-control"
+                        id="msisdn"
+                        v-model="newParticipant.msisdn"
+                        :class="{
+                            'border border-danger': participantError.msisdn,
+                        }"
+                    />
+                    <Alert
+                        v-if="participantError.msisdn"
+                        :title="participantError.msisdn"
+                    />
+                </div>
+            </div>
+            <div class="d-flex gap-3">
+                <button
+                    class="btn btn-primary px-5 py-2"
+					type="submit"
+                >
+                    Save
+                </button>
+                <button
+                    @click="$emit('switch', 'details')"
+                    class="btn btn-secondary px-5 py-2"
+                >
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
 </template>
 
 <script setup>
@@ -198,18 +161,9 @@ import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import $ from "jquery";
 
-import {
-	registerVisitor,
-	editVisitor,
-	getSingleVisitor,
-	visuallyHideModalBackdrop,
-	API_URL,
-} from "@/assets/js/index.js";
-import {
-	msisdnValidation,
-	emailValidation,
-	showModal,
-} from "@/assets/js/util.js";
+import { API_URL } from "../../assets/js/index.js";
+import BreadCrumbs from "../BreadCrumbs.vue";
+import Alert from "../Alert.vue";
 
 // Route and State
 const route = useRoute();
@@ -220,75 +174,13 @@ const msisdn = ref("");
 const email = ref("");
 const address = ref("");
 
-const alert = ref({
-	status: "",
-	title: "",
-	message: "",
-	pageLink: "",
-});
-
-const buttonLabel = ref("Save");
-let visitorInfo;
-
-// Form status and breadcrumbs
-const activeBreadCrumbs = ref([]);
-const breadCrumbs = defineModel("breadCrumbs");
-breadCrumbs.value = route.path.split("/").slice(1);
-activeBreadCrumbs.value = breadCrumbs.value;
-const tem = [...breadCrumbs.value];
-const formStatus = tem.pop();
-
-// Functions
-const onSubmit = async () => {
-	if (
-		!first_name.value ||
-		!last_name.value ||
-		!msisdn.value ||
-		!email.value ||
-		!address.value
-	) {
-		return;
-	}
-
-	const participant = {
-		first_name: first_name.value,
-		middle_name: middle_name.value,
-		last_name: last_name.value,
-		msisdn: msisdn.value.startsWith("0")
-			? `231${msisdn.value.slice(1)}`
-			: msisdn.value,
-		email: email.value,
-		address: address.value,
-	};
-
-	const body = {
-		event_id: route.params.id,
-		event_participants: [participant],
-	};
-
-	$.ajax({
-		url: API_URL + "event_participants",
-		type: "POST",
-		data: body,
-		success: (data) => {
-			showModal("#alertModal", "#alertModalBody");
-
-			alert.value.status = "success";
-			alert.value.title = "Success";
-			alert.value.message = data.message;
-			alert.value.pageLink = `/events/${
-				data.data.length ? data.data[0].id : data.data.id
-			}`;
-
-			resetForm();
-		},
-		error: (error) => {
-			showModal("#alertModal", "#alertModalBody");
-			alert.value.status = "danger";
-			alert.value.title = "Error";
-			alert.value.message = error.responseJSON.message;
-		},
-	});
+const emptyParticipant = {
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    address: "",
+    email: "",
+    msisdn: "",
 };
 
 const fetchVisitor = async () => {
@@ -314,39 +206,99 @@ const contactValidation = (number) => {
 		validMsisdn.value = false;
 		validMsisdnMessage.value = "Please provide a phone number";
 
-		return;
-	}
+        $("body").css("pointer-events", "none");
 
-	const isValid = msisdnValidation([number]);
+        try {
+            await $.post(API_URL + "event_participants/", data, () => {
+                emit("participantAdded", {
+                    status: "success",
+                    title: "Participant Added",
+                    pageLink: `/events/${eventId}`,
+                });
+                newParticipant.value = { ...emptyParticipant };
+                $("body").css("pointer-events", "auto");
+            });
+        } catch (error) {
+            console.log("Unable to create participant: ", error);
 
-	if (!isValid.valid) {
-		validMsisdn.value = true;
-		validMsisdnMessage.value = isValid.message;
-	} else {
-		validMsisdn.value = false;
-	}
-};
+            emit("errorCreatingParticipant", {
+                status: "danger",
+                title:
+                    error.responseJSON.status == 500
+                        ? "Unable to create participant, try again"
+                        : error.responseJSON.message,
+            });
+            $("body").css("pointer-events", "auto");
+        }
+    }
+}
 
-watch(
-	() => msisdn.value,
-	(n) => {
-		contactValidation(n);
-	}
-);
+function validateParticipant() {
+    participantError.value = { ...emptyParticipant };
 
-watch(
-	() => email.value,
-	(n) => {
-		validateEmail(n);
-	}
-);
+    // ensure `first_name` was given
+    if (
+        !newParticipant.value.firstName ||
+        newParticipant.value.firstName.length <= 1
+    ) {
+        participantError.value.firstName =
+            "Participant's `first_name` is invalid";
+        return false;
+    }
 
-const validateEmail = (mail) => {
-	if (!mail) {
-		validEmail.value = false;
-		validEmailMessage.value = "Please provide a valid email address";
-	}
-	const isValid = emailValidation(mail);
+    // if middle_name was given
+    // ensure it's atleast two characters
+    if (
+        newParticipant.value.middleName &&
+        newParticipant.value.middleName.length <= 1
+    ) {
+        participantError.value.middleName =
+            "Participant's `middle_name` is invalid";
+        return false;
+    }
+
+    // ensure `last_name` was given
+    if (
+        !newParticipant.value.lastName ||
+        newParticipant.value.lastName.length <= 1
+    ) {
+        participantError.value.lastName =
+            "Participant's `last_name` is invalid";
+        return false;
+    }
+
+    // ensure `email` was given
+    if (!newParticipant.value.email) {
+        participantError.value.email = "Participant's `email` is required";
+        return false;
+    }
+
+    // ensure `email` is atleast six chars
+    if (newParticipant.value.email.length <= 5) {
+        participantError.value.email = "Participant's `email` is invalid";
+        return false;
+    }
+
+    // ensure address was given
+    if (!newParticipant.value.address) {
+        participantError.value.address = "Participant's `address` is required";
+        return false;
+    }
+
+    // ensure address is atleast 12 chars with two spaces
+    if (
+        newParticipant.value.address.length <= 11 ||
+        newParticipant.value.address.split(" ").length <= 1
+    ) {
+        participantError.value.address = "Participant's address is invalid";
+        return false;
+    }
+
+    // ensure msisdn was given
+    if (!newParticipant.value.msisdn) {
+        participantError.value.msisdn = "Participant's `msisdn` is required";
+        return false;
+    }
 
 	if (!isValid.valid) {
 		validEmail.value = true;
@@ -356,14 +308,8 @@ const validateEmail = (mail) => {
 	}
 };
 
-const resetForm = () => {
-	first_name.value = "";
-	middle_name.value = "";
-	last_name.value = "";
-	msisdn.value = "";
-	email.value = "";
-	address.value = "";
-	buttonLabel.value = "Save";
+    return true;
+}
 
 	// Remove validation classes
 	const form = document.querySelector(".needs-validation");

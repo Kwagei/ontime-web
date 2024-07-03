@@ -1,13 +1,53 @@
 <template>
-	<div class="container">
-		<DataTable
-			id="visitsTable"
-			class="display w-100 table"
-			:columns="columns"
-			:options="options"
-			ref="table"
-		/>
-	</div>
+    <div
+        v-show="
+            (participants == 'loading' && searchQuery) ||
+            participants == 'noMatch' ||
+            sorting ||
+            hasParticipants
+        "
+        class="w-100 mt-3 d-flex justify-content-between gap-3 mb-3"
+    >
+        <Search class="flex-grow-1" v-model:search="searchQuery" />
+        <Sort
+            v-model:term="term"
+            v-model:direction="direction"
+            :sortTerms="participantsSortTerms"
+        />
+    </div>
+    <div class="w-100" v-if="hasParticipants">
+        {{ term }}
+        |
+        {{ direction }}
+        <ParticipantsTable
+            @addParticipant="$emit('switch', 'addParticipant')"
+            :participants="participantsToShow"
+            @newSortTerm="(newTerm) => (term = newTerm)"
+            @ascend="direction = 'asc'"
+            @descend="direction = 'desc'"
+        />
+        <Pagination
+            class="mx-2"
+            v-if="Array.isArray(participants) && !!participants.length"
+            v-model="paginationStart"
+        />
+    </div>
+    <div
+        class="w-100 d-flex justify-content-center mt-5"
+        v-else-if="participants == 'loading'"
+    >
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <h2 class="w-75 text-center" v-else-if="participants == 'error'">
+        <hr />
+        Error Loading Event Participants, Try again!
+    </h2>
+    <h2 class="w-75 text-center" v-else-if="participants == 'noMatch'">
+        <hr />
+        No match!
+    </h2>
 </template>
 
 <script setup>
@@ -17,7 +57,11 @@ import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
 import { API_URL } from "@/assets/js";
 
-DataTable.use(DataTablesCore);
+import ParticipantsTable from "./ParticipantsTable.vue";
+import Pagination from "../Pagination.vue";
+import Search from "../Search.vue";
+import Sort from "../Sort.vue";
+import { API_URL } from "../../assets/js/index.js";
 
 import { ref } from "vue";
 import { useRoute } from "vue-router";
@@ -52,8 +96,9 @@ const options = {
 		dataSrc: (json) => {
 			const { participants, length } = json.data;
 
-			json.recordsTotal = length;
-			json.recordsFiltered = length;
+const emit = defineEmits(["switch"]);
+
+const hasParticipants = computed(() => Array.isArray(participants.value));
 
 			participants.forEach((d) => {
 				d.address = formatAddress(d.address);

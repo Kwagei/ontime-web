@@ -1,22 +1,26 @@
 <template>
-    <Modal :data="{ title, message, status, pageLink }" />
+    <Modal :data="{ title, message, status }" />
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
+            style="margin-top: 0.3rem"
         >
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
-        <div class="mt-1 p-4 form-control input">
+        <div
+            class="mt-4 form-control input"
+            style="margin: auto; padding: 3rem"
+        >
             <form
                 class="row g-3 needs-validation"
                 novalidate
                 @submit.prevent="onSubmit"
             >
-                <!-- FIRST NAME -->
+                <!-- NAME -->
                 <div class="col-md-6">
-                    <label for="first_name" class="form-label is-required"
-                        >First name<span class="visually-hidden">
+                    <label for="name" class="form-label is-required"
+                        >Name<span class="visually-hidden">
                             (required)</span
                         ></label
                     >
@@ -24,13 +28,13 @@
                         <input
                             type="text"
                             class="form-control"
-                            id="first_name"
+                            id="name"
                             aria-describedby="inputGroupPrepend"
-                            v-model="first_name"
+                            v-model="name"
                             required
                         />
                         <div class="invalid-feedback">
-                            Please provide a first name.
+                            Please provide a host name.
                         </div>
                     </div>
                 </div>
@@ -65,83 +69,51 @@
                         </div>
                     </div>
                     <div id="emailHelp" class="form-text">
-                        Please enter your phone number starting with 231. For
-                        example: 231123456789
+                        For example: 0778456789
                     </div>
                 </div>
 
-                <!-- MIDDLE NAME -->
-                <div class="col-md-6">
-                    <label for="middle_name" class="form-label"
-                        >Middle name</label
-                    >
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="middle_name"
-                        v-model="middle_name"
-                        aria-describedby="inputGroupPrepend"
-                    />
-                </div>
-
-                <!-- EMAIL -->
-                <div class="col-md-6">
-                    <label for="email" class="form-label">Email</label>
-                    <div class="input-group">
-                        <input
-                            type="email"
-                            :class="[validEmail && 'validated', 'form-control']"
-                            v-model="email"
-                            id="email"
-                            aria-describedby="inputGroupPrepend"
-                            @blur="validateEmail"
-                        />
-                        <div
-                            :class="[
-                                'invalid-feedback',
-                                validEmail && 'show-feedback',
-                            ]"
-                        >
-                            Please provide a valid email address
-                        </div>
-                    </div>
-                    <div id="emailHelp" class="form-text">
-                        Please enter a valid email address. For example:
-                        example@example.com
-                    </div>
-                </div>
-
-                <!-- LAST NAME -->
-                <div class="col-md-6">
-                    <label for="last_name" class="form-label is-required"
-                        >Last name<span class="visually-hidden">
+                <!-- HOST TYPE -->
+                <div class="">
+                    <label for="host_type" class="form-label is-required"
+                        >Host Type<span class="visually-hidden">
                             (required)</span
                         ></label
                     >
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="last_name"
-                            v-model="last_name"
-                            required
-                        />
-                        <div class="invalid-feedback">
-                            Please provide a last name.
-                        </div>
+                    <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" />
+                        <label for="">Individual</label>
+                    </div>
+                    <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" />
+                        <label for="">Company</label>
                     </div>
                 </div>
 
-                <!-- Submit and Cancel Buttons -->
-                <div class="col-12 d-flex gap-3">
-                    <button class="px-5 btn btn-primary" type="submit">
-                        {{ buttonLabel }}
-                    </button>
-                    <button
-                        class="px-5 btn btn-secondary"
-                        @click="router.back()"
+                <!-- Details -->
+                <div class="col-md-6">
+                    <label for="detailsTextarea" class="form-label"
+                        >Details</label
                     >
-                        Cancel
+                    <textarea
+                        placeholder="Enter details..."
+                        class="form-control"
+                        id="detailsTextarea"
+                        v-model="details"
+                        rows="4"
+                    ></textarea>
+                </div>
+
+                <div class="col-md-12">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="
+                            padding: 0.7rem 2rem !important;
+                            font-weight: 600;
+                        "
+                    >
+                        {{ buttonLabel }}
                     </button>
                 </div>
             </form>
@@ -151,39 +123,23 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import BreadCrumbs from "../BreadCrumbs.vue";
-import Modal from "../Modal.vue";
-import {
-    registerVisitor,
-    editVisitor,
-    getSingleVisitor,
-    visuallyHideModalBackdrop,
-} from "@/assets/js/index.js";
-import {
-	msisdnValidation,
-	emailValidation,
-	showModal,
-} from "@/assets/js/util.js";
+import { useRoute } from "vue-router";
+import BreadCrumbs from "@/components/BreadCrumbs.vue";
+import Modal from "@/components/Modal.vue";
+import { registerHost, editHost, getHosts } from "@/assets/js/index.js";
+import { msisdnValidation } from "@/assets/js/util.js";
 
 // Route and State
 const route = useRoute();
-const first_name = ref("");
-const middle_name = ref("");
-const last_name = ref("");
+const name = ref("");
 const msisdn = ref("");
-const email = ref("");
-const address = ref("");
-
-const alert = ref({
-	status: "",
-	title: "",
-	message: "",
-	pageLink: "",
-});
+const details = ref("");
+const status = ref("");
+const message = ref("");
+const title = ref("");
 
 const buttonLabel = ref("Save");
-let visitorInfo;
+let hostInfo;
 
 // Form status and breadcrumbs
 const activeBreadCrumbs = ref([]);
@@ -193,35 +149,32 @@ activeBreadCrumbs.value = breadCrumbs.value;
 const tem = [...breadCrumbs.value];
 const formStatus = tem.pop();
 
-const router = useRouter();
-
 // Functions
 const onSubmit = async () => {
-    if (!first_name.value || !last_name.value || !msisdn.value) {
+    if (!name.value || !msisdn.value) {
         return;
     }
 
-    const visitor = {
-        first_name: first_name.value,
-        middle_name: middle_name.value,
-        last_name: last_name.value,
-        msisdn: msisdn.value,
-        email: email.value,
+    const host = {
+        name: name.value,
+        msisdn:
+            msisdn.value[0] == "0"
+                ? `231${msisdn.value.slice(1)}`
+                : msisdn.value,
+        details: details.value,
     };
 
     const response = formStatus.startsWith("new")
-        ? await registerVisitor(visitor)
-        : await editVisitor(visitorInfo.id, visitor);
+        ? await registerHost(host)
+        : await editHost(hostInfo.id, host);
+
+    console.log(response);
 
     const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
     myModal.show(document.querySelector("#toggleMyModal"));
     status.value = response.ok ? "success" : "danger";
     message.value = response.result.message;
     title.value = response.ok ? "Success" : "Error";
-    console.log("Result: ", response.result);
-    pageLink.value = response.result.data
-        ? `/visitors/${response.result.data[0].id}`
-        : undefined;
 
     visuallyHideModalBackdrop();
 
@@ -231,23 +184,26 @@ const onSubmit = async () => {
     }
 };
 
-const fetchVisitor = async () => {
+const fetchHost = async () => {
     if (formStatus.startsWith("edit")) {
         buttonLabel.value = "Update";
         const id = breadCrumbs.value[1];
-        visitorInfo = await getSingleVisitor({ id });
-        first_name.value = visitorInfo.first_name;
-        middle_name.value = visitorInfo.middle_name;
-        last_name.value = visitorInfo.last_name;
-        msisdn.value = visitorInfo.msisdn;
-        email.value = visitorInfo.email;
+        hostInfo = await getHosts({ id });
+
+        name.value = hostInfo.name;
+        msisdn.value = hostInfo.msisdn;
+        details.value = hostInfo.details;
     }
 };
 
-const validEmail = ref(false);
+const visuallyHideModalBackdrop = () => {
+    document
+        .querySelectorAll(".modal-backdrop")
+        .forEach((modal) => modal.classList.add("visually-hidden"));
+};
+
 const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
-const validEmailMessage = ref("Please provide a valid email address");
 
 const contactValidation = () => {
     if (!msisdn.value) {
@@ -256,7 +212,6 @@ const contactValidation = () => {
 
         return;
     }
-
     const isvalid = msisdnValidation([msisdn.value]);
 
     if (!isvalid.valid) {
@@ -267,16 +222,10 @@ const contactValidation = () => {
     }
 };
 
-const validateEmail = () => {
-    validEmail.value = emailValidation(email.value) ? false : true;
-};
-
 const resetForm = () => {
-    first_name.value = "";
-    middle_name.value = "";
-    last_name.value = "";
+    name.value = "";
     msisdn.value = "";
-    email.value = "";
+    details.value = "";
     buttonLabel.value = "Save";
 
     // Remove validation classes
@@ -286,7 +235,7 @@ const resetForm = () => {
 
 // Lifecycle Hooks
 onMounted(() => {
-    fetchVisitor();
+    fetchHost();
 
     const form = document.querySelector(".needs-validation");
     form.addEventListener(

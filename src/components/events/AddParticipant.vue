@@ -1,28 +1,17 @@
 <template>
     <div class="w-75 d-flex flex-column align-items-center">
-        <div class="d-flex justify-content-between align-items-center p-3 w-75">
-            <div class="d-flex align-items-center gap-4">
-                <BackArrow @click="emit('switch', 'details')" />
-                <h3 class="m-0">Add Participant</h3>
-            </div>
-            <div>
-                <button
-                    class="btn btn-primary px-5 py-2"
-                    @click="postParticipant"
-                >
-                    Submit
-                </button>
-            </div>
+        <div
+            class="d-flex justify-content-between align-items-center mt-4 w-75"
+        >
+            <BreadCrumbs
+                class="mb-3"
+                :breadCrumbs="['Events', eventId, 'AddParticipant']"
+            />
         </div>
         <form
             @submit.prevent="postParticipant"
             @input="validateParticipant"
-            class="w-75 container gap-5 p-4"
-            style="
-                background-color: #fff;
-                border-radius: 10px;
-                outline: 1px solid #aaa;
-            "
+            class="form-control w-75 container gap-5 p-4"
         >
             <div class="row mb-3">
                 <div class="col">
@@ -147,8 +136,20 @@
                     />
                 </div>
             </div>
-            <!-- Will not show, just added so the for could submit by pressing enter -->
-            <button class="visually-hidden" type="submit">Submit</button>
+            <div class="d-flex gap-3">
+                <button
+                    class="btn btn-primary px-5 py-2"
+					type="submit"
+                >
+                    Save
+                </button>
+                <button
+                    @click="$emit('switch', 'details')"
+                    class="btn btn-secondary px-5 py-2"
+                >
+                    Cancel
+                </button>
+            </div>
         </form>
     </div>
 </template>
@@ -159,19 +160,19 @@ import { useRoute } from "vue-router";
 import $ from "jquery";
 
 import { API_URL } from "../../assets/js/index.js";
+import BreadCrumbs from "../BreadCrumbs.vue";
 import Alert from "../Alert.vue";
-import BackArrow from "../BackArrow.vue";
 
 const router = useRoute();
 const eventId = router.params.id;
 
 const emptyParticipant = {
-	firstName: "",
-	middleName: "",
-	lastName: "",
-	address: "",
-	email: "",
-	msisdn: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    address: "",
+    email: "",
+    msisdn: "",
 };
 
 const emit = defineEmits(["errorCreatingParticipant", "participantAdded"]);
@@ -188,10 +189,6 @@ async function postParticipant() {
 
         $("body").css("pointer-events", "none");
 
-        $("body").css("pointer-events", "none");
-
-        $("body").css("pointer-events", "none");
-
         try {
             await $.post(API_URL + "event_participants/", data, () => {
                 emit("participantAdded", {
@@ -203,13 +200,13 @@ async function postParticipant() {
                 $("body").css("pointer-events", "auto");
             });
         } catch (error) {
-            console.log("Error creating participant: ", error);
+            console.log("Unable to create participant: ", error);
 
             emit("errorCreatingParticipant", {
                 status: "danger",
                 title:
                     error.responseJSON.status == 500
-                        ? "Error Creating Participant, try again"
+                        ? "Unable to create participant, try again"
                         : error.responseJSON.message,
             });
             $("body").css("pointer-events", "auto");
@@ -251,38 +248,38 @@ function validateParticipant() {
         return false;
     }
 
-	// ensure `email` was given
-	if (!newParticipant.value.email) {
-		participantError.value.email = "Participant's `email` is required";
-		return false;
-	}
+    // ensure `email` was given
+    if (!newParticipant.value.email) {
+        participantError.value.email = "Participant's `email` is required";
+        return false;
+    }
 
-	// ensure `email` is atleast six chars
-	if (newParticipant.value.email.length <= 5) {
-		participantError.value.email = "Participant's `email` is invalid";
-		return false;
-	}
+    // ensure `email` is atleast six chars
+    if (newParticipant.value.email.length <= 5) {
+        participantError.value.email = "Participant's `email` is invalid";
+        return false;
+    }
 
-	// ensure address was given
-	if (!newParticipant.value.address) {
-		participantError.value.address = "Participant's `address` is required";
-		return false;
-	}
+    // ensure address was given
+    if (!newParticipant.value.address) {
+        participantError.value.address = "Participant's `address` is required";
+        return false;
+    }
 
-	// ensure address is atleast 12 chars with two spaces
-	if (
-		newParticipant.value.address.length <= 11 ||
-		newParticipant.value.address.split(" ").length <= 1
-	) {
-		participantError.value.address = "Participant's address is invalid";
-		return false;
-	}
+    // ensure address is atleast 12 chars with two spaces
+    if (
+        newParticipant.value.address.length <= 11 ||
+        newParticipant.value.address.split(" ").length <= 1
+    ) {
+        participantError.value.address = "Participant's address is invalid";
+        return false;
+    }
 
-	// ensure msisdn was given
-	if (!newParticipant.value.msisdn) {
-		participantError.value.msisdn = "Participant's `msisdn` is required";
-		return false;
-	}
+    // ensure msisdn was given
+    if (!newParticipant.value.msisdn) {
+        participantError.value.msisdn = "Participant's `msisdn` is required";
+        return false;
+    }
 
     // ensure msisdn is atleast 10 chars long and it's a number
     if (
@@ -293,7 +290,7 @@ function validateParticipant() {
         return false;
     }
 
-	return true;
+    return true;
 }
 
 function formatEventParticipants() {

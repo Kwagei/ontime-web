@@ -1,9 +1,6 @@
 <template>
-    <div class="w-100 d-flex align-items-center flex-column">
-        <div
-            class="d-flex justify-content-between gap-4 pt-3"
-            style="width: 81%"
-        >
+    <div style="width: 81%" class="d-flex align-items-center flex-column">
+        <div class="w-100 d-flex justify-content-between gap-4 pt-3">
             <BreadCrumbs :breadCrumbs="['events', event.title]" />
             <div class="d-flex gap-3">
                 <button
@@ -24,7 +21,7 @@
                 />
             </div>
         </div>
-        <div class="d-flex justify-content-between gap-4" style="width: 81%">
+        <div class="w-100 d-flex justify-content-between gap-4">
             <div
                 class="d-flex justify-content-between mt-3 gap-4 mx-auto"
                 style="width: 70%"
@@ -45,11 +42,10 @@
             <div v-show="event.details" class="border border-1"></div>
             <div v-show="event.details" class="w-50 pt-2 text-left flex-grow-1">
                 <span class="fs-5">Details</span>
-                <vr />
                 <h5 class="mt-2 mb-0">{{ event.details }}</h5>
             </div>
         </div>
-        <EventParticipants />
+        <EventParticipants @switch="emit('switch', 'addParticipant')" />
     </div>
 </template>
 

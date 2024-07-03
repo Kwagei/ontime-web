@@ -6,21 +6,26 @@
             sorting ||
             hasParticipants
         "
-        class="mt-3"
-        style="width: 70vw"
+        class="w-100 mt-3 d-flex justify-content-between gap-3 mb-3"
     >
-        <div class="d-flex justify-content-between mb-3 mx-2">
-            <Search v-model:search="searchQuery" />
-            <Filter />
-            <Sort
-                v-model:term="term"
-                v-model:direction="direction"
-                :sortTerms="participantsSortTerms"
-            />
-        </div>
+        <Search class="flex-grow-1" v-model:search="searchQuery" />
+        <Sort
+            v-model:term="term"
+            v-model:direction="direction"
+            :sortTerms="participantsSortTerms"
+        />
     </div>
-    <div style="width: 70vw" v-if="hasParticipants">
-        <ParticipantsTable :participants="participantsToShow" />
+    <div class="w-100" v-if="hasParticipants">
+        {{ term }}
+        |
+        {{ direction }}
+        <ParticipantsTable
+            @addParticipant="$emit('switch', 'addParticipant')"
+            :participants="participantsToShow"
+            @newSortTerm="(newTerm) => (term = newTerm)"
+            @ascend="direction = 'asc'"
+            @descend="direction = 'desc'"
+        />
         <Pagination
             class="mx-2"
             v-if="Array.isArray(participants) && !!participants.length"
@@ -28,10 +33,10 @@
         />
     </div>
     <div
-        class="d-flex justify-content-center mt-5"
+        class="w-100 d-flex justify-content-center mt-5"
         v-else-if="participants == 'loading'"
     >
-        <div class="spinner-border spinner-border-lg" role="status">
+        <div class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
@@ -43,10 +48,6 @@
         <hr />
         No match!
     </h2>
-    <h2 class="w-75 text-center" v-else>
-        <hr />
-        No Event Participants Currently!
-    </h2>
 </template>
 
 <script setup>
@@ -57,7 +58,6 @@ import { useRouter } from "vue-router";
 import ParticipantsTable from "./ParticipantsTable.vue";
 import Pagination from "../Pagination.vue";
 import Search from "../Search.vue";
-import Filter from "../Filter.vue";
 import Sort from "../Sort.vue";
 import { API_URL } from "../../assets/js/index.js";
 
@@ -86,9 +86,9 @@ const participantsSortTerms = [
 
 const eventId = router.currentRoute.value.params.id;
 
-const hasParticipants = computed(
-    () => Array.isArray(participants.value) && participants.value.length
-);
+const emit = defineEmits(["switch"]);
+
+const hasParticipants = computed(() => Array.isArray(participants.value));
 
 onMounted(() => {
     getEvent();

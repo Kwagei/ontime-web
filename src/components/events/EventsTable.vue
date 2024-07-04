@@ -25,16 +25,10 @@ const props = defineProps({
 
 const emit = defineEmits(["refreshComplete"]);
 
-onMounted(async () => {});
-
 // Watch Refresh Prop to refresh events accordingly
 watch(
     () => props.refresh,
-    async (n) => {
-        if (n) {
-            emit("refreshComplete");
-        }
-    }
+    () => emit("refreshComplete")
 );
 
 const initializeDataTable = () => {
@@ -119,10 +113,6 @@ function displayEventPage(eventId) {
 </script>
 
 <style scoped>
-.cursorPointer {
-    cursor: pointer;
-}
-
 th,
 td {
     padding: 0.9rem;

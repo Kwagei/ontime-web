@@ -1,21 +1,21 @@
 <template>
-	<div id="eventsWrapper" class="d-flex flex-column container">
-		<div
-			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-		>
-			<BreadCrumbs :breadCrumbs="breadCrumbs" />
-			<div class="d-flex" style="gap: 0.521rem">
-				<RefreshList @click="refreshEvents" />
-				<router-link :to="{ name: 'add-event' }">
-					<button type="button" class="btn btn-primary">
-						Add Event
-					</button>
-				</router-link>
-			</div>
-		</div>
+    <div id="eventsWrapper" class="d-flex flex-column container">
+        <div
+            class="d-flex justify-content-between align-items-center container p-0 mx-auto"
+        >
+            <BreadCrumbs :breadCrumbs="breadCrumbs" />
+            <div class="d-flex" style="gap: 0.521rem">
+                <RefreshList @click="refreshEvents" />
+                <router-link :to="{ name: 'add-event' }">
+                    <button type="button" class="btn btn-primary">
+                        Add Event
+                    </button>
+                </router-link>
+            </div>
+        </div>
 
-		<EventsTable :refresh="refresh" @refreshComplete="stopEventsRefresh" />
-	</div>
+        <EventsTable :refresh="refresh" @refreshComplete="stopEventsRefresh" />
+    </div>
 </template>
 
 <script setup>
@@ -27,61 +27,55 @@ import { ref } from "vue";
 import $ from "jquery";
 
 const props = defineProps({
-	breadCrumbs: {
-		type: Array,
-		required: true,
-	},
+    breadCrumbs: {
+        type: Array,
+        required: true,
+    },
 });
 
 const refresh = ref(false);
 
 function refreshEvents() {
-	refresh.value = true;
-	$(".refresh").css("pointer-events", "none");
+    refresh.value = true;
+    $(".refresh").css("pointer-events", "none");
 }
 
 function stopEventsRefresh() {
-	// refresh and then set refresh back to false
-	refresh.value = false;
-	$(".refresh").css("pointer-events", "auto");
+    // refresh and then set refresh back to false
+    refresh.value = false;
+    $(".refresh").css("pointer-events", "auto");
 }
 </script>
 
 <style scoped>
 svg {
-	height: 20px !important;
-	margin: 0 !important;
+    height: 20px !important;
+    margin: 0 !important;
 }
 
 #new-visitor:hover {
-	color: white !important;
+    color: white !important;
 }
 
 #eventsWrapper {
-	gap: 1.5rem;
-	padding-top: 2rem;
+    gap: 1.5rem;
+    padding-top: 2rem;
 }
 
 .btn {
-	padding: 0.5rem !important;
+    padding: 0.5rem !important;
 }
 
 .btn:hover {
-	border: 0.125rem solid black !important;
+    border: 0.125rem solid black !important;
 }
 
 .btn:hover g {
-	fill: white;
+    fill: white;
 }
 
 .list-options svg {
-	height: 20px !important;
-	margin: 0 !important;
+    height: 20px !important;
+    margin: 0 !important;
 }
-
-/* @media (min-width: 768px) and (max-width: 1440px) {
-	#eventsWrapper {
-		padding: 1rem 3rem 0 3rem;
-	}
-} */
 </style>

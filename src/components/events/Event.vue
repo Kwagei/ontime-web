@@ -1,11 +1,7 @@
 <template>
-    <Modal
-        style="z-index: 999999999"
-        v-if="!!Object.keys(modalData).length"
-        :data="modalData"
-    />
+    <Modal v-if="!!Object.keys(modalData).length" :data="modalData" />
     <h2 v-if="event == 'error'" class="d-flex justify-content-center pt-5">
-        Error Loading Event, Try again
+        Unable to load events, Try again
     </h2>
     <div
         v-else-if="event == 'loading'"
@@ -13,7 +9,7 @@
         role="status"
         style="height: 85vh"
     >
-        <div class="spinner-border spinner-border-lg" role="status">
+        <div class="spinner-border" style="margin-top: -25vh" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
@@ -40,6 +36,7 @@
         <ImportParticipant
             v-if="state == 'importParticipants'"
             :eventId="eventId"
+            :eventTitle="event.title"
             @switch="switchState"
             @participantsImported="setModalData"
             @errorImportingParticipants="setModalData"

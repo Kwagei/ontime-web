@@ -1,4 +1,6 @@
-export const API_URL = import.meta.env.VITE_API_URL;
+import $ from "jquery";
+
+export const API_URL = import.meta.env.VITE_VERCEL_ENV;
 
 export const registerVisit = async (data) => {
 	try {

@@ -39,15 +39,11 @@ div.dt-container .dt-search input {
 }
 
 div.dt-container select.dt-input {
-	font-family: inherit;
 	padding: 0.5rem 0.7rem;
 	font-size: 1rem;
 	font-weight: 700;
 	line-height: 1.25;
 	color: var(--bs-body-color);
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
 	background-color: var(--bs-body-bg);
 	background-clip: padding-box;
 	border-radius: 0;

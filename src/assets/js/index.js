@@ -151,9 +151,10 @@ export const getVisitors = async (query = {}) => {
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
 		}
-		const { data } = await response.json();
+		const result = await response.json();
+		const { data, length } = result.data;
 
-		return data;
+		return { data, length };
 	} catch (error) {
 		throw error;
 	}

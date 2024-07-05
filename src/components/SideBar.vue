@@ -62,7 +62,7 @@ watch(
 const navItems = [
 	{
 		name: "visitors",
-		svg: `avatar`,
+		svg: `group`,
 	},
 	{
 		name: "visits",

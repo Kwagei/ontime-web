@@ -5,6 +5,7 @@
 			<div class="d-flex gap-3">
 				<button
 					@click="emit('switch', 'importParticipants')"
+					type="button"
 					class="btn btn-secondary"
 				>
 					Import Participants
@@ -15,7 +16,9 @@
 						name: 'add-event-participant',
 					}"
 				>
-					<button class="btn btn-primary">Add Participant</button>
+					<button type="button" class="btn btn-primary">
+						Add Participant
+					</button>
 				</router-link>
 
 				<button
@@ -98,14 +101,14 @@ const emit = defineEmits(["switch"]);
 	background-color: #ddd;
 }
 
-.btn {
+.editBtn {
 	padding: 0.5rem !important;
 }
-.btn:hover {
+.editBtn:hover {
 	border: 0.125rem solid black !important;
 }
 
-.btn:hover path {
+.editBtn:hover path {
 	fill: white;
 }
 .editBtn svg {

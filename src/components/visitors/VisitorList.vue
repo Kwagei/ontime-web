@@ -30,6 +30,8 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
+import { API_URL } from "@/assets/js/index.js";
+import { useRouter } from "vue-router";
 
 DataTable.use(DataTablesCore);
 
@@ -48,7 +50,7 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: "http://localhost:3000/api/visitors",
+		url: `${API_URL}visitors`,
 		type: "GET",
 		data: (query) => {
 			return {
@@ -95,8 +97,6 @@ const options = {
 
 let dt;
 const table = ref();
-
-import { useRouter } from "vue-router";
 
 const router = useRouter();
 const loader = ref(false);

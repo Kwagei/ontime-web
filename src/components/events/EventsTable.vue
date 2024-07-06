@@ -22,6 +22,7 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
+import { API_URL } from "@/assets/js";
 
 DataTable.use(DataTablesCore);
 
@@ -40,7 +41,7 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: "http://localhost:3000/api/events",
+		url: `${API_URL}events`,
 		type: "GET",
 		data: (query) => {
 			const order =

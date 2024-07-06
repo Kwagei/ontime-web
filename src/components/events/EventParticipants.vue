@@ -32,7 +32,7 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: "http://localhost:3000/api/event_participants",
+		url: `${API_URL}event_participants`,
 		type: "GET",
 		data: (query) => {
 			return {

@@ -22,6 +22,7 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
+import { API_URL } from "@/assets/js";
 
 DataTable.use(DataTablesCore);
 

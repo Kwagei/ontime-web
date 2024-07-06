@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { updateDepartureTime } from "@/assets/js/index";
+import { API_URL, updateDepartureTime } from "@/assets/js/index";
 import { onMounted, ref, watch } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -75,7 +75,7 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: "http://localhost:3000/api/visits",
+		url: `${API_URL}visits`,
 		type: "GET",
 		data: (query) => {
 			const order =

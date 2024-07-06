@@ -48,7 +48,7 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: "http://localhost:3000/api/visitors",
+		url: `${API_URL}visitors`,
 		type: "GET",
 		data: (query) => {
 			return {

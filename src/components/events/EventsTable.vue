@@ -40,7 +40,7 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: "http://localhost:3000/api/events",
+		url: `${API_URL}events`,
 		type: "GET",
 		data: (query) => {
 			const order =

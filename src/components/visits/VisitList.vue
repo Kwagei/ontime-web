@@ -12,24 +12,6 @@
 				ref="table"
 			/>
 		</div>
-
-		<div>
-			<div
-				id="spinner"
-				v-if="loader"
-				class="d-flex justify-content-center p-4"
-			>
-				<div class="spinner-border" role="status">
-					<span class="visually-hidden">Loading...</span>
-				</div>
-			</div>
-			<div
-				v-if="fetchError"
-				class="invalid-feedback show-feedback m-auto"
-			>
-				{{ errorMessage }}
-			</div>
-		</div>
 	</div>
 </template>
 
@@ -96,7 +78,6 @@ const options = {
 			json.recordsTotal = length;
 			json.recordsFiltered = length;
 
-			loader.value = false;
 			return formatDateTime(visits);
 		},
 
@@ -121,7 +102,6 @@ const options = {
 	order: [[0, "desc"]],
 };
 
-const loader = ref(true);
 const MAX_ITEMS_LEN = 30;
 
 // function to update departure time

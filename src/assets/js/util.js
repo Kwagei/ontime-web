@@ -45,6 +45,8 @@ export const msisdnValidation = (msisdns) => {
             contactNumber = contact.slice(3);
         }
 
+        const contactRange = contactNumber.length;
+
         // Check if contact number starts with either of the serviceCode elements.
         const validCode = serviceCode.some((val) =>
             contactNumber.startsWith(val)

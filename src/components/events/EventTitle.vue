@@ -5,8 +5,8 @@
         data-bs-theme="light"
     >
         <div class="container-xxl">
-            <h5 class="display-1 py-2">{{ title }}</h5>
-            <picture>
+            <h5 class="display-1 py-2 my-auto">{{ title }}</h5>
+            <picture class="mt-3">
                 <img src="../../assets/images/eventTitleBackdrop.png" />
             </picture>
         </div>

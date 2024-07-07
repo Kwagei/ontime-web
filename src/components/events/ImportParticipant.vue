@@ -10,6 +10,10 @@
             class="d-flex justify-content-between align-items-center gap-5 mt-3"
         >
             <div class="d-flex align-items-center gap-4">
+                <BackArrow
+                    v-show="!participants.length"
+                    @click="$emit('switch', 'details')"
+                />
                 <BreadCrumbs
                     :breadCrumbs="['events', eventId, 'Import Participants']"
                 />
@@ -86,6 +90,7 @@ import ImportedParticipantsGrid from "./ImportedParticipantsGrid.vue";
 import EditParticipantForm from "./EditParticipantForm.vue";
 import Alert from "../Alert.vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
+import BackArrow from "../BackArrow.vue";
 
 const route = useRoute();
 const eventId = route.params.id;

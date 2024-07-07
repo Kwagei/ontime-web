@@ -1,16 +1,21 @@
 <template>
+    <Modal
+        :data="{
+            title: alert.title,
+            message: alert.message,
+            status: alert.status,
+            pageLink: alert.pageLink,
+        }"
+    />
     <div class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-            style="margin-top: 0.3rem"
+            style="margin: 2rem auto"
         >
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
-        <div
-            class="mt-4 form-control input"
-            style="margin: auto; padding: 3rem"
-        >
+        <div class="form-control input" style="padding: 3rem">
             <form
                 class="row g-3 needs-validation"
                 novalidate
@@ -29,7 +34,6 @@
                             id="first_name"
                             aria-describedby="inputGroupPrepend"
                             v-model="first_name"
-                            placeholder="John"
                             required
                         />
                         <div class="invalid-feedback">
@@ -161,18 +165,21 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 d-flex">
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                        style="
-                            padding: 0.7rem 2rem !important;
-                            font-weight: 600;
-                            margin-left: auto;
-                        "
+                <div class="col-md-12 d-flex gap-3">
+                    <div
+                        style="font-weight: 600; margin-left: auto"
+                        class="d-flex gap-3"
                     >
-                        Save
-                    </button>
+                        <button type="submit" class="btn btn-primary px-5">
+                            Save
+                        </button>
+                        <button
+                            class="btn btn-secondary px-5"
+                            @click="router.back()"
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -180,9 +187,10 @@
 </template>
 
 <script setup>
+import Modal from "../Modal.vue";
+
 import { ref, onMounted, watch } from "vue";
-import { useRoute } from "vue-router";
-import BreadCrumbs from "../BreadCrumbs.vue";
+import { useRoute, useRouter } from "vue-router";
 import $ from "jquery";
 
 // Helpers
@@ -196,6 +204,10 @@ import {
 } from "@/assets/js/util.js";
 
 import BreadCrumbs from "../BreadCrumbs.vue";
+
+const props = defineProps({
+    breadCrumbs: Object,
+});
 
 // Route and State
 const route = useRoute();
@@ -213,6 +225,8 @@ const alert = ref({
     pageLink: "",
 });
 
+const router = useRouter();
+
 // Form status and breadcrumbs
 const activeBreadCrumbs = ref([]);
 const breadCrumbs = defineModel("breadCrumbs");
@@ -220,6 +234,11 @@ breadCrumbs.value = route.path.split("/").slice(1);
 activeBreadCrumbs.value = breadCrumbs.value;
 const tmp = [...breadCrumbs.value];
 const formStatus = tmp.pop();
+
+const validEmail = ref(false);
+const validMsisdn = ref(false);
+const validMsisdnMessage = ref("Please provide a phone number");
+const validEmailMessage = ref("Please provide a valid email address");
 
 // Functions
 async function postParticipant() {
@@ -256,7 +275,7 @@ async function postParticipant() {
         url: API_URL + "event_participants",
         type: "POST",
         data: body,
-        success: () => {
+        success: (res) => {
             showModal("#alertModal", "#alertModalBody");
 
             alert.value.status = "success";
@@ -284,11 +303,6 @@ const fetchVisitor = async () => {
         email.value = visitorInfo.email;
     }
 };
-
-const validEmail = ref(false);
-const validMsisdn = ref(false);
-const validMsisdnMessage = ref("Please provide a phone number");
-const validEmailMessage = ref("Please provide a valid email address");
 
 const contactValidation = (number) => {
     if (!number) {
@@ -358,8 +372,6 @@ onMounted(() => {
     $(".needs-validation").on(
         "submit",
         (event) => {
-            console.log("event: ", event);
-
             if (!form.checkValidity()) event.preventDefault();
             event.target.classList.add("was-validated");
         },

@@ -97,7 +97,7 @@
             class="mt-4 p-0 d-flex flex-column"
             style="border: none; background-color: transparent; gap: 3rem"
         >
-            <form class="row g-3">
+            <form @submit.prevent class="row g-3">
                 <div class="dropdown" style="width: 42.5%">
                     <label for="typeInput" class="form-label is-required">
                         Select Event:
@@ -113,9 +113,10 @@
                         autocomplete="off"
                     />
                     <ul class="dropdown-menu" style="width: 96.5%">
-                        <template v-for="(option, index) in options">
+                        <template v-for="option in options">
                             <li
                                 class="dropdown-item"
+                                style="cursor: pointer"
                                 :value="option.id"
                                 @click="updateEventTerm(option)"
                             >
@@ -136,7 +137,10 @@
             </form>
 
             <!-- All Participants -->
-            <div class="container">
+            <div
+                v-show="Array.isArray(participants) && participants.length"
+                class="container"
+            >
                 <table
                     id="participantsTable"
                     class="table table-striped w-100"
@@ -147,7 +151,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import {
@@ -155,13 +159,14 @@ import {
     getSingleVisitor,
     registerVisitor,
     getEvents,
-    getParticipants,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
 
 import { showModal } from "@/assets/js/util";
 import DataTables from "datatables.net-dt";
 import "datatables.net-responsive-dt";
+
+const router = useRouter();
 
 const msisdn = ref("");
 const visitor = ref("");
@@ -171,7 +176,7 @@ const belongings = ref([]);
 const temBelonging = ref("");
 const options = ref([]);
 const eventValue = ref("");
-const eventID = ref("");
+const eventID = ref(router.currentRoute.value.params.id);
 const host_id = ref("");
 const room_id = ref("");
 const room = ref("");
@@ -182,14 +187,11 @@ const status = ref("");
 const message = ref("");
 const title = ref("");
 
-const loader = ref(false);
-
 const participants = ref([]);
 const dataTable = ref(null);
 const MAX_DETAIL_LEN = 30;
 
 const activeBreadCrumbs = ref([]);
-const router = useRouter();
 
 const props = defineProps({
     breadCrumbs: {
@@ -200,7 +202,9 @@ const props = defineProps({
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
 
-onMounted(() => {
+onMounted(async () => {
+    await getEventsOptions();
+
     (() => {
         "use strict";
 
@@ -222,16 +226,21 @@ onMounted(() => {
     })();
 });
 
-const updateEventTerm = (host) => {
-    eventValue.value = host.text;
-    eventID.value = host.value;
-    purpose.value = host.text;
+const updateEventTerm = (eventNameAndId) => {
+    console.log({ eventNameAndId });
+    eventValue.value = eventNameAndId.text;
+    eventID.value = eventNameAndId.value;
+    purpose.value = eventNameAndId.text;
 
     const selectedHost = events.value.find((val) => val.id === eventID.value);
 
     if (selectedHost) {
         room.value = selectedHost.room;
     }
+
+    eventID.value = eventNameAndId.value;
+    initializeDataTable();
+    console.log({ eventID });
 };
 
 // function for inserting each username in the select element
@@ -356,10 +365,11 @@ function formatAddress(address) {
 }
 
 const initializeDataTable = () => {
+    console.log({ eventID });
     dataTable.value = new DataTables("#participantsTable", {
         serverSide: true,
         ajax: {
-            url: `http://localhost:3000/api/events/${id.value}/participants`,
+            url: `http://localhost:3000/api/events/${eventID.value}/participants`,
             type: "GET",
             data: (query) => {
                 return {
@@ -377,7 +387,7 @@ const initializeDataTable = () => {
                 });
                 return participants.value;
             },
-            error: (xhr, error, thrown) => {
+            error: (error) => {
                 console.log("Error fetching data:", error);
             },
         },
@@ -401,14 +411,10 @@ const initializeDataTable = () => {
     dataTable.value.on("click", "tr", function () {
         const rowData = dataTable.value.row(this).data();
         if (rowData) {
-            visitorDetail(rowData.id);
+            participantDetail(rowData.id);
         }
     });
 };
-
-onMounted(() => {
-    initializeDataTable();
-});
 </script>
 
 <style scoped>

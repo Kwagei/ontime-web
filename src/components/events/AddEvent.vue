@@ -23,10 +23,7 @@
             <hr class="text-center w-75" />
         </h3>
 
-        <div
-            class="mt-4 form-control input"
-            style="margin: auto; padding: 3rem"
-        >
+        <div class="form-control input" style="margin: auto; padding: 3rem">
             <form
                 class="row g-3 needs-validation"
                 novalidate
@@ -190,6 +187,24 @@
                     </div>
                 </div>
 
+                <!-- DETAILS -->
+                <div class="col-md-6">
+                    <label for="detail" class="form-label">Details</label>
+                    <div class="input-group">
+                        <textarea
+                            placeholder="Enter details..."
+                            class="form-control"
+                            id="detailsTextarea"
+                            v-model="details"
+                            rows="2"
+                        ></textarea>
+
+                        <div class="invalid-feedback">
+                            Please enter event details.
+                        </div>
+                    </div>
+                </div>
+
                 <!-- TYPE -->
                 <div class="col-md-6">
                     <label for="type" class="form-label is-required"
@@ -216,35 +231,19 @@
                     </div>
                 </div>
 
-                <!-- DETAILS -->
-                <div class="">
-                    <label for="detail" class="form-label">Details</label>
-                    <div class="input-group">
-                        <textarea
-                            placeholder="Enter details..."
-                            class="form-control"
-                            id="detailsTextarea"
-                            v-model="details"
-                            rows="2"
-                        ></textarea>
-
-                        <div class="invalid-feedback">
-                            Please enter event details.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-12 d-flex">
+                <div class="col-md-12 d-flex gap-3">
                     <button
                         type="submit"
-                        class="btn btn-primary"
-                        style="
-                            padding: 0.7rem 2rem !important;
-                            font-weight: 600;
-                            margin-left: auto;
-                        "
+                        style="margin-left: auto"
+                        class="btn btn-primary px-5"
                     >
                         Save
+                    </button>
+                    <button
+                        class="btn btn-secondary px-5"
+                        @click="router.back()"
+                    >
+                        Cancel
                     </button>
                 </div>
             </form>

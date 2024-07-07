@@ -13,8 +13,10 @@
                 </router-link>
             </div>
         </div>
-
-        <EventsTable :refresh="refresh" @refreshComplete="stopEventsRefresh" />
+        <EventsTable
+            v-model:refreshEvents="refresh"
+            @refreshComplete="stopEventsRefresh"
+        />
     </div>
 </template>
 

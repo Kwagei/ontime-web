@@ -43,7 +43,6 @@
                     </div>
                 </div>
 
-                <<<<<<< HEAD
                 <!-- PHONE NUMBER -->
                 <div class="col-md-6">
                     <label for="phone_number" class="form-label is-required"
@@ -78,42 +77,6 @@
                         0778675908
                     </div>
                 </div>
-                =======
-                <!-- PHONE NUMBER -->
-                <div class="col-md-6">
-                    <label for="phone_number" class="form-label is-required"
-                        >Phone number<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="tel"
-                            :class="[
-                                validMsisdn && 'validated',
-                                'form-control',
-                            ]"
-                            v-model="msisdn"
-                            id="phone_number"
-                            aria-describedby="inputGroupPrepend"
-                            required
-                            @blur="contactValidation"
-                        />
-                        <div
-                            :class="[
-                                'invalid-feedback',
-                                validMsisdn && 'show-feedback',
-                            ]"
-                        >
-                            {{ validMsisdnMessage }}
-                        </div>
-                    </div>
-                    <div id="emailHelp" class="form-text">
-                        Please enter your phone number starting with 231. For
-                        example: 231123456789
-                    </div>
-                </div>
-                >>>>>>> code
 
                 <!-- MIDDLE NAME -->
                 <div class="col-md-6">
@@ -202,17 +165,14 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 d-flex">
+                <!-- Submit and Cancel Buttons -->
+                <div class="col-md-12 d-flex gap-3">
                     <button
                         type="submit"
-                        class="btn btn-primary"
-                        style="
-                            padding: 0.7rem 2rem !important;
-                            font-weight: 600;
-                            margin-left: auto;
-                        "
+                        class="btn btn-primary px-5"
+                        style="margin-left: auto"
                     >
-                        {{ buttonLabel }}
+                        Save
                     </button>
                     <button
                         class="px-5 btn btn-secondary"
@@ -227,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { watch, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
@@ -259,7 +219,6 @@ const alert = ref({
     pageLink: "",
 });
 
-const buttonLabel = ref("Save");
 let visitorInfo;
 
 // Form status and breadcrumbs
@@ -311,7 +270,6 @@ const onSubmit = async () => {
 
 const fetchVisitor = async () => {
     if (formStatus.startsWith("edit")) {
-        buttonLabel.value = "Update";
         const id = breadCrumbs.value[1];
         visitorInfo = await getSingleVisitor({ id });
         first_name.value = visitorInfo.first_name;
@@ -319,6 +277,7 @@ const fetchVisitor = async () => {
         last_name.value = visitorInfo.last_name;
         msisdn.value = visitorInfo.msisdn;
         email.value = visitorInfo.email;
+        address.value = visitorInfo.address;
     }
 };
 
@@ -381,7 +340,6 @@ const resetForm = () => {
     msisdn.value = "";
     email.value = "";
     address.value = "";
-    buttonLabel.value = "Save";
 
     // Remove validation classes
     const form = document.querySelector(".needs-validation");

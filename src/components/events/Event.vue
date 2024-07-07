@@ -66,6 +66,10 @@ const state = ref("details");
 const participants = ref("loading");
 const modalData = ref({});
 
+const props = defineProps({
+    breadCrumbs: Array,
+});
+
 onMounted(async () => {
     getEvent();
     getParticipants();

@@ -12,24 +12,23 @@ import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import DataTables from "datatables.net-dt";
 import "datatables.net-responsive-dt";
+import { getEvents } from "@/assets/js/index.js";
 
 const events = ref([]);
 const router = useRouter();
 const MAX_DETAIL_LEN = 30;
 const dataTable = ref(null);
-const loader = ref(false);
 
-const props = defineProps({
-    refresh: Boolean,
-});
+const refresh = defineModel("refreshEvents");
 
 const emit = defineEmits(["refreshComplete"]);
 
 // Watch Refresh Prop to refresh events accordingly
-watch(
-    () => props.refresh,
-    () => emit("refreshComplete")
-);
+watch(refresh, async () => {
+    events.value = [];
+    await getEvents();
+    emit("refreshComplete");
+});
 
 const initializeDataTable = () => {
     dataTable.value = new DataTables("#eventTable", {
@@ -38,6 +37,7 @@ const initializeDataTable = () => {
             url: `http://localhost:3000/api/events`,
             type: "GET",
             data: (query) => {
+                console.log({ query });
                 const order =
                     query.columns[query.order[0].column].data === "date"
                         ? "date_time"
@@ -58,10 +58,9 @@ const initializeDataTable = () => {
                 });
 
                 events.value = json.data;
-                loader.value = false;
                 return events.value;
             },
-            error: (xhr, error, thrown) => {
+            error: (error) => {
                 console.log("Error fetching data:", error);
             },
         },
@@ -71,7 +70,7 @@ const initializeDataTable = () => {
             { data: "start_date", title: "Start Date" },
             { data: "end_date", title: "End Date" },
             { data: "facilitator", title: "Facilitator" },
-            { data: "event_type", title: "Type" },
+            { data: "type", title: "Type" },
             { data: "details", title: "Details" },
         ],
         responsive: true,
@@ -85,7 +84,6 @@ const initializeDataTable = () => {
     dataTable.value.on("click", "tr", function () {
         const rowData = dataTable.value.row(this).data();
         if (rowData) {
-            console.log(rowData.id);
             displayEventPage(rowData.id);
         }
     });

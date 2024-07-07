@@ -1,24 +1,89 @@
 <template>
-    <div class="w-75 d-flex flex-column align-items-center">
+    <Modal
+        :data="{
+            title: alert.title,
+            message: alert.message,
+            status: alert.status,
+            pageLink: alert.pageLink,
+        }"
+    />
+    <div class="d-flex flex-column container">
         <div
-            class="d-flex justify-content-between align-items-center mt-4 w-75"
+            class="d-flex justify-content-between align-items-center container p-0 mx-auto"
+            style="margin: 2rem auto"
         >
             <BreadCrumbs
                 class="mb-3"
                 :breadCrumbs="['Events', eventId, 'AddParticipant']"
             />
         </div>
-        <form
-            @submit.prevent="postParticipant"
-            @input="validateParticipant"
-            class="form-control w-75 container gap-5 p-4"
-        >
-            <div class="row mb-3">
-                <div class="col">
-                    <label class="p-2 is-required" for="firstName">
-                        First Name:
+
+        <div class="form-control input" style="padding: 3rem">
+            <form
+                class="row g-3 needs-validation"
+                novalidate
+                @submit.prevent="postParticipant"
+            >
+                <!-- FIRST NAME -->
+                <div class="col-md-6">
+                    <label for="first_name" class="form-label is-required">
+                        First name
                         <span class="visually-hidden">(required)</span>
                     </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="first_name"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="first_name"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Please provide a first name.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PHONE NUMBER -->
+                <div class="col-md-6">
+                    <label for="phone_number" class="form-label is-required">
+                        Phone number
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="tel"
+                            :class="[
+                                validMsisdn && 'validated',
+                                'form-control',
+                            ]"
+                            v-model="msisdn"
+                            id="phone_number"
+                            aria-describedby="inputGroupPrepend"
+                            required
+                            autocomplete="off"
+                        />
+                        <div
+                            :class="[
+                                'invalid-feedback',
+                                validMsisdn && 'show-feedback',
+                            ]"
+                        >
+                            {{ validMsisdnMessage }}
+                        </div>
+                    </div>
+                    <div id="emailHelp" class="form-text">
+                        Phone number should start with 0. For example:
+                        0778675908
+                    </div>
+                </div>
+
+                <!-- MIDDLE NAME -->
+                <div class="col-md-6">
+                    <label for="middle_name" class="form-label"
+                        >Middle name</label
+                    >
                     <input
                         type="text"
                         class="form-control"
@@ -115,25 +180,22 @@
                         :title="participantError.address"
                     />
                 </div>
-                <div class="col">
-                    <label class="p-2 is-required" for="msisdn">
-                        Contact:
-                        <span class="visually-hidden">(required)</span>
-                    </label>
-                    <input
-                        type="tel"
-                        placeholder="0770894295"
-                        class="form-control"
-                        id="msisdn"
-                        v-model="newParticipant.msisdn"
-                        :class="{
-                            'border border-danger': participantError.msisdn,
-                        }"
-                    />
-                    <Alert
-                        v-if="participantError.msisdn"
-                        :title="participantError.msisdn"
-                    />
+
+                <div class="col-md-12 d-flex gap-3">
+                    <div
+                        style="font-weight: 600; margin-left: auto"
+                        class="d-flex gap-3"
+                    >
+                        <button type="submit" class="btn btn-primary px-5">
+                            Save
+                        </button>
+                        <button
+                            class="btn btn-secondary px-5"
+                            @click="router.back()"
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="d-flex gap-3">
@@ -155,15 +217,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import { useRoute } from "vue-router";
-import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
+
+import { ref, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import $ from "jquery";
 
 import { API_URL } from "../../assets/js/index.js";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Alert from "../Alert.vue";
+
+const props = defineProps({
+    breadCrumbs: Object,
+});
 
 // Route and State
 const route = useRoute();
@@ -174,14 +240,79 @@ const msisdn = ref("");
 const email = ref("");
 const address = ref("");
 
-const emptyParticipant = {
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    address: "",
-    email: "",
-    msisdn: "",
-};
+const alert = ref({
+    status: "",
+    title: "",
+    message: "",
+    pageLink: "",
+});
+
+const router = useRouter();
+
+// Form status and breadcrumbs
+const activeBreadCrumbs = ref([]);
+const breadCrumbs = defineModel("breadCrumbs");
+breadCrumbs.value = route.path.split("/").slice(1);
+activeBreadCrumbs.value = breadCrumbs.value;
+const tmp = [...breadCrumbs.value];
+const formStatus = tmp.pop();
+
+const validEmail = ref(false);
+const validMsisdn = ref(false);
+const validMsisdnMessage = ref("Please provide a phone number");
+const validEmailMessage = ref("Please provide a valid email address");
+
+// Functions
+async function postParticipant() {
+    // return if any of the required fields were not given
+    if (
+        !first_name.value ||
+        !last_name.value ||
+        !msisdn.value ||
+        !email.value ||
+        !address.value
+    )
+        return;
+
+    const participant = {
+        first_name: first_name.value,
+        middle_name: middle_name.value,
+        last_name: last_name.value,
+
+        // format Msisdn for backend
+        msisdn: msisdn.value.startsWith("0")
+            ? `231${msisdn.value.slice(1)}`
+            : msisdn.value,
+
+        email: email.value,
+        address: address.value,
+    };
+
+    const body = {
+        event_id: route.params.id,
+        event_participants: [participant],
+    };
+
+    $.ajax({
+        url: API_URL + "event_participants",
+        type: "POST",
+        data: body,
+        success: (res) => {
+            showModal("#alertModal", "#alertModalBody");
+
+            alert.value.status = "success";
+            alert.value.title = "Participant Added";
+            alert.value.pageLink = `/events/${route.params.id}`;
+
+            clearInputs();
+        },
+        error: (error) => {
+            showModal("#alertModal", "#alertModalBody");
+            alert.value.status = "danger";
+            alert.value.title = error.responseJSON.message;
+        },
+    });
+}
 
 const fetchVisitor = async () => {
 	if (formStatus.startsWith("edit")) {
@@ -195,11 +326,6 @@ const fetchVisitor = async () => {
 		email.value = visitorInfo.email;
 	}
 };
-
-const validEmail = ref(false);
-const validMsisdn = ref(false);
-const validMsisdnMessage = ref("Please provide a phone number");
-const validEmailMessage = ref("Please provide a valid email address");
 
 const contactValidation = (number) => {
 	if (!number) {
@@ -320,18 +446,14 @@ function validateParticipant() {
 onMounted(() => {
 	fetchVisitor();
 
-	const form = document.querySelector(".needs-validation");
-	form.addEventListener(
-		"submit",
-		(event) => {
-			if (!form.checkValidity()) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-			form.classList.add("was-validated");
-		},
-		false
-	);
+    $(".needs-validation").on(
+        "submit",
+        (event) => {
+            if (!form.checkValidity()) event.preventDefault();
+            event.target.classList.add("was-validated");
+        },
+        false
+    );
 });
 </script>
 

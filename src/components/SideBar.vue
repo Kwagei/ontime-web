@@ -52,7 +52,7 @@
 import { RouterLink, useRoute } from "vue-router";
 import Icons from "@/components/Icons.vue";
 
-import { watch } from "vue";
+import { ref, watch } from "vue";
 
 const route = useRoute();
 const breadCrumbs = defineModel("breadCrumbs");

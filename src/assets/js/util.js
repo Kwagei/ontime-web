@@ -67,12 +67,17 @@ export const msisdnValidation = (msisdns) => {
             // otherwise format the phone number for the backend
             else contact = `231${contact.slice(1)}`;
         }
-        // return error if it didn't begin with 0 nor 231
-        else {
-            return {
-                valid: false,
-                message: "Phone number should start with `231` or `0`",
-            };
+
+        const contactRange = contactNumber.length;
+
+        // Check if contact number starts with either of the serviceCode elements.
+        const validCode = serviceCode.some((val) =>
+            contactNumber.startsWith(val)
+        );
+
+        // Msisdn range must be 9 digits.
+        if (contactRange !== 9 || !validCode || !contactNumber) {
+            return { valid: false, message: "Invalid phone number!" };
         }
     }
 

@@ -15,8 +15,7 @@
             </div>
         </div>
         <EventsTable
-            :searchQuery="searchQuery"
-            :refresh="refresh"
+            v-model:refreshEvents="refresh"
             @refreshComplete="stopEventsRefresh"
         />
     </div>

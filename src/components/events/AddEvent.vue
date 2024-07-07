@@ -21,7 +21,7 @@
             <hr class="text-center w-75" />
         </h3>
 
-        <div class="p-4 mt-1 input form-control">
+        <div class="form-control input" style="margin: auto; padding: 3rem">
             <form
                 @submit.prevent="mode == 'add' ? postEvent() : putEvent()"
                 id="eventsFormWrapper"
@@ -165,21 +165,30 @@
                     <Alert :title="endDateError" />
                 </div>
 
-                <!-- Rooms -->
-                <div>
-                    <label for="roomInput" class="form-label is-required">
-                        Rooms
-                        <span class="visually-hidden">(required)</span>
-                    </label>
-                    <select
-                        class="form-select"
-                        :class="{
-                            border: roomError,
-                            'border-danger': roomError,
-                        }"
-                        aria-label="Select Event Type"
-                        required
-                        v-model="room"
+                <!-- DETAILS -->
+                <div class="col-md-6">
+                    <label for="detail" class="form-label">Details</label>
+                    <div class="input-group">
+                        <textarea
+                            placeholder="Enter details..."
+                            class="form-control"
+                            id="detailsTextarea"
+                            v-model="details"
+                            rows="2"
+                        ></textarea>
+
+                        <div class="invalid-feedback">
+                            Please enter event details.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TYPE -->
+                <div class="col-md-6">
+                    <label for="type" class="form-label is-required"
+                        >Type<span class="visually-hidden">
+                            (required)</span
+                        ></label
                     >
                         <option v-for="room in rooms" :value="room.name">
                             {{ room.name }}
@@ -189,63 +198,19 @@
                     <Alert :title="roomError" />
                 </div>
 
-                <!-- Details -->
-                <div>
-                    <label for="detailsTextarea" class="form-label"
-                        >Details</label
-                    >
-                    <textarea
-                        placeholder="Enter details..."
-                        class="form-control"
-                        id="detailsTextarea"
-                        :class="{
-                            border: detailsError,
-                            'border-danger': detailsError,
-                        }"
-                        v-model="details"
-                        rows="4"
-                    ></textarea>
-
-                    <Alert :title="detailsError" />
-                </div>
-
-                <!-- Type -->
-                <div>
-                    <label for="typeInput" class="form-label is-required">
-                        Type
-                        <span class="visually-hidden">(required)</span>
-                    </label>
-                    <select
-                        class="form-select"
-                        v-model="type"
-                        :class="{
-                            border: typeError,
-                            'border-danger': typeError,
-                        }"
-                        aria-label="Select Event Type"
-                        required
-                    >
-                        <option value="Course">Course</option>
-                        <option value="Conference">Conference</option>
-                        <option value="Hackathon">Hackathon</option>
-                        <option value="Workshop">Workshop</option>
-                        <option value="Excursion">Excursion</option>
-                    </select>
-
-                    <Alert :title="typeError" />
-                </div>
-
-                <div class="d-flex gap-3">
+                <div class="col-md-12 d-flex gap-3">
                     <button
                         @click="mode == 'add' ? postEvent() : putEvent()"
                         class="btn btn-primary px-5 py-2"
                         type="submit"
+                        style="margin-left: auto"
+                        class="btn btn-primary px-5"
                     >
                         Save
                     </button>
                     <button
+                        class="btn btn-secondary px-5"
                         @click="router.back()"
-                        class="btn btn-secondary px-5 py-2"
                     >
                         Cancel
                     </button>

@@ -72,6 +72,11 @@ const options = {
             Please click the add participant or import participants button to create new participants.
         </div>
         `,
+		loadingRecords: `<div class="d-flex justify-content-center p-4">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        </div>`,
 	},
 	order: [[0, "desc"]],
 	destroy: true,

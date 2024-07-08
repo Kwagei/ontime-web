@@ -77,8 +77,8 @@ const options = {
 
 			json.recordsTotal = length;
 			json.recordsFiltered = length;
-			return [];
-			return formatDateTime(visits);
+			// return [];
+			// return formatDateTime(visits);
 		},
 
 		error: (xhr, error, thrown) => {
@@ -90,13 +90,18 @@ const options = {
 	language: {
 		searchPlaceholder: "Search ...",
 		search: "",
-		zeroRecords: `
-         <div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
+		emptyTable: `
+        <div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
             No Visits to show!
             <svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M82.5 37.5V35l-15-15H60v-3.75A1.25 1.25 0 0058.75 15h-2.5A1.25 1.25 0 0055 16.25V20H40v-3.75A1.25 1.25 0 0038.75 15h-2.5A1.25 1.25 0 0035 16.25V20h-7.5l-15 15v2.5h5V85H15v2.5h65V85h-2.5V37.5zM35 77.5H25V70a5 5 0 015-5 5 5 0 015 5zm0-25H25V45a5 5 0 015-5 5 5 0 015 5zM52.5 85h-10V70a5 5 0 015-5 5 5 0 015 5zm0-32.5h-10V45a5 5 0 015-5 5 5 0 015 5zm17.5 25H60V70a5 5 0 015-5 5 5 0 015 5zm0-25H60V45a5 5 0 015-5 5 5 0 015 5z"/></svg>
             Please click the add visit button to create new visits.
         </div>
-        `,
+    `,
+		loadingRecords: `<div class="d-flex justify-content-center p-4">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        </div>`,
 	},
 
 	order: [[0, "desc"]],
@@ -134,7 +139,7 @@ const handleCheckout = async (id, target) => {
 
 const table = ref();
 
-const handleVisitorDetail = () => {
+const handleCheckoutDetail = () => {
 	const dt = table.value.dt;
 
 	dt.on("click", "tr", function (event) {
@@ -182,7 +187,7 @@ const formatItems = (belonging) => {
 };
 
 onMounted(async () => {
-	handleVisitorDetail();
+	handleCheckoutDetail();
 });
 </script>
 

@@ -412,7 +412,9 @@ function clearInputs() {
 	endDate.value = "";
 	type.value = "";
 	hosts.value = "";
+	hostValue = "";
 	rooms.value = "";
+	roomValue = "";
 	details.value = "";
 
 	document
@@ -515,13 +517,4 @@ a:hover {
 #eventsWrapper {
 	gap: 1.5rem;
 }
-
-/* #eventsFormWrapper {
-	outline: 1px solid #aaa;
-	border-radius: 5px;
-	display: grid;
-	grid-template-columns: repeat(2, 0.5fr);
-	gap: 30px;
-	background-color: #fff;
-} */
 </style>

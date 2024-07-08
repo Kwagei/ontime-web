@@ -237,6 +237,25 @@ export const getHosts = async (id) => {
 	} catch (error) {}
 };
 
+export const getRooms = async (id) => {
+	try {
+		let url = `${API_URL}rooms`;
+
+		if (id) {
+			url += `/${id}`;
+		}
+
+		const response = await fetch(url);
+
+		if (!response.ok) {
+			throw new Error("Network response was not ok");
+		}
+		const { data: rooms } = await response.json();
+
+		return rooms;
+	} catch (error) {}
+};
+
 export const registerHost = async (data) => {
 	try {
 		const options = {
@@ -257,6 +276,26 @@ export const registerHost = async (data) => {
 	}
 };
 
+export const registerRoom = async (data) => {
+	try {
+		const options = {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		};
+
+		const response = await fetch(`${API_URL}rooms`, options);
+
+		const result = await response.json();
+
+		return { ok: response.ok, result };
+	} catch (error) {
+		console.error("Error:", error);
+	}
+};
+
 export const editHost = async (id, data) => {
 	try {
 		const options = {
@@ -268,6 +307,26 @@ export const editHost = async (id, data) => {
 		};
 
 		const response = await fetch(`${API_URL}hosts/${id}`, options);
+
+		const result = await response.json();
+
+		return { ok: response.ok, result };
+	} catch (error) {
+		console.error("Error:", error);
+	}
+};
+
+export const editRoom = async (id, data) => {
+	try {
+		const options = {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		};
+
+		const response = await fetch(`${API_URL}rooms/${id}`, options);
 
 		const result = await response.json();
 

@@ -169,28 +169,45 @@
 				</div>
 
 				<!-- ROOM -->
-				<div class="col-md-6">
+				<div class="dropdown col-md-6">
 					<label for="room" class="form-label is-required"
 						>Room<span class="visually-hidden">
 							(required)</span
 						></label
 					>
+
 					<div class="input-group has-validation">
-						<select
-							class="form-select"
-							v-model="room"
-							aria-label="Select Event Type"
+						<input
+							type="text"
+							class="form-control"
+							id="facilitatorInput"
+							:id="roomID"
+							:value="roomValue"
+							aria-expanded="false"
+							data-bs-toggle="dropdown"
+							autocomplete="off"
 							required
-						>
-							<option value="FabLab">FabLab</option>
-							<option value="Super Coders">Super Coders</option>
-							<option value="Conference Hall">
-								Conference Hall
-							</option>
-						</select>
+						/>
+						<ul class="dropdown-menu w-100">
+							<template v-for="room in rooms">
+								<li
+									class="dropdown-item"
+									:value="room.id"
+									@click="updateRoomTerm(room)"
+								>
+									{{ room.name }}
+								</li>
+							</template>
+							<router-link
+								:to="{ name: 'new-room' }"
+								class="text-primary"
+							>
+								<li class="dropdown-item">create new room</li>
+							</router-link>
+						</ul>
 
 						<div class="invalid-feedback">
-							Please select a room.
+							Please provide a host.
 						</div>
 					</div>
 				</div>
@@ -261,7 +278,7 @@
 import { ref, onMounted } from "vue";
 import $ from "jquery";
 
-import { API_URL, getHosts } from "../../assets/js/index.js";
+import { API_URL, getHosts, getRooms } from "../../assets/js/index.js";
 
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
@@ -277,8 +294,9 @@ const endDate = ref("");
 const hostValue = ref("");
 const hostID = ref("");
 const hosts = ref("");
-const room = ref("");
+const roomValue = ref("");
 const roomID = ref("");
+const rooms = ref("");
 const type = ref("");
 const details = ref("");
 const buttonLabel = ref("Save");
@@ -322,6 +340,13 @@ const activeBreadCrumbs = ref(
 const updateHostTerm = (host) => {
 	hostValue.value = host.name;
 	hostID.value = host.id;
+	console.log(hostID);
+};
+
+const updateRoomTerm = (room) => {
+	roomValue.value = room.name;
+	roomID.value = room.id;
+	console.log(roomID);
 };
 
 const onSubmit = async () => {
@@ -332,7 +357,7 @@ const onSubmit = async () => {
 		!endDate.value ||
 		!type.value ||
 		!hostValue.value ||
-		!room.value
+		!roomValue.value
 	) {
 		return;
 	}
@@ -343,8 +368,8 @@ const onSubmit = async () => {
 		start_date: startDate.value,
 		end_date: endDate.value,
 		type: type.value,
-		host: hostValue.value,
-		room: room.value,
+		host: hostID.value,
+		room: roomID.value,
 		details: details.value,
 	};
 
@@ -387,7 +412,7 @@ function clearInputs() {
 	endDate.value = "";
 	type.value = "";
 	hosts.value = "";
-	room.value = "";
+	rooms.value = "";
 	details.value = "";
 
 	document
@@ -425,6 +450,7 @@ onMounted(async () => {
 		false
 	);
 	hosts.value = await getHosts();
+	rooms.value = await getRooms();
 });
 
 function setMode() {
@@ -442,7 +468,7 @@ async function getEventToEdit() {
 			details.value = retrievedEvent.details;
 			hostValue.value = retrievedEvent.host;
 			hostID.value = retrievedEvent.host_id;
-			room.value = retrievedEvent.room;
+			roomValue.value = retrievedEvent.room;
 			roomID.value = retrievedEvent.room_id;
 
 			// format date before setting it as the value

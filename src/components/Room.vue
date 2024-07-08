@@ -40,96 +40,23 @@
 							required
 						/>
 						<div class="invalid-feedback">
-							Please provide a host name.
+							Please provide a room name.
 						</div>
 					</div>
 				</div>
 
-				<!-- HOST TYPE -->
+				<!-- CODE -->
 				<div class="col-md-6">
-					<label for="host_type" class="form-label is-required"
-						>Host Type<span class="visually-hidden">
-							(required)</span
-						></label
-					>
-					<div class="form-check">
-						<input
-							class="form-check-input"
-							type="radio"
-							name="flexRadioDefault"
-							id="flexRadioDefault2"
-							value="c"
-							@click="updateHostType('Company')"
-							checked
-						/>
-						<label class="form-check-label" for="flexRadioDefault2">
-							Company
-						</label>
-					</div>
-					<div class="form-check">
-						<input
-							class="form-check-input"
-							type="radio"
-							name="flexRadioDefault"
-							id="flexRadioDefault1"
-							@click="updateHostType('Individual')"
-						/>
-						<label class="form-check-label" for="flexRadioDefault1">
-							Individual
-						</label>
-					</div>
-				</div>
-
-				<!-- PHONE NUMBER -->
-				<div class="col-md-6">
-					<label for="phone_number" class="form-label is-required"
-						>Phone number<span class="visually-hidden">
-							(required)</span
-						></label
-					>
+					<label for="code" class="form-label">Code </label>
 					<div class="input-group has-validation">
 						<input
 							type="tel"
-							:class="[
-								validMsisdn && 'validated',
-								'form-control',
-							]"
-							v-model="msisdn"
-							id="phone_number"
+							class="form-control"
+							v-model="code"
+							id="code"
 							aria-describedby="inputGroupPrepend"
-							required
 							autocomplete="off"
 						/>
-						<div
-							:class="[
-								'invalid-feedback',
-								validMsisdn && 'show-feedback',
-							]"
-						>
-							{{ validMsisdnMessage }}
-						</div>
-					</div>
-					<div id="emailHelp" class="form-text">
-						Phone number should start with 0. For example:
-						0778675908
-					</div>
-				</div>
-
-				<!-- DETAILS -->
-				<div class="col-md-6">
-					<label for="detail" class="form-label">Details</label>
-					<div class="input-group">
-						<textarea
-							placeholder="Enter details..."
-							class="form-control"
-							id="detailsTextarea"
-							v-model="details"
-							rows="2"
-						></textarea>
-
-						<div class="invalid-feedback">
-							Please enter event details.
-						</div>
 					</div>
 				</div>
 
@@ -151,18 +78,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import Modal from "../components/Modal.vue";
-import { registerHost, editHost, getHosts } from "@/assets/js/index.js";
-import { msisdnValidation, showModal } from "@/assets/js/util.js";
+import { registerRoom, editRoom, getRooms } from "@/assets/js/index.js";
+import { showModal } from "@/assets/js/util.js";
 // Route and State
 const route = useRoute();
 const name = ref("");
-const msisdn = ref("");
-const details = ref("");
-const type = ref("Company");
+const code = ref("");
 
 const alert = ref({
 	status: "",
@@ -171,7 +96,7 @@ const alert = ref({
 });
 
 const buttonLabel = ref("Save");
-let hostInfo;
+let roomInfo;
 
 // Form status and breadcrumbs
 const activeBreadCrumbs = ref([]);
@@ -183,24 +108,19 @@ const formStatus = tem.pop();
 
 // Functions
 const onSubmit = async () => {
-	if (!name.value || !msisdn.value) {
+	if (!name.value) {
 		return;
 	}
 
-	const host = {
+	const room = {
 		name: name.value,
-		msisdn: msisdn.value.startsWith("0")
-			? `231${msisdn.value.slice(1)}`
-			: msisdn.value,
-		details: details.value,
-		type: type.value,
+		code: code.value,
 	};
 
 	const response = formStatus.startsWith("new")
-		? await registerHost(host)
-		: await editHost(hostInfo.id, host);
+		? await registerRoom(room)
+		: await editRoom(roomInfo.id, room);
 
-	console.log(response);
 	showModal("#alertModal", "#alertModalBody");
 
 	alert.value.status = response.ok ? "success" : "danger";
@@ -213,48 +133,20 @@ const onSubmit = async () => {
 	}
 };
 
-watch(
-	() => msisdn.value,
-	(n) => contactValidation(n)
-);
-
-const fetchHost = async () => {
+const fetchRoom = async () => {
 	if (formStatus.startsWith("edit")) {
 		buttonLabel.value = "Update";
 		const id = breadCrumbs.value[1];
-		hostInfo = await getHosts({ id });
+		roomInfo = await getRooms({ id });
 
-		name.value = hostInfo.name;
-		msisdn.value = hostInfo.msisdn;
-		details.value = hostInfo.details;
-	}
-};
-
-const validMsisdn = ref(false);
-const validMsisdnMessage = ref("Please provide a phone number");
-
-const contactValidation = (number) => {
-	if (!number) {
-		validMsisdn.value = false;
-		validMsisdnMessage.value = "Please provide a phone number";
-
-		return;
-	}
-
-	const isValid = msisdnValidation([number]);
-
-	if (!isValid.valid) {
-		validMsisdn.value = true;
-		validMsisdnMessage.value = isValid.message;
-	} else {
-		validMsisdn.value = false;
+		name.value = roomInfo.name;
+		code.value = roomInfo.code;
 	}
 };
 
 const resetForm = () => {
 	name.value = "";
-	msisdn.value = "";
-	details.value = "";
+	code.value = "";
 	buttonLabel.value = "Save";
 
 	// Remove validation classes
@@ -264,7 +156,7 @@ const resetForm = () => {
 
 // Lifecycle Hooks
 onMounted(() => {
-	fetchHost();
+	fetchRoom();
 
 	const form = document.querySelector(".needs-validation");
 	form.addEventListener(
@@ -279,10 +171,6 @@ onMounted(() => {
 		false
 	);
 });
-
-const updateHostType = (hostType) => {
-	type.value = hostType;
-};
 </script>
 
 <style scoped>

@@ -22,6 +22,7 @@ import Users from "../views/Users.vue";
 
 import Dashboard from "../views/Dashboard.vue";
 import Host from "@/components/Host.vue";
+import Room from "@/components/Room.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
@@ -132,6 +133,11 @@ const routes = [
 				path: "new-host",
 				component: Host,
 				name: "new-host",
+			},
+			{
+				path: "new-room",
+				component: Room,
+				name: "new-room",
 			},
 		],
 	},

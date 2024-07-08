@@ -513,7 +513,6 @@ a:hover {
 }
 
 #eventsWrapper {
-	padding-top: 2rem;
 	gap: 1.5rem;
 }
 

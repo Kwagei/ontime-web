@@ -59,6 +59,10 @@ main {
 	display: none !important;
 }
 
+section {
+	padding: 2rem 0;
+}
+
 @media (max-width: 1440px) {
 	aside {
 		width: 15rem;

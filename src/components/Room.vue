@@ -194,7 +194,6 @@ svg {
 }
 
 #visitor-view {
-	padding-top: 2rem;
 	gap: 1.5rem;
 }
 

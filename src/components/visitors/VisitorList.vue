@@ -114,7 +114,6 @@ const initializeDataTable = () => {
 				});
 
 				visitors.value = data;
-				console.log(visitors.value);
 				return visitors.value;
 			},
 			error: (xhr, error, thrown) => {

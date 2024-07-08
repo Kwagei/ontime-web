@@ -1,9 +1,5 @@
 <template>
-	<div
-		data-v-b3773347=""
-		id="visitor-view"
-		class="d-flex flex-column container"
-	>
+	<div id="visitor-view" class="d-flex flex-column container">
 		<div
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
 			style="margin-top: 0.3rem"

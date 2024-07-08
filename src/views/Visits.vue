@@ -97,7 +97,6 @@ refresh.value = false;
 
 <style scoped>
 #visit-view {
-	padding-top: 2rem;
 	gap: 1.5rem;
 }
 

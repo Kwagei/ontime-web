@@ -59,7 +59,6 @@ svg {
 
 #eventsWrapper {
 	gap: 1.5rem;
-	padding-top: 2rem;
 }
 
 .btn {

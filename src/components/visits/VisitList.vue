@@ -77,8 +77,7 @@ const options = {
 
 			json.recordsTotal = length;
 			json.recordsFiltered = length;
-			// return [];
-			// return formatDateTime(visits);
+			return formatDateTime(visits);
 		},
 
 		error: (xhr, error, thrown) => {

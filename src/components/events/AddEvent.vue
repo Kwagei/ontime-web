@@ -340,13 +340,11 @@ const activeBreadCrumbs = ref(
 const updateHostTerm = (host) => {
 	hostValue.value = host.name;
 	hostID.value = host.id;
-	console.log(hostID);
 };
 
 const updateRoomTerm = (room) => {
 	roomValue.value = room.name;
 	roomID.value = room.id;
-	console.log(roomID);
 };
 
 const onSubmit = async () => {
@@ -392,8 +390,7 @@ const onSubmit = async () => {
 				data.data.length ? data.data[0].id : data.data.id
 			}`;
 
-			clearInputs();
-			clearErrors();
+			resetForm();
 		},
 		error: (error) => {
 			showModal("#alertModal", "#alertModalBody");
@@ -404,38 +401,29 @@ const onSubmit = async () => {
 	});
 };
 
-function clearInputs() {
+function resetForm() {
 	// clear inputs
 	title.value = "";
 	facilitator.value = "";
 	startDate.value = "";
 	endDate.value = "";
 	type.value = "";
-	hosts.value = "";
-	hostValue = "";
-	rooms.value = "";
-	roomValue = "";
+	hostValue.value = "";
+	roomValue.value = "";
 	details.value = "";
 
-	document
-		.querySelector(".needs-validation")
-		.classList.remove("was-validated");
-}
-
-function clearErrors() {
-	// clear errors
-	titleError.value = "";
-	facilitatorError.value = "";
-	startDateError.value = "";
-	endDateError.value = "";
-	typeError.value = "";
-	detailsError.value = "";
+	// Remove validation classes
+	const form = document.querySelector(".needs-validation");
+	form.classList.remove("was-validated");
 }
 
 // Lifecycle Hooks
 onMounted(async () => {
 	// get event to edit if we're trying to edit
 	if (mode == "edit") await getEventToEdit();
+
+	hosts.value = await getHosts();
+	rooms.value = await getRooms();
 
 	("use strict");
 
@@ -451,8 +439,6 @@ onMounted(async () => {
 		},
 		false
 	);
-	hosts.value = await getHosts();
-	rooms.value = await getRooms();
 });
 
 function setMode() {

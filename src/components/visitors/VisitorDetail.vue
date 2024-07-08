@@ -111,19 +111,17 @@ import { API_URL } from "@/assets/js";
 DataTable.use(DataTablesCore);
 
 import { useRoute } from "vue-router";
-import { ref, onMounted, watch } from "vue";
+import { ref } from "vue";
 import { RouterLink } from "vue-router";
 
-const loader = ref(true);
 const edit = "pencil";
 
-const route = useRoute();
 const breadCrumbs = defineModel("breadCrumbs");
 breadCrumbs.value = route.path.split("/").slice(1);
 
+const route = useRoute();
 const id = ref(route.params.id);
 const visitorInfo = ref("");
-const dataTable = ref(null);
 
 const columns = [
 	{ data: "date", title: "Date" },

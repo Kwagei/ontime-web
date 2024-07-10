@@ -13,30 +13,38 @@
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    <div v-else class="w-100 d-flex flex-column align-items-center">
+    <!-- Dont' change the margin on this div! -->
+    <div
+        v-else
+        class="d-flex flex-column align-items-center"
+        style="margin-top: -2rem; margin-left: -50rem; margin-right: -50rem"
+    >
         <EventTitle :title="event.title" />
-        <EventDetails
-            :event="event"
-            v-model:participants="participants"
-            v-if="state == 'details'"
-            @switch="switchState"
-            @displayEventParticipants="switchState"
-            @editEvent="editEvent"
-        />
-        <AddParticipant
-            v-if="state == 'addParticipant'"
-            @switch="switchState"
-            @participantAdded="setModalData"
-            @errorCreatingParticipant="setModalData"
-        />
-        <ImportParticipant
-            v-if="state == 'importParticipants'"
-            :eventId="eventId"
-            :eventTitle="event.title"
-            @switch="switchState"
-            @participantsImported="setModalData"
-            @errorImportingParticipants="setModalData"
-        />
+        <!-- don't change the width on this div -->
+        <div style="width: 45%">
+            <EventDetails
+                :event="event"
+                v-model:participants="participants"
+                v-if="state == 'details'"
+                @switch="switchState"
+                @displayEventParticipants="switchState"
+                @editEvent="editEvent"
+            />
+            <AddParticipant
+                v-if="state == 'addParticipant'"
+                @switch="switchState"
+                @participantAdded="setModalData"
+                @errorCreatingParticipant="setModalData"
+            />
+            <ImportParticipant
+                v-if="state == 'importParticipants'"
+                :eventId="eventId"
+                :eventTitle="event.title"
+                @switch="switchState"
+                @participantsImported="setModalData"
+                @errorImportingParticipants="setModalData"
+            />
+        </div>
     </div>
 </template>
 
@@ -51,8 +59,8 @@ import EventDetails from "./EventDetails.vue";
 import EventTitle from "./EventTitle.vue";
 import Modal from "../Modal.vue";
 
-import { API_URL } from "@/assets/js";
-import { showModal } from "@/assets/js/util";
+import { API_URL } from "@/assets/js/index.js";
+import { showModal } from "@/assets/js/util.js";
 
 const router = useRouter();
 
@@ -107,15 +115,12 @@ function setModalData(newData) {
     // still tryna understand this part
     // but that's the only way it'll work
     setTimeout(() => {
-        const modal = new boosted.Modal("#exampleModal");
-        modal.show("#toggleMyModal");
-
-        visuallyHideModalBackdrop();
+        showModal("#alertModal", "#alertModalBody");
     }, 500);
 }
 
 function editEvent() {
-    router.push(`/events/${eventId.value}/edit`, {
+    router.push(`/events/${eventId.value}/edit-event`, {
         params: { id: eventId.value },
     });
 }

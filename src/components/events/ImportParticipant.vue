@@ -5,7 +5,7 @@
         @updated="onParticipantUpdate"
         @cancel="participantToEdit = {}"
     />
-    <div style="width: 81%">
+    <div>
         <div
             class="d-flex justify-content-between align-items-center gap-5 mt-3"
         >
@@ -145,6 +145,9 @@ function handleFileImport(event) {
 }
 
 async function onParticipantUpdate(updatedParticipant) {
+    // reactive pointer events when the edit participant form is updated
+    $("body").css("pointer-events", "auto");
+
     participants.value[participantToEdit.value.idx] = updatedParticipant;
 
     // only repost the participants if there was an error
@@ -158,42 +161,52 @@ async function onParticipantUpdate(updatedParticipant) {
 }
 
 async function postParticipants() {
-	$("body").css("pointer-events", "none");
+    $("body").css("pointer-events", "none");
 
-	const data = {
-		event_id: props.eventId,
-		event_participants: participants.value,
-	};
+    const data = {
+        event_id: props.eventId,
+        event_participants: participants.value,
+    };
 
     try {
         await $.post(API_URL + "event_participants/", data, () => {
             // clear participant to edit if all went well
             participantToEdit.value = {};
 
-			$("body").css("pointer-events", "auto");
-			emit("participantsImported", {
-				status: "success",
-				title: "Participants Imported",
-				pageLink: `/events/${eventId}`,
-			});
-		});
-		$("body").css("pointer-events", "auto");
-	} catch (error) {
-		$("body").css("pointer-events", "auto");
-		if (error.responseJSON.status === 500) {
-			emit("errorImportingParticipants", {
-				status: "danger",
-				title: "Error Importing Participants, try again",
-			});
-			return;
-		}
+            $("body").css("pointer-events", "auto");
+            emit("participantsImported", {
+                status: "success",
+                title: "Participants Imported",
+                pageLink: `/events/${eventId}`,
+            });
+        });
+        $("body").css("pointer-events", "auto");
+    } catch (error) {
+        $("body").css("pointer-events", "auto");
 
+        // only show the modal if there was an actual error
+        if (error.responseJSON.status === 500) {
+            emit("errorImportingParticipants", {
+                status: "danger",
+                title: "Unable to Import Participants, try again",
+            });
+            return;
+        }
+
+        // otherwise show the form to edit the specific participant with
+        // issue if it's a conflict or invalid data issue
         participantToEdit.value = {
             errorMessage: error.responseJSON.message,
             participant: error.responseJSON.data.participant,
             idx: error.responseJSON.data.idx,
             status: error.responseJSON.status,
         };
+
+        // stop user from clicking around until the participant has been edited
+        $("body").css("pointer-events", "none");
+
+        // allow them to only click the form
+        $("#editParticipantFormWrapper").css("pointer-events", "auto");
     }
 }
 
@@ -253,26 +266,26 @@ function validateParticipantsCsvFile(result) {
 }
 
 function editParticipant(msisdn) {
-	const idxToEdit = participants.value.findIndex(
-		(participant) => participant.msisdn === msisdn
-	);
+    const idxToEdit = participants.value.findIndex(
+        (participant) => participant.msisdn === msisdn
+    );
 
-	// set a participant to edit and
-	// the form to edit a participant will show
-	// automatically based on the condition at the top of the template
-	participantToEdit.value = {
-		participant: participants.value[idxToEdit],
-		idx: idxToEdit,
-		errorMessage: "",
-	};
+    // set a participant to edit and
+    // the form to edit a participant will show
+    // automatically based on the condition at the top of the template
+    participantToEdit.value = {
+        participant: participants.value[idxToEdit],
+        idx: idxToEdit,
+        errorMessage: "",
+    };
 }
 
 function deleteParticipant(msisdn) {
-	const idxToDelete = participants.value.findIndex(
-		(participant) => participant.msisdn === msisdn
-	);
+    const idxToDelete = participants.value.findIndex(
+        (participant) => participant.msisdn === msisdn
+    );
 
-	participants.value.splice(idxToDelete, 1);
+    participants.value.splice(idxToDelete, 1);
 }
 </script>
 

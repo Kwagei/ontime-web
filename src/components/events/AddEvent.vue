@@ -1,15 +1,17 @@
 <template>
     <Modal
         :data="{
-            title: successModalData.title,
-            message: successModalData.message,
-            status: successModalData.status,
-            pageLink: successModalData.pageLink,
+            title: alert.title,
+            message: alert.message,
+            status: alert.status,
+            pageLink: alert.pageLink,
         }"
     />
     <div id="eventsWrapper" class="d-flex flex-column container">
         <div class="d-flex justify-content-between">
-            <BreadCrumbs v-model:breadCrumbs="activeBreadCrumbs" />
+            <div>
+                <BreadCrumbs v-model:breadCrumbs="activeBreadCrumbs" />
+            </div>
         </div>
 
         <h3
@@ -17,152 +19,194 @@
             class="text-center mt-3 d-flex align-items-center flex-column text-danger"
             style="margin-bottom: -21px"
         >
-            Unable to get event to edit, please try again!
+            Error getting event to edit, please try again!
             <hr class="text-center w-75" />
         </h3>
 
         <div class="form-control input" style="margin: auto; padding: 3rem">
             <form
-                @submit.prevent="mode == 'add' ? postEvent() : putEvent()"
-                id="eventsFormWrapper"
-                novalidate
                 class="row g-3 needs-validation"
+                novalidate
+                @submit.prevent="onSubmit"
             >
-                <!-- Title -->
-                <div>
-                    <label for="titleInput" class="form-label is-required">
-                        Title
-                        <span class="visually-hidden">(required)</span>
-                    </label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        :class="{
-                            border: titleError,
-                            'border-danger': titleError,
-                        }"
-                        id="titleInput"
-                        placeholder="Title"
-                        v-model="title"
-                        required
-                    />
-
-                    <Alert :title="titleError" />
-                </div>
-
-                <!-- Facilitator -->
-                <div>
-                    <label
-                        for="facilitatorInput"
-                        class="form-label is-required"
+                <!-- TITLE -->
+                <div class="col-md-6">
+                    <label for="title" class="form-label is-required"
+                        >Title<span class="visually-hidden">
+                            (required)</span
+                        ></label
                     >
-                        Facilitator
-                        <span class="visually-hidden">(required)</span>
-                    </label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="facilitatorInput"
-                        :class="{
-                            border: facilitatorError,
-                            'border-danger': facilitatorError,
-                        }"
-                        placeholder="Facilitator"
-                        v-model="facilitator"
-                        required
-                    />
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="title"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="title"
+                            required
+                        />
 
-                    <Alert :title="facilitatorError" />
+                        <div class="invalid-feedback">
+                            Please provide a title.
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Start Date -->
-                <div>
-                    <label for="startDateInput" class="form-label is-required">
-                        Start Date
-                        <span class="visually-hidden">(required)</span>
-                    </label>
-                    <input
-                        type="date"
-                        class="form-control"
-                        id="startDateInput"
-                        :class="{
-                            border: startDateError,
-                            'border-danger': startDateError,
-                        }"
-                        placeholder="Start Date"
-                        v-model="startDate"
-                        required
-                    />
+                <!-- FACILITATOR -->
+                <div class="col-md-6">
+                    <label for="facilitator" class="form-label is-required"
+                        >Facilitator<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="facilitator"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="facilitator"
+                            required
+                        />
 
-                    <Alert :title="startDateError" />
+                        <div class="invalid-feedback">
+                            Please provide a facilitator.
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Host -->
-                <div class="dropdown">
-                    <label for="typeInput" class="form-label is-required">
-                        Host
-                        <span class="visually-hidden">(required)</span>
-                    </label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="hostInput"
-                        :class="{
-                            'border border-danger': hostError,
-                        }"
-                        :id="hostID"
-                        :value="hostValue"
-                        aria-expanded="false"
-                        data-bs-toggle="dropdown"
-                        autocomplete="off"
-                        required
-                    />
-                    <ul class="dropdown-menu" style="width: 96.75%">
-                        <template v-for="host in hosts">
-                            <li
-                                class="dropdown-item"
-                                :value="host.id"
-                                @click="updateHostTerm(host)"
+                <!-- START DATE -->
+                <div class="col-md-6">
+                    <label for="startDate" class="form-label is-required"
+                        >Start Date<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="startDate"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="startDate"
+                            required
+                        />
+
+                        <div class="invalid-feedback">
+                            Please provide a start date.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HOST -->
+                <div class="dropdown col-md-6">
+                    <label for="first_name" class="form-label is-required"
+                        >Host<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="facilitatorInput"
+                            :id="hostID"
+                            :value="hostValue"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            autocomplete="off"
+                            required
+                        />
+                        <ul class="dropdown-menu w-100">
+                            <template v-for="host in hosts">
+                                <li
+                                    class="dropdown-item"
+                                    :value="host.id"
+                                    @click="updateHostTerm(host)"
+                                >
+                                    {{ host.name }}
+                                </li>
+                            </template>
+                            <router-link
+                                :to="{ name: 'new-host' }"
+                                class="text-primary"
                             >
-                                {{ host.name }}
-                            </li>
-                        </template>
-                        <router-link
-                            :to="{ name: 'new-host' }"
-                            class="text-primary"
-                        >
-                            <li
-                                class="dropdown-item"
-                                v-if="!hosts || !hosts[index + 1]"
-                            >
-                                create new host
-                            </li>
-                        </router-link>
-                    </ul>
+                                <li class="dropdown-item">create new host</li>
+                            </router-link>
+                        </ul>
 
-                    <Alert :title="hostError" />
+                        <div class="invalid-feedback">
+                            Please provide a host.
+                        </div>
+                    </div>
                 </div>
 
-                <!-- End Date -->
-                <div>
-                    <label for="endDateInput" class="form-label is-required">
-                        End Date
-                        <span class="visually-hidden">(required)</span>
-                    </label>
-                    <input
-                        type="date"
-                        class="form-control"
-                        id="endDateInput"
-                        :class="{
-                            border: endDateError,
-                            'border-danger': endDateError,
-                        }"
-                        placeholder="End Date"
-                        v-model="endDate"
-                        required
-                    />
+                <!-- END DATE -->
+                <div class="col-md-6">
+                    <label for="endDate" class="form-label is-required"
+                        >End Date<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="date"
+                            class="form-control"
+                            id="endDate"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="endDate"
+                            required
+                        />
 
-                    <Alert :title="endDateError" />
+                        <div class="invalid-feedback">
+                            Please provide an end date.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROOM -->
+                <div class="dropdown col-md-6">
+                    <label for="room" class="form-label is-required"
+                        >Room<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="facilitatorInput"
+                            :id="roomID"
+                            :value="roomValue"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            autocomplete="off"
+                            required
+                        />
+                        <ul class="dropdown-menu w-100">
+                            <template v-for="room in rooms">
+                                <li
+                                    class="dropdown-item"
+                                    :value="room.id"
+                                    @click="updateRoomTerm(room)"
+                                >
+                                    {{ room.name }}
+                                </li>
+                            </template>
+                            <router-link
+                                :to="{ name: 'new-room' }"
+                                class="text-primary"
+                            >
+                                <li class="dropdown-item">create new room</li>
+                            </router-link>
+                        </ul>
+
+                        <div class="invalid-feedback">
+                            Please provide a host.
+                        </div>
+                    </div>
                 </div>
 
                 <!-- DETAILS -->
@@ -174,7 +218,7 @@
                             class="form-control"
                             id="detailsTextarea"
                             v-model="details"
-                            rows="2"
+                            rows="3"
                         ></textarea>
 
                         <div class="invalid-feedback">
@@ -190,27 +234,36 @@
                             (required)</span
                         ></label
                     >
-                        <option v-for="room in rooms" :value="room.name">
-                            {{ room.name }}
-                        </option>
-                    </select>
+                    <div class="input-group has-validation">
+                        <select
+                            class="form-select"
+                            v-model="type"
+                            aria-label="Select Event Type"
+                            required
+                        >
+                            <option value="Course">Course</option>
+                            <option value="Conference">Conference</option>
+                            <option value="Workshop">Workshop</option>
+                            <option value="Hackathon">Hackathon</option>
+                        </select>
 
-                    <Alert :title="roomError" />
+                        <div class="invalid-feedback">
+                            Please select a type.
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-md-12 d-flex gap-3">
                     <button
-                        @click="mode == 'add' ? postEvent() : putEvent()"
-                        class="btn btn-primary px-5 py-2"
                         type="submit"
-                        style="margin-left: auto"
                         class="btn btn-primary px-5"
+                        style="margin-left: auto"
                     >
                         Save
                     </button>
                     <button
-                        class="btn btn-secondary px-5"
                         @click="router.back()"
+                        class="btn btn-secondary px-5"
                     >
                         Cancel
                     </button>
@@ -224,15 +277,10 @@
 import { ref, onMounted } from "vue";
 import $ from "jquery";
 
-import {
-    visuallyHideModalBackdrop,
-    API_URL,
-    getHosts,
-} from "../../assets/js/index.js";
+import { API_URL, getHosts, getRooms } from "../../assets/js/index.js";
 
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
-import Alert from "../Alert.vue";
 import { useRouter } from "vue-router";
 import { showModal } from "@/assets/js/util.js";
 
@@ -249,27 +297,14 @@ const roomID = ref("");
 const rooms = ref("");
 const type = ref("");
 const details = ref("");
-const buttonLabel = ref("Save");
-
-const rooms = ref([]);
 
 // Modal Data
-const successModalData = ref({
+const alert = ref({
     title: "",
     status: "",
     message: "",
     pageLink: "",
 });
-
-// Error Alert Data
-const titleError = ref("");
-const facilitatorError = ref("");
-const startDateError = ref("");
-const endDateError = ref("");
-const typeError = ref("");
-const hostError = ref("");
-const roomError = ref("");
-const detailsError = ref("");
 
 const props = defineProps({
     breadCrumbs: {
@@ -295,113 +330,78 @@ const updateHostTerm = (host) => {
     hostID.value = host.id;
 };
 
-async function postEvent() {
-    const body = {
-        title: title.value,
-        facilitator: facilitator.value,
-        start_date: startDate.value,
-        end_date: endDate.value,
-        type: type.value,
-        host: hostValue.value,
-        room: room.value,
-        details: details.value,
-    };
+const updateRoomTerm = (room) => {
+    roomValue.value = room.name;
+    roomID.value = room.id;
+};
 
-    try {
-        await $.post(API_URL + "events/", body, (data) => {
-            const modal = new boosted.Modal("#exampleModal");
-            modal.show($("#toggleMyModal")[0]);
-
-            // set modal data
-            successModalData.value.message = data.message;
-            successModalData.value.status = "success";
-            successModalData.value.title = "Event Created";
-            successModalData.value.pageLink = `/events/${data.data.id}`;
-
-            visuallyHideModalBackdrop();
-        });
-
-        clearInputs();
-        clearErrors();
-    } catch (error) {
-        console.log("Unable to get event: ", error.responseJSON);
-        clearErrors();
-        displayErrorMessage(error.responseJSON.message);
+const onSubmit = async (event) => {
+    if (
+        !title.value ||
+        !facilitator.value ||
+        !startDate.value ||
+        !endDate.value ||
+        !type.value ||
+        !hostValue.value ||
+        !roomValue.value
+    ) {
+        return;
     }
-}
 
-async function putEvent() {
     const body = {
         title: title.value,
         facilitator: facilitator.value,
         start_date: startDate.value,
         end_date: endDate.value,
         type: type.value,
+        host: hostID.value,
+        room: roomID.value,
         details: details.value,
     };
 
-    // PUT request to Edit the Event with the given
-    // data from the form
+    const options =
+        setMode() === "edit"
+            ? { url: API_URL + `events/${eventId.value}`, type: "PUT" }
+            : { url: API_URL + "events/", type: "POST" };
 
     $.ajax({
-        url: API_URL + `events/${eventId.value}`,
-        type: "PUT",
+        url: options.url,
+        type: options.type,
         data: body,
-        success: () => {
-            clearInputs();
-            clearErrors();
+        success: (data) => {
+            showModal("#alertModal", "#alertModalBody");
 
-            // redirect the user to the edited event page
-            // so they can see the updates
-            router.push({
-                name: "specific-event",
-                params: { id: eventId.value },
-            });
+            alert.value.status = "success";
+            alert.value.title = data.message;
+            alert.value.pageLink = `/events/${
+                data.data.length ? data.data[0].id : data.data.id
+            }`;
+
+            resetForm();
         },
-        error: (err) => {
-            clearErrors();
-            displayErrorMessage(err.responseJSON.message);
+        error: (error) => {
+            showModal("#alertModal", "#alertModalBody");
+            alert.value.status = "danger";
+            alert.value.title = "Error";
+            alert.value.message = error.responseJSON.message;
         },
     });
-}
+};
 
-function displayErrorMessage(msg) {
-    const tmpMsg = msg.toLowerCase();
-
-    if (tmpMsg.includes("title")) titleError.value = msg;
-    else if (tmpMsg.includes("facilitator")) facilitatorError.value = msg;
-    else if (tmpMsg.includes("start date")) startDateError.value = msg;
-    else if (tmpMsg.includes("end date")) endDateError.value = msg;
-    else if (tmpMsg.includes("type")) typeError.value = msg;
-    else if (tmpMsg.includes("host")) hostError.value = msg;
-    else if (tmpMsg.includes("room")) roomError.value = msg;
-    else if (tmpMsg.includes("details")) detailsError.value = msg;
-}
-
-function clearInputs() {
+function resetForm() {
     // clear inputs
     title.value = "";
     facilitator.value = "";
     startDate.value = "";
     endDate.value = "";
     type.value = "";
-    hosts.value = "";
-    room.value = "";
+    hostValue.value = "";
+    roomValue.value = "";
     details.value = "";
 
-    document
-        .querySelector(".needs-validation")
-        .classList.remove("was-validated");
-}
-
-function clearErrors() {
-    // clear errors
-    titleError.value = "";
-    facilitatorError.value = "";
-    startDateError.value = "";
-    endDateError.value = "";
-    typeError.value = "";
-    detailsError.value = "";
+    // Remove validation classes
+    const form = document.querySelector(".needs-validation");
+    form.classList.remove("was-validated");
 }
 
 // Lifecycle Hooks
@@ -409,23 +409,23 @@ onMounted(async () => {
     // get event to edit if we're trying to edit
     if (mode == "edit") await getEventToEdit();
 
+    hosts.value = await getHosts();
+    rooms.value = await getRooms();
+
     ("use strict");
 
-    $(".needs-validation").on(
+    const form = document.querySelector(".needs-validation");
+    form.addEventListener(
         "submit",
         (event) => {
-            if (!form[0].checkValidity()) {
+            if (!form.checkValidity()) {
                 event.preventDefault();
                 event.stopPropagation();
             }
-
-            this.addClass("was-validated");
+            form.classList.add("was-validated");
         },
         false
     );
-
-    hosts.value = await getHosts();
-    getRooms();
 });
 
 function setMode() {
@@ -434,21 +434,17 @@ function setMode() {
 
 async function getEventToEdit() {
     try {
-        $.get(API_URL + `events/${eventId.value}/`, async (data) => {
+        $.get(API_URL + `events/${eventId.value}/`, (data) => {
             const retrievedEvent = data.data[0];
 
             title.value = retrievedEvent.title;
             type.value = retrievedEvent.type;
             facilitator.value = retrievedEvent.facilitator;
             details.value = retrievedEvent.details;
-
-            // initialize host to edit
-            const thisHost = await getHosts(retrievedEvent.host_id);
-            hostValue.value = thisHost[0].name;
-            hostID.value = thisHost[0].id;
-
-            // initialize room to edit
-            getRoomToEdit(retrievedEvent.room_id);
+            hostValue.value = retrievedEvent.host;
+            hostID.value = retrievedEvent.host_id;
+            roomValue.value = retrievedEvent.room;
+            roomID.value = retrievedEvent.room_id;
 
             // format date before setting it as the value
             // start date input field in the form
@@ -464,31 +460,12 @@ async function getEventToEdit() {
 
             errorGettingEventToEdit.value = false;
         }).fail((error) => {
-            console.log("Unable to get event to edit: ", error.responseJSON);
+            console.log("Error getting event to edit: ", error.responseJSON);
             errorGettingEventToEdit.value = true;
         });
     } catch (error) {
-        console.log("Unable to get event to edit: ", error.responseJSON);
+        console.log("Error getting event to edit: ", error.responseJSON);
         errorGettingEventToEdit.value = true;
-    }
-}
-
-async function getRoomToEdit(id) {
-    try {
-        await $.get(
-            API_URL + `rooms/${id}`,
-            (res) => (room.value = res.data.name)
-        );
-    } catch (error) {
-        console.error(error.responseJSON.message);
-    }
-}
-
-async function getRooms() {
-    try {
-        await $.get(API_URL + `rooms`, (res) => (rooms.value = res.data));
-    } catch (error) {
-        console.error(error.responseJSON.message);
     }
 }
 </script>
@@ -511,12 +488,6 @@ a:hover {
 }
 
 #eventsWrapper {
-    padding-top: 2rem;
     gap: 1.5rem;
-}
-
-#eventsFormWrapper {
-    display: grid;
-    grid-template-columns: repeat(2, 0.5fr);
 }
 </style>

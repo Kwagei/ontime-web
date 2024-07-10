@@ -1,5 +1,5 @@
 <template>
-    <div style="width: 81%" class="d-flex align-items-center flex-column">
+    <div class="d-flex align-items-center flex-column">
         <div class="w-100 d-flex justify-content-between gap-4 pt-3">
             <BreadCrumbs :breadCrumbs="['events', event.title]" />
             <div class="d-flex gap-3">
@@ -10,15 +10,18 @@
                     Import Participants
                 </button>
                 <button
+                    id="addParticipantBtn"
                     @click="emit('switch', 'addParticipant')"
                     class="btn btn-primary"
                 >
                     Add Participant
                 </button>
-                <Edit
-                    style="height: 45px; width: 50px; background-color: #ddd"
+                <button
                     @click="$emit('editEvent')"
-                />
+                    class="btn btn-link border border-2"
+                >
+                    <Icons :icon="edit" />
+                </button>
             </div>
         </div>
         <div class="w-100 d-flex justify-content-between gap-4">
@@ -53,7 +56,7 @@
                 <h5 class="mt-2 mb-0">{{ event.details }}</h5>
             </div>
         </div>
-        <EventParticipants @switch="emit('switch', 'addParticipant')" />
+        <EventParticipants />
     </div>
 </template>
 
@@ -65,13 +68,12 @@ import Icons from "../Icons.vue";
 const edit = "pencil";
 
 import { formatDate } from "../../assets/js/index.js";
-import { RouterLink } from "vue-router";
 
 const props = defineProps({
-	event: {
-		type: Object,
-		required: true,
-	},
+    event: {
+        type: Object,
+        required: true,
+    },
 });
 
 const emit = defineEmits(["switch"]);
@@ -79,36 +81,36 @@ const emit = defineEmits(["switch"]);
 
 <style scoped>
 #eventOptionsUL {
-	position: absolute;
-	z-index: 9999;
-	background-color: #eee;
-	list-style: none;
-	border: 2px solid #555;
-	padding: 0;
+    position: absolute;
+    z-index: 9999;
+    background-color: #eee;
+    list-style: none;
+    border: 2px solid #555;
+    padding: 0;
 }
 
 #eventOptionsUL li {
-	padding: 15px;
-	cursor: pointer;
-	font-weight: 800;
+    padding: 15px;
+    cursor: pointer;
+    font-weight: 800;
 }
 
 #eventOptionsUL li:hover {
-	background-color: #ddd;
+    background-color: #ddd;
 }
 
 .editBtn {
-	padding: 0.5rem !important;
+    padding: 0.5rem !important;
 }
 .editBtn:hover {
-	border: 0.125rem solid black !important;
+    border: 0.125rem solid black !important;
 }
 
 .editBtn:hover path {
-	fill: white;
+    fill: white;
 }
 .editBtn svg {
-	height: 1.5rem !important;
-	margin: 0 !important;
+    height: 1.5rem !important;
+    margin: 0 !important;
 }
 </style>

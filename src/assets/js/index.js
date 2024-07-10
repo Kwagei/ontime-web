@@ -3,63 +3,63 @@ import $ from "jquery";
 export const API_URL = import.meta.env.VITE_API_URL;
 
 export const registerVisit = async (data) => {
-	try {
-		const options = {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
-		};
+    try {
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
 
         const response = await fetch(`${API_URL}visits`, options);
 
-		const result = await response.json();
+        const result = await response.json();
 
-		return { ok: response.ok, result };
-	} catch (error) {
-		console.error("Error: ", error);
-	}
+        return { ok: response.ok, result };
+    } catch (error) {
+        console.error("Error: ", error);
+    }
 };
 
 export const registerVisitor = async (data) => {
-	try {
-		const options = {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
-		};
+    try {
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
 
         const response = await fetch(`${API_URL}visitors`, options);
 
-		const result = await response.json();
+        const result = await response.json();
 
-		return { ok: response.ok, result };
-	} catch (error) {
-		console.error("Error:", error);
-	}
+        return { ok: response.ok, result };
+    } catch (error) {
+        console.error("Error:", error);
+    }
 };
 
 export const editVisitor = async (id, data) => {
-	try {
-		const options = {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
-		};
+    try {
+        const options = {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
 
         const response = await fetch(`${API_URL}visitors/${id}`, options);
 
-		const result = await response.json();
+        const result = await response.json();
 
-		return { ok: response.ok, result };
-	} catch (error) {
-		console.error("Error:", error);
-	}
+        return { ok: response.ok, result };
+    } catch (error) {
+        console.error("Error:", error);
+    }
 };
 
 export const getUsers = async () => {
@@ -69,14 +69,14 @@ export const getUsers = async () => {
             throw new Error("Network response was not ok");
         }
 
-		const { data } = await response.json();
-		return data;
-	} catch (error) {}
+        const { data } = await response.json();
+        return data;
+    } catch (error) {}
 };
 
 export const getSingleVisitor = async (data) => {
-	const { id, msisdn } = data;
-	let response;
+    const { id, msisdn } = data;
+    let response;
 
     try {
         if (id) {
@@ -85,116 +85,118 @@ export const getSingleVisitor = async (data) => {
             response = await fetch(`${API_URL}visitors?search=${msisdn}`);
         }
 
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
 
-		const { data } = await response.json();
-		return data[0];
-	} catch (error) {}
+        const { data } = await response.json();
+        console.log({ data });
+
+        return data.data[0];
+    } catch (error) {}
 };
 
 export const getVisits = async (query = {}) => {
-	try {
-		const {
-			search = "",
-			start = 0,
-			limit = 20,
-			sort = "",
-			direction = "",
-		} = query;
+    try {
+        const {
+            search = "",
+            start = 0,
+            limit = 20,
+            sort = "",
+            direction = "",
+        } = query;
 
         let url = `${API_URL}visits?start=${start}&limit=${limit}`;
 
-		if (search) {
-			url += `&search=${search}`;
-		}
+        if (search) {
+            url += `&search=${search}`;
+        }
 
-		if (sort) {
-			url += `&sort=${sort}&direction=${direction}`;
-		}
+        if (sort) {
+            url += `&sort=${sort}&direction=${direction}`;
+        }
 
-		const response = await fetch(url);
-		if (!response.ok) {
-			throw new Error(
-				"Error getting visits. Please try again after few seconds"
-			);
-		}
-		const { data } = await response.json();
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(
+                "Error getting visits. Please try again after few seconds"
+            );
+        }
+        const { data } = await response.json();
 
-		return data;
-	} catch (error) {
-		throw error;
-	}
+        return data;
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const getVisitors = async (query = {}) => {
-	try {
-		const {
-			search = "",
-			start = 0,
-			limit = 20,
-			sort = "",
-			direction = "",
-		} = query;
+    try {
+        const {
+            search = "",
+            start = 0,
+            limit = 20,
+            sort = "",
+            direction = "",
+        } = query;
 
         let url = `${API_URL}visitors?start=${start}&limit=${limit}`;
 
-		if (search) {
-			url += `&search=${search}`;
-		}
+        if (search) {
+            url += `&search=${search}`;
+        }
 
-		if (sort) {
-			url += `&sort=${sort}&direction=${direction}`;
-		}
+        if (sort) {
+            url += `&sort=${sort}&direction=${direction}`;
+        }
 
-		const response = await fetch(url);
+        const response = await fetch(url);
 
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
-		const result = await response.json();
-		const { data, length } = result.data;
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const result = await response.json();
+        const { data, length } = result.data;
 
-		return { data, length };
-	} catch (error) {
-		throw error;
-	}
+        return { data, length };
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const getVisitorWithVisits = async (id, query) => {
-	try {
-		const {
-			search = "",
-			start = 0,
-			limit = 20,
-			sort = "",
-			direction = "",
-		} = query;
+    try {
+        const {
+            search = "",
+            start = 0,
+            limit = 20,
+            sort = "",
+            direction = "",
+        } = query;
 
         let url = `${API_URL}visitors/${id}/visits?&start=${start}&limit=${limit}`;
 
-		if (search) {
-			url += `&search=${search}`;
-		}
+        if (search) {
+            url += `&search=${search}`;
+        }
 
-		if (sort) {
-			url += `&sort=${sort}&direction=${direction}`;
-		}
+        if (sort) {
+            url += `&sort=${sort}&direction=${direction}`;
+        }
 
-		const response = await fetch(url);
+        const response = await fetch(url);
 
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
 
-		const { data } = await response.json();
-		console.log({ data });
+        const { data } = await response.json();
+        console.log({ data });
 
-		return data;
-	} catch (error) {
-		console.error("Error: ", error);
-	}
+        return data;
+    } catch (error) {
+        console.error("Error: ", error);
+    }
 };
 
 export const getEvents = async (id) => {
@@ -239,22 +241,22 @@ export const getHosts = async (id) => {
 };
 
 export const getRooms = async (id) => {
-	try {
-		let url = `${API_URL}rooms`;
+    try {
+        let url = `${API_URL}rooms`;
 
-		if (id) {
-			url += `/${id}`;
-		}
+        if (id) {
+            url += `/${id}`;
+        }
 
-		const response = await fetch(url);
+        const response = await fetch(url);
 
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
-		const { data: rooms } = await response.json();
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const { data: rooms } = await response.json();
 
-		return rooms;
-	} catch (error) {}
+        return rooms;
+    } catch (error) {}
 };
 
 export const registerHost = async (data) => {
@@ -302,9 +304,9 @@ export function visuallyHideModalBackdrop() {
 }
 
 export function formatDate(date) {
-	const rawDate = new Date(date);
+    const rawDate = new Date(date);
 
-	return rawDate.toString().split(" 0")[0];
+    return rawDate.toString().split(" 0")[0];
 }
 
 export const updateDepartureTime = async (id, data) => {
@@ -332,34 +334,74 @@ export const updateDepartureTime = async (id, data) => {
 };
 
 export const getParticipants = async (id, query = {}) => {
-	try {
-		const {
-			search = "",
-			start = 0,
-			limit = 20,
-			sort = "",
-			direction = "",
-		} = query;
+    try {
+        const {
+            search = "",
+            start = 0,
+            limit = 20,
+            sort = "",
+            direction = "",
+        } = query;
 
-		let url = `${API_URL}events/${id}/participants?start=${start}&limit=${limit}`;
+        let url = `${API_URL}events/${id}/participants?start=${start}&limit=${limit}`;
 
-		if (search) {
-			url += `&search=${search}`;
-		}
+        if (search) {
+            url += `&search=${search}`;
+        }
 
-		if (sort) {
-			url += `&sort=${sort}&direction=${direction}`;
-		}
+        if (sort) {
+            url += `&sort=${sort}&direction=${direction}`;
+        }
 
-		const response = await fetch(url);
+        const response = await fetch(url);
 
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
-		const { data: participants } = await response.json();
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const { data: participants } = await response.json();
 
-		return participants;
-	} catch (error) {
-		console.log({ error });
-	}
+        return participants;
+    } catch (error) {
+        console.log({ error });
+    }
+};
+
+export const registerRoom = async (data) => {
+    try {
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
+
+        const response = await fetch(`${API_URL}rooms`, options);
+
+        const result = await response.json();
+
+        return { ok: response.ok, result };
+    } catch (error) {
+        console.error("Error:", error);
+    }
+};
+
+export const editRoom = async (id, data) => {
+    try {
+        const options = {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
+
+        const response = await fetch(`${API_URL}rooms/${id}`, options);
+
+        const result = await response.json();
+
+        return { ok: response.ok, result };
+    } catch (error) {
+        console.error("Error:", error);
+    }
 };

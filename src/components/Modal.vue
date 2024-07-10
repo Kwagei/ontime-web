@@ -42,10 +42,9 @@
                     </div>
 
                     <router-link
+                        @click="handleIdenticalRoute"
                         v-if="data.pageLink"
-                        :to="{
-                            path: data.pageLink,
-                        }"
+                        :to="data.pageLink"
                     >
                         <button
                             type="button"
@@ -61,11 +60,22 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
 
 const props = defineProps({
     data: { type: Object, required: true },
 });
+
+function handleIdenticalRoute() {
+    // reload the page if the new route and
+    // the current route are identical
+    if (props.data.pageLink == route.fullPath) router.go(0);
+
+    // otherwise do nothing
+}
 </script>
 
 <style scoped>

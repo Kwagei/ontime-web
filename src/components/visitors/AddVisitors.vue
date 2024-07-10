@@ -1,13 +1,24 @@
 <template>
-    <Modal :data="{ title, message, status, pageLink }" />
+    <Modal
+        :data="{
+            title: alert.title,
+            message: alert.message,
+            status: alert.status,
+            pageLink: alert.pageLink,
+        }"
+    />
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
+            style="margin-top: 0.3rem"
         >
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
-        <div class="mt-1 p-4 form-control input">
+        <div
+            class="mt-4 form-control input"
+            style="margin: auto; padding: 3rem"
+        >
             <form
                 class="row g-3 needs-validation"
                 novalidate
@@ -94,7 +105,7 @@
                             v-model="email"
                             id="email"
                             aria-describedby="inputGroupPrepend"
-                            @blur="validateEmail"
+                            autocomplete="off"
                         />
                         <div
                             :class="[
@@ -102,12 +113,12 @@
                                 validEmail && 'show-feedback',
                             ]"
                         >
-                            Please provide a valid email address
+                            {{ validEmailMessage }}
                         </div>
                     </div>
                     <div id="emailHelp" class="form-text">
-                        Please enter a valid email address. For example:
-                        example@example.com
+                        Enter a valid email address. For example:
+                        john12@gmail.com
                     </div>
                 </div>
 
@@ -157,7 +168,6 @@
                     </div>
                 </div>
 
-                <!-- Submit and Cancel Buttons -->
                 <div class="col-md-12 d-flex gap-3">
                     <button
                         type="submit"
@@ -167,7 +177,7 @@
                         Save
                     </button>
                     <button
-                        class="px-5 btn btn-secondary"
+                        class="btn btn-secondary px-5"
                         @click="router.back()"
                     >
                         Cancel
@@ -179,7 +189,7 @@
 </template>
 
 <script setup>
-import { watch, ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
@@ -190,13 +200,16 @@ import {
     visuallyHideModalBackdrop,
 } from "@/assets/js/index.js";
 import {
-	msisdnValidation,
-	emailValidation,
-	showModal,
+    msisdnValidation,
+    emailValidation,
+    showModal,
 } from "@/assets/js/util.js";
 
 // Route and State
 const route = useRoute();
+const router = useRouter();
+
+// visitor data
 const first_name = ref("");
 const middle_name = ref("");
 const last_name = ref("");
@@ -205,12 +218,13 @@ const email = ref("");
 const address = ref("");
 
 const alert = ref({
-	status: "",
-	title: "",
-	message: "",
-	pageLink: "",
+    status: "",
+    title: "",
+    message: "",
+    pageLink: "",
 });
 
+const buttonLabel = ref("Save");
 let visitorInfo;
 
 // Form status and breadcrumbs
@@ -221,11 +235,14 @@ activeBreadCrumbs.value = breadCrumbs.value;
 const tem = [...breadCrumbs.value];
 const formStatus = tem.pop();
 
-const router = useRouter();
-
 // Functions
 const onSubmit = async () => {
-    if (!first_name.value || !last_name.value || !msisdn.value) {
+    if (
+        !first_name.value ||
+        !last_name.value ||
+        !msisdn.value ||
+        !address.value
+    ) {
         return;
     }
 
@@ -233,25 +250,25 @@ const onSubmit = async () => {
         first_name: first_name.value,
         middle_name: middle_name.value,
         last_name: last_name.value,
-        msisdn: msisdn.value,
+
+        // format msisdn for backend
+        msisdn: msisdn.value.startsWith("0")
+            ? `231${msisdn.value.slice(1)}`
+            : msisdn.value,
+
         email: email.value,
+        address: address.value,
     };
 
     const response = formStatus.startsWith("new")
         ? await registerVisitor(visitor)
         : await editVisitor(visitorInfo.id, visitor);
 
-    const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-    myModal.show(document.querySelector("#toggleMyModal"));
-    status.value = response.ok ? "success" : "danger";
-    message.value = response.result.message;
-    title.value = response.ok ? "Success" : "Error";
-    console.log("Result: ", response.result);
-    pageLink.value = response.result.data
-        ? `/visitors/${response.result.data[0].id}`
-        : undefined;
-
-    visuallyHideModalBackdrop();
+    showModal("#alertModal", "#alertModalBody");
+    alert.value.status = response.ok ? "success" : "danger";
+    alert.value.message = response.result.message;
+    alert.value.title = response.ok ? "Success" : "Error";
+    alert.value.pageLink = `/visitors/${response.result.data[0].id}`;
 
     // Reset form if the response is successful
     if (response.ok) {
@@ -261,6 +278,7 @@ const onSubmit = async () => {
 
 const fetchVisitor = async () => {
     if (formStatus.startsWith("edit")) {
+        buttonLabel.value = "Update";
         const id = breadCrumbs.value[1];
         visitorInfo = await getSingleVisitor({ id });
         first_name.value = visitorInfo.first_name;
@@ -268,7 +286,6 @@ const fetchVisitor = async () => {
         last_name.value = visitorInfo.last_name;
         msisdn.value = visitorInfo.msisdn;
         email.value = visitorInfo.email;
-        address.value = visitorInfo.address;
     }
 };
 
@@ -277,26 +294,51 @@ const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
 const validEmailMessage = ref("Please provide a valid email address");
 
-const contactValidation = () => {
-    if (!msisdn.value) {
+const contactValidation = (number) => {
+    if (!number) {
         validMsisdn.value = false;
         validMsisdnMessage.value = "Please provide a phone number";
 
         return;
     }
 
-    const isvalid = msisdnValidation([msisdn.value]);
+    const isValid = msisdnValidation([number]);
 
-    if (!isvalid.valid) {
+    if (!isValid.valid) {
         validMsisdn.value = true;
-        validMsisdnMessage.value = isvalid.message;
+        validMsisdnMessage.value = isValid.message;
     } else {
         validMsisdn.value = false;
     }
 };
 
-const validateEmail = () => {
-    validEmail.value = emailValidation(email.value) ? false : true;
+watch(
+    () => msisdn.value,
+    (n) => {
+        contactValidation(n);
+    }
+);
+
+watch(
+    () => email.value,
+    (n) => {
+        validateEmail(n);
+    }
+);
+
+const validateEmail = (mail) => {
+    if (!mail) {
+        validEmail.value = false;
+        validEmailMessage.value = "Please provide a valid email address";
+    }
+    const isValid = emailValidation(mail);
+
+    if (!isValid.valid) {
+        validEmail.value = true;
+        validEmailMessage.value = isValid.message;
+    } else {
+        validEmail.value = false;
+    }
 };
 
 const resetForm = () => {
@@ -306,6 +348,7 @@ const resetForm = () => {
     msisdn.value = "";
     email.value = "";
     address.value = "";
+    buttonLabel.value = "Save";
 
     // Remove validation classes
     const form = document.querySelector(".needs-validation");
@@ -352,13 +395,12 @@ svg {
 }
 
 #visitor-view {
-    padding-top: 2rem;
     gap: 1.5rem;
 }
 
-@media (min-width: 768px) and (max-width: 1440px) {
-    #visitor-view {
-        padding: 1rem 3rem 0 3rem;
+@media (max-width: 1440px) {
+    #emailHelp {
+        font-size: small;
     }
 }
 </style>

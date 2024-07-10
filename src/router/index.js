@@ -19,16 +19,20 @@ import AddVisits from "@/components/visits/AddVisits.vue";
 import Users from "../views/Users.vue";
 
 // Dashboard Components
-import Dashboard from "../views/Dashboard.vue";
 
-// Host Components
-import Hosts from "@/components/hosts/Hosts.vue";
+import Dashboard from "../views/Dashboard.vue";
+import Host from "@/components/Host.vue";
+import Room from "@/components/Room.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
 import AddParticipant from "@/components/events/AddParticipant.vue";
 
 const routes = [
+	{
+		path: "",
+		redirect: "/visits"
+	},
     {
         path: "/dashboard",
         component: Dashboard,
@@ -74,6 +78,11 @@ const routes = [
                 name: "visits",
             },
             {
+                path: "new-visit",
+                component: AddVisits,
+                name: "add-visit",
+            },
+            {
                 path: "purpose-meeting",
                 component: AddMeeting,
                 name: "add-meeting",
@@ -113,16 +122,26 @@ const routes = [
                         name: "specific-event",
                     },
                     {
-                        path: "edit",
+                        path: "edit-event",
                         component: AddEvent,
                         name: "specific-event-participants",
+                    },
+                    {
+                        path: "add-participant",
+                        component: AddParticipant,
+                        name: "add-event-participant",
                     },
                 ],
             },
             {
                 path: "new-host",
-                component: Hosts,
+                component: Host,
                 name: "new-host",
+            },
+            {
+                path: "new-room",
+                component: Room,
+                name: "new-room",
             },
         ],
     },

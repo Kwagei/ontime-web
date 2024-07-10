@@ -1,29 +1,26 @@
 <template>
     <div id="eventsWrapper" class="d-flex flex-column container">
-        <div class="d-flex justify-content-between gap-4">
-            <Search class="flex-grow-1" v-model:search="searchQuery" />
+        <div
+            class="d-flex justify-content-between align-items-center container p-0 mx-auto"
+        >
+            <BreadCrumbs :breadCrumbs="breadCrumbs" />
             <div class="d-flex" style="gap: 0.521rem">
                 <RefreshList @click="refreshEvents" />
                 <router-link :to="{ name: 'add-event' }">
-                    <button
-                        style="height: 50px !important; width: 150px !important"
-                        class="btn btn-primary"
-                    >
+                    <button type="button" class="btn btn-primary">
                         Add Event
                     </button>
                 </router-link>
             </div>
         </div>
-        <EventsTable
-            v-model:refreshEvents="refresh"
-            @refreshComplete="stopEventsRefresh"
-        />
+
+        <EventsTable :refresh="refresh" @refreshComplete="stopEventsRefresh" />
     </div>
 </template>
 
 <script setup>
 import RefreshList from "../components/RefreshList.vue";
-import Search from "../components/Search.vue";
+import BreadCrumbs from "../components/BreadCrumbs.vue";
 import EventsTable from "../components/events/EventsTable.vue";
 
 import { ref } from "vue";
@@ -35,8 +32,6 @@ const props = defineProps({
         required: true,
     },
 });
-
-const searchQuery = ref("");
 
 const refresh = ref(false);
 
@@ -64,7 +59,6 @@ svg {
 
 #eventsWrapper {
     gap: 1.5rem;
-    padding-top: 2rem;
 }
 
 .btn {
@@ -84,9 +78,9 @@ svg {
     margin: 0 !important;
 }
 
-@media (min-width: 768px) and (max-width: 1440px) {
-    #eventsWrapper {
-        padding: 1rem 3rem 0 3rem;
-    }
-}
+/* @media (min-width: 768px) and (max-width: 1440px) {
+	#eventsWrapper {
+		padding: 1rem 3rem 0 3rem;
+	}
+} */
 </style>

@@ -88,7 +88,6 @@ function formatAddress(address) {
 const initializeDataTable = () => {
 	const options = {
 		responsive: true,
-		select: true,
 		serverSide: true,
 		ajax: {
 			url: `${API_URL}visitors`,

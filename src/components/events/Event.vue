@@ -13,34 +13,38 @@
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
+    <!-- Dont' change the margin on this div! -->
     <div
         v-else
-        style="width: 83.5vw !important; margin-left: -8vw"
         class="d-flex flex-column align-items-center"
+        style="margin-top: -2rem; margin-left: -50rem; margin-right: -50rem"
     >
         <EventTitle :title="event.title" />
-        <EventDetails
-            :event="event"
-            v-model:participants="participants"
-            v-if="state == 'details'"
-            @switch="switchState"
-            @displayEventParticipants="switchState"
-            @editEvent="editEvent"
-        />
-        <AddParticipant
-            v-if="state == 'addParticipant'"
-            @switch="switchState"
-            @participantAdded="setModalData"
-            @errorCreatingParticipant="setModalData"
-        />
-        <ImportParticipant
-            v-if="state == 'importParticipants'"
-            :eventId="eventId"
-            :eventTitle="event.title"
-            @switch="switchState"
-            @participantsImported="setModalData"
-            @errorImportingParticipants="setModalData"
-        />
+        <!-- don't change the width on this div -->
+        <div style="width: 45%">
+            <EventDetails
+                :event="event"
+                v-model:participants="participants"
+                v-if="state == 'details'"
+                @switch="switchState"
+                @displayEventParticipants="switchState"
+                @editEvent="editEvent"
+            />
+            <AddParticipant
+                v-if="state == 'addParticipant'"
+                @switch="switchState"
+                @participantAdded="setModalData"
+                @errorCreatingParticipant="setModalData"
+            />
+            <ImportParticipant
+                v-if="state == 'importParticipants'"
+                :eventId="eventId"
+                :eventTitle="event.title"
+                @switch="switchState"
+                @participantsImported="setModalData"
+                @errorImportingParticipants="setModalData"
+            />
+        </div>
     </div>
 </template>
 
@@ -55,8 +59,8 @@ import EventDetails from "./EventDetails.vue";
 import EventTitle from "./EventTitle.vue";
 import Modal from "../Modal.vue";
 
-import { API_URL } from "@/assets/js";
-import { showModal } from "@/assets/js/util";
+import { API_URL } from "@/assets/js/index.js";
+import { showModal } from "@/assets/js/util.js";
 
 const router = useRouter();
 

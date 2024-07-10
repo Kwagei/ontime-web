@@ -5,7 +5,7 @@
         @updated="onParticipantUpdate"
         @cancel="participantToEdit = {}"
     />
-    <div style="width: 81%">
+    <div>
         <div
             class="d-flex justify-content-between align-items-center gap-5 mt-3"
         >
@@ -145,6 +145,9 @@ function handleFileImport(event) {
 }
 
 async function onParticipantUpdate(updatedParticipant) {
+    // reactive pointer events when the edit participant form is updated
+    $("body").css("pointer-events", "auto");
+
     participants.value[participantToEdit.value.idx] = updatedParticipant;
 
     // only repost the participants if there was an error
@@ -180,20 +183,30 @@ async function postParticipants() {
         $("body").css("pointer-events", "auto");
     } catch (error) {
         $("body").css("pointer-events", "auto");
+
+        // only show the modal if there was an actual error
         if (error.responseJSON.status === 500) {
             emit("errorImportingParticipants", {
                 status: "danger",
-                title: "Error Importing Participants, try again",
+                title: "Unable to Import Participants, try again",
             });
             return;
         }
 
+        // otherwise show the form to edit the specific participant with
+        // issue if it's a conflict or invalid data issue
         participantToEdit.value = {
             errorMessage: error.responseJSON.message,
             participant: error.responseJSON.data.participant,
             idx: error.responseJSON.data.idx,
             status: error.responseJSON.status,
         };
+
+        // stop user from clicking around until the participant has been edited
+        $("body").css("pointer-events", "none");
+
+        // allow them to only click the form
+        $("#editParticipantFormWrapper").css("pointer-events", "auto");
     }
 }
 

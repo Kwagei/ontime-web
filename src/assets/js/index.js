@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 export const API_URL = import.meta.env.VITE_API_URL;
 
 export const registerVisit = async (data) => {
@@ -60,7 +62,7 @@ export const editVisitor = async (id, data) => {
     }
 };
 
-export const getUsers = async (data) => {
+export const getUsers = async () => {
     try {
         const response = await fetch(`${API_URL}users`);
         if (!response.ok) {
@@ -88,7 +90,9 @@ export const getSingleVisitor = async (data) => {
         }
 
         const { data } = await response.json();
-        return data[0];
+        console.log({ data });
+
+        return data.data[0];
     } catch (error) {}
 };
 
@@ -151,9 +155,10 @@ export const getVisitors = async (query = {}) => {
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
-        const { data } = await response.json();
+        const result = await response.json();
+        const { data, length } = result.data;
 
-        return data;
+        return { data, length };
     } catch (error) {
         throw error;
     }
@@ -232,6 +237,25 @@ export const getHosts = async (id) => {
         const { data: hosts } = await response.json();
 
         return hosts;
+    } catch (error) {}
+};
+
+export const getRooms = async (id) => {
+    try {
+        let url = `${API_URL}rooms`;
+
+        if (id) {
+            url += `/${id}`;
+        }
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        const { data: rooms } = await response.json();
+
+        return rooms;
     } catch (error) {}
 };
 
@@ -339,5 +363,45 @@ export const getParticipants = async (id, query = {}) => {
         return participants;
     } catch (error) {
         console.log({ error });
+    }
+};
+
+export const registerRoom = async (data) => {
+    try {
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
+
+        const response = await fetch(`${API_URL}rooms`, options);
+
+        const result = await response.json();
+
+        return { ok: response.ok, result };
+    } catch (error) {
+        console.error("Error:", error);
+    }
+};
+
+export const editRoom = async (id, data) => {
+    try {
+        const options = {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
+
+        const response = await fetch(`${API_URL}rooms/${id}`, options);
+
+        const result = await response.json();
+
+        return { ok: response.ok, result };
+    } catch (error) {
+        console.error("Error:", error);
     }
 };

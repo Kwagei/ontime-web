@@ -1,5 +1,5 @@
 <template>
-    <Modal :data="{ title, message, status }" />
+    <Modal :data="{ title, pageLink, message, status }" />
 
     <!-- BELONGING MODAL -->
     <div
@@ -27,7 +27,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form class="row g-3" @submit.prevent="onSubmit">
+                    <form class="row g-3" @submit.prevent="checkParticipantIn">
                         <div class="">
                             <label for="belongings" class="form-label"
                                 >Belongings</label
@@ -68,11 +68,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button
-                        type="submit"
-                        @click="onSubmit"
-                        class="btn btn-primary"
-                    >
+                    <button @click="checkParticipantIn" class="btn btn-primary">
                         Check In
                     </button>
                 </div>
@@ -80,12 +76,8 @@
         </div>
     </div>
 
-    <!-- EVENT LIST -->
-    <div
-        id="visit-view"
-        class="d-flex flex-column container"
-        style="padding-top: 2rem"
-    >
+    <!-- EVENT PARTICIPANTS TABLE -->
+    <div id="visit-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
             style="margin-top: 0.3rem"
@@ -97,7 +89,7 @@
             class="mt-4 p-0 d-flex flex-column"
             style="border: none; background-color: transparent; gap: 3rem"
         >
-            <form @submit.prevent class="row g-3">
+            <form class="row g-3">
                 <div class="dropdown" style="width: 42.5%">
                     <label for="typeInput" class="form-label is-required">
                         Select Event:
@@ -113,21 +105,20 @@
                         autocomplete="off"
                     />
                     <ul class="dropdown-menu" style="width: 96.5%">
-                        <template v-for="option in options">
+                        <template v-for="event in events">
                             <li
                                 class="dropdown-item"
-                                style="cursor: pointer"
-                                :value="option.id"
-                                @click="updateEventTerm(option)"
+                                :value="event.id"
+                                @click="updateEventTerm(event)"
                             >
-                                {{ option.text }}
+                                {{ event.title }}
                             </li>
                         </template>
-                        <router-link :to="{ name: 'add-event' }">
+                        <router-link to="/events/add-event">
                             <li
                                 class="dropdown-item"
                                 style="color: #ff7900"
-                                v-if="!options[index + 1]"
+                                v-if="!events[index + 1]"
                             >
                                 Create new event
                             </li>
@@ -137,14 +128,14 @@
             </form>
 
             <!-- All Participants -->
-            <div
-                v-show="Array.isArray(participants) && participants.length"
-                class="container"
-            >
-                <table
-                    id="participantsTable"
-                    class="table table-striped w-100"
-                ></table>
+            <div v-if="showTable" class="container">
+                <DataTable
+                    id="eventParticipantsTable"
+                    class="display w-100 table"
+                    :columns="columns"
+                    :options="dataTableOptions"
+                    ref="table"
+                />
             </div>
         </div>
     </div>
@@ -159,36 +150,101 @@ import {
     getSingleVisitor,
     registerVisitor,
     getEvents,
+    API_URL,
 } from "@/assets/js/index.js";
-import { useRouter } from "vue-router";
+import $ from "jquery";
 
 import { showModal } from "@/assets/js/util";
-import DataTables from "datatables.net-dt";
+import DataTable from "datatables.net-vue3";
+import DataTablesCore from "datatables.net";
+import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
 
-const router = useRouter();
+DataTable.use(DataTablesCore);
+
+const table = ref();
+const showTable = ref(false);
+const eventID = ref("");
+
+const columns = [
+    { data: "first_name", title: "First name" },
+    { data: "middle_name", title: "Middle name" },
+    { data: "last_name", title: "Last name" },
+    { data: "msisdn", title: "Phone number" },
+    { data: "email", title: "Email" },
+    { data: "address", title: "Address" },
+];
+
+const dataTableOptions = ref({
+    select: true,
+    serverSide: true,
+    ajax: {
+        url: `${API_URL}events/${eventID.value}/participants`,
+        type: "GET",
+        data: (query) => {
+            return {
+                start: query.start,
+                limit: query.length,
+                search: query.search.value,
+                sort: query.columns[query.order[0].column].data,
+                order: query.order[0].dir,
+            };
+        },
+        dataSrc: (json) => {
+            participants.value = json.data;
+            participants.value.forEach((visitor) => {
+                visitor.address = formatAddress(visitor.address);
+            });
+            return participants.value;
+        },
+        error: (error) => {
+            console.log("Error fetching data:", error);
+        },
+    },
+    responsive: true,
+    lengthMenu: [10, 25, 50, 100],
+    language: {
+        searchPlaceholder: "Search ...",
+        search: "",
+        emptyTable: `
+			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4" >
+				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"/></svg>
+				No participants for this event
+				<button class="btn btn-secondary">Add Participant</button>
+			</div>
+		`,
+        loadingRecords: `
+			<div class="d-flex justify-content-center p-4">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		`,
+    },
+    destroy: true,
+    order: [[0, "desc"]],
+});
 
 const msisdn = ref("");
 const visitor = ref("");
 const visitorId = ref("");
-const events = ref(null);
+const events = ref([]);
 const belongings = ref([]);
 const temBelonging = ref("");
-const options = ref([]);
 const eventValue = ref("");
-const eventID = ref(router.currentRoute.value.params.id);
 const host_id = ref("");
 const room_id = ref("");
 const room = ref("");
 const institution = ref("");
 const address = ref("");
 const purpose = ref("");
+
 const status = ref("");
 const message = ref("");
+const pageLink = ref("");
 const title = ref("");
 
 const participants = ref([]);
-const dataTable = ref(null);
 const MAX_DETAIL_LEN = 30;
 
 const activeBreadCrumbs = ref([]);
@@ -203,8 +259,6 @@ const props = defineProps({
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
 
 onMounted(async () => {
-    await getEventsOptions();
-
     (() => {
         "use strict";
 
@@ -224,13 +278,26 @@ onMounted(async () => {
             );
         });
     })();
+
+    await getEventsOptions();
 });
 
-const updateEventTerm = (eventNameAndId) => {
-    console.log({ eventNameAndId });
-    eventValue.value = eventNameAndId.text;
-    eventID.value = eventNameAndId.value;
-    purpose.value = eventNameAndId.text;
+const updateEventTerm = (event) => {
+    purpose.value = event.title;
+    eventValue.value = event.title;
+    eventID.value = event.id;
+
+    // destroy table
+    $("eventParticipantsTable").DataTable().destroy();
+
+    // update api url in options object
+    dataTableOptions.value.ajax.url = `${API_URL}/events/${eventID.value}/participants`;
+
+    // reload the table with the new url
+    $("#eventParticipantsTable")
+        .DataTable()
+        .ajax.url(`${API_URL}/events/${eventID.value}/participants`)
+        .load();
 
     const selectedHost = events.value.find((val) => val.id === eventID.value);
 
@@ -238,9 +305,13 @@ const updateEventTerm = (eventNameAndId) => {
         room.value = selectedHost.room;
     }
 
-    eventID.value = eventNameAndId.value;
-    initializeDataTable();
-    console.log({ eventID });
+    if (showTable.value == false) {
+        showTable.value = true;
+
+        setTimeout(() => {
+            setEventListenerOnParticipantRows();
+        }, 500);
+    }
 };
 
 // function for inserting each username in the select element
@@ -248,9 +319,10 @@ const getEventsOptions = async () => {
     try {
         events.value = await getEvents();
 
-        options.value = events.value.map((event) => ({
-            value: event.id,
-            text: event.title,
+        events.value = events.value.events.map((event) => ({
+            id: event.id,
+            title: event.title,
+            room_id: event.room_id,
         }));
     } catch (error) {
         console.error("Error retrieving users:", error);
@@ -258,15 +330,8 @@ const getEventsOptions = async () => {
 };
 
 // function to validate form before it submit the form
-const onSubmit = async (event) => {
-    if (
-        !msisdn.value ||
-        !visitor.value ||
-        !purpose.value ||
-        !room.value ||
-        !address.value ||
-        event.type === "submit"
-    ) {
+const checkParticipantIn = async () => {
+    if (!msisdn.value || !visitor.value || !purpose.value || !room_id.value) {
         return;
     }
 
@@ -289,6 +354,7 @@ const onSubmit = async (event) => {
     status.value = response.ok ? "success" : "danger";
     message.value = response.result.message;
     title.value = response.ok ? "Success" : "Error";
+    pageLink.value = `/visits`;
 
     // Reset form if the response is successful
     if (response.ok) {
@@ -338,8 +404,8 @@ const participantDetail = async (id) => {
             last_name: participant.last_name,
             email: participant.email,
             msisdn: participant.msisdn,
-            address: participant.address,
         });
+
         visitorData = data.result.data[0];
     }
 
@@ -348,7 +414,6 @@ const participantDetail = async (id) => {
     msisdn.value = visitorData.msisdn;
     room_id.value = event.room_id;
     host_id.value = event.host_id;
-    address.value = participant.address;
 };
 
 function formatAddress(address) {
@@ -364,57 +429,18 @@ function formatAddress(address) {
     return newAddress;
 }
 
-const initializeDataTable = () => {
-    console.log({ eventID });
-    dataTable.value = new DataTables("#participantsTable", {
-        serverSide: true,
-        ajax: {
-            url: `http://localhost:3000/api/events/${eventID.value}/participants`,
-            type: "GET",
-            data: (query) => {
-                return {
-                    start: query.start,
-                    limit: query.length,
-                    search: query.search.value,
-                    sort: query.columns[query.order[0].column].data,
-                    direction: query.order[0].dir,
-                };
-            },
-            dataSrc: (json) => {
-                participants.value = json.data;
-                participants.value.forEach((visitor) => {
-                    visitor.address = formatAddress(visitor.address);
-                });
-                return participants.value;
-            },
-            error: (error) => {
-                console.log("Error fetching data:", error);
-            },
-        },
-        columns: [
-            { data: "first_name", title: "First name" },
-            { data: "middle_name", title: "Middle name" },
-            { data: "last_name", title: "Last name" },
-            { data: "msisdn", title: "Phone number" },
-            { data: "email", title: "Email" },
-            { data: "address", title: "Address" },
-        ],
-        responsive: true,
-        lengthMenu: [10, 25, 50, 100],
-        language: {
-            searchPlaceholder: "Search ...",
-            search: "",
-        },
-    });
+function setEventListenerOnParticipantRows() {
+    const dt = table.value.dt;
 
     // Handle row click event
-    dataTable.value.on("click", "tr", function () {
-        const rowData = dataTable.value.row(this).data();
+    dt.on("click", "tr", function () {
+        const rowData = table.value.dt.row(this).data();
+        console.log({ rowData });
         if (rowData) {
             participantDetail(rowData.id);
         }
     });
-};
+}
 </script>
 
 <style scoped>

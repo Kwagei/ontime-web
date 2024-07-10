@@ -52,11 +52,16 @@ aside {
 main {
     margin-left: 20rem;
     overflow-y: scroll;
+	overflow-x: hidden;
     padding-bottom: 3rem;
 }
 
 .modal-backdrop {
     display: none !important;
+}
+
+section {
+    padding: 2rem 0;
 }
 
 @media (max-width: 1440px) {

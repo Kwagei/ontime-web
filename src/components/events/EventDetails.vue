@@ -1,6 +1,6 @@
 <template>
-    <div class="w-100 d-flex align-items-center flex-column container">
-        <div class="w-100 d-flex justify-content-between pt-3">
+    <div class="d-flex align-items-center flex-column">
+        <div class="w-100 d-flex justify-content-between gap-4 pt-3">
             <BreadCrumbs :breadCrumbs="['events', event.title]" />
             <div class="d-flex gap-3">
                 <button
@@ -9,27 +9,22 @@
                 >
                     Import Participants
                 </button>
-
-                <router-link
-                    :to="{
-                        name: 'add-event-participant',
-                    }"
-                >
-                    <button class="btn btn-primary">Add Participant</button>
-                </router-link>
-
                 <button
-                    class="btn btn-secondary editBtn"
-                    style="border: 0.125rem solid black"
-                    type="button"
-                    data-bs-theme="dark"
-                    @click="$emit('editEvent')"
+                    id="addParticipantBtn"
+                    @click="emit('switch', 'addParticipant')"
+                    class="btn btn-primary"
                 >
-                    <Icons v-model:icon="edit" />
+                    Add Participant
+                </button>
+                <button
+                    @click="$emit('editEvent')"
+                    class="btn btn-link border border-2"
+                >
+                    <Icons :icon="edit" />
                 </button>
             </div>
         </div>
-        <div class="d-flex justify-content-between gap-4" style="width: 81%">
+        <div class="w-100 d-flex justify-content-between gap-4">
             <div
                 class="d-flex justify-content-between mt-3 gap-4 mx-auto"
                 style="width: 70%"
@@ -73,7 +68,6 @@ import Icons from "../Icons.vue";
 const edit = "pencil";
 
 import { formatDate } from "../../assets/js/index.js";
-import { RouterLink } from "vue-router";
 
 const props = defineProps({
     event: {
@@ -105,14 +99,14 @@ const emit = defineEmits(["switch"]);
     background-color: #ddd;
 }
 
-.btn {
+.editBtn {
     padding: 0.5rem !important;
 }
-.btn:hover {
+.editBtn:hover {
     border: 0.125rem solid black !important;
 }
 
-.btn:hover path {
+.editBtn:hover path {
     fill: white;
 }
 .editBtn svg {

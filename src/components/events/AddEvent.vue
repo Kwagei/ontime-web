@@ -19,7 +19,7 @@
             class="text-center mt-3 d-flex align-items-center flex-column text-danger"
             style="margin-bottom: -21px"
         >
-            Unable to get event to edit, please try again!
+            Error getting event to edit, please try again!
             <hr class="text-center w-75" />
         </h3>
 
@@ -100,15 +100,17 @@
 
                 <!-- HOST -->
                 <div class="dropdown col-md-6">
-                    <label for="first_name" class="form-label is-required">
-                        Host
-                        <span class="visually-hidden">(required)</span>
-                    </label>
+                    <label for="first_name" class="form-label is-required"
+                        >Host<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+
                     <div class="input-group has-validation">
                         <input
                             type="text"
                             class="form-control"
-                            id="hostInput"
+                            id="facilitatorInput"
                             :id="hostID"
                             :value="hostValue"
                             aria-expanded="false"
@@ -116,7 +118,7 @@
                             autocomplete="off"
                             required
                         />
-                        <ul class="dropdown-menu" style="width: 96.75%">
+                        <ul class="dropdown-menu w-100">
                             <template v-for="host in hosts">
                                 <li
                                     class="dropdown-item"
@@ -164,25 +166,45 @@
                 </div>
 
                 <!-- ROOM -->
-                <div class="col-md-6">
-                    <label class="form-label is-required">
-                        Room
-                        <span class="visually-hidden"> (required) </span>
-                    </label>
+                <div class="dropdown col-md-6">
+                    <label for="room" class="form-label is-required"
+                        >Room<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+
                     <div class="input-group has-validation">
-                        <select
-                            class="form-select"
-                            v-model="room"
-                            aria-label="Select Event Type"
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="facilitatorInput"
+                            :id="roomID"
+                            :value="roomValue"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            autocomplete="off"
                             required
-                        >
-                            <option v-for="room in rooms" :value="room.name">
-                                {{ room.name }}
-                            </option>
-                        </select>
+                        />
+                        <ul class="dropdown-menu w-100">
+                            <template v-for="room in rooms">
+                                <li
+                                    class="dropdown-item"
+                                    :value="room.id"
+                                    @click="updateRoomTerm(room)"
+                                >
+                                    {{ room.name }}
+                                </li>
+                            </template>
+                            <router-link
+                                :to="{ name: 'new-room' }"
+                                class="text-primary"
+                            >
+                                <li class="dropdown-item">create new room</li>
+                            </router-link>
+                        </ul>
 
                         <div class="invalid-feedback">
-                            Please select a room.
+                            Please provide a host.
                         </div>
                     </div>
                 </div>
@@ -196,7 +218,7 @@
                             class="form-control"
                             id="detailsTextarea"
                             v-model="details"
-                            rows="2"
+                            rows="3"
                         ></textarea>
 
                         <div class="invalid-feedback">
@@ -234,14 +256,14 @@
                 <div class="col-md-12 d-flex gap-3">
                     <button
                         type="submit"
-                        style="margin-left: auto"
                         class="btn btn-primary px-5"
+                        style="margin-left: auto"
                     >
                         Save
                     </button>
                     <button
-                        class="btn btn-secondary px-5"
                         @click="router.back()"
+                        class="btn btn-secondary px-5"
                     >
                         Cancel
                     </button>
@@ -255,7 +277,7 @@
 import { ref, onMounted } from "vue";
 import $ from "jquery";
 
-import { API_URL, getHosts } from "../../assets/js/index.js";
+import { API_URL, getHosts, getRooms } from "../../assets/js/index.js";
 
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
@@ -270,12 +292,11 @@ const endDate = ref("");
 const hostValue = ref("");
 const hostID = ref("");
 const hosts = ref("");
-const room = ref("");
+const roomValue = ref("");
 const roomID = ref("");
+const rooms = ref("");
 const type = ref("");
 const details = ref("");
-
-const rooms = ref([]);
 
 // Modal Data
 const alert = ref({
@@ -309,8 +330,12 @@ const updateHostTerm = (host) => {
     hostID.value = host.id;
 };
 
-const onSubmit = async () => {
-    // return if any of the values are a falsy value
+const updateRoomTerm = (room) => {
+    roomValue.value = room.name;
+    roomID.value = room.id;
+};
+
+const onSubmit = async (event) => {
     if (
         !title.value ||
         !facilitator.value ||
@@ -318,9 +343,10 @@ const onSubmit = async () => {
         !endDate.value ||
         !type.value ||
         !hostValue.value ||
-        !room.value
-    )
+        !roomValue.value
+    ) {
         return;
+    }
 
     const body = {
         title: title.value,
@@ -328,8 +354,8 @@ const onSubmit = async () => {
         start_date: startDate.value,
         end_date: endDate.value,
         type: type.value,
-        host: hostValue.value,
-        room: room.value,
+        host: hostID.value,
+        room: roomID.value,
         details: details.value,
     };
 
@@ -346,13 +372,12 @@ const onSubmit = async () => {
             showModal("#alertModal", "#alertModalBody");
 
             alert.value.status = "success";
-            alert.value.title = "Success";
-            alert.value.message = data.message;
+            alert.value.title = data.message;
             alert.value.pageLink = `/events/${
                 data.data.length ? data.data[0].id : data.data.id
             }`;
 
-            clearInputs();
+            resetForm();
         },
         error: (error) => {
             showModal("#alertModal", "#alertModalBody");
@@ -363,26 +388,29 @@ const onSubmit = async () => {
     });
 };
 
-function clearInputs() {
+function resetForm() {
     // clear inputs
     title.value = "";
     facilitator.value = "";
     startDate.value = "";
     endDate.value = "";
     type.value = "";
-    hosts.value = "";
-    room.value = "";
+    hostValue.value = "";
+    roomValue.value = "";
     details.value = "";
 
-    document
-        .querySelector(".needs-validation")
-        .classList.remove("was-validated");
+    // Remove validation classes
+    const form = document.querySelector(".needs-validation");
+    form.classList.remove("was-validated");
 }
 
 // Lifecycle Hooks
 onMounted(async () => {
     // get event to edit if we're trying to edit
     if (mode == "edit") await getEventToEdit();
+
+    hosts.value = await getHosts();
+    rooms.value = await getRooms();
 
     ("use strict");
 
@@ -392,14 +420,12 @@ onMounted(async () => {
         (event) => {
             if (!form.checkValidity()) {
                 event.preventDefault();
+                event.stopPropagation();
             }
             form.classList.add("was-validated");
         },
         false
     );
-
-    hosts.value = await getHosts();
-    await getRooms();
 });
 
 function setMode() {
@@ -408,29 +434,17 @@ function setMode() {
 
 async function getEventToEdit() {
     try {
-        $.get(API_URL + `events/${eventId.value}/`, async (data) => {
+        $.get(API_URL + `events/${eventId.value}/`, (data) => {
             const retrievedEvent = data.data[0];
 
             title.value = retrievedEvent.title;
             type.value = retrievedEvent.type;
             facilitator.value = retrievedEvent.facilitator;
             details.value = retrievedEvent.details;
-
-            // host
             hostValue.value = retrievedEvent.host;
             hostID.value = retrievedEvent.host_id;
-
-            // room
-            room.value = retrievedEvent.room;
+            roomValue.value = retrievedEvent.room;
             roomID.value = retrievedEvent.room_id;
-
-            // initialize host to edit
-            const thisHost = await getHosts(retrievedEvent.host_id);
-            hostValue.value = thisHost[0].name;
-            hostID.value = thisHost[0].id;
-
-            // initialize room to edit
-            getRoomToEdit(retrievedEvent.room_id);
 
             // format date before setting it as the value
             // start date input field in the form
@@ -446,31 +460,12 @@ async function getEventToEdit() {
 
             errorGettingEventToEdit.value = false;
         }).fail((error) => {
-            console.log("Unable to get event to edit: ", error.responseJSON);
+            console.log("Error getting event to edit: ", error.responseJSON);
             errorGettingEventToEdit.value = true;
         });
     } catch (error) {
-        console.log("Unable to get event to edit: ", error.responseJSON);
+        console.log("Error getting event to edit: ", error.responseJSON);
         errorGettingEventToEdit.value = true;
-    }
-}
-
-async function getRoomToEdit(id) {
-    try {
-        await $.get(
-            API_URL + `rooms/${id}`,
-            (res) => (room.value = res.data.name)
-        );
-    } catch (error) {
-        console.error(error.responseJSON.message);
-    }
-}
-
-async function getRooms() {
-    try {
-        await $.get(API_URL + `rooms`, (res) => (rooms.value = res.data));
-    } catch (error) {
-        console.error(error.responseJSON.message);
     }
 }
 </script>
@@ -493,7 +488,6 @@ a:hover {
 }
 
 #eventsWrapper {
-    padding-top: 2rem;
     gap: 1.5rem;
 }
 </style>

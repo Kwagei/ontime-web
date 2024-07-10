@@ -1,32 +1,24 @@
 <template>
-    <Modal
-        :data="{
-            title: alert.title,
-            message: alert.message,
-            status: alert.status,
-            pageLink: alert.pageLink,
-        }"
-    />
-    <div class="d-flex flex-column container">
+    <Modal :data="alert" />
+    <div id="visitor-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-            style="margin: 2rem auto"
         >
-            <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
+            <BreadCrumbs class="mb-0 mt-4" :breadCrumbs="breadCrumbs" />
         </div>
-
-        <div class="form-control input" style="padding: 3rem">
+        <div class="form-control input" style="margin: auto; padding: 3rem">
             <form
                 class="row g-3 needs-validation"
                 novalidate
-                @submit.prevent="postParticipant"
+                @submit.prevent="onSubmit"
             >
                 <!-- FIRST NAME -->
                 <div class="col-md-6">
-                    <label for="first_name" class="form-label is-required">
-                        First name
-                        <span class="visually-hidden">(required)</span>
-                    </label>
+                    <label for="first_name" class="form-label is-required"
+                        >First name<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
                     <div class="input-group has-validation">
                         <input
                             type="text"
@@ -44,10 +36,11 @@
 
                 <!-- PHONE NUMBER -->
                 <div class="col-md-6">
-                    <label for="phone_number" class="form-label is-required">
-                        Phone number
-                        <span class="visually-hidden">(required)</span>
-                    </label>
+                    <label for="phone_number" class="form-label is-required"
+                        >Phone number<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
                     <div class="input-group has-validation">
                         <input
                             type="tel"
@@ -92,10 +85,11 @@
 
                 <!-- EMAIL -->
                 <div class="col-md-6">
-                    <label for="email" class="form-label is-required">
-                        Email
-                        <span class="visually-hidden">(required)</span>
-                    </label>
+                    <label for="email" class="form-label is-required"
+                        >Email<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
                     <div class="input-group has-validation">
                         <input
                             type="email"
@@ -123,10 +117,11 @@
 
                 <!-- LAST NAME -->
                 <div class="col-md-6">
-                    <label for="last_name" class="form-label is-required">
-                        Last name
-                        <span class="visually-hidden">(required)</span>
-                    </label>
+                    <label for="last_name" class="form-label is-required"
+                        >Last name<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
                     <div class="input-group has-validation">
                         <input
                             type="text"
@@ -143,10 +138,11 @@
 
                 <!-- ADDRESS -->
                 <div class="col-md-6">
-                    <label for="address" class="form-label is-required">
-                        Address
-                        <span class="visually-hidden"> (required)</span>
-                    </label>
+                    <label for="address" class="form-label is-required"
+                        >Address<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
                     <div class="input-group has-validation">
                         <input
                             type="text"
@@ -166,20 +162,19 @@
                 </div>
 
                 <div class="col-md-12 d-flex gap-3">
-                    <div
-                        style="font-weight: 600; margin-left: auto"
-                        class="d-flex gap-3"
+                    <button
+                        type="submit"
+                        class="btn btn-primary px-5"
+                        style="margin-left: auto"
                     >
-                        <button type="submit" class="btn btn-primary px-5">
-                            Save
-                        </button>
-                        <button
-                            class="btn btn-secondary px-5"
-                            @click="router.back()"
-                        >
-                            Cancel
-                        </button>
-                    </div>
+                        Save
+                    </button>
+                    <button
+                        @click="$emit('switch', 'details')"
+                        class="btn btn-secondary px-5"
+                    >
+                        Cancel
+                    </button>
                 </div>
             </form>
         </div>
@@ -193,10 +188,7 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import $ from "jquery";
 
-// Helpers
-import { getSingleVisitor, API_URL } from "@/assets/js/index.js";
-
-// Utilities
+import { API_URL } from "@/assets/js/index.js";
 import {
     msisdnValidation,
     emailValidation,
@@ -211,6 +203,9 @@ const props = defineProps({
 
 // Route and State
 const route = useRoute();
+const eventId = route.params.id;
+const breadCrumbs = ["Events", eventId, "Add Participant"];
+
 const first_name = ref("");
 const middle_name = ref("");
 const last_name = ref("");
@@ -221,19 +216,61 @@ const address = ref("");
 const alert = ref({
     status: "",
     title: "",
-    message: "",
     pageLink: "",
 });
 
-const router = useRouter();
+// Functions
+const onSubmit = async () => {
+    if (
+        !first_name.value ||
+        !last_name.value ||
+        !msisdn.value ||
+        !email.value ||
+        !address.value
+    ) {
+        return;
+    }
 
-// Form status and breadcrumbs
-const activeBreadCrumbs = ref([]);
-const breadCrumbs = defineModel("breadCrumbs");
-breadCrumbs.value = route.path.split("/").slice(1);
-activeBreadCrumbs.value = breadCrumbs.value;
-const tmp = [...breadCrumbs.value];
-const formStatus = tmp.pop();
+    const participant = {
+        first_name: first_name.value,
+        middle_name: middle_name.value,
+        last_name: last_name.value,
+
+        // format msisdn for backend
+        msisdn: msisdn.value.startsWith("0")
+            ? `231${msisdn.value.slice(1)}`
+            : msisdn.value,
+
+        email: email.value,
+        address: address.value,
+    };
+
+    const body = {
+        event_id: route.params.id,
+        event_participants: [participant],
+    };
+
+    $.ajax({
+        url: API_URL + "event_participants",
+        type: "POST",
+        data: body,
+        success: (data) => {
+            showModal("#alertModal", "#alertModalBody");
+
+            alert.value.status = "success";
+            alert.value.title = data.message;
+            alert.value.pageLink = `/events/${eventId}`;
+
+            resetForm();
+        },
+        error: (error) => {
+            showModal("#alertModal", "#alertModalBody");
+            alert.value.status = "danger";
+            alert.value.title = error.responseJSON.message;
+            alert.pageLink = undefined;
+        },
+    });
+};
 
 const validEmail = ref(false);
 const validMsisdn = ref(false);
@@ -308,6 +345,7 @@ const contactValidation = (number) => {
     if (!number) {
         validMsisdn.value = false;
         validMsisdnMessage.value = "Please provide a phone number";
+
         return;
     }
 
@@ -339,9 +377,7 @@ const validateEmail = (mail) => {
     if (!mail) {
         validEmail.value = false;
         validEmailMessage.value = "Please provide a valid email address";
-        return;
     }
-
     const isValid = emailValidation(mail);
 
     if (!isValid.valid) {
@@ -352,7 +388,7 @@ const validateEmail = (mail) => {
     }
 };
 
-function clearInputs() {
+const resetForm = () => {
     first_name.value = "";
     middle_name.value = "";
     last_name.value = "";
@@ -363,17 +399,19 @@ function clearInputs() {
     // Remove validation classes
     const form = document.querySelector(".needs-validation");
     form.classList.remove("was-validated");
-}
+};
 
 // Lifecycle Hooks
 onMounted(() => {
-    fetchVisitor();
-
-    $(".needs-validation").on(
+    const form = document.querySelector(".needs-validation");
+    form.addEventListener(
         "submit",
         (event) => {
-            if (!form.checkValidity()) event.preventDefault();
-            event.target.classList.add("was-validated");
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add("was-validated");
         },
         false
     );
@@ -401,7 +439,6 @@ svg {
 }
 
 #visitor-view {
-    padding-top: 2rem;
     gap: 1.5rem;
 }
 

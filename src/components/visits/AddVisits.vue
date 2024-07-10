@@ -164,7 +164,7 @@
 import BreadCrumbs from "../BreadCrumbs.vue";
 import { registerVisitor } from "@/assets/js/index.js";
 
-import { ref, defineProps, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 
 const new_visitor = ref("");
 const arrival_time = ref("");
@@ -258,7 +258,6 @@ svg {
 }
 
 #visitor-view {
-	padding-top: 2rem;
 	gap: 1.5rem;
 }
 

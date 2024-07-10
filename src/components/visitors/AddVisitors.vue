@@ -15,7 +15,10 @@
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
-        <div class="mt-1 p-4 form-control input">
+        <div
+            class="mt-4 form-control input"
+            style="margin: auto; padding: 3rem"
+        >
             <form
                 class="row g-3 needs-validation"
                 novalidate
@@ -165,7 +168,6 @@
                     </div>
                 </div>
 
-                <!-- Submit and Cancel Buttons -->
                 <div class="col-md-12 d-flex gap-3">
                     <button
                         type="submit"
@@ -175,7 +177,7 @@
                         Save
                     </button>
                     <button
-                        class="px-5 btn btn-secondary"
+                        class="btn btn-secondary px-5"
                         @click="router.back()"
                     >
                         Cancel
@@ -187,7 +189,7 @@
 </template>
 
 <script setup>
-import { watch, ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
@@ -205,6 +207,9 @@ import {
 
 // Route and State
 const route = useRoute();
+const router = useRouter();
+
+// visitor data
 const first_name = ref("");
 const middle_name = ref("");
 const last_name = ref("");
@@ -238,16 +243,20 @@ const onSubmit = async () => {
         !last_name.value ||
         !msisdn.value ||
         !address.value
-    )
+    ) {
         return;
+    }
 
     const visitor = {
         first_name: first_name.value,
         middle_name: middle_name.value,
         last_name: last_name.value,
+
+        // format msisdn for backend
         msisdn: msisdn.value.startsWith("0")
             ? `231${msisdn.value.slice(1)}`
             : msisdn.value,
+
         email: email.value,
         address: address.value,
     };
@@ -270,6 +279,7 @@ const onSubmit = async () => {
 
 const fetchVisitor = async () => {
     if (formStatus.startsWith("edit")) {
+        buttonLabel.value = "Update";
         const id = breadCrumbs.value[1];
         visitorInfo = await getSingleVisitor({ id });
         first_name.value = visitorInfo.first_name;
@@ -277,7 +287,6 @@ const fetchVisitor = async () => {
         last_name.value = visitorInfo.last_name;
         msisdn.value = visitorInfo.msisdn;
         email.value = visitorInfo.email;
-        address.value = visitorInfo.address;
     }
 };
 
@@ -340,6 +349,7 @@ const resetForm = () => {
     msisdn.value = "";
     email.value = "";
     address.value = "";
+    buttonLabel.value = "Save";
 
     // Remove validation classes
     const form = document.querySelector(".needs-validation");
@@ -386,7 +396,6 @@ svg {
 }
 
 #visitor-view {
-    padding-top: 2rem;
     gap: 1.5rem;
 }
 

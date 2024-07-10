@@ -13,10 +13,8 @@
                 </router-link>
             </div>
         </div>
-        <EventsTable
-            v-model:refreshEvents="refresh"
-            @refreshComplete="stopEventsRefresh"
-        />
+
+        <EventsTable :refresh="refresh" @refreshComplete="stopEventsRefresh" />
     </div>
 </template>
 
@@ -61,7 +59,6 @@ svg {
 
 #eventsWrapper {
     gap: 1.5rem;
-    padding-top: 2rem;
 }
 
 .btn {

@@ -6,7 +6,7 @@
 			<BreadCrumbs :breadCrumbs="breadCrumbs" />
 
 			<div class="d-flex" style="gap: 0.521rem">
-				<RefreshList @click="refresh = true" />
+				<RefreshList @click="handleRefresh" />
 
 				<router-link :to="{ name: 'add-visitor' }">
 					<button type="button" class="btn btn-primary">
@@ -25,14 +25,15 @@
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import VisitorList from "../components/visitors/VisitorList.vue";
 import RefreshList from "../components/RefreshList.vue";
-import Options from "@/components/Options.vue";
 
 import { RouterLink, RouterView } from "vue-router";
-import { ref } from "vue";
 
 const breadCrumbs = defineModel("breadCrumbs");
 const refresh = defineModel("refresh");
-refresh.value = false;
+
+const handleRefresh = () => {
+	refresh.value = true;
+};
 </script>
 
 <style scoped>
@@ -46,7 +47,6 @@ svg {
 }
 
 #visitor-view {
-	padding-top: 2rem;
 	gap: 1.5rem;
 }
 

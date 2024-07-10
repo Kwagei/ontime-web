@@ -1,15 +1,15 @@
 <template>
-	<div id="search" class="col-md-5 p-0" style="background-color: red">
-		<form class="row m-0" action="">
-			<input
-				type="search"
-				class="form-control search"
-				placeholder="Search ..."
-				v-model="searchTerms"
-				ref="inputEl"
-			/>
-		</form>
-	</div>
+    <div id="search" class="col-md-5 p-0">
+        <form class="row m-0" action="">
+            <input
+                type="search"
+                class="form-control search"
+                placeholder="Search ..."
+                v-model="searchTerms"
+                ref="inputEl"
+            />
+        </form>
+    </div>
 </template>
 
 <style scoped></style>
@@ -21,10 +21,10 @@ import { ref, onMounted } from "vue";
 const inputEl = ref(null);
 
 onMounted(() => {
-	inputEl.value.addEventListener("keyup", handleKeyUp);
+    inputEl.value.addEventListener("keyup", handleKeyUp);
 });
 
 function handleKeyUp() {
-	searchTerms.value = inputEl.value.value;
+    searchTerms.value = inputEl.value.value;
 }
 </script>

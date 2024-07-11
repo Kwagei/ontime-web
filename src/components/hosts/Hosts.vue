@@ -1,5 +1,12 @@
 <template>
-	<Modal :data="{ title, message, status }" />
+	<Modal
+		:data="{
+			title: alert.title,
+			message: alert.message,
+			status: alert.status,
+			pageLink: alert.pageLink,
+		}"
+	/>
 	<div id="visitor-view" class="d-flex flex-column container">
 		<div
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -39,6 +46,41 @@
 					</div>
 				</div>
 
+				<!-- HOST TYPE -->
+				<div class="col-md-6">
+					<label for="host_type" class="form-label is-required"
+						>Host Type<span class="visually-hidden">
+							(required)</span
+						></label
+					>
+
+					<div class="form-check">
+						<input
+							class="form-check-input"
+							type="radio"
+							name="flexRadioDefault"
+							id="flexRadioDefault1"
+							@click="updateHostTypeTerm('Company')"
+							checked
+						/>
+						<label class="form-check-label" for="flexRadioDefault1">
+							Company
+						</label>
+					</div>
+					<div class="form-check">
+						<input
+							class="form-check-input"
+							type="radio"
+							name="flexRadioDefault"
+							@click="updateHostTypeTerm('Individual')"
+							id="flexRadioDefault2"
+						/>
+						<label class="form-check-label" for="flexRadioDefault2">
+							Individual
+						</label>
+					</div>
+				</div>
+
 				<!-- PHONE NUMBER -->
 				<div class="col-md-6">
 					<label for="phone_number" class="form-label is-required"
@@ -57,7 +99,6 @@
 							id="phone_number"
 							aria-describedby="inputGroupPrepend"
 							required
-							@blur="contactValidation"
 						/>
 						<div
 							:class="[
@@ -70,23 +111,6 @@
 					</div>
 					<div id="emailHelp" class="form-text">
 						For example: 0778456789
-					</div>
-				</div>
-
-				<!-- HOST TYPE -->
-				<div class="">
-					<label for="host_type" class="form-label is-required"
-						>Host Type<span class="visually-hidden">
-							(required)</span
-						></label
-					>
-					<div class="form-check mb-0">
-						<input class="form-check-input" type="checkbox" />
-						<label for="">Individual</label>
-					</div>
-					<div class="form-check mb-0">
-						<input class="form-check-input" type="checkbox" />
-						<label for="">Company</label>
 					</div>
 				</div>
 
@@ -104,16 +128,20 @@
 					></textarea>
 				</div>
 
-				<div class="col-md-12">
+				<div class="col-md-12 d-flex gap-3 justify-content-end">
 					<button
 						type="submit"
-						class="btn btn-primary"
-						style="
-							padding: 0.7rem 2rem !important;
-							font-weight: 600;
-						"
+						class="btn btn-primary px-5"
+						style="margin-left: auto"
 					>
 						{{ buttonLabel }}
+					</button>
+					<button
+						class="btn btn-secondary px-5"
+						type="button"
+						@click="router.back()"
+					>
+						Cancel
 					</button>
 				</div>
 			</form>
@@ -122,21 +150,28 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import BreadCrumbs from "@/components/BreadCrumbs.vue";
 import Modal from "@/components/Modal.vue";
 import { registerHost, editHost, getHosts } from "@/assets/js/index.js";
-import { msisdnValidation } from "@/assets/js/util.js";
+import { msisdnValidation, showModal } from "@/assets/js/util.js";
+import router from "@/router";
 
 // Route and State
 const route = useRoute();
 const name = ref("");
 const msisdn = ref("");
 const details = ref("");
-const status = ref("");
-const message = ref("");
-const title = ref("");
+const type = ref("Company");
+
+// Modal Data
+const alert = ref({
+	title: "",
+	status: "",
+	message: "",
+	pageLink: "",
+});
 
 const buttonLabel = ref("Save");
 let hostInfo;
@@ -162,26 +197,26 @@ const onSubmit = async () => {
 				? `231${msisdn.value.slice(1)}`
 				: msisdn.value,
 		details: details.value,
+		type: type.value,
 	};
 
 	const response = formStatus.startsWith("new")
 		? await registerHost(host)
 		: await editHost(hostInfo.id, host);
 
-	console.log(response);
-
-	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-	myModal.show(document.querySelector("#toggleMyModal"));
-	status.value = response.ok ? "success" : "danger";
-	message.value = response.result.message;
-	title.value = response.ok ? "Success" : "Error";
-
-	visuallyHideModalBackdrop();
+	showModal("#alertModal", "#alertModalBody");
+	alert.value.status = response.ok ? "success" : "danger";
+	alert.value.message = response.result.message;
+	alert.value.title = response.ok ? "Success" : "Error";
 
 	// Reset form if the response is successful
 	if (response.ok) {
 		resetForm();
 	}
+};
+
+const updateHostTypeTerm = (t) => {
+	type.value = t;
 };
 
 const fetchHost = async () => {
@@ -194,12 +229,6 @@ const fetchHost = async () => {
 		msisdn.value = hostInfo.msisdn;
 		details.value = hostInfo.details;
 	}
-};
-
-const visuallyHideModalBackdrop = () => {
-	document
-		.querySelectorAll(".modal-backdrop")
-		.forEach((modal) => modal.classList.add("visually-hidden"));
 };
 
 const validMsisdn = ref(false);
@@ -221,6 +250,13 @@ const contactValidation = () => {
 		validMsisdn.value = false;
 	}
 };
+
+watch(
+	() => msisdn.value,
+	(n) => {
+		contactValidation(n);
+	}
+);
 
 const resetForm = () => {
 	name.value = "";

@@ -198,7 +198,7 @@ export const getVisitorWithVisits = async (id, query) => {
 	}
 };
 
-export const getEvents = async (id) => {
+export const getEvents = async (id, data) => {
 	try {
 		let url = `${API_URL}/events`;
 

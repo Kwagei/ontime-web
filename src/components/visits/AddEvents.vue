@@ -105,7 +105,7 @@
 						autocomplete="off"
 					/>
 					<ul class="dropdown-menu" style="width: 96.5%">
-						<template v-for="event in eventsData">
+						<template v-for="event in eventsData" :key="event.id">
 							<li
 								class="dropdown-item"
 								:value="event.id"
@@ -115,11 +115,7 @@
 							</li>
 						</template>
 						<router-link to="/events/add-event">
-							<li
-								class="dropdown-item"
-								style="color: #ff7900"
-								v-if="!events[index + 1]"
-							>
+							<li class="dropdown-item" style="color: #ff7900">
 								Create new event
 							</li>
 						</router-link>
@@ -228,7 +224,6 @@ const options = ref({
 const msisdn = ref("");
 const visitor = ref("");
 const visitorId = ref("");
-const events = ref([]);
 const belongings = ref([]);
 const temBelonging = ref("");
 const eventValue = ref("");
@@ -245,7 +240,6 @@ const pageLink = ref("");
 const title = ref("");
 
 const participants = ref([]);
-const MAX_DETAIL_LEN = 30;
 
 const activeBreadCrumbs = ref([]);
 
@@ -257,30 +251,6 @@ const props = defineProps({
 });
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
-
-onMounted(async () => {
-	(() => {
-		"use strict";
-
-		const forms = document.querySelectorAll(".needs-validation");
-
-		Array.prototype.slice.call(forms).forEach((form) => {
-			form.addEventListener(
-				"submit",
-				(event) => {
-					if (!form.checkValidity()) {
-						event.preventDefault();
-						event.stopPropagation();
-					}
-					form.classList.add("was-validated");
-				},
-				false
-			);
-		});
-	})();
-
-	await getEventsOptions();
-});
 
 const updateEventTerm = (event) => {
 	purpose.value = event.title;
@@ -430,6 +400,30 @@ function setEventListenerOnParticipantRows() {
 		}
 	});
 }
+
+onMounted(async () => {
+	(() => {
+		"use strict";
+
+		const forms = document.querySelectorAll(".needs-validation");
+
+		Array.prototype.slice.call(forms).forEach((form) => {
+			form.addEventListener(
+				"submit",
+				(event) => {
+					if (!form.checkValidity()) {
+						event.preventDefault();
+						event.stopPropagation();
+					}
+					form.classList.add("was-validated");
+				},
+				false
+			);
+		});
+	})();
+
+	await getEventsOptions();
+});
 </script>
 
 <style scoped>

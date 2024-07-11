@@ -168,16 +168,13 @@
 					</div>
 				</div>
 
-				<div class="col-md-12 d-flex gap-3">
-					<button
-						type="submit"
-						class="btn btn-primary px-5"
-						style="margin-left: auto"
-					>
-						Save
+				<div class="col-md-12 d-flex gap-3 justify-content-end">
+					<button type="submit" class="btn btn-primary px-5">
+						{{ buttonLabel }}
 					</button>
 					<button
 						class="btn btn-secondary px-5"
+						type="button"
 						@click="router.back()"
 					>
 						Cancel
@@ -197,7 +194,6 @@ import {
 	registerVisitor,
 	editVisitor,
 	getSingleVisitor,
-	visuallyHideModalBackdrop,
 } from "@/assets/js/index.js";
 import {
 	msisdnValidation,
@@ -233,6 +229,7 @@ breadCrumbs.value = route.path.split("/").slice(1);
 activeBreadCrumbs.value = breadCrumbs.value;
 const tem = [...breadCrumbs.value];
 const formStatus = tem.pop();
+const buttonLabel = ref("Save");
 
 // Functions
 const onSubmit = async () => {
@@ -355,8 +352,8 @@ const resetForm = () => {
 };
 
 // Lifecycle Hooks
-onMounted(() => {
-	fetchVisitor();
+onMounted(async () => {
+	await fetchVisitor();
 
 	const form = document.querySelector(".needs-validation");
 	form.addEventListener(

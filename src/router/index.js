@@ -20,7 +20,7 @@ import Users from "../views/Users.vue";
 
 // Dashboard Components
 import Dashboard from "../views/Dashboard.vue";
-import Host from "@/components/Host.vue";
+import Host from "@/components/hosts/Hosts.vue";
 import Room from "@/components/Room.vue";
 
 // Dependecies Imports
@@ -28,10 +28,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import AddParticipant from "@/components/events/AddParticipant.vue";
 
 const routes = [
-	{
-		path: "",
-		redirect: "/visits"
-	},
+    {
+        path: "",
+        redirect: "/visits",
+    },
     {
         path: "/dashboard",
         component: Dashboard,

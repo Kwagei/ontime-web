@@ -90,40 +90,56 @@
             style="border: none; background-color: transparent; gap: 3rem"
         >
             <form class="row g-3">
-                <div class="dropdown" style="width: 42.5%">
-                    <label for="typeInput" class="form-label is-required">
+                <div class="dropdown" style="width: 45%">
+                    <label
+                        for="selectEventInput"
+                        class="form-label is-required"
+                    >
                         Select Event:
                     </label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="host"
-                        :id="eventID"
-                        :value="eventValue"
-                        aria-expanded="false"
-                        data-bs-toggle="dropdown"
-                        autocomplete="off"
-                    />
-                    <ul class="dropdown-menu" style="width: 96.5%">
-                        <template v-for="event in events">
-                            <li
-                                class="dropdown-item"
-                                :value="event.id"
-                                @click="updateEventTerm(event)"
-                            >
-                                {{ event.title }}
-                            </li>
-                        </template>
-                        <router-link to="/events/add-event">
-                            <li
-                                class="dropdown-item"
-                                style="color: #ff7900"
-                                v-if="!events[index + 1]"
-                            >
-                                Create new event
-                            </li>
-                        </router-link>
-                    </ul>
+
+                    <div class="btn-group w-100">
+                        <input
+                            type="text"
+                            class="form-control border border-2"
+                            id="selectEventInput"
+                            :id="eventID"
+                            :value="eventValue"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            autocomplete="off"
+                            placeholder="Select Event..."
+                        />
+
+                        <button
+                            type="button"
+                            class="btn btn-lg btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu w-100">
+                            <template v-for="event in events">
+                                <li
+                                    class="dropdown-item"
+                                    :value="event.id"
+                                    @click="updateEventTerm(event)"
+                                >
+                                    {{ event.title }}
+                                </li>
+                            </template>
+                            <router-link to="/events/add-event">
+                                <li
+                                    class="dropdown-item"
+                                    style="color: #ff7900"
+                                    v-if="!events[index + 1]"
+                                >
+                                    Create new event
+                                </li>
+                            </router-link>
+                        </ul>
+                    </div>
                 </div>
             </form>
 
@@ -154,7 +170,7 @@ import {
 } from "@/assets/js/index.js";
 import $ from "jquery";
 
-import { showModal } from "@/assets/js/util";
+import { showModal, removeDuplicates } from "@/assets/js/util";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -166,6 +182,7 @@ const table = ref();
 const showTable = ref(false);
 const eventID = ref("");
 
+// columns for Data Table
 const columns = [
     { data: "first_name", title: "First name" },
     { data: "middle_name", title: "Middle name" },
@@ -173,8 +190,19 @@ const columns = [
     { data: "msisdn", title: "Phone number" },
     { data: "email", title: "Email" },
     { data: "address", title: "Address" },
+    {
+        data: null,
+        title: "Visited Today",
+        className: "text-center",
+        render: (data) => {
+            return data.participant_id
+                ? `<span class="text-success fw-bold">Yes</span>`
+                : `<span class="text-danger fw-bold">No</span>`;
+        },
+    },
 ];
 
+// Options for Data Table
 const dataTableOptions = ref({
     select: true,
     serverSide: true,
@@ -191,14 +219,20 @@ const dataTableOptions = ref({
             };
         },
         dataSrc: (json) => {
-            participants.value = json.data;
+            participants.value = removeDuplicates(json.data);
+
             participants.value.forEach((visitor) => {
                 visitor.address = formatAddress(visitor.address);
             });
+
             return participants.value;
         },
         error: (error) => {
             console.log("Error fetching data:", error);
+            showModal();
+            title.value = "Unable to load event participants, try again";
+            status.value = "error";
+            pageLink.value = undefined;
         },
     },
     responsive: true,
@@ -225,26 +259,30 @@ const dataTableOptions = ref({
     order: [[0, "desc"]],
 });
 
+// visit creation data
+const participant_id = ref("");
 const msisdn = ref("");
-const visitor = ref("");
 const visitorId = ref("");
-const events = ref([]);
-const belongings = ref([]);
-const temBelonging = ref("");
-const eventValue = ref("");
 const host_id = ref("");
 const room_id = ref("");
-const room = ref("");
 const institution = ref("");
 const address = ref("");
 const purpose = ref("");
+const belongings = ref([]);
+const room = ref("");
 
+// Modal Data
 const status = ref("");
 const message = ref("");
 const pageLink = ref("");
 const title = ref("");
 
+// others
+const visitor = ref("");
+const events = ref([]);
 const participants = ref([]);
+const temBelonging = ref("");
+const eventValue = ref("");
 const MAX_DETAIL_LEN = 30;
 
 const activeBreadCrumbs = ref([]);
@@ -346,6 +384,7 @@ const checkParticipantIn = async () => {
         room_id: room_id.value,
         host_id: host_id.value,
         purpose: purpose.value,
+        participant_id: participant_id.value,
     };
 
     const response = await registerVisit(visitData);
@@ -394,23 +433,33 @@ const participantDetail = async (id) => {
     showModal("#visitModal", "#modal-dialog");
     const event = events.value.find((val) => val.id === eventID.value);
 
+    // find the specific participant being checked in
     const participant = participants.value.find((val) => val.id === id);
+
+    // assign participant id for visit checking in
+    participant_id.value = participant.id;
+
+    // check if the visitor exists
     let visitorData = await getSingleVisitor({ msisdn: participant.msisdn });
 
+    // create visitor if this participant is not already a participant
     if (!visitorData) {
-        const data = await registerVisitor({
+        visitorData = await registerVisitor({
             first_name: participant.first_name,
             middle_name: participant.middle_name,
             last_name: participant.last_name,
             email: participant.email,
             msisdn: participant.msisdn,
+            address: address.value,
         });
-
-        visitorData = data.result.data[0];
     }
 
+    // add first name, add middle name if the visitor has one, and add last name
+    visitor.value = `${visitorData.first_name}${
+        visitorData.middle_name ? visitorData.middle_name + " " : ""
+    } ${visitorData.last_name}`;
+
     visitorId.value = visitorData.id;
-    visitor.value = `${visitorData.first_name} ${visitorData.last_name}`;
     msisdn.value = visitorData.msisdn;
     room_id.value = event.room_id;
     host_id.value = event.host_id;
@@ -435,8 +484,25 @@ function setEventListenerOnParticipantRows() {
     // Handle row click event
     dt.on("click", "tr", function () {
         const rowData = table.value.dt.row(this).data();
-        console.log({ rowData });
-        if (rowData) {
+
+        // only check the participant in if they don't have
+        // a departure_time, meaning they either haven't checked in
+        // or they have checked out already
+        // in this case, if they checked in earlier and checked out for some
+        // reason, they can still check back in, but not if they weren't checked out
+        if (
+            rowData &&
+            rowData.participant_id &&
+            !rowData.visit_departure_time
+        ) {
+            // inform user visitor is still checked in
+            showModal("#alertModal", "#alertModalBody");
+
+            pageLink.value = "/visits";
+            title.value = "Visitor is still checked in";
+            status.value = "warning";
+        } else {
+            // otherwise check visitor in
             participantDetail(rowData.id);
         }
     });

@@ -382,8 +382,7 @@ const onSubmit = async (event) => {
         error: (error) => {
             showModal("#alertModal", "#alertModalBody");
             alert.value.status = "danger";
-            alert.value.title = "Error";
-            alert.value.message = error.responseJSON.message;
+            alert.value.title = error.responseJSON.message;
         },
     });
 };

@@ -234,8 +234,6 @@ activeBreadCrumbs.value = breadCrumbs.value;
 const tem = [...breadCrumbs.value];
 const formStatus = tem.pop();
 
-const router = useRouter();
-
 // Functions
 const onSubmit = async () => {
     if (

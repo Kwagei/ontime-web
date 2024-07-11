@@ -1,7 +1,7 @@
 <template>
     <Modal v-if="!!Object.keys(modalData).length" :data="modalData" />
     <h2 v-if="event == 'error'" class="d-flex justify-content-center pt-5">
-        Unable to load events, Try again
+        Unable to load event, Try again
     </h2>
     <div
         v-else-if="event == 'loading'"

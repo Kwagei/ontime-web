@@ -24,6 +24,7 @@ import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
 
 import { API_URL } from "@/assets/js";
+import { removeDuplicates } from "@/assets/js/util";
 
 const router = useRouter();
 const eventId = router.currentRoute.value.params.id;
@@ -44,11 +45,10 @@ const columns = [
     {
         data: null,
         title: "In / Out",
-        className: "text-center",
         render: (data) => {
             return data.participant_id
-                ? `<button class="btn btn-success">Checked In</button>`
-                : `<button class="btn btn-secondary">Not Checked In</button>`;
+                ? `<span class="text-success fw-bold">Attended</span>`
+                : `<span class="text-danger fw-bold">Not Attended</span>`;
         },
     },
 ];
@@ -75,7 +75,7 @@ const options = {
             };
         },
         dataSrc: (json) => {
-            const participants = json.data;
+            const participants = removeDuplicates(json.data);
 
             json.recordsTotal = participants.length;
             json.recordsFiltered = participants.length;

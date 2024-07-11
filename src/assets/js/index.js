@@ -90,7 +90,6 @@ export const getSingleVisitor = async (data) => {
         }
 
         const { data } = await response.json();
-        console.log({ data });
 
         return data.data[0];
     } catch (error) {}

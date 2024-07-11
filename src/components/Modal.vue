@@ -41,6 +41,9 @@
                         {{ data.message }}
                     </div>
 
+                    <!-- Router Link only works if the route is differentso the -->
+                    <!-- `handleIdenticalRoute` function will reload the page if the -->
+                    <!-- route is identical -->
                     <router-link
                         @click="handleIdenticalRoute"
                         v-if="data.pageLink"

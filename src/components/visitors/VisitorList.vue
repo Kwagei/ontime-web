@@ -116,7 +116,7 @@ const initializeDataTable = () => {
                 visitors.value = data;
                 return visitors.value;
             },
-            error: (xhr, error, thrown) => {
+            error: (error) => {
                 console.log("Error fetching data:", error);
             },
         },

@@ -16,7 +16,7 @@
         </div>
 
         <div
-            class="mt-4 form-control input"
+            class="mt-1 form-control input"
             style="margin: auto; padding: 3rem"
         >
             <form
@@ -168,16 +168,13 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 d-flex gap-3">
-                    <button
-                        type="submit"
-                        class="btn btn-primary px-5"
-                        style="margin-left: auto"
-                    >
+                <div class="col-md-12 d-flex gap-3 justify-content-end">
+                    <button type="submit" class="btn btn-primary px-5">
                         Save
                     </button>
                     <button
                         class="btn btn-secondary px-5"
+                        type="button"
                         @click="router.back()"
                     >
                         Cancel
@@ -197,7 +194,6 @@ import {
     registerVisitor,
     editVisitor,
     getSingleVisitor,
-    visuallyHideModalBackdrop,
 } from "@/assets/js/index.js";
 import {
     msisdnValidation,
@@ -265,8 +261,7 @@ const onSubmit = async () => {
 
     showModal("#alertModal", "#alertModalBody");
     alert.value.status = response.ok ? "success" : "danger";
-    alert.value.message = response.result.message;
-    alert.value.title = response.ok ? "Success" : "Error";
+    alert.value.title = response.result.message;
     alert.value.pageLink = `/visitors/${response.result.data[0].id}`;
 
     // Reset form if the response is successful
@@ -277,14 +272,16 @@ const onSubmit = async () => {
 
 const fetchVisitor = async () => {
     if (formStatus.startsWith("edit")) {
-        buttonLabel.value = "Update";
         const id = breadCrumbs.value[1];
         visitorInfo = await getSingleVisitor({ id });
+
+        // update references for input fields
         first_name.value = visitorInfo.first_name;
         middle_name.value = visitorInfo.middle_name;
         last_name.value = visitorInfo.last_name;
         msisdn.value = visitorInfo.msisdn;
         email.value = visitorInfo.email;
+        address.value = visitorInfo.address;
     }
 };
 
@@ -347,7 +344,6 @@ const resetForm = () => {
     msisdn.value = "";
     email.value = "";
     address.value = "";
-    buttonLabel.value = "Save";
 
     // Remove validation classes
     const form = document.querySelector(".needs-validation");
@@ -355,8 +351,8 @@ const resetForm = () => {
 };
 
 // Lifecycle Hooks
-onMounted(() => {
-    fetchVisitor();
+onMounted(async () => {
+    await fetchVisitor();
 
     const form = document.querySelector(".needs-validation");
     form.addEventListener(

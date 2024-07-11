@@ -2,6 +2,7 @@
 import AddEvent from "../components/events/AddEvent.vue";
 import Events from "../views/Events.vue";
 import Event from "../components/events/Event.vue";
+import AddParticipant from "@/components/events/AddParticipant.vue";
 
 // Visitors Components
 import VisitorDetail from "../components/visitors/VisitorDetail.vue";
@@ -20,12 +21,11 @@ import Users from "../views/Users.vue";
 
 // Dashboard Components
 import Dashboard from "../views/Dashboard.vue";
-import Host from "@/components/hosts/Hosts.vue";
-import Room from "@/components/Room.vue";
+import Hosts from "@/components/hosts/Hosts.vue";
+import Rooms from "@/components/Room.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
-import AddParticipant from "@/components/events/AddParticipant.vue";
 
 const routes = [
     {
@@ -134,12 +134,12 @@ const routes = [
             },
             {
                 path: "new-host",
-                component: Host,
+                component: Hosts,
                 name: "new-host",
             },
             {
                 path: "new-room",
-                component: Room,
+                component: Rooms,
                 name: "new-room",
             },
         ],

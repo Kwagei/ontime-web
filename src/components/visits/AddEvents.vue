@@ -391,8 +391,7 @@ const checkParticipantIn = async () => {
 
     showModal("#alertModal", "#alertModalBody");
     status.value = response.ok ? "success" : "danger";
-    message.value = response.result.message;
-    title.value = response.ok ? "Success" : "Error";
+    title.value = response.result.message;
     pageLink.value = `/visits`;
 
     // Reset form if the response is successful

@@ -12,7 +12,7 @@ export const registerVisit = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}visits`, options);
+        const response = await fetch(`${API_URL}/visits`, options);
 
         const result = await response.json();
 
@@ -32,7 +32,7 @@ export const registerVisitor = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}visitors`, options);
+        const response = await fetch(`${API_URL}/visitors`, options);
 
         const result = await response.json();
 
@@ -52,7 +52,7 @@ export const editVisitor = async (id, data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}visitors/${id}`, options);
+        const response = await fetch(`${API_URL}/visitors/${id}`, options);
 
         const result = await response.json();
 
@@ -64,7 +64,7 @@ export const editVisitor = async (id, data) => {
 
 export const getUsers = async () => {
     try {
-        const response = await fetch(`${API_URL}users`);
+        const response = await fetch(`${API_URL}/users`);
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
@@ -80,9 +80,9 @@ export const getSingleVisitor = async (data) => {
 
     try {
         if (id) {
-            response = await fetch(`${API_URL}visitors/${id}`);
+            response = await fetch(`${API_URL}/visitors/${id}`);
         } else if (msisdn) {
-            response = await fetch(`${API_URL}visitors?search=${msisdn}`);
+            response = await fetch(`${API_URL}/visitors?search=${msisdn}`);
         }
 
         if (!response.ok) {
@@ -105,7 +105,7 @@ export const getVisits = async (query = {}) => {
             direction = "",
         } = query;
 
-        let url = `${API_URL}visits?start=${start}&limit=${limit}`;
+        let url = `${API_URL}/visits?start=${start}&limit=${limit}`;
 
         if (search) {
             url += `&search=${search}`;
@@ -139,7 +139,7 @@ export const getVisitors = async (query = {}) => {
             direction = "",
         } = query;
 
-        let url = `${API_URL}visitors?start=${start}&limit=${limit}`;
+        let url = `${API_URL}/visitors?start=${start}&limit=${limit}`;
 
         if (search) {
             url += `&search=${search}`;
@@ -173,7 +173,7 @@ export const getVisitorWithVisits = async (id, query) => {
             direction = "",
         } = query;
 
-        let url = `${API_URL}visitors/${id}/visits?&start=${start}&limit=${limit}`;
+        let url = `${API_URL}/visitors/${id}/visits?&start=${start}&limit=${limit}`;
 
         if (search) {
             url += `&search=${search}`;
@@ -198,9 +198,9 @@ export const getVisitorWithVisits = async (id, query) => {
     }
 };
 
-export const getEvents = async (id) => {
+export const getEvents = async (id, data) => {
     try {
-        let url = `${API_URL}events`;
+        let url = `${API_URL}/events`;
 
         if (id) {
             url += `/${id}`;
@@ -221,7 +221,7 @@ export const getEvents = async (id) => {
 
 export const getHosts = async (id) => {
     try {
-        let url = `${API_URL}hosts`;
+        let url = `${API_URL}/hosts`;
 
         if (id) {
             url += `/${id}`;
@@ -241,7 +241,7 @@ export const getHosts = async (id) => {
 
 export const getRooms = async (id) => {
     try {
-        let url = `${API_URL}rooms`;
+        let url = `${API_URL}/rooms`;
 
         if (id) {
             url += `/${id}`;
@@ -268,7 +268,7 @@ export const registerHost = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}hosts`, options);
+        const response = await fetch(`${API_URL}/hosts`, options);
 
         const result = await response.json();
 
@@ -288,7 +288,7 @@ export const editHost = async (id, data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}hosts/${id}`, options);
+        const response = await fetch(`${API_URL}/hosts/${id}`, options);
 
         const result = await response.json();
 
@@ -317,7 +317,7 @@ export const updateDepartureTime = async (id, data) => {
             },
             body: JSON.stringify(data),
         };
-        const response = await fetch(`${API_URL}visits/${id}`, options);
+        const response = await fetch(`${API_URL}/visits/${id}`, options);
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -342,7 +342,7 @@ export const getParticipants = async (id, query = {}) => {
             direction = "",
         } = query;
 
-        let url = `${API_URL}events/${id}/participants?start=${start}&limit=${limit}`;
+        let url = `${API_URL}/events/${id}/participants?start=${start}&limit=${limit}`;
 
         if (search) {
             url += `&search=${search}`;
@@ -375,7 +375,7 @@ export const registerRoom = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}rooms`, options);
+        const response = await fetch(`${API_URL}/rooms`, options);
 
         const result = await response.json();
 
@@ -395,7 +395,7 @@ export const editRoom = async (id, data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}rooms/${id}`, options);
+        const response = await fetch(`${API_URL}/rooms/${id}`, options);
 
         const result = await response.json();
 

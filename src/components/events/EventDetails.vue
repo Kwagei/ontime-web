@@ -4,23 +4,25 @@
             <BreadCrumbs :breadCrumbs="['events', event.title]" />
             <div class="d-flex gap-3">
                 <button
-                    @click="emit('switch', 'importParticipants')"
                     class="btn btn-secondary"
+                    @click="emit('switch', 'importParticipants')"
                 >
                     Import Participants
                 </button>
                 <button
-                    id="addParticipantBtn"
-                    @click="emit('switch', 'addParticipant')"
                     class="btn btn-primary"
+                    @click="emit('switch', 'addParticipant')"
                 >
                     Add Participant
                 </button>
                 <button
+                    class="btn btn-secondary editBtn"
+                    style="border: 0.125rem solid black"
+                    type="button"
+                    data-bs-theme="dark"
                     @click="$emit('editEvent')"
-                    class="btn btn-link border border-2"
                 >
-                    <Icons :icon="edit" />
+                    <Icons v-model:icon="edit" />
                 </button>
             </div>
         </div>
@@ -76,7 +78,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["switch"]);
+const emit = defineEmits(["editEvent", "switch"]);
 </script>
 
 <style scoped>
@@ -100,17 +102,12 @@ const emit = defineEmits(["switch"]);
 }
 
 .editBtn {
-    padding: 0.5rem !important;
-}
-.editBtn:hover {
-    border: 0.125rem solid black !important;
+    padding: 0.5rem;
 }
 
-.editBtn:hover path {
-    fill: white;
-}
 .editBtn svg {
-    height: 1.5rem !important;
+    height: 1.3rem !important;
+    padding: 0 !important;
     margin: 0 !important;
 }
 </style>

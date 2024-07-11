@@ -81,7 +81,7 @@ onMounted(async () => {
 
 async function getEvent() {
     try {
-        await $.get(API_URL + `events/${eventId.value}`, (data) => {
+        await $.get(API_URL + `/events/${eventId.value}`, (data) => {
             event.value = data.data[0];
         });
     } catch {
@@ -93,7 +93,7 @@ async function getEvent() {
 async function getParticipants() {
     try {
         await $.get(
-            API_URL + `events/${eventId.value}/participants`,
+            API_URL + `/events/${eventId.value}/participants`,
             (data) => {
                 participants.value = data.data;
             }

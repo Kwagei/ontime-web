@@ -93,4 +93,8 @@ a.router-link-active {
 a.router-link-active:hover {
     color: #ff7900 !important;
 }
+
+.view {
+    font-weight: 400;
+}
 </style>

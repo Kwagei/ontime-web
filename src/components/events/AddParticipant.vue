@@ -185,7 +185,7 @@
 import Modal from "../Modal.vue";
 
 import { ref, onMounted, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import $ from "jquery";
 
 import { API_URL } from "@/assets/js/index.js";
@@ -216,6 +216,7 @@ const address = ref("");
 const alert = ref({
     status: "",
     title: "",
+    message: "",
     pageLink: "",
 });
 
@@ -276,70 +277,6 @@ const validEmail = ref(false);
 const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
 const validEmailMessage = ref("Please provide a valid email address");
-
-// Functions
-async function postParticipant() {
-    // return if any of the required fields were not given
-    if (
-        !first_name.value ||
-        !last_name.value ||
-        !msisdn.value ||
-        !email.value ||
-        !address.value
-    )
-        return;
-
-    const participant = {
-        first_name: first_name.value,
-        middle_name: middle_name.value,
-        last_name: last_name.value,
-
-        // format Msisdn for backend
-        msisdn: msisdn.value.startsWith("0")
-            ? `231${msisdn.value.slice(1)}`
-            : msisdn.value,
-
-        email: email.value,
-        address: address.value,
-    };
-
-    const body = {
-        event_id: route.params.id,
-        event_participants: [participant],
-    };
-
-    $.ajax({
-        url: API_URL + "event_participants",
-        type: "POST",
-        data: body,
-        success: (res) => {
-            showModal("#alertModal", "#alertModalBody");
-
-            alert.value.status = "success";
-            alert.value.title = "Participant Added";
-            alert.value.pageLink = `/events/${route.params.id}`;
-
-            clearInputs();
-        },
-        error: (error) => {
-            showModal("#alertModal", "#alertModalBody");
-            alert.value.status = "danger";
-            alert.value.title = error.responseJSON.message;
-        },
-    });
-}
-
-const fetchVisitor = async () => {
-    if (formStatus.startsWith("edit")) {
-        const id = breadCrumbs.value[1];
-        visitorInfo = await getSingleVisitor({ id });
-        first_name.value = visitorInfo.first_name;
-        middle_name.value = visitorInfo.middle_name;
-        last_name.value = visitorInfo.last_name;
-        msisdn.value = visitorInfo.msisdn;
-        email.value = visitorInfo.email;
-    }
-};
 
 const contactValidation = (number) => {
     if (!number) {

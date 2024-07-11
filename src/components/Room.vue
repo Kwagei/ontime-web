@@ -60,16 +60,16 @@
 					</div>
 				</div>
 
-				<div class="col-md-12 d-flex justify-content-end">
-					<button
-						type="submit"
-						class="btn btn-primary"
-						style="
-							padding: 0.7rem 2rem !important;
-							font-weight: 600;
-						"
-					>
+				<div class="col-md-12 d-flex gap-3 justify-content-end">
+					<button type="submit" class="btn btn-primary px-5">
 						{{ buttonLabel }}
+					</button>
+					<button
+						class="btn btn-secondary px-5"
+						type="button"
+						@click="router.back()"
+					>
+						Cancel
 					</button>
 				</div>
 			</form>
@@ -79,13 +79,15 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import Modal from "../components/Modal.vue";
 import { registerRoom, editRoom, getRooms } from "@/assets/js/index.js";
 import { showModal } from "@/assets/js/util.js";
 // Route and State
 const route = useRoute();
+const router = useRouter();
+
 const name = ref("");
 const code = ref("");
 

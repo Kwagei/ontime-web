@@ -119,7 +119,7 @@
                             required
                         />
                         <ul class="dropdown-menu w-100">
-                            <template v-for="host in hosts">
+                            <template v-for="host in hostsData">
                                 <li
                                     class="dropdown-item"
                                     :value="host.id"
@@ -186,7 +186,7 @@
                             required
                         />
                         <ul class="dropdown-menu w-100">
-                            <template v-for="room in rooms">
+                            <template v-for="room in roomsData">
                                 <li
                                     class="dropdown-item"
                                     :value="room.id"
@@ -291,10 +291,10 @@ const startDate = ref("");
 const endDate = ref("");
 const hostValue = ref("");
 const hostID = ref("");
-const hosts = ref("");
+const hostsData = ref("");
 const roomValue = ref("");
 const roomID = ref("");
-const rooms = ref("");
+const roomsData = ref("");
 const type = ref("");
 const details = ref("");
 
@@ -335,7 +335,7 @@ const updateRoomTerm = (room) => {
     roomID.value = room.id;
 };
 
-const onSubmit = async (event) => {
+const onSubmit = async () => {
     if (
         !title.value ||
         !facilitator.value ||
@@ -361,8 +361,8 @@ const onSubmit = async (event) => {
 
     const options =
         setMode() === "edit"
-            ? { url: API_URL + `events/${eventId.value}`, type: "PUT" }
-            : { url: API_URL + "events/", type: "POST" };
+            ? { url: API_URL + `/events/${eventId.value}`, type: "PUT" }
+            : { url: API_URL + "/events/", type: "POST" };
 
     $.ajax({
         url: options.url,
@@ -408,8 +408,11 @@ onMounted(async () => {
     // get event to edit if we're trying to edit
     if (mode == "edit") await getEventToEdit();
 
-    hosts.value = await getHosts();
-    rooms.value = await getRooms();
+    const { hosts } = await getHosts();
+    hostsData.value = hosts;
+    const { rooms } = await getRooms();
+
+    roomsData.value = rooms;
 
     ("use strict");
 

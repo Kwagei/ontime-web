@@ -9,7 +9,7 @@
 				<RefreshList @click="handleRefresh" />
 
 				<router-link :to="{ name: 'add-visitor' }">
-					<button type="button" class="btn btn-primary">
+					<button type="button" class="btn btn-primary px-5">
 						Add Visitor
 					</button>
 				</router-link>

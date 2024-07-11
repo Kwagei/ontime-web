@@ -80,7 +80,26 @@ export const emailValidation = (mail) => {
     }
 };
 
-export const showModal = (parent, child) => {
+export const showModal = (parent = "#alertModal", child = "alertModalBody") => {
     const modal = new boosted.Modal(parent, { backdrop: false });
     modal.show(document.querySelector(child));
 };
+
+// remove duplicates from an array of object passed
+export function removeDuplicates(arrOfObjs) {
+    const seenParticipants = new Map();
+    const newArr = [];
+
+    for (let i = arrOfObjs.length - 1; i > -1; i--) {
+        const obj = arrOfObjs[i];
+        const id = obj.id;
+
+        if (seenParticipants.has(id)) continue;
+        else {
+            seenParticipants.set(id, true);
+            newArr.push(obj);
+        }
+    }
+
+    return newArr;
+}

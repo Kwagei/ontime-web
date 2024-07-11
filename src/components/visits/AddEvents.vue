@@ -377,6 +377,7 @@ const participantDetail = async (id) => {
 			last_name: participant.last_name,
 			email: participant.email,
 			msisdn: participant.msisdn,
+			address: participant.address,
 		});
 
 		visitorData = data.result.data[0];

@@ -1,36 +1,56 @@
 <template>
-	<div class="container">
-		<DataTable
-			id="visitsTable"
-			class="display w-100 table"
-			:columns="columns"
-			:options="options"
-			ref="table"
-		/>
+	<div
+		class="table-responsive container p-0 d-flex flex-column"
+		style="gap: 0.7rem"
+	>
+		<div>
+			<DataTable
+				id="eventssTable"
+				class="display w-100 table"
+				:columns="columns"
+				:options="options"
+				ref="table"
+			/>
+		</div>
 	</div>
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
+
 import { API_URL } from "@/assets/js";
+
+const router = useRouter();
+const eventId = router.currentRoute.value.params.id;
+
+const emit = defineEmits(["switch"]);
+
+let allParticipants = [];
 
 DataTable.use(DataTablesCore);
 
-import { ref } from "vue";
-import { useRoute } from "vue-router";
-const route = useRoute();
-const id = ref(route.params.id);
-
 const columns = [
-	{ data: "first_name", title: "First name" },
-	{ data: "middle_name", title: "Middle name" },
-	{ data: "last_name", title: "Last name" },
-	{ data: "msisdn", title: "Phone number" },
+	{ data: "first_name", title: "First Name" },
+	{ data: "middle_name", title: "Middle Name" },
+	{ data: "last_name", title: "Last Name" },
 	{ data: "email", title: "Email" },
+	{ data: "msisdn", title: "Contact" },
 	{ data: "address", title: "Address" },
+	{
+		data: null,
+		title: "In / Out",
+		className: "text-center",
+		render: (data) => {
+			return data.participant_id
+				? `<button class="btn btn-success">Checked In</button>`
+				: `<button class="btn btn-secondary">Not Checked In</button>`;
+		},
+	},
 ];
 
 const options = {
@@ -38,15 +58,20 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}events/${id.value}/participants`,
+		url: `${API_URL}/events/${eventId}/participants/`,
 		type: "GET",
 		data: (query) => {
+			const order =
+				query.columns[query.order[0].column].data === "date"
+					? "date_time"
+					: query.columns[query.order[0].column].data;
+
 			return {
 				start: query.start,
 				limit: query.length,
 				search: query.search.value,
-				sort: query.columns[query.order[0].column].data,
-				order: query.order[0].dir,
+				sort: order,
+				direction: query.order[0].dir,
 			};
 		},
 		dataSrc: (json) => {
@@ -55,14 +80,16 @@ const options = {
 			json.recordsTotal = length;
 			json.recordsFiltered = length;
 
-			participants.forEach((d) => {
-				d.address = formatAddress(d.address);
+			participants.forEach((participant) => {
+				participant.msisdn = `0${participant.msisdn.slice(3)}`;
 			});
+
+			allParticipants = participants;
 
 			return participants;
 		},
-		error: (xhr, error, thrown) => {
-			console.log("Error fetching data:", error);
+		error: (error) => {
+			console.log("Error fetching data:", error.responseJSON);
 		},
 	},
 	responsive: true,
@@ -71,38 +98,55 @@ const options = {
 		searchPlaceholder: "Search ...",
 		search: "",
 		emptyTable: `
-         <div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
-            No participants to show!
-            <svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"/></svg>
-            Please click the add participant or import participants button to create new participants.
-        </div>
+			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
+				No Event Participants to show!
+				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M80 17.5H70v-3.8c0-2.071-1.679-3.7-3.75-3.7a3.75 3.75 0 00-3.75 3.75v3.75H35.001L35 13.75a3.75 3.75 0 00-7.5 0v3.75H10V80a7.5 7.5 0 007.5 7.5h70V25a7.5 7.5 0 00-7.5-7.5m2.5 65H18.75A3.75 3.75 0 0115 78.75V40h63.75a3.75 3.75 0 013.75 3.75zM25 26.25a6.24 6.24 0 012.5-5v5a3.75 3.75 0 007.5 0V25h.001v-3.75a6.25 6.25 0 11-10.001 5m35 0a6.24 6.24 0 012.5-5v5a3.75 3.75 0 007.5 0L69.999 25H70v-3.7a6.15 6.15 0 012.5 4.95 6.25 6.25 0 01-12.5 0M23.75 45a3.75 3.75 0 103.75 3.75A3.75 3.75 0 0023.75 45m48.75 1.2H35c-1.38 0-2.5 1.17-2.5 2.55s1.12 2.45 2.5 2.45h37.5c1.38 0 2.5-1.07 2.5-2.45s-1.12-2.55-2.5-2.55M23.75 57.5a3.75 3.75 0 103.75 3.75 3.75 3.75 0 00-3.75-3.75m48.75 1.2H35c-1.38 0-2.5 1.17-2.5 2.55s1.12 2.45 2.5 2.45h37.5c1.38 0 2.5-1.07 2.5-2.45s-1.12-2.55-2.5-2.55M23.75 70a3.75 3.75 0 103.75 3.75A3.75 3.75 0 0023.75 70m48.75 1.2H35c-1.38 0-2.5 1.17-2.5 2.55s1.12 2.45 2.5 2.45h37.5c1.38 0 2.5-1.07 2.5-2.45s-1.12-2.55-2.5-2.55"/></svg>
+			</div>
         `,
-		loadingRecords: `<div class="d-flex justify-content-center p-4">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        </div>`,
+		loadingRecords: `
+			<div class="d-flex justify-content-center p-4">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		`,
 	},
-	order: [[0, "desc"]],
+	order: [[2, "desc"]],
 	destroy: true,
 };
 
-const MAX_DETAIL_LEN = 30;
+const table = ref();
 
-function formatAddress(address) {
-	if (!address) {
-		return "";
-	}
-	const addressLen = address.length;
-	const newAddress =
-		addressLen >= MAX_DETAIL_LEN
-			? `${address.slice(0, MAX_DETAIL_LEN)}...`
-			: address;
+onMounted(() => {
+	handleEventDetail();
+});
 
-	return newAddress;
+const handleEventDetail = () => {
+	// don't add click event listener on table rows
+	// if there are no participants to show
+	if (!allParticipants.length) return;
+
+	const dt = table.value.dt;
+
+	dt.on("click", "tr", function () {
+		const { id } = dt.row(this).data();
+		displayEventPage(id);
+	});
+};
+
+function displayEventPage(eventId) {
+	router.push({ name: "specific-event", params: { id: eventId } });
 }
 </script>
 
 <style scoped>
-/* code... */
+.cursorPointer {
+	cursor: pointer;
+}
+
+th,
+td {
+	padding: 0.9rem;
+	font-size: 0.9rem;
+}
 </style>

@@ -19,16 +19,18 @@ import AddVisits from "@/components/visits/AddVisits.vue";
 import Users from "../views/Users.vue";
 
 // Dashboard Components
-
 import Dashboard from "../views/Dashboard.vue";
-import Host from "@/components/Host.vue";
-import Room from "@/components/Room.vue";
-
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
 import AddParticipant from "@/components/events/AddParticipant.vue";
+import Hosts from "@/components/hosts/Hosts.vue";
+import Room from "@/components/Room.vue";
 
 const routes = [
+	{
+		path: "",
+		redirect: "/visits",
+	},
 	{
 		path: "/dashboard",
 		component: Dashboard,
@@ -131,7 +133,7 @@ const routes = [
 			},
 			{
 				path: "new-host",
-				component: Host,
+				component: Hosts,
 				name: "new-host",
 			},
 			{

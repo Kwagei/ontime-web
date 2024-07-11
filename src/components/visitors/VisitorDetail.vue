@@ -101,6 +101,7 @@
 </template>
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
+import dayjs from "dayjs";
 import Icons from "../Icons.vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -116,16 +117,19 @@ import { RouterLink } from "vue-router";
 
 const edit = "pencil";
 
+const route = useRoute();
+
 const breadCrumbs = defineModel("breadCrumbs");
 breadCrumbs.value = route.path.split("/").slice(1);
 
-const route = useRoute();
 const id = ref(route.params.id);
 const visitorInfo = ref("");
 
 const columns = [
-	{ data: "date", title: "Date" },
-	{ data: "arrival_time", title: "Arrival Time" },
+	{ data: "date_time", title: "Date" },
+	{ data: "host", title: "Host" },
+	{ data: "institution", title: "Institution" },
+	{ data: "room", title: "Room" },
 	{ data: "departure_time", title: "Departure Time" },
 	{ data: "purpose", title: "Purpose" },
 	{ data: "items", title: "Items" },
@@ -136,7 +140,7 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}visitors/${id.value}/visits`,
+		url: `${API_URL}/visitors/${id.value}/visits`,
 		type: "GET",
 		data: (query) => {
 			const order =
@@ -158,10 +162,10 @@ const options = {
 			json.recordsTotal = visits.length;
 			json.recordsFiltered = visits.length;
 
-			return visits.visitorVisits;
+			return formatDateTime(visits.visitorVisits);
 		},
-		error: (xhr, error, thrown) => {
-			console.log("Error fetching data:", error);
+		error: (error) => {
+			console.log("Error fetching data:", error.responseJSON);
 		},
 	},
 	responsive: true,
@@ -195,20 +199,18 @@ const formatVisitorInfo = (key) => {
 };
 
 const formatDateTime = (visits) => {
-	return visits.map((visit) => {
-		if (visit.date_time) {
-			const [date, time] = visit.date_time.split("T");
-			const arrival_time = time.split(".")[0];
-			visit.items = visit.items ? visit.items.join(", ") : "";
-			delete visit.date_time;
-			return { ...visit, date, arrival_time };
-		} else {
-			return visit;
-		}
-	});
-};
+	for (const visit of visits) {
+		const now = dayjs(visit.date_time);
 
-const visitDetail = () => {};
+		if (visit.date_time) {
+			visit.date_time =
+				now.format("dddd, MMMM D, YYYY") + " " + now.format("HH:mm:ss");
+		}
+
+		visit.items = visit.items ? visit.items.join(", ") : "";
+	}
+	return visits;
+};
 </script>
 
 <style scoped>
@@ -259,7 +261,7 @@ const visitDetail = () => {};
 	fill: white;
 }
 .editBtn svg {
-	height: 1.5rem !important;
+	height: 1.3rem !important;
 	margin: 0 !important;
 }
 </style>

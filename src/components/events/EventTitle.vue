@@ -1,26 +1,24 @@
 <template>
-	<div
-		id="title"
-		class="bg-supporting-purple title-bar w-100"
-		data-bs-theme="light"
-	>
-		<div
-			class="d-flex justify-content-between align-items-center container"
-		>
-			<h5 class="display-3">{{ title }}</h5>
-			<picture>
-				<img src="../../assets/images/eventTitleBackdrop.png" />
-			</picture>
-		</div>
-	</div>
+    <div
+        id="title"
+        class="bg-supporting-purple title-bar w-100"
+        data-bs-theme="light"
+    >
+        <div class="container-xxl">
+            <h5 class="display-1 py-2 my-auto">{{ title }}</h5>
+            <picture class="mt-3">
+                <img src="../../assets/images/eventTitleBackdrop.png" />
+            </picture>
+        </div>
+    </div>
 </template>
 
 <script setup>
 const props = defineProps({
-	title: {
-		type: String,
-		required: true,
-	},
+    title: {
+        type: String,
+        required: true,
+    },
 });
 </script>
 

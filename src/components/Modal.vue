@@ -42,13 +42,13 @@
 					</div>
 
 					<router-link
+						@click="handleIdenticalRoute"
 						v-if="data.pageLink"
-						:to="{
-							path: data.pageLink,
-						}"
-						v-model:visitor-info="visitorInfo"
+						:to="data.pageLink"
 					>
-						<button type="button" class="btn btn-link">view</button>
+						<button type="button" class="btn btn-link view">
+							View
+						</button>
 					</router-link>
 				</div>
 			</div>
@@ -57,11 +57,22 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
 
 const props = defineProps({
 	data: { type: Object, required: true },
 });
+
+function handleIdenticalRoute() {
+	// reload the page if the new route and
+	// the current route are identical
+	if (props.data.pageLink == route.fullPath) router.go(0);
+
+	// otherwise do nothing
+}
 </script>
 
 <style scoped>
@@ -75,5 +86,9 @@ a.router-link-active {
 
 a.router-link-active:hover {
 	color: #ff7900 !important;
+}
+
+.view {
+	font-weight: 400;
 }
 </style>

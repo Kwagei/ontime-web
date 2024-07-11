@@ -17,7 +17,8 @@
 
 <script setup>
 import { API_URL, updateDepartureTime } from "@/assets/js/index";
-import { onMounted, ref, watch } from "vue";
+import dayjs from "dayjs";
+import { onMounted, ref, render } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -26,28 +27,31 @@ import "datatables.net-responsive-dt";
 DataTable.use(DataTablesCore);
 
 const columns = [
-	{ data: "date", title: "Date" },
+	{ data: "date_time", title: "Date" },
 	{ data: "visitor", title: "Visitor" },
-	{ data: "arrival_time", title: "Arrival Time" },
 	{ data: "departure_time", title: "Departure Time" },
 	{ data: "purpose", title: "Purpose" },
 	{ data: "items", title: "Items" },
 	{
-		title: "Check Out",
 		data: null,
-		className: "text-center",
-		render: (data, type, row) => {
+		title: "Status",
+		render: (data) => {
 			return data.departure_time
-				? `<span class="text-center">
-							<svg data-v-61ae8e47="" class="solaris-icon" 
-                            aria-hidden="true" focusable="false">
-                                <use href="/src/assets/svg/solaris-icons-sprite.svg#tick-confirmation"></use>
-                            </svg>
-						</span>`
-				: `<button type="button" class="btn btn-secondary"
-                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                            Check Out
-                        </button>`;
+				? `<span class="text-default fw-bold">Checked Out</span>`
+				: `<span class="text-success fw-bold">Checked In</span>`;
+		},
+	},
+	{
+		data: null,
+		title: "Action",
+		className: "text-center",
+		render: (data) => {
+			return `<button type="button" class="btn btn-secondary"
+                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" ${
+								data.departure_time ? "disabled" : ""
+							}>
+                         Check Out
+                      </button>`;
 		},
 	},
 ];
@@ -57,7 +61,7 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}visits`,
+		url: `${API_URL}/visits`,
 		type: "GET",
 		data: (query) => {
 			const order =
@@ -79,8 +83,7 @@ const options = {
 			json.recordsFiltered = length;
 			return formatDateTime(visits);
 		},
-
-		error: (xhr, error, thrown) => {
+		error: (error) => {
 			console.log("Error fetching data:", error);
 		},
 	},
@@ -120,16 +123,18 @@ const checkout = async (id) => {
 	}
 };
 
-const handleCheckout = async (id, target) => {
+const handleCheckout = async (id, tr) => {
 	try {
 		const time = await checkout(id);
-		const tr = $(target).children("td");
+		const td = $(tr).children("td");
 
-		const checkStatus = $(tr[6]);
-		checkStatus.html(`<span class="text-center">
-							<svg data-v-61ae8e47="" class="solaris-icon" aria-hidden="true" focusable="false"><use href="/src/assets/svg/solaris-icons-sprite.svg#tick-confirmation"></use></svg>
-						</span>`);
-		const departure_time = $(tr[3]);
+		const checkStatus = $(td[6]).children("button")[0];
+		checkStatus.setAttribute("disabled", "disabled");
+
+		const status = $(td[5]);
+		status.html(`<span class="text-default fw-bold">Checked Out</span>`);
+
+		const departure_time = $(td[2]);
 		departure_time.text(time);
 	} catch (error) {
 		console.error("Error updating departure time:", error);
@@ -141,20 +146,23 @@ const table = ref();
 const handleCheckoutDetail = () => {
 	const dt = table.value.dt;
 
-	dt.on("click", "tr", function (event) {
-		const target = $(event.target).closest("tr");
-		const { id } = dt.row(this).data();
-		handleCheckout(id, target);
+	dt.on("click", "button", function (event) {
+		const checkOutBtn = event.target;
+
+		const tr = $(checkOutBtn).closest("tr");
+		const { id } = dt.row(tr).data();
+
+		handleCheckout(id, tr);
 	});
 };
 
 const formatDateTime = (visits) => {
 	return visits.map((visit) => {
-		let date, arrival_time;
+		const now = dayjs(visit.date_time);
 
 		if (visit.date_time) {
-			[date, arrival_time] = visit.date_time.split("T");
-			arrival_time = arrival_time.split(".")[0];
+			visit.date_time =
+				now.format("dddd, MMMM D, YYYY") + " " + now.format("HH:mm:ss");
 		}
 
 		if (Array.isArray(visit.items)) {
@@ -171,8 +179,6 @@ const formatDateTime = (visits) => {
 
 		return {
 			...visit,
-			date,
-			arrival_time,
 			visitor: `${visit.first_name} ${visit.last_name}`,
 		};
 	});
@@ -209,6 +215,10 @@ td {
 
 svg {
 	color: #228722;
+}
+
+.fw-bold {
+	font-weight: 700;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {

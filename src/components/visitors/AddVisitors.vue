@@ -168,17 +168,19 @@
 					</div>
 				</div>
 
-				<div class="col-md-12 d-flex">
+				<div class="col-md-12 d-flex gap-3">
 					<button
 						type="submit"
-						class="btn btn-primary"
-						style="
-							padding: 0.7rem 2rem !important;
-							font-weight: 600;
-							margin-left: auto;
-						"
+						class="btn btn-primary px-5"
+						style="margin-left: auto"
 					>
-						{{ buttonLabel }}
+						Save
+					</button>
+					<button
+						class="btn btn-secondary px-5"
+						@click="router.back()"
+					>
+						Cancel
 					</button>
 				</div>
 			</form>
@@ -188,7 +190,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import {
@@ -205,6 +207,9 @@ import {
 
 // Route and State
 const route = useRoute();
+const router = useRouter();
+
+// visitor data
 const first_name = ref("");
 const middle_name = ref("");
 const last_name = ref("");
@@ -219,7 +224,6 @@ const alert = ref({
 	pageLink: "",
 });
 
-const buttonLabel = ref("Save");
 let visitorInfo;
 
 // Form status and breadcrumbs
@@ -245,9 +249,12 @@ const onSubmit = async () => {
 		first_name: first_name.value,
 		middle_name: middle_name.value,
 		last_name: last_name.value,
+
+		// format msisdn for backend
 		msisdn: msisdn.value.startsWith("0")
 			? `231${msisdn.value.slice(1)}`
 			: msisdn.value,
+
 		email: email.value,
 		address: address.value,
 	};

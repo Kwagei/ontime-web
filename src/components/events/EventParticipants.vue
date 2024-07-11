@@ -44,7 +44,7 @@ const columns = [
     { data: "address", title: "Address" },
     {
         data: null,
-        title: "In / Out",
+        title: "Attendance",
         render: (data) => {
             return data.participant_id
                 ? `<span class="text-success fw-bold">Attended</span>`

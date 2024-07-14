@@ -126,7 +126,7 @@
 								:to="{ name: 'new-host' }"
 								class="text-primary"
 							>
-								<li class="dropdown-item">create new host</li>
+								<li class="dropdown-item">Create new host</li>
 							</router-link>
 						</ul>
 
@@ -195,7 +195,7 @@
 								:to="{ name: 'new-room' }"
 								class="text-primary"
 							>
-								<li class="dropdown-item">create new room</li>
+								<li class="dropdown-item">Create new room</li>
 							</router-link>
 						</ul>
 

@@ -93,3 +93,7 @@ table tr {
 		fill: var(--bs-white) !important;
 	}
 }
+
+.dropdown-item {
+	cursor: pointer;
+}

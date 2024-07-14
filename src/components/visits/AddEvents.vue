@@ -90,7 +90,7 @@
 			style="border: none; background-color: transparent; gap: 3rem"
 		>
 			<form class="row g-3">
-				<div class="dropdown" style="width: 45%">
+				<div class="dropdown col-md-4">
 					<label
 						for="selectEventInput"
 						class="form-label is-required"
@@ -98,27 +98,20 @@
 						Select Event:
 					</label>
 
-					<div class="btn-group w-100">
+					<div class="w-100 position-relative">
 						<input
 							type="text"
-							class="form-control border border-2"
+							class="form-select dropdown-toggle dropdown-toggle-split"
 							id="selectEventInput"
 							:id="eventID"
 							:value="eventValue"
+							v-model="eventValue"
 							aria-expanded="false"
 							data-bs-toggle="dropdown"
 							autocomplete="off"
 							placeholder="Select Event..."
 						/>
 
-						<button
-							type="button"
-							class="btn btn-lg btn-outline-secondary dropdown-toggle dropdown-toggle-split"
-							data-bs-toggle="dropdown"
-							aria-expanded="false"
-						>
-							<span class="visually-hidden">Toggle Dropdown</span>
-						</button>
 						<ul class="dropdown-menu w-100">
 							<template v-for="event in events">
 								<li
@@ -133,7 +126,6 @@
 								<li
 									class="dropdown-item"
 									style="color: #ff7900"
-									v-if="!events[index + 1]"
 								>
 									Create new event
 								</li>
@@ -158,7 +150,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../Modal.vue";
 import {
@@ -180,7 +172,12 @@ DataTable.use(DataTablesCore);
 
 const table = ref();
 const showTable = ref(false);
+
+// Events Data
+const events = ref([]);
 const eventID = ref("");
+const eventValue = ref("");
+const eventTem = ref("");
 
 // columns for Data Table
 const columns = [
@@ -285,11 +282,9 @@ const alert = ref({
 
 // others
 const visitor = ref("");
-const events = ref([]);
 const participants = ref([]);
 const participant = ref("");
 const temBelonging = ref("");
-const eventValue = ref("");
 const MAX_DETAIL_LEN = 30;
 
 const activeBreadCrumbs = ref([]);
@@ -369,6 +364,8 @@ const getEventsOptions = async () => {
 			title: event.title,
 			room_id: event.room_id,
 		}));
+
+		eventTem.value = events.value;
 	} catch (error) {
 		console.error("Error retrieving users:", error);
 	}
@@ -397,7 +394,7 @@ const checkParticipantIn = async () => {
 
 	showModal("#alertModal", "#alertModalBody");
 	alert.value.status = response.ok ? "success" : "danger";
-	alert.value.title = "Success";
+	alert.value.title = response.ok ? "Success" : "Error";
 	alert.value.message = response.result.message;
 	alert.value.pageLink = `/visits`;
 
@@ -530,6 +527,19 @@ const updateVisitorVisit = () => {
 	// Reset for new participant.
 	participant.value = "";
 };
+
+watch(
+	() => eventValue.value,
+	(n) => {
+		events.value = n
+			? eventTem.value.filter((event) =>
+					event.title
+						.toLocaleLowerCase()
+						.includes(n.toLocaleLowerCase())
+			  )
+			: eventTem.value;
+	}
+);
 </script>
 
 <style scoped>

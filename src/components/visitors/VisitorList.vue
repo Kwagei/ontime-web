@@ -1,18 +1,18 @@
 <template>
-    <div
-        class="table-responsive container p-0 d-flex flex-column"
-        style="gap: 0.7rem"
-    >
-        <div>
-            <DataTable
-                id="visitorsTable"
-                class="display w-100 table"
-                :columns="columns"
-                :options="options"
-                ref="table"
-            />
-        </div>
-    </div>
+	<div
+		class="table-responsive container p-0 d-flex flex-column"
+		style="gap: 0.7rem"
+	>
+		<div>
+			<DataTable
+				id="visitorsTable"
+				class="display w-100 table"
+				:columns="columns"
+				:options="options"
+				ref="table"
+			/>
+		</div>
+	</div>
 </template>
 
 <script setup>
@@ -28,13 +28,13 @@ DataTable.use(DataTablesCore);
 import dayjs from "dayjs";
 
 const columns = [
-    { data: "first_name", title: "First name" },
-    { data: "middle_name", title: "Middle name" },
-    { data: "last_name", title: "Last name" },
-    { data: "msisdn", title: "Phone number" },
-    { data: "email", title: "Email" },
-    { data: "address", title: "Address" },
-    { data: "created_at", title: "Created At" },
+	{ data: "first_name", title: "First name" },
+	{ data: "middle_name", title: "Middle name" },
+	{ data: "last_name", title: "Last name" },
+	{ data: "msisdn", title: "Phone number" },
+	{ data: "email", title: "Email" },
+	{ data: "address", title: "Address" },
+	{ data: "created_at", title: "Created At" },
 ];
 
 const table = ref();
@@ -45,139 +45,144 @@ const refresh = defineModel("refresh");
 const visitors = ref();
 
 watch(
-    () => refresh.value,
-    (n) => {
-        refresh.value = false;
-    }
+	() => refresh.value,
+	(n) => {
+		refresh.value = false;
+	}
 );
 
 const visitorDetail = (id) => {
-    router.push({ name: "visitorDetail", params: { id } });
+	router.push({ name: "visitorDetail", params: { id } });
 };
 
 const handleVisitorDetail = () => {
-    const dt = table.value.dt;
-    dt.on("click", "tr", function () {
-        const { id } = dt.row(this).data();
-        visitorDetail(id);
-    });
+	const dt = table.value.dt;
+	dt.on("click", "tr", function (event) {
+		if (event.target.dataset.empty) addVisitor();
+
+		const visitorData = dt.row(this).data();
+
+		if (visitorData) {
+			visitorDetail(visitorData.id);
+		}
+	});
 };
 
 const formatDateTime = (visitors) => {
-    for (const visitor of visitors) {
-        const now = dayjs(visitor.created_at);
-        visitor.created_at =
-            now.format("dddd, MMMM D, YYYY") + " " + now.format("HH:mm:ss");
-    }
+	for (const visitor of visitors) {
+		const now = dayjs(visitor.created_at);
+		visitor.created_at =
+			now.format("dddd, MMMM D, YYYY") + " " + now.format("HH:mm:ss");
+	}
 };
 
 function formatAddress(address) {
-    if (!address) {
-        return "";
-    }
+	if (!address) {
+		return "";
+	}
 
-    const addressLen = address.length;
-    const newAddress =
-        addressLen >= MAX_DETAIL_LEN
-            ? `${address.slice(0, MAX_DETAIL_LEN)}...`
-            : address;
+	const addressLen = address.length;
+	const newAddress =
+		addressLen >= MAX_DETAIL_LEN
+			? `${address.slice(0, MAX_DETAIL_LEN)}...`
+			: address;
 
-    return newAddress;
+	return newAddress;
 }
 
 const options = {
-    responsive: true,
-    select: true,
-    serverSide: true,
-    ajax: {
-        url: `${API_URL}/visitors`,
-        type: "GET",
-        data: (query) => {
-            return {
-                start: query.start,
-                limit: query.length,
-                search: query.search.value,
-                sort: query.columns[query.order[0].column].data,
-                order: query.order[0].dir,
-            };
-        },
-        dataSrc: (json) => {
-            const { data, length } = json.data;
+	responsive: true,
+	select: true,
+	serverSide: true,
+	ajax: {
+		url: `${API_URL}/visitors`,
+		type: "GET",
+		data: (query) => {
+			return {
+				start: query.start,
+				limit: query.length,
+				search: query.search.value,
+				sort: query.columns[query.order[0].column].data,
+				order: query.order[0].dir,
+			};
+		},
+		dataSrc: (json) => {
+			const { data, length } = json.data;
 
-            json.recordsTotal = length;
-            json.recordsFiltered = length;
+			json.recordsTotal = length;
+			json.recordsFiltered = length;
 
-            formatDateTime(data);
-            data.forEach((d) => {
-                d.address = formatAddress(d.address);
-            });
+			formatDateTime(data);
+			data.forEach((d) => {
+				d.address = formatAddress(d.address);
+			});
 
-            visitors.value = data;
-            return visitors.value;
-        },
-        error: (error) => {
-            console.log("Error fetching data:", error);
-        },
-    },
-    responsive: true,
-    lengthMenu: [10, 25, 50, 100],
-    language: {
-        searchPlaceholder: "Search ...",
-        search: "",
-        emptyTable: `
+			visitors.value = data;
+			return visitors.value;
+		},
+		error: (error) => {
+			console.log("Error fetching data:", error);
+		},
+	},
+	responsive: true,
+	lengthMenu: [10, 25, 50, 100],
+	language: {
+		searchPlaceholder: "Search ...",
+		search: "",
+		zeroRecords: `
                 <div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
                     No Visitors to show!
                     <svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"/></svg>
-					<router-link to="/visitors/new-visitor">
-						<button class="btn btn-secondary">
-							Add Visitor
-						</button>
-					</router-link>
+                    <button class="btn btn-secondary" data-empty="true" >Add Visitor</button>
                 </div>
 			`,
-        loadingRecords: `<div class="d-flex justify-content-center p-4">
+		loadingRecords: `<div class="d-flex justify-content-center p-4">
 				<div class="spinner-border" role="status">
 					<span class="visually-hidden">Loading...</span>
 				</div>
 			</div>`,
-    },
-    order: [[6, "desc"]],
-    destroy: true,
+	},
+	order: [[6, "desc"]],
+	destroy: true,
+};
+
+const addVisitor = () => {
+	router.push({ name: "add-visitor" });
 };
 
 onMounted(() => {
-    handleVisitorDetail();
+	handleVisitorDetail();
 });
 </script>
 
 <style scoped>
 table {
-    margin: 0;
+	margin: 0;
 }
 
 table input {
-    background-color: red !important;
+	background-color: red !important;
 }
 
 tr {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 th,
 td {
-    padding: 0.9rem;
-    font-size: 0.9rem;
+	padding: 0.9rem;
+	font-size: 0.9rem;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {
-    th,
-    td {
-        padding: 0.7rem;
-    }
+	th,
+	td {
+		padding: 0.7rem;
+	}
 }
 
 svg.solaris-icon {
-    width: 1.2rem;
-    height: 1.2rem;
+	width: 1.2rem;
+	height: 1.2rem;
 }
 </style>

@@ -162,7 +162,7 @@ import {
 } from "@/assets/js/index.js";
 import $ from "jquery";
 
-import { showModal, removeDuplicates } from "@/assets/js/util";
+import { showModal } from "@/assets/js/util";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -219,7 +219,7 @@ const dataTableOptions = ref({
 			json.recordsTotal = json.data.length;
 			json.recordsFiltered = json.data.length;
 
-			participants.value = removeDuplicates(json.data.participants);
+			participants.value = json.data.participants;
 
 			participants.value.forEach((visitor) => {
 				visitor.address = formatAddress(visitor.address);

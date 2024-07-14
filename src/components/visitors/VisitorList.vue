@@ -113,8 +113,9 @@ const options = {
 			json.recordsFiltered = length;
 
 			formatDateTime(data);
-			data.forEach((d) => {
-				d.address = formatAddress(d.address);
+			data.forEach((visitor) => {
+				visitor.address = formatAddress(visitor.address);
+				visitor.msisdn = `0${visitor.msisdn.slice(3)}`;
 			});
 
 			visitors.value = data;

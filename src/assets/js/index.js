@@ -12,7 +12,7 @@ export const registerVisit = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/visits`, options);
+        const response = await fetch(`${API_URL}visits`, options);
 
         const result = await response.json();
 
@@ -198,7 +198,7 @@ export const getVisitorWithVisits = async (id, query) => {
     }
 };
 
-export const getEvents = async (id, data) => {
+export const getEvents = async (id) => {
     try {
         let url = `${API_URL}/events`;
 
@@ -300,12 +300,6 @@ export const editHost = async (id, data) => {
 
 export function visuallyHideModalBackdrop() {
     $(".modal-backdrop").addClass("visually-hidden");
-}
-
-export function formatDate(date) {
-    const rawDate = new Date(date);
-
-    return rawDate.toString().split(" 0")[0];
 }
 
 export const updateDepartureTime = async (id, data) => {

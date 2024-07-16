@@ -11,6 +11,7 @@
                 </button>
                 <button
                     class="btn btn-primary"
+                    id="addParticipantBtn"
                     @click="emit('switch', 'addParticipant')"
                 >
                     Add Participant
@@ -43,13 +44,19 @@
                 </div>
                 <div class="d-flex flex-column align-items-end">
                     <span class="fs-6">Start Date</span>
-                    <h4>{{ formatDate(event.start_date) }}</h4>
+                    <h4>
+                        {{ formatDateTime(event.start_date, { date: true }) }}
+                    </h4>
                     <span class="fs-6">End Date</span>
-                    <h4>{{ formatDate(event.end_date) }}</h4>
+                    <h4>
+                        {{ formatDateTime(event.end_date, { date: true }) }}
+                    </h4>
                     <span class="fs-6">Room</span>
                     <h4>{{ event.room }}</h4>
                     <span class="fs-6">Created At</span>
-                    <h4>{{ formatDate(event.created_at) }}</h4>
+                    <h4>
+                        {{ formatDateTime(event.created_at, { date: true }) }}
+                    </h4>
                 </div>
             </div>
             <div v-show="event.details" class="border border-1"></div>
@@ -69,7 +76,7 @@ import Icons from "../Icons.vue";
 
 const edit = "pencil";
 
-import { formatDate } from "../../assets/js/index.js";
+import { formatDateTime } from "../../assets/js/util.js";
 
 const props = defineProps({
     event: {

@@ -1,3 +1,10 @@
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+import dayjsWithoutPlugin from "./dayjsWithoutPlugin.js";
+
+dayjs.extend(customParseFormat);
+
 /**
  * Checks if the given msisdn is valid or not.
  * @param {Array} msisdns - An array of msisdn (Contacts) to be validated.
@@ -86,10 +93,25 @@ export const showModal = (parent = "#alertModal", child = "alertModalBody") => {
 };
 
 // remove duplicates from an array of object passed
-export function removeDuplicates(arrOfObjs) {
+export function removeDuplicateParticipants(arrOfObjs) {
+    // use a map to avoid duplicacy
     const seenParticipants = new Map();
+
+    // store unique records
     const newArr = [];
 
+    // loop from the end of the array to the beginning of the array
+    // because the records that will be retrieved from the API will have
+    // the participant record with the departure time before the records without
+    // departure time, so by looping from the end of the array, i'll get
+    // the records without the departure time (if any) before reaching the records
+    // with departure time and the records with departure time will be skipped.
+    //
+    // This will ensure I don't have participant duplicated in the table with one records
+    // having a departure time making it possible to check that participant in,
+    // and that same participant will have another records without a departure time
+    // but will display an error saying "Visitor is still checked in" when you try
+    // to check the participant in
     for (let i = arrOfObjs.length - 1; i > -1; i--) {
         const obj = arrOfObjs[i];
         const id = obj.id;
@@ -103,3 +125,30 @@ export function removeDuplicates(arrOfObjs) {
 
     return newArr;
 }
+
+export const formatDateTime = (dateTime, format = {}) => {
+    const { date, time } = format;
+
+    const dateFormat = "ddd, MMM D, YYYY";
+    const timeFormat = "h:mm A";
+
+    // use custom parse format when formatting only time
+    if (time) {
+        const parseFormat = "HH:mm:ss";
+        const now = dayjs(dateTime, parseFormat);
+
+        return now.format(timeFormat);
+    }
+    // otherwise use dayjs without the custom parse format plugin
+    else {
+        const now = dayjsWithoutPlugin(dateTime);
+
+        if (!date && !time) {
+            return now.format(`${dateFormat} ${timeFormat}`);
+        }
+
+        if (date) {
+            return now.format(dateFormat);
+        }
+    }
+};

@@ -6,23 +6,28 @@
         <div>
             <DataTable
                 id="visitsTable"
+                :key="tableKey"
                 class="display w-100 table"
                 :columns="columns"
                 :options="options"
                 ref="table"
+                v-show="!showError"
             />
+            <h3 class="mt-5 text-center fw-bold" v-if="showError">
+                Unable to load visits, try again!
+            </h3>
         </div>
     </div>
 </template>
 
 <script setup>
 import { API_URL, updateDepartureTime } from "@/assets/js/index.js";
-import dayjs from "dayjs";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
+import { formatDateTime } from "@/assets/js/util.js";
 
 DataTable.use(DataTablesCore);
 
@@ -35,6 +40,7 @@ const columns = [
     {
         data: null,
         title: "Status",
+        className: "text-center",
         render: (data) => {
             return data.departure_time
                 ? `<span class="text-default fw-bold">Checked Out</span>`
@@ -61,7 +67,7 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/visits`,
+        url: `${API_URL}visits`,
         type: "GET",
         data: (query) => {
             const order =
@@ -77,14 +83,19 @@ const options = {
             };
         },
         dataSrc: (json) => {
+            showError.value = false;
+
             const { visits, length } = json.data;
 
+            // fix stop data table from showing NAN error
+            // in pagination and number of records
             json.recordsTotal = length;
             json.recordsFiltered = length;
-            return formatDateTime(visits);
+            return formatVisit(visits);
         },
         error: (error) => {
             console.log("Error fetching data:", error);
+            showError.value = true;
         },
     },
     responsive: true,
@@ -103,15 +114,22 @@ const options = {
 				</router-link>
 			</div>
 		`,
-        loadingRecords: `
-		<div class="d-flex justify-content-center p-4">
-			<div class="spinner-border" role="status">
-				<span class="visually-hidden">Loading...</span>
+        zeroRecords: `
+			<div class="d-flex gap-3 my-3 flex-column align-items-center">
+				No match found!
+				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-house" viewBox="0 0 1000 1000">
+					<path d="M825 375v-25L675 200h-75v-37.5a12.5 12.5 0 0 0-12.5-12.5h-25a12.5 12.5 0 0 0-12.5 12.5V200H400v-37.5a12.5 12.5 0 0 0-12.5-12.5h-25a12.5 12.5 0 0 0-12.5 12.5V200h-75L125 350v25h50v475h-25v25h650v-25h-25V375zM350 775H250v-75a50 50 0 0 1 50-50 50 50 0 0 1 50 50zm0-250H250v-75a50 50 0 0 1 50-50 50 50 0 0 1 50 50zm175 325H425V700a50 50 0 0 1 50-50 50 50 0 0 1 50 50zm0-325H425v-75a50 50 0 0 1 50-50 50 50 0 0 1 50 50zm175 250H600v-75a50 50 0 0 1 50-50 50 50 0 0 1 50 50zm0-250H600v-75a50 50 0 0 1 50-50 50 50 0 0 1 50 50z" style="fill-rule:evenodd"/>
+				</svg>
 			</div>
-		</div>
-	`,
+		`,
+        loadingRecords: `
+			<div class="d-flex justify-content-center p-4">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		`,
     },
-
     order: [[0, "desc"]],
 };
 
@@ -148,6 +166,16 @@ const handleCheckout = async (id, tr) => {
 };
 
 const table = ref();
+const tableKey = ref(0);
+const showError = ref(false);
+
+const refresh = defineModel("refresh");
+
+// refresh table
+watch(
+    () => refresh.value,
+    () => (tableKey.value += 1)
+);
 
 const handleCheckoutDetail = () => {
     const dt = table.value.dt;
@@ -162,13 +190,13 @@ const handleCheckoutDetail = () => {
     });
 };
 
-const formatDateTime = (visits) => {
+const formatVisit = (visits) => {
     return visits.map((visit) => {
-        const now = dayjs(visit.date_time);
-
-        if (visit.date_time) {
-            visit.date_time =
-                now.format("dddd, MMMM D, YYYY") + " " + now.format("HH:mm:ss");
+        visit.date_time = formatDateTime(visit.date_time);
+        if (visit.departure_time) {
+            visit.departure_time = formatDateTime(visit.departure_time, {
+                time: true,
+            });
         }
 
         if (Array.isArray(visit.items)) {

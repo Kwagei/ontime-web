@@ -5,16 +5,19 @@
         >
             <BreadCrumbs :breadCrumbs="breadCrumbs" />
             <div class="d-flex" style="gap: 0.521rem">
-                <RefreshList @click="refreshEvents" />
+                <RefreshList @click="refresh = true" />
                 <router-link :to="{ name: 'add-event' }">
-                    <button type="button" class="btn btn-primary">
+                    <button
+                        id="addEventBtn"
+                        type="button"
+                        class="btn btn-primary"
+                    >
                         Add Event
                     </button>
                 </router-link>
             </div>
         </div>
-
-        <EventsTable :refresh="refresh" @refreshComplete="stopEventsRefresh" />
+        <EventsTable v-model:refresh="refresh" />
     </div>
 </template>
 
@@ -24,7 +27,6 @@ import BreadCrumbs from "../components/BreadCrumbs.vue";
 import EventsTable from "../components/events/EventsTable.vue";
 
 import { ref } from "vue";
-import $ from "jquery";
 
 const props = defineProps({
     breadCrumbs: {
@@ -34,17 +36,6 @@ const props = defineProps({
 });
 
 const refresh = ref(false);
-
-function refreshEvents() {
-    refresh.value = true;
-    $(".refresh").css("pointer-events", "none");
-}
-
-function stopEventsRefresh() {
-    // refresh and then set refresh back to false
-    refresh.value = false;
-    $(".refresh").css("pointer-events", "auto");
-}
 </script>
 
 <style scoped>

@@ -101,24 +101,17 @@
                     <div class="btn-group w-100">
                         <input
                             type="text"
-                            class="form-control border border-2"
+                            class="border form-select dropdown-toggle dropdown-toggle-split"
                             id="selectEventInput"
                             :id="eventID"
                             :value="eventValue"
+                            v-model="eventValue"
                             aria-expanded="false"
                             data-bs-toggle="dropdown"
                             autocomplete="off"
                             placeholder="Select Event..."
                         />
 
-                        <button
-                            type="button"
-                            class="btn btn-lg btn-outline-secondary dropdown-toggle dropdown-toggle-split"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                        >
-                            <span class="visually-hidden">Toggle Dropdown</span>
-                        </button>
                         <ul class="dropdown-menu w-100">
                             <template v-for="event in events">
                                 <li
@@ -146,12 +139,17 @@
             <!-- All Participants -->
             <div v-if="showTable" class="container">
                 <DataTable
+                    :key="dataTableKey"
                     id="eventParticipantsTable"
                     class="display w-100 table"
                     :columns="columns"
                     :options="dataTableOptions"
                     ref="table"
+                    v-show="!showError"
                 />
+                <h3 class="mt-5 text-center fw-bold" v-if="showError">
+                    Unable to load event participants, try again!
+                </h3>
             </div>
         </div>
     </div>
@@ -170,7 +168,7 @@ import {
 } from "@/assets/js/index.js";
 import $ from "jquery";
 
-import { showModal, removeDuplicates } from "@/assets/js/util";
+import { showModal, removeDuplicateParticipants } from "@/assets/js/util.js";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -179,7 +177,10 @@ import "datatables.net-responsive-dt";
 DataTable.use(DataTablesCore);
 
 const table = ref();
+const dataTableKey = ref(0);
 const showTable = ref(false);
+const showError = ref(false);
+
 const eventID = ref("");
 
 // columns for Data Table
@@ -219,7 +220,15 @@ const dataTableOptions = ref({
             };
         },
         dataSrc: (json) => {
-            participants.value = removeDuplicates(json.data);
+            showError.value = false;
+
+            participants.value = removeDuplicateParticipants(
+                json.data.participants
+            );
+
+            // fix stop data table from showing NAN error
+            json.recordsTotal = json.data.length;
+            json.recordsFiltered = json.data.length;
 
             participants.value.forEach((visitor) => {
                 visitor.address = formatAddress(visitor.address);
@@ -229,10 +238,7 @@ const dataTableOptions = ref({
         },
         error: (error) => {
             console.log("Error fetching data:", error);
-            showModal();
-            title.value = "Unable to load event participants, try again";
-            status.value = "error";
-            pageLink.value = undefined;
+            showError.value = true;
         },
     },
     responsive: true,
@@ -241,10 +247,19 @@ const dataTableOptions = ref({
         searchPlaceholder: "Search ...",
         search: "",
         emptyTable: `
-			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4" >
-				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"/></svg>
-				No participants for this event
-				<button class="btn btn-secondary">Add Participant</button>
+			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
+				No Event Participants to show!
+				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-group" viewBox="0 0 1000 1000">
+					<path d="M338 875V696.837A100.18 100.18 0 0 1 263 600V487.5a187.2 187.2 0 0 1 17.626-79.433 166.44 166.44 0 0 1-107.2-45.325A152.94 152.94 0 0 0 88 500v119.118C88 658.1 120.015 690 159 690v185a49.65 49.65 0 0 0 49.588 50h148.57A74.7 74.7 0 0 1 338 875m489.576-512.258a166.44 166.44 0 0 1-107.2 45.325A187.2 187.2 0 0 1 738 487.5V600a100.18 100.18 0 0 1-75 96.837V875a74.7 74.7 0 0 1-19.158 50h148.57A49.65 49.65 0 0 0 842 875V690c38.985 0 71-31.9 71-70.882V500a152.94 152.94 0 0 0-85.424-137.258M713 125a124.4 124.4 0 0 0-65.376 18.446c.9 1.913 1.769 3.84 2.6 5.794a162.38 162.38 0 0 1-24.162 166.435l7.231 3.564a187.9 187.9 0 0 1 66.676 55.086A125 125 0 1 0 713 125m-75 87.5A137.5 137.5 0 1 1 500.5 75 137.5 137.5 0 0 1 638 212.5m-15.763 129.164a177.47 177.47 0 0 1-243.474 0A162.5 162.5 0 0 0 288 487.5V600a75 75 0 0 0 75 75v200a50 50 0 0 0 50 50h175a50 50 0 0 0 50-50V675a75 75 0 0 0 75-75V487.5a162.5 162.5 0 0 0-90.763-145.836m-321.2 32.661a187.9 187.9 0 0 1 66.676-55.086l7.231-3.564A162.7 162.7 0 0 1 350.78 149.24c.827-1.954 1.7-3.881 2.6-5.794A125 125 0 1 0 288 375a126 126 0 0 0 13.035-.675Z" style="fill-rule:evenodd"/>
+				</svg>
+			</div>
+		`,
+        zeroRecords: `
+			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
+				No match found!
+				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-group" viewBox="0 0 1000 1000">
+					<path d="M338 875V696.837A100.18 100.18 0 0 1 263 600V487.5a187.2 187.2 0 0 1 17.626-79.433 166.44 166.44 0 0 1-107.2-45.325A152.94 152.94 0 0 0 88 500v119.118C88 658.1 120.015 690 159 690v185a49.65 49.65 0 0 0 49.588 50h148.57A74.7 74.7 0 0 1 338 875m489.576-512.258a166.44 166.44 0 0 1-107.2 45.325A187.2 187.2 0 0 1 738 487.5V600a100.18 100.18 0 0 1-75 96.837V875a74.7 74.7 0 0 1-19.158 50h148.57A49.65 49.65 0 0 0 842 875V690c38.985 0 71-31.9 71-70.882V500a152.94 152.94 0 0 0-85.424-137.258M713 125a124.4 124.4 0 0 0-65.376 18.446c.9 1.913 1.769 3.84 2.6 5.794a162.38 162.38 0 0 1-24.162 166.435l7.231 3.564a187.9 187.9 0 0 1 66.676 55.086A125 125 0 1 0 713 125m-75 87.5A137.5 137.5 0 1 1 500.5 75 137.5 137.5 0 0 1 638 212.5m-15.763 129.164a177.47 177.47 0 0 1-243.474 0A162.5 162.5 0 0 0 288 487.5V600a75 75 0 0 0 75 75v200a50 50 0 0 0 50 50h175a50 50 0 0 0 50-50V675a75 75 0 0 0 75-75V487.5a162.5 162.5 0 0 0-90.763-145.836m-321.2 32.661a187.9 187.9 0 0 1 66.676-55.086l7.231-3.564A162.7 162.7 0 0 1 350.78 149.24c.827-1.954 1.7-3.881 2.6-5.794A125 125 0 1 0 288 375a126 126 0 0 0 13.035-.675Z" style="fill-rule:evenodd"/>
+				</svg>
 			</div>
 		`,
         loadingRecords: `
@@ -254,6 +269,27 @@ const dataTableOptions = ref({
 				</div>
 			</div>
 		`,
+    },
+    createdRow: (row, data) => {
+        // add event listener on each row
+        $(row).on("click", () => {
+            // only check the participant in if they don't have
+            // a departure_time, meaning they either haven't checked in
+            // or they have checked out already
+            // in this case, if they checked in earlier and checked out for some
+            // reason, they can still check back in, but not if they weren't checked out
+            if (data && data.participant_id && !data.visit_departure_time) {
+                // inform user visitor is still checked in
+                showModal();
+
+                pageLink.value = "/visits";
+                title.value = "Visitor is still checked in";
+                status.value = "warning";
+            } else {
+                // otherwise check visitor in
+                participantDetail(data.id);
+            }
+        });
     },
     destroy: true,
     order: [[0, "desc"]],
@@ -332,10 +368,7 @@ const updateEventTerm = (event) => {
     dataTableOptions.value.ajax.url = `${API_URL}/events/${eventID.value}/participants`;
 
     // reload the table with the new url
-    $("#eventParticipantsTable")
-        .DataTable()
-        .ajax.url(`${API_URL}/events/${eventID.value}/participants`)
-        .load();
+    dataTableKey.value += 1;
 
     const selectedHost = events.value.find((val) => val.id === eventID.value);
 
@@ -343,13 +376,8 @@ const updateEventTerm = (event) => {
         room.value = selectedHost.room;
     }
 
-    if (showTable.value == false) {
-        showTable.value = true;
-
-        setTimeout(() => {
-            setEventListenerOnParticipantRows();
-        }, 500);
-    }
+    // display data table if it's not already displayed
+    if (showTable.value == false) showTable.value = true;
 };
 
 // function for inserting each username in the select element
@@ -388,6 +416,10 @@ const checkParticipantIn = async () => {
     };
 
     const response = await registerVisit(visitData);
+
+    // reload data table to update the departure time of the
+    // participant that was just checked in
+    dataTableKey.value += 1;
 
     showModal("#alertModal", "#alertModalBody");
     status.value = response.ok ? "success" : "danger";
@@ -481,30 +513,7 @@ function setEventListenerOnParticipantRows() {
     const dt = table.value.dt;
 
     // Handle row click event
-    dt.on("click", "tr", function () {
-        const rowData = table.value.dt.row(this).data();
-
-        // only check the participant in if they don't have
-        // a departure_time, meaning they either haven't checked in
-        // or they have checked out already
-        // in this case, if they checked in earlier and checked out for some
-        // reason, they can still check back in, but not if they weren't checked out
-        if (
-            rowData &&
-            rowData.participant_id &&
-            !rowData.visit_departure_time
-        ) {
-            // inform user visitor is still checked in
-            showModal("#alertModal", "#alertModalBody");
-
-            pageLink.value = "/visits";
-            title.value = "Visitor is still checked in";
-            status.value = "warning";
-        } else {
-            // otherwise check visitor in
-            participantDetail(rowData.id);
-        }
-    });
+    dt.on("click", "tr", function () {});
 }
 </script>
 

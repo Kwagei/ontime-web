@@ -1,23 +1,31 @@
 <template>
-    <div
-        class="table-responsive container p-0 d-flex flex-column"
-        style="gap: 0.7rem"
-    >
-        <div>
-            <DataTable
-                id="visitorsTable"
-                :key="tableKey"
-                class="display w-100 table nowrap"
-                :columns="columns"
-                :options="options"
-                ref="table"
-                v-show="!showError"
-            />
-            <h3 class="mt-5 text-center fw-bold" v-if="showError">
-                Unable to load visitors, try again!
-            </h3>
-        </div>
-    </div>
+	<div
+		class="table-responsive container p-0 d-flex flex-column"
+		style="gap: 0.7rem"
+	>
+		<div>
+			<!-- <DataTable
+				id="visitorsTable"
+				class="display w-100 table nowrap"
+				ref="table"
+				:columns="columns"
+				:options="options"
+                /> -->
+
+			<DataTable
+				id="visitorsTable"
+				:key="tableKey"
+				class="display w-100 table"
+				:columns="columns"
+				:options="options"
+				ref="table"
+				v-show="!showError"
+			/>
+			<h3 class="mt-5 text-center fw-bold" v-if="showError">
+				Unable to load visitors, try again!
+			</h3>
+		</div>
+	</div>
 </template>
 
 <script setup>
@@ -44,44 +52,52 @@ const columns = [
 ];
 
 const options = {
-    responsive: true,
-    select: true,
-    serverSide: true,
-    ajax: {
-        url: `${API_URL}visitors`,
-        type: "GET",
-        data: (query) => {
-            return {
-                start: query.start,
-                limit: query.length,
-                search: query.search.value,
-                sort: query.columns[query.order[0].column].data,
-                order: query.order[0].dir,
-            };
-        },
-        dataSrc: (json) => {
-            showError.value = false;
+	responsive: true,
+	select: true,
+	serverSide: true,
+	ajax: {
+		url: `${API_URL}visitors`,
+		type: "GET",
+		data: (query) => {
+			return {
+				start: query.start,
+				limit: query.length,
+				search: query.search.value,
+				sort: query.columns[query.order[0].column].data,
+				order: query.order[0].dir,
+			};
+		},
+		dataSrc: (json) => {
+			showError.value = false;
 
-            const { data, length } = json.data;
+			const { data, length } = json.data;
 
-            json.recordsTotal = length;
-            json.recordsFiltered = length;
+			json.recordsTotal = length;
+			json.recordsFiltered = length;
 
-            formatCreatedAt(data);
+			data.forEach((visitor) => {
+				visitor.address = formatAddress(visitor.address);
+				visitor.msisdn = `0${visitor.msisdn.slice(3)}`;
+				visitor.created_at = formatDateTime(visitor.created_at, {
+					date: true,
+				});
+			});
 
-            visitors.value = data;
-            return visitors.value;
-        },
-        error: (error) => {
-            console.log("Error fetching data:", error);
-        },
-    },
-    responsive: true,
-    lengthMenu: [10, 25, 50, 100],
-    language: {
-        searchPlaceholder: "Search ...",
-        search: "",
-        emptyTable: `
+			// formatCreatedAt(data);
+
+			visitors.value = data;
+			return visitors.value;
+		},
+		error: (error) => {
+			console.log("Error fetching data:", error);
+		},
+	},
+	responsive: true,
+	lengthMenu: [10, 25, 50, 100],
+	language: {
+		searchPlaceholder: "Search ...",
+		search: "",
+		emptyTable: `
 			<div class="d-flex gap-3 my-3 flex-column align-items-center">
 				No Visitor to show!
 				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-group" viewBox="0 0 1000 1000">
@@ -95,7 +111,7 @@ const options = {
 				</button>
 			</div>
         `,
-        zeroRecords: `
+		zeroRecords: `
 			<div class="d-flex gap-3 my-3 flex-column align-items-center">
 				No match found!
 				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-group" viewBox="0 0 1000 1000">
@@ -103,32 +119,33 @@ const options = {
 				</svg>
 			</div>
 		`,
-        loadingRecords: `
+		loadingRecords: `
 			<div class="d-flex justify-content-center p-4">
 				<div class="spinner-border" role="status">
 					<span class="visually-hidden">Loading...</span>
 				</div>
 			</div>
 		`,
-    },
-    order: [[6, "desc"]],
-    destroy: true,
+	},
+	order: [[6, "desc"]],
+	destroy: true,
 };
 
 const table = ref();
 const tableKey = ref(0);
 const showError = ref(false);
+const MAX_DETAIL_LEN = 30;
 
 const router = useRouter();
 const refresh = defineModel("refresh");
 const visitors = ref();
 
 watch(
-    () => refresh.value,
-    () => {
-        // update table Key to force data table to re render
-        tableKey.value += 1;
-    }
+	() => refresh.value,
+	() => {
+		// update table Key to force data table to re render
+		tableKey.value += 1;
+	}
 );
 
 const visitorDetail = (id) => {
@@ -148,12 +165,19 @@ const handleVisitorDetail = () => {
 	});
 };
 
-// formatted by reference
-const formatCreatedAt = (visitors) => {
-    for (const visitor of visitors) {
-        visitor.created_at = formatDateTime(visitor.created_at);
-    }
-};
+function formatAddress(address) {
+	if (!address) {
+		return "";
+	}
+
+	const addressLen = address.length;
+	const newAddress =
+		addressLen >= MAX_DETAIL_LEN
+			? `${address.slice(0, MAX_DETAIL_LEN)}...`
+			: address;
+
+	return newAddress;
+}
 
 onMounted(() => {
 	handleVisitorDetail();

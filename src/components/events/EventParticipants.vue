@@ -34,8 +34,6 @@ const eventId = router.currentRoute.value.params.id;
 const emit = defineEmits(["switch"]);
 
 let allParticipants = [];
-const table = ref();
-const showError = ref(false);
 
 DataTable.use(DataTablesCore);
 
@@ -133,6 +131,8 @@ const options = {
 	order: [[2, "desc"]],
 	destroy: true,
 };
+
+const table = ref();
 
 onMounted(() => {
 	handleEventDetail();

@@ -9,7 +9,7 @@
 		style="z-index: 4000"
 	>
 		<div class="modal-dialog modal-lg" id="alertModalBody">
-			<div class="modal-content py-1">
+			<div :class="`modal-content py-1 border-${data.status}`">
 				<div class="modal-header">
 					<div
 						:class="`alert alert-${data.status} mb-0`"
@@ -18,9 +18,9 @@
 					>
 						<span class="alert-icon"></span>
 					</div>
-					<h3 class="mb-0">
-						{{ data.title }}
-					</h3>
+					<p class="mb-0">
+						{{ data.message }}
+					</p>
 					<button
 						type="button"
 						class="btn-close"
@@ -34,13 +34,9 @@
 					</button>
 				</div>
 				<div
-					v-if="data.pageLink || data.message"
-					class="modal-body d-flex justify-content-between align-items-center"
+					v-if="data.pageLink"
+					class="modal-body py-0 d-flex justify-content-between align-items-center"
 				>
-					<div class="mt-2 mb-3" style="padding: 0 1.5rem">
-						{{ data.message }}
-					</div>
-
 					<!-- Router Link only works if the route is differentso the -->
 					<!-- `handleIdenticalRoute` function will reload the page if the -->
 					<!-- route is identical -->
@@ -82,7 +78,8 @@ function handleIdenticalRoute() {
 }
 
 a.router-link-active {
-	font-weight: 700;
+	font-size: small;
+	font-weight: 400;
 }
 
 a.router-link-active:hover {
@@ -91,5 +88,6 @@ a.router-link-active:hover {
 
 .view {
 	font-weight: 400;
+	font-size: small;
 }
 </style>

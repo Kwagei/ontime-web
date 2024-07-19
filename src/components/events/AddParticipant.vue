@@ -252,14 +252,13 @@ const onSubmit = async () => {
 	};
 
 	$.ajax({
-		url: API_URL + "event_participants",
+		url: `${API_URL}/event_participants`,
 		type: "POST",
 		data: body,
 		success: (data) => {
 			showModal("#alertModal", "#alertModalBody");
 
 			alert.value.status = "success";
-			alert.value.title = "Success";
 			alert.value.message = data.message;
 			alert.value.pageLink = `/events/${eventId}`;
 
@@ -268,7 +267,6 @@ const onSubmit = async () => {
 		error: (error) => {
 			showModal("#alertModal", "#alertModalBody");
 			alert.value.status = "danger";
-			alert.value.title = "Error";
 			alert.value.message = error.responseJSON.message;
 			alert.pageLink = undefined;
 		},

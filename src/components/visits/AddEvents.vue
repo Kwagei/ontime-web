@@ -138,12 +138,16 @@
 			<!-- All Participants -->
 			<div v-if="showTable" class="container">
 				<DataTable
+					:key="dataTableKey"
 					id="eventParticipantsTable"
 					class="display w-100 table"
 					:columns="columns"
 					:options="dataTableOptions"
 					ref="table"
 				/>
+				<h3 class="mt-5 text-center fw-bold" v-if="showError">
+					Unable to load event participants, try again!
+				</h3>
 			</div>
 		</div>
 	</div>
@@ -172,6 +176,8 @@ DataTable.use(DataTablesCore);
 
 const table = ref();
 const showTable = ref(false);
+const showError = ref(false);
+const dataTableKey = ref(0);
 
 // Events Data
 const events = ref([]);
@@ -181,6 +187,7 @@ const eventTem = ref("");
 
 // columns for Data Table
 const columns = [
+	{ data: "created_at", visible: false },
 	{ data: "first_name", title: "First name" },
 	{ data: "middle_name", title: "Middle name" },
 	{ data: "last_name", title: "Last name" },
@@ -216,6 +223,8 @@ const dataTableOptions = ref({
 			};
 		},
 		dataSrc: (json) => {
+			showError.value = false;
+
 			json.recordsTotal = json.data.length;
 			json.recordsFiltered = json.data.length;
 
@@ -229,11 +238,7 @@ const dataTableOptions = ref({
 		},
 		error: (error) => {
 			console.log("Error fetching data:", error);
-			showModal();
-			alert.value.status = "danger";
-			alert.value.title = "Error";
-			alert.value.message =
-				"Unable to load event participants, try again";
+			showError.value = true;
 		},
 	},
 	responsive: true,
@@ -245,7 +250,12 @@ const dataTableOptions = ref({
 			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4" >
 				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"/></svg>
 				No participants for this event
-				<button class="btn btn-secondary">Add Participant</button>
+			</div>
+		`,
+		zeroRecords: `
+			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4" >
+				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"/></svg>
+				No participants for this event
 			</div>
 		`,
 		loadingRecords: `
@@ -255,6 +265,23 @@ const dataTableOptions = ref({
 				</div>
 			</div>
 		`,
+	},
+	createdRow: (row, data) => {
+		$(row).on("click", () => {
+			if (data && data.participant_id && !data.visit_departure_time) {
+				// inform user visitor is still checked in
+				showModal("#alertModal", "#alertModalBody");
+
+				alert.value.status = "warning";
+				alert.value.message = `Visitor ${data.first_name} ${data.last_name} is still checked in`;
+				alert.value.pageLink = `/visits`;
+			} else {
+				// otherwise check visitor in
+				participantDetail(data.id);
+
+				participant.value = row;
+			}
+		});
 	},
 	destroy: true,
 	order: [[0, "desc"]],
@@ -334,10 +361,7 @@ const updateEventTerm = (event) => {
 	dataTableOptions.value.ajax.url = `${API_URL}/events/${eventID.value}/participants`;
 
 	// reload the table with the new url
-	$("#eventParticipantsTable")
-		.DataTable()
-		.ajax.url(`${API_URL}/events/${eventID.value}/participants`)
-		.load();
+	dataTableKey.value += 1;
 
 	const selectedHost = events.value.find((val) => val.id === eventID.value);
 
@@ -345,13 +369,8 @@ const updateEventTerm = (event) => {
 		room.value = selectedHost.room;
 	}
 
-	if (showTable.value == false) {
-		showTable.value = true;
-
-		setTimeout(() => {
-			setEventListenerOnParticipantRows();
-		}, 500);
-	}
+	// display data table if it's not already displayed
+	if (showTable.value == false) showTable.value = true;
 };
 
 // function for inserting each username in the select element
@@ -363,6 +382,7 @@ const getEventsOptions = async () => {
 			id: event.id,
 			title: event.title,
 			room_id: event.room_id,
+			host_id: event.host_id,
 		}));
 
 		eventTem.value = events.value;
@@ -379,7 +399,7 @@ const checkParticipantIn = async () => {
 
 	document.body.removeAttribute("style");
 
-	// require values for the submittion of the form
+	// Required values for checking a visitor in
 	const visitData = {
 		visitor_id: visitorId.value,
 		institution: institution.value,
@@ -392,9 +412,11 @@ const checkParticipantIn = async () => {
 
 	const response = await registerVisit(visitData);
 
+	// Reload data table to update the departure time of the participant that was just checked in
+	dataTableKey.value += 1;
+
 	showModal("#alertModal", "#alertModalBody");
 	alert.value.status = response.ok ? "success" : "danger";
-	alert.value.title = response.ok ? "Success" : "Error";
 	alert.value.message = response.result.message;
 	alert.value.pageLink = `/visits`;
 
@@ -439,16 +461,16 @@ const participantDetail = async (id) => {
 	showModal("#visitModal", "#modal-dialog");
 	const event = events.value.find((val) => val.id === eventID.value);
 
-	// find the specific participant being checked in
+	// Find the specific participant being checked in
 	const participant = participants.value.find((val) => val.id === id);
 
-	// assign participant id for visit checking in
+	// Assign participant id for visit checking in
 	participant_id.value = participant.id;
 
-	// check if the visitor exists
+	// Check if the visitor exists
 	let visitorData = await getSingleVisitor({ msisdn: participant.msisdn });
 
-	// create visitor if this participant is not already a participant
+	// Create visitor if this participant is not already a visitor.
 	if (!visitorData) {
 		visitorData = await registerVisitor({
 			first_name: participant.first_name,
@@ -460,7 +482,9 @@ const participantDetail = async (id) => {
 		});
 	}
 
-	// add first name, add middle name if the visitor has one, and add last name
+	visitorData = visitorData.result.data[0];
+
+	// Add first name, add middle name if the visitor has one, and add last name
 	visitor.value = `${visitorData.first_name}${
 		visitorData.middle_name ? visitorData.middle_name + " " : ""
 	} ${visitorData.last_name}`;
@@ -482,39 +506,6 @@ function formatAddress(address) {
 			: address;
 
 	return newAddress;
-}
-
-function setEventListenerOnParticipantRows() {
-	const dt = table.value.dt;
-
-	// Handle row click event
-	dt.on("click", "tr", function () {
-		const rowData = table.value.dt.row(this).data();
-
-		// only check the participant in if they don't have
-		// a departure_time, meaning they either haven't checked in
-		// or they have checked out already
-		// in this case, if they checked in earlier and checked out for some
-		// reason, they can still check back in, but not if they weren't checked out
-		if (
-			rowData &&
-			rowData.participant_id &&
-			!rowData.visit_departure_time
-		) {
-			// inform user visitor is still checked in
-			showModal("#alertModal", "#alertModalBody");
-
-			alert.value.status = "warning";
-			alert.value.title = "Warning";
-			alert.value.message = "Visitor is still checked in";
-			alert.value.pageLink = `/visits`;
-		} else {
-			// otherwise check visitor in
-			participantDetail(rowData.id);
-
-			participant.value = this;
-		}
-	});
 }
 
 const updateVisitorVisit = () => {

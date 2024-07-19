@@ -104,6 +104,14 @@ const options = {
                 </button>
 			</div>
 		`,
+		zeroRecords: `
+			<div class="d-flex gap-3 my-3 flex-column align-items-center">
+				No match found!
+				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-house" viewBox="0 0 1000 1000">
+					<path d="M825 375v-25L675 200h-75v-37.5a12.5 12.5 0 0 0-12.5-12.5h-25a12.5 12.5 0 0 0-12.5 12.5V200H400v-37.5a12.5 12.5 0 0 0-12.5-12.5h-25a12.5 12.5 0 0 0-12.5 12.5V200h-75L125 350v25h50v475h-25v25h650v-25h-25V375zM350 775H250v-75a50 50 0 0 1 50-50 50 50 0 0 1 50 50zm0-250H250v-75a50 50 0 0 1 50-50 50 50 0 0 1 50 50zm175 325H425V700a50 50 0 0 1 50-50 50 50 0 0 1 50 50zm0-325H425v-75a50 50 0 0 1 50-50 50 50 0 0 1 50 50zm175 250H600v-75a50 50 0 0 1 50-50 50 50 0 0 1 50 50zm0-250H600v-75a50 50 0 0 1 50-50 50 50 0 0 1 50 50z" style="fill-rule:evenodd"/>
+				</svg>
+			</div>
+		`,
 		loadingRecords: `
 		<div class="d-flex justify-content-center p-4">
 			<div class="spinner-border" role="status">

@@ -419,7 +419,6 @@ const onSubmit = async () => {
 			showModal("#alertModal", "#alertModalBody");
 
 			alert.value.status = "success";
-			alert.value.title = "Success";
 			alert.value.message = data.message;
 			alert.value.pageLink = `/events/${
 				data.data.length ? data.data[0].id : data.data.id
@@ -430,7 +429,6 @@ const onSubmit = async () => {
 		error: (error) => {
 			showModal("#alertModal", "#alertModalBody");
 			alert.value.status = "danger";
-			alert.value.title = "Error";
 			alert.value.message = error.responseJSON.message;
 		},
 	});
@@ -455,7 +453,6 @@ function resetForm() {
 // Lifecycle Hooks
 onMounted(async () => {
 	// get event to edit if we're trying to edit
-	if (mode == "edit") await getEventToEdit();
 
 	const { hosts } = await getHosts();
 	hostsData.value = hosts;
@@ -464,6 +461,8 @@ onMounted(async () => {
 	const { rooms } = await getRooms();
 	roomsData.value = rooms;
 	roomTem.value = rooms;
+
+	if (mode == "edit") await getEventToEdit();
 
 	("use strict");
 
@@ -487,7 +486,7 @@ function setMode() {
 
 async function getEventToEdit() {
 	try {
-		$.get(API_URL + `events/${eventId.value}/`, (data) => {
+		$.get(API_URL + `/events/${eventId.value}/`, (data) => {
 			const retrievedEvent = data.data[0];
 
 			title.value = retrievedEvent.title;

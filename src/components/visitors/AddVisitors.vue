@@ -254,7 +254,6 @@ const onSubmit = async () => {
 
 	showModal("#alertModal", "#alertModalBody");
 	alert.value.status = response.ok ? "success" : "danger";
-	alert.value.title = response.ok ? "Success" : "Error";
 	alert.value.message = response.result.message;
 	alert.value.pageLink = `/visitors/${response.result.data[0].id}`;
 

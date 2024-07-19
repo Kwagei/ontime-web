@@ -472,7 +472,7 @@ const participantDetail = async (id) => {
 
 	// Create visitor if this participant is not already a visitor.
 	if (!visitorData) {
-		visitorData = await registerVisitor({
+		const insertedVisitorData = await registerVisitor({
 			first_name: participant.first_name,
 			middle_name: participant.middle_name,
 			last_name: participant.last_name,
@@ -480,9 +480,8 @@ const participantDetail = async (id) => {
 			msisdn: participant.msisdn,
 			address: address.value,
 		});
+		visitorData = insertedVisitorData.result.data[0];
 	}
-
-	visitorData = visitorData.result.data[0];
 
 	// Add first name, add middle name if the visitor has one, and add last name
 	visitor.value = `${visitorData.first_name}${

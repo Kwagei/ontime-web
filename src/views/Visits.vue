@@ -58,7 +58,6 @@
                                 class="btn btn-primary"
                                 id=""
                                 style="padding: 0.5rem 1.5rem; font-weight: 600"
-                                disabled
                             >
                                 Meeting
                             </button>

@@ -26,7 +26,10 @@
                     aria-labelledby="offcanvasExampleLabel"
                 >
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasExampleLabel">
+                        <h5
+                            class="ms-5 offcanvas-title"
+                            id="offcanvasExampleLabel"
+                        >
                             Purpose
                         </h5>
                         <button

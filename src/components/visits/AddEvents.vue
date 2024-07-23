@@ -164,7 +164,6 @@ import {
 	getEvents,
 	API_URL,
 } from "@/assets/js/index.js";
-import $ from "jquery";
 
 import { showModal } from "@/assets/js/util";
 import DataTable from "datatables.net-vue3";
@@ -187,23 +186,32 @@ const eventTem = ref("");
 
 // columns for Data Table
 const columns = [
-	{ data: "created_at", visible: false },
-	{ data: "first_name", title: "First name" },
-	{ data: "middle_name", title: "Middle name" },
-	{ data: "last_name", title: "Last name" },
-	{ data: "msisdn", title: "Phone number" },
-	{ data: "email", title: "Email" },
-	{ data: "address", title: "Address" },
-	{
-		data: null,
-		title: "Visited Today",
-		className: "text-center",
-		render: (data) => {
-			return data.participant_id
-				? `<span class="text-success fw-bold">Yes</span>`
-				: `<span class="text-danger fw-bold">No</span>`;
-		},
-	},
+    { data: "first_name", title: "First name" },
+    { data: "middle_name", title: "Middle name" },
+    { data: "last_name", title: "Last name" },
+    { data: "msisdn", title: "Phone number" },
+    { data: "email", title: "Email" },
+    { data: "address", title: "Address" },
+    {
+        data: null,
+        title: "Visited Today",
+        className: "text-center",
+        render: (data) => {
+            return data.participant_id
+                ? `<span class="text-success fw-bold">Yes</span>`
+                : `<span class="text-danger fw-bold">No</span>`;
+        },
+    },
+    {
+        data: null,
+        title: "Action",
+        className: "w-5 text-center",
+        render: (data) => {
+            return !data.participant_id
+                ? `<button class="btn btn-secondary">Check In</button>`
+                : `<button class="btn btn-secondary" disabled>Check In</button>`;
+        },
+    },
 ];
 
 // Options for Data Table
@@ -265,26 +273,9 @@ const dataTableOptions = ref({
 				</div>
 			</div>
 		`,
-	},
-	createdRow: (row, data) => {
-		$(row).on("click", () => {
-			if (data && data.participant_id && !data.visit_departure_time) {
-				// inform user visitor is still checked in
-				showModal("#alertModal", "#alertModalBody");
-
-				alert.value.status = "warning";
-				alert.value.message = `Visitor ${data.first_name} ${data.last_name} is still checked in`;
-				alert.value.pageLink = `/visits`;
-			} else {
-				// otherwise check visitor in
-				participantDetail(data.id);
-
-				participant.value = row;
-			}
-		});
-	},
-	destroy: true,
-	order: [[0, "desc"]],
+    },
+    destroy: true,
+    order: [[0, "desc"]],
 });
 
 // visit creation data
@@ -323,6 +314,38 @@ const props = defineProps({
 	},
 });
 
+function addClickEventListenerOnCheckButtons() {
+    const dt = table.value.dt;
+
+    dt.on("click", "button", (event) => {
+        // manually get the email of the clicked participant / row
+        const thisParticipantEmail =
+            event.target.parentNode.parentNode.childNodes[4].textContent;
+
+        // find the participant in the participants array
+        const data = participants.value.find(
+            (participant) => participant.email == thisParticipantEmail
+        );
+
+        // only check the participant in if they don't have
+        // a departure_time, meaning they either haven't checked in
+        // or they have checked out already
+        // in this case, if they checked in earlier and checked out for some
+        // reason, they can still check back in, but not if they weren't checked out
+        if (data && data.participant_id && !data.visit_departure_time) {
+            // inform user visitor is still checked in
+            showModal();
+
+            pageLink.value = "/visits";
+            title.value = "Visitor is Checked In";
+            status.value = "warning";
+        } else {
+            // otherwise check visitor in
+            participantDetail(data.id);
+        }
+    });
+}
+
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
 
 onMounted(async () => {
@@ -354,11 +377,8 @@ const updateEventTerm = (event) => {
 	eventValue.value = event.title;
 	eventID.value = event.id;
 
-	// destroy table
-	$("eventParticipantsTable").DataTable().destroy();
-
-	// update api url in options object
-	dataTableOptions.value.ajax.url = `${API_URL}/events/${eventID.value}/participants`;
+    // update api url in options object
+    dataTableOptions.value.ajax.url = `${API_URL}events/${eventID.value}/participants`;
 
 	// reload the table with the new url
 	dataTableKey.value += 1;
@@ -369,14 +389,19 @@ const updateEventTerm = (event) => {
 		room.value = selectedHost.room;
 	}
 
-	// display data table if it's not already displayed
-	if (showTable.value == false) showTable.value = true;
+    // display data table if it's not already displayed
+    if (showTable.value == false) {
+        showTable.value = true;
+
+        // just enough time for the data table to load
+        setTimeout(() => addClickEventListenerOnCheckButtons(), 500);
+    }
 };
 
 // function for inserting each username in the select element
 const getEventsOptions = async () => {
-	try {
-		events.value = await getEvents();
+    try {
+        events.value = await getEvents("", { current: true });
 
 		events.value = events.value.events.map((event) => ({
 			id: event.id,
@@ -506,30 +531,6 @@ function formatAddress(address) {
 
 	return newAddress;
 }
-
-const updateVisitorVisit = () => {
-	const tr = participant.value;
-	if (!tr) return;
-
-	const visitedToday = $(tr).children("td")[6];
-	$(visitedToday).html(`<span class="text-success fw-bold">Yes</span>`);
-
-	// Reset for new participant.
-	participant.value = "";
-};
-
-watch(
-	() => eventValue.value,
-	(n) => {
-		events.value = n
-			? eventTem.value.filter((event) =>
-					event.title
-						.toLocaleLowerCase()
-						.includes(n.toLocaleLowerCase())
-			  )
-			: eventTem.value;
-	}
-);
 </script>
 
 <style scoped>

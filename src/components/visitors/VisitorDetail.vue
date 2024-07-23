@@ -115,7 +115,6 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
-import dayjs from "dayjs";
 import { formatDateTime } from "@/assets/js/util";
 
 DataTable.use(DataTablesCore);
@@ -218,13 +217,15 @@ const formatVisitorInfo = (key) => {
 };
 
 const formatVisitorVisits = (visits) => {
-	for (const visit of visits) {
-		if (visit.date_time) {
-			visit.date_time = formatDateTime(visit.date_time);
-		}
+    for (const visit of visits) {
+        visit.date_time = formatDateTime(visit.date_time);
+        visit.departure_time = formatDateTime(visit.departure_time, {
+            time: true,
+        });
 
-		visit.items = visit.items ? visit.items.join(", ") : "";
-	}
+        // convert items array to comma seperated string, if any
+        visit.items = visit.items ? visit.items.join(", ") : "";
+    }
 
 	return visits;
 };

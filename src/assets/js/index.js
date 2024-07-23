@@ -12,7 +12,7 @@ export const registerVisit = async (data) => {
 			body: JSON.stringify(data),
 		};
 
-		const response = await fetch(`${API_URL}/visits`, options);
+        const response = await fetch(`${API_URL}/visits`, options);
 
 		const result = await response.json();
 
@@ -199,12 +199,14 @@ export const getVisitorWithVisits = async (id, query) => {
 };
 
 export const getEvents = async (id, data) => {
-	try {
-		let url = `${API_URL}/events`;
+    try {
+        let url = `${API_URL}/events`;
 
-		if (id) {
-			url += `/${id}`;
-		}
+        if (id) {
+            url += `/${id}`;
+        } else if (data.current) {
+            url += `?current=1`;
+        }
 
 		const response = await fetch(url);
 

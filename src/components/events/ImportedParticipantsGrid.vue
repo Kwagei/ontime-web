@@ -46,7 +46,7 @@
 import Edit from "../Edit.vue";
 import Delete from "../Delete.vue";
 
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const props = defineProps({
     participants: {
@@ -69,6 +69,12 @@ const participantsToDisplay = computed(() => {
 
 const emit = defineEmits(["edit", "delete"]);
 
+onMounted(() => {
+    props.participants.forEach((participant) => {
+        participant.msisdn = formatMsisdn(participant.msisdn);
+    });
+});
+
 function search() {
     // query the original participants array for matching values
     queryResults.value = props.participants.filter((participant) =>
@@ -76,6 +82,19 @@ function search() {
             .toLowerCase()
             .includes(query.value.toLowerCase())
     );
+}
+
+function formatMsisdn(msisdn) {
+    // remove 0 and put 231 if it begins with 0
+    if (msisdn.startsWith("0")) {
+        return msisdn.split("0", 1)[1];
+    } else if (msisdn.startsWith("231")) {
+        return msisdn;
+    }
+    // only prepend the 231 if it doesn't begin with 231 or 0
+    else {
+        return `231${msisdn}`;
+    }
 }
 </script>
 

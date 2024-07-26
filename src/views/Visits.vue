@@ -11,7 +11,13 @@
 				<div class="dropdown">
 					<Options />
 					<ul class="dropdown-menu">
-						<li id="export" class="dropdown-item">Export</li>
+						<li
+							@click="exportVisits"
+							id="export"
+							class="dropdown-item"
+						>
+							Export
+						</li>
 					</ul>
 				</div>
 
@@ -130,11 +136,6 @@ const formatItems = (belonging) => {
 	const items = belonging.join(", ");
 	return items.length > 30 ? `${items.slice(0, 30)}...` : items;
 };
-
-onMounted(() => {
-	const exportBtn = document.querySelector("#export");
-	exportBtn.addEventListener("click", exportVisits);
-});
 </script>
 
 <style scoped>

@@ -100,6 +100,8 @@ table tr {
 
 .btn,
 input,
-select {
+select,
+textarea,
+a {
 	border-radius: 0.3rem !important;
 }

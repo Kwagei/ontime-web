@@ -2,28 +2,43 @@
 	<div class="d-flex align-items-center flex-column">
 		<div class="w-100 d-flex justify-content-between gap-4 pt-3">
 			<BreadCrumbs :breadCrumbs="['events', event.title]" />
-			<div class="d-flex gap-3">
-				<button
-					class="btn btn-secondary"
-					@click="emit('switch', 'importParticipants')"
-				>
-					Import Participants
-				</button>
+			<div class="d-flex" style="gap: 0.521rem">
+				<RefreshList @click="refresh = true" />
+
+				<div class="dropdown">
+					<Options />
+					<ul class="dropdown-menu">
+						<li
+							id="export"
+							class="dropdown-item"
+							@click="$emit('editEvent')"
+						>
+							Edit Event
+						</li>
+						<li
+							id="export"
+							class="dropdown-item"
+							@click="exportEventParticipants"
+						>
+							Export Participants
+						</li>
+						<li
+							id="export"
+							class="dropdown-item"
+							@click="emit('switch', 'importParticipants')"
+						>
+							Import Participants
+						</li>
+					</ul>
+				</div>
+
 				<button
 					class="btn btn-primary"
 					id="addParticipantBtn"
 					@click="emit('switch', 'addParticipant')"
 				>
-					Add Participant
-				</button>
-				<button
-					class="btn btn-secondary editBtn"
-					style="border: 0.125rem solid black"
-					type="button"
-					data-bs-theme="dark"
-					@click="$emit('editEvent')"
-				>
-					<Icons v-model:icon="edit" />
+					<Icons v-model:icon="add" />
+					New
 				</button>
 			</div>
 		</div>
@@ -65,7 +80,7 @@
 				<h5 class="mt-2 mb-0">{{ event.details }}</h5>
 			</div>
 		</div>
-		<EventParticipants />
+		<EventParticipants v-model:refresh="refresh" />
 	</div>
 </template>
 
@@ -74,8 +89,31 @@ import BreadCrumbs from "../BreadCrumbs.vue";
 import EventParticipants from "./EventParticipants.vue";
 import Icons from "../Icons.vue";
 import { formatDateTime } from "@/assets/js/util.js";
+import RefreshList from "../RefreshList.vue";
+import { csvExport, getParticipants } from "@/assets/js";
+import { ref, onMounted } from "vue";
+import Options from "../Options.vue";
 
-const edit = "pencil";
+const add = "add";
+const refresh = defineModel("refresh");
+const totalEventParticipants = defineModel("totalEventParticipants");
+
+const exportEventParticipants = async () => {
+	const { participants } = await getParticipants(props.event.id, {
+		limit: totalEventParticipants.value,
+	});
+
+	csvExport(
+		participants.map((participant) => {
+			participant.event_title = props.event.title;
+			delete participant.event_id;
+			delete participant.participant_id;
+			delete participant.visit_date_time;
+			delete participant.visit_departure_time;
+			return participant;
+		})
+	);
+};
 
 const props = defineProps({
 	event: {
@@ -88,32 +126,12 @@ const emit = defineEmits(["editEvent", "switch"]);
 </script>
 
 <style scoped>
-#eventOptionsUL {
-	position: absolute;
-	z-index: 9999;
-	background-color: #eee;
-	list-style: none;
-	border: 2px solid #555;
-	padding: 0;
-}
-
-#eventOptionsUL li {
-	padding: 15px;
-	cursor: pointer;
-	font-weight: 800;
-}
-
-#eventOptionsUL li:hover {
-	background-color: #ddd;
-}
-
-.editBtn {
-	padding: 0.5rem;
-}
-
-.editBtn svg {
-	height: 1.3rem !important;
-	padding: 0 !important;
+svg {
+	height: 20px !important;
 	margin: 0 !important;
+}
+
+#addParticipantBtn {
+	padding: 0.5rem;
 }
 </style>

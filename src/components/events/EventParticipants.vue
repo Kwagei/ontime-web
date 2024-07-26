@@ -6,6 +6,7 @@
 		<div>
 			<DataTable
 				class="display w-100 table"
+				:key="tableKey"
 				:columns="columns"
 				:options="options"
 				ref="table"
@@ -19,7 +20,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -30,7 +31,8 @@ import { API_URL } from "@/assets/js";
 
 const router = useRouter();
 const eventId = router.currentRoute.value.params.id;
-
+const totalEventParticipants = defineModel("totalEventParticipants");
+const showError = ref(false);
 const emit = defineEmits(["switch"]);
 
 let allParticipants = [];
@@ -77,12 +79,11 @@ const options = {
 			};
 		},
 		dataSrc: (json) => {
-			const participants = json.data.participants;
+			const { participants, length } = json.data;
 
-			// fix stop data table from showing NAN error
-			// in pagination and number of records
-			json.recordsTotal = json.data.length;
-			json.recordsFiltered = json.data.length;
+			json.recordsTotal = length;
+			json.recordsFiltered = length;
+			totalEventParticipants.value = length;
 
 			participants.forEach((participant) => {
 				participant.msisdn = `0${participant.msisdn.slice(3)}`;
@@ -154,6 +155,17 @@ const handleEventDetail = () => {
 function displayEventPage(eventId) {
 	router.push({ name: "specific-event", params: { id: eventId } });
 }
+
+const refresh = defineModel("refresh");
+const tableKey = ref(0);
+
+watch(
+	() => refresh.value,
+	() => {
+		// update table Key to force data table to re render
+		tableKey.value += 1;
+	}
+);
 </script>
 
 <style scoped>

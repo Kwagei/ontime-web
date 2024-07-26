@@ -10,7 +10,13 @@
 				<div class="dropdown">
 					<Options />
 					<ul class="dropdown-menu">
-						<li id="export" class="dropdown-item">Export</li>
+						<li
+							@click="exportEvents"
+							id="export"
+							class="dropdown-item"
+						>
+							Export
+						</li>
 					</ul>
 				</div>
 
@@ -64,11 +70,6 @@ const exportEvents = async () => {
 		})
 	);
 };
-
-onMounted(() => {
-	const exportBtn = document.querySelector("#export");
-	exportBtn.addEventListener("click", exportEvents);
-});
 </script>
 
 <style scoped>

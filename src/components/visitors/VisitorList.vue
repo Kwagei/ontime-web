@@ -4,14 +4,6 @@
 		style="gap: 0.7rem"
 	>
 		<div>
-			<!-- <DataTable
-				id="visitorsTable"
-				class="display w-100 table nowrap"
-				ref="table"
-				:columns="columns"
-				:options="options"
-                /> -->
-
 			<DataTable
 				id="visitorsTable"
 				:key="tableKey"
@@ -40,6 +32,8 @@ import { API_URL } from "@/assets/js/index.js";
 import { formatDateTime } from "@/assets/js/util.js";
 
 DataTable.use(DataTablesCore);
+
+const totalVisitors = defineModel("totalVisitors");
 
 const columns = [
 	{ data: "first_name", title: "First name" },
@@ -74,6 +68,7 @@ const options = {
 
 			json.recordsTotal = length;
 			json.recordsFiltered = length;
+			totalVisitors.value = length;
 
 			data.forEach((visitor) => {
 				visitor.address = formatAddress(visitor.address);

@@ -26,6 +26,8 @@ import "datatables.net-responsive-dt";
 
 DataTable.use(DataTablesCore);
 
+const totalVisits = defineModel("totalVisits");
+
 const columns = [
 	{ data: "date_time", title: "Date" },
 	{ data: "visitor", title: "Visitor" },
@@ -78,6 +80,8 @@ const options = {
 		},
 		dataSrc: (json) => {
 			const { visits, length } = json.data;
+
+			totalVisits.value = length;
 
 			json.recordsTotal = length;
 			json.recordsFiltered = length;

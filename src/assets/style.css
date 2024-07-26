@@ -97,3 +97,9 @@ table tr {
 .dropdown-item {
 	cursor: pointer;
 }
+
+.btn,
+input,
+select {
+	border-radius: 0.3rem !important;
+}

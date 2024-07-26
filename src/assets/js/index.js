@@ -1,6 +1,19 @@
 import $ from "jquery";
+import { mkConfig, generateCsv, download } from "export-to-csv";
 
-export const API_URL = import.meta.env.VITE_VERCEL_ENV;
+// mkConfig merges your options with the defaults
+// and returns WithDefaults<ConfigOptions>
+const csvConfig = mkConfig({ useKeysAsHeaders: true });
+
+export const csvExport = (data) => {
+	// Converts your Array<Object> to a CsvOutput string based on the configs
+	const csv = generateCsv(csvConfig)(data);
+
+	// `download` takes `csvConfig` and the generated `CsvOutput`
+	download(csvConfig)(csv);
+};
+
+export const API_URL = import.meta.env.VITE_API_URL;
 
 export const registerVisit = async (data) => {
 	try {
@@ -102,7 +115,7 @@ export const getVisits = async (query = {}) => {
 			start = 0,
 			limit = 20,
 			sort = "",
-			direction = "",
+			order = "",
 		} = query;
 
 		let url = `${API_URL}/visits?start=${start}&limit=${limit}`;
@@ -112,7 +125,7 @@ export const getVisits = async (query = {}) => {
 		}
 
 		if (sort) {
-			url += `&sort=${sort}&direction=${direction}`;
+			url += `&sort=${sort}&order=${order}`;
 		}
 
 		const response = await fetch(url);
@@ -136,7 +149,7 @@ export const getVisitors = async (query = {}) => {
 			start = 0,
 			limit = 20,
 			sort = "",
-			direction = "",
+			order = "",
 		} = query;
 
 		let url = `${API_URL}/visitors?start=${start}&limit=${limit}`;
@@ -146,8 +159,10 @@ export const getVisitors = async (query = {}) => {
 		}
 
 		if (sort) {
-			url += `&sort=${sort}&direction=${direction}`;
+			url += `&sort=${sort}&order=${order}`;
 		}
+
+		console.log({ url });
 
 		const response = await fetch(url);
 
@@ -170,7 +185,7 @@ export const getVisitorWithVisits = async (id, query) => {
 			start = 0,
 			limit = 20,
 			sort = "",
-			direction = "",
+			order = "",
 		} = query;
 
 		let url = `${API_URL}/visitors/${id}/visits?&start=${start}&limit=${limit}`;
@@ -180,7 +195,7 @@ export const getVisitorWithVisits = async (id, query) => {
 		}
 
 		if (sort) {
-			url += `&sort=${sort}&direction=${direction}`;
+			url += `&sort=${sort}&order=${order}`;
 		}
 
 		const response = await fetch(url);
@@ -333,7 +348,7 @@ export const getParticipants = async (id, query = {}) => {
 			start = 0,
 			limit = 20,
 			sort = "",
-			direction = "",
+			order = "",
 		} = query;
 
 		let url = `${API_URL}/events/${id}/participants?start=${start}&limit=${limit}`;
@@ -343,7 +358,7 @@ export const getParticipants = async (id, query = {}) => {
 		}
 
 		if (sort) {
-			url += `&sort=${sort}&direction=${direction}`;
+			url += `&sort=${sort}&order=${order}`;
 		}
 
 		const response = await fetch(url);

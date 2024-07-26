@@ -68,6 +68,15 @@
 					</form>
 				</div>
 				<div class="modal-footer">
+					<button
+						type="button"
+						class="btn btn-outline-secondary"
+						data-bs-dismiss="modal"
+						@click="resetForm"
+					>
+						Cancel
+					</button>
+
 					<button @click="checkParticipantIn" class="btn btn-primary">
 						Check In
 					</button>

@@ -4,26 +4,27 @@
 		style="border: 0.125rem solid black"
 		type="button"
 		data-bs-theme="dark"
+		data-bs-toggle="dropdown"
+		aria-expanded="false"
 	>
-		<svg
-			width="100"
-			height="100"
-			viewBox="0 0 100 100"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<g fill="#000000" transform="scale(.1)">
-				<circle cx="200" cy="500" r="100" />
-				<circle cx="500" cy="500" r="100" />
-				<circle cx="800" cy="500" r="100" />
-			</g>
-		</svg>
+		<Icons v-model:icon="dots" />
 	</button>
 </template>
+
+<script setup>
+import Icons from "./Icons.vue";
+const dots = "more-dots";
+</script>
 
 <style scoped>
 .btn:hover g {
 	fill: white;
 }
+
+.list-options {
+	padding: 0.5rem;
+}
+
 .list-options svg {
 	height: 20px !important;
 	margin: 0 !important;

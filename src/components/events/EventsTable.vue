@@ -5,6 +5,7 @@
 	>
 		<div>
 			<DataTable
+				:key="tableKey"
 				id="eventsTable"
 				class="display w-100 table"
 				:columns="columns"
@@ -16,7 +17,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -26,6 +27,10 @@ import { API_URL } from "@/assets/js";
 
 DataTable.use(DataTablesCore);
 import dayjs from "dayjs";
+
+const totalEvents = defineModel("totalEvents");
+const refresh = defineModel("refresh");
+const tableKey = ref(0);
 
 const columns = [
 	{ data: "title", title: "Title" },
@@ -61,6 +66,7 @@ const options = {
 
 			json.recordsTotal = length;
 			json.recordsFiltered = length;
+			totalEvents.value = length;
 
 			events.forEach((event) => {
 				event.details = formatDetails(event.details);
@@ -138,6 +144,14 @@ function displayEventPage(eventId) {
 const addEvent = () => {
 	router.push({ name: "add-event" });
 };
+
+watch(
+	() => refresh.value,
+	() => {
+		// update table Key to force data table to re render
+		tableKey.value += 1;
+	}
+);
 </script>
 
 <style scoped>

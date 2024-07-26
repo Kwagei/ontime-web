@@ -5,6 +5,7 @@
 	>
 		<div>
 			<DataTable
+				:key="tableKey"
 				id="visitsTable"
 				class="display w-100 table"
 				:columns="columns"
@@ -18,7 +19,7 @@
 <script setup>
 import { API_URL, updateDepartureTime } from "@/assets/js/index.js";
 import dayjs from "dayjs";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -27,6 +28,8 @@ import "datatables.net-responsive-dt";
 DataTable.use(DataTablesCore);
 
 const totalVisits = defineModel("totalVisits");
+const refresh = defineModel("refresh");
+const tableKey = ref(0);
 
 const columns = [
 	{ data: "date_time", title: "Date" },
@@ -211,6 +214,14 @@ const formatItems = (belonging) => {
 		? `${items.slice(0, MAX_ITEMS_LEN)}...`
 		: items;
 };
+
+watch(
+	() => refresh.value,
+	() => {
+		// update table Key to force data table to re render
+		tableKey.value += 1;
+	}
+);
 
 onMounted(async () => {
 	handleCheckoutDetail();

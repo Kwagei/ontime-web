@@ -226,9 +226,9 @@ export const getEvents = async (id, data) => {
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
 		}
-		const { data: events } = await response.json();
+		const { data } = await response.json();
 
-		return events;
+		return data;
 	} catch (error) {
 		console.error("Error: ", error);
 	}

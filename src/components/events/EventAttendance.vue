@@ -1,15 +1,29 @@
 <template>
-    <div
-        class="table-responsive container p-0 d-flex flex-column"
-        style="gap: 0.7rem"
-    >
+    <div class="d-flex justify-content-between align-items-center gap-5 mt-3">
+        <div class="d-flex align-items-center gap-4">
+            <BackArrow @click="$emit('switch', 'details')" />
+            <BreadCrumbs
+                :breadCrumbs="['events', eventId, 'Today\'s Attendance']"
+            />
+        </div>
         <div>
+            <button
+                class="btn btn-primary"
+                id="addParticipantBtn"
+                @click="$emit('switch', 'addParticipant')"
+            >
+                Add Participant
+            </button>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center gap-3 mt-2">
+        <div class="pt-2 w-100">
             <DataTable
                 class="display w-100 table"
                 :columns="columns"
                 :options="options"
                 ref="table"
-                v-show="!showError"
+                v-if="!showError"
             />
             <h3 class="mt-5 text-center fw-bold" v-if="showError">
                 Unable to load event participants, try again!
@@ -19,36 +33,36 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import BackArrow from "../BackArrow.vue";
+import BreadCrumbs from "../BreadCrumbs.vue";
+import { API_URL } from "@/assets/js";
+
+import { ref } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
+import { formatDateTime } from "@/assets/js/util";
 
-import { API_URL } from "@/assets/js";
+const props = defineProps({
+    eventId: String,
+});
 
-const router = useRouter();
-const eventId = router.currentRoute.value.params.id;
-
-const emit = defineEmits(["switch"]);
-
-let allParticipants = [];
+const eventId = ref(props.eventId);
+const showError = ref(false);
 
 DataTable.use(DataTablesCore);
 
-const showError = ref(false);
-
 const columns = [
     { data: "first_name", title: "First Name" },
-    { data: "middle_name", title: "Middle Name" },
     { data: "last_name", title: "Last Name" },
-    { data: "email", title: "Email" },
     { data: "msisdn", title: "Contact" },
-    { data: "address", title: "Address" },
+    { data: "visit_date_time", title: "Time In" },
+    { data: "visit_departure_time", title: "Time Out" },
+    { data: "items", title: "Items" },
     {
         data: null,
-        title: "Today's Attendance",
+        title: "Status",
         render: (data) => {
             return data.participant_id
                 ? `<span class="text-success fw-bold">Attended</span>`
@@ -62,7 +76,7 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}events/${eventId}/participants/`,
+        url: `${API_URL}events/${eventId.value}/participants/`,
         type: "GET",
         data: (query) => {
             const order =
@@ -86,13 +100,30 @@ const options = {
             json.recordsTotal = json.data.length;
             json.recordsFiltered = json.data.length;
 
-            showError.value = false;
-
+            // format each participant record
             participants.forEach((participant) => {
                 participant.msisdn = `0${participant.msisdn.slice(3)}`;
-            });
 
-            allParticipants = participants;
+                // format visit date time or arrival time if any
+                participant.visit_date_time = participant.visit_date_time
+                    ? formatDateTime(participant.visit_date_time, {
+                          time: true,
+                      })
+                    : null;
+
+                // format departure time if any
+                participant.visit_departure_time =
+                    participant.visit_departure_time
+                        ? formatDateTime(participant.visit_departure_time, {
+                              time: true,
+                          })
+                        : null;
+
+                // format items if any
+                participant.items = participant.items
+                    ? participant.items.join(", ")
+                    : "";
+            });
 
             return participants;
         },
@@ -137,37 +168,8 @@ const options = {
 };
 
 const table = ref();
-
-onMounted(() => {
-    handleEventDetail();
-});
-
-const handleEventDetail = () => {
-    // don't add click event listener on table rows
-    // if there are no participants to show
-    if (!allParticipants.length) return;
-
-    const dt = table.value.dt;
-
-    dt.on("click", "tr", function () {
-        const { id } = dt.row(this).data();
-        displayEventPage(id);
-    });
-};
-
-function displayEventPage(eventId) {
-    router.push({ name: "specific-event", params: { id: eventId } });
-}
 </script>
 
 <style scoped>
-.cursorPointer {
-    cursor: pointer;
-}
-
-th,
-td {
-    padding: 0.9rem;
-    font-size: 0.9rem;
-}
+/* code... */
 </style>

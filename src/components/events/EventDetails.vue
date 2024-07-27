@@ -5,6 +5,14 @@
             <div class="d-flex gap-3">
                 <button
                     class="btn btn-secondary"
+                    @click="emit('switch', 'todaysAttendance')"
+                    style="border: 0.125rem solid black"
+                    data-bs-theme="dark"
+                >
+                    Today's Attendance
+                </button>
+                <button
+                    class="btn btn-secondary"
                     @click="emit('switch', 'importParticipants')"
                 >
                     Import Participants
@@ -78,10 +86,10 @@ import { formatDateTime } from "../../assets/js/util.js";
 const edit = "pencil";
 
 const props = defineProps({
-	event: {
-		type: Object,
-		required: true,
-	},
+    event: {
+        type: Object,
+        required: true,
+    },
 });
 
 const emit = defineEmits(["editEvent", "switch"]);
@@ -89,31 +97,31 @@ const emit = defineEmits(["editEvent", "switch"]);
 
 <style scoped>
 #eventOptionsUL {
-	position: absolute;
-	z-index: 9999;
-	background-color: #eee;
-	list-style: none;
-	border: 2px solid #555;
-	padding: 0;
+    position: absolute;
+    z-index: 9999;
+    background-color: #eee;
+    list-style: none;
+    border: 2px solid #555;
+    padding: 0;
 }
 
 #eventOptionsUL li {
-	padding: 15px;
-	cursor: pointer;
-	font-weight: 800;
+    padding: 15px;
+    cursor: pointer;
+    font-weight: 800;
 }
 
 #eventOptionsUL li:hover {
-	background-color: #ddd;
+    background-color: #ddd;
 }
 
 .editBtn {
-	padding: 0.5rem;
+    padding: 0.5rem;
 }
 
 .editBtn svg {
-	height: 1.3rem !important;
-	padding: 0 !important;
-	margin: 0 !important;
+    height: 1.3rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 </style>

@@ -21,7 +21,7 @@
             <div>
                 <a
                     class="link-underline link-underline-opacity-0"
-                    href="/docs/participants_template.csv"
+                    :href="templateUrl"
                     download="participants_template.csv"
                 >
                     <button class="btn btn-primary">
@@ -116,6 +116,9 @@ const participants = ref([]);
 const participantsFile = ref(null);
 const errorAlertMessage = ref("");
 const participantToEdit = ref({});
+const templateUrl = ref(
+    window.location.origin + "/docs/participants_template.csv"
+);
 
 function handleFileImport(event) {
     const file = event.target.files[0];

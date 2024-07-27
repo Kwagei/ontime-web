@@ -30,6 +30,11 @@
                 @displayEventParticipants="switchState"
                 @editEvent="editEvent"
             />
+            <EventAttendance
+                v-if="state == 'todaysAttendance'"
+                :eventId="eventId"
+                @switch="switchState"
+            />
             <AddParticipant
                 v-if="state == 'addParticipant'"
                 @switch="switchState"
@@ -61,6 +66,7 @@ import Modal from "../Modal.vue";
 
 import { API_URL } from "@/assets/js/index.js";
 import { showModal } from "@/assets/js/util.js";
+import EventAttendance from "./EventAttendance.vue";
 
 const router = useRouter();
 

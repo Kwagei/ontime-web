@@ -6,7 +6,10 @@
                 :breadCrumbs="['events', eventId, 'Today\'s Attendance']"
             />
         </div>
-        <div>
+        <div class="d-flex gap-3">
+            <router-link to="/visits/purpose-event">
+                <button class="btn btn-secondary">Check In</button>
+            </router-link>
             <button
                 class="btn btn-primary"
                 id="addParticipantBtn"
@@ -43,6 +46,7 @@ import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
 import { formatDateTime } from "@/assets/js/util";
+import { RouterLink } from "vue-router";
 
 const props = defineProps({
     eventId: String,

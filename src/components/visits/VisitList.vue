@@ -18,7 +18,8 @@
 
 <script setup>
 import { API_URL, updateDepartureTime } from "@/assets/js/index.js";
-import dayjs from "dayjs";
+import { formatDateTime } from "@/assets/js/util.js";
+
 import { onMounted, ref, watch } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -29,6 +30,8 @@ DataTable.use(DataTablesCore);
 
 const totalVisits = defineModel("totalVisits");
 const refresh = defineModel("refresh");
+const lengthMenu = defineModel("lengthMenu");
+const recordsFiltered = defineModel("recordsFiltered");
 const tableKey = ref(0);
 
 const columns = [
@@ -87,15 +90,15 @@ const options = {
 			totalVisits.value = length;
 
 			json.recordsTotal = length;
-			json.recordsFiltered = length;
-			return formatDateTime(visits);
+			json.recordsFiltered = recordsFiltered.value || length;
+			return formatData(visits);
 		},
 		error: (error) => {
 			console.log("Error fetching data:", error);
 		},
 	},
 	responsive: true,
-	lengthMenu: [10, 25, 50, 100],
+	lengthMenu: lengthMenu.value || [10, 25, 50, 100],
 	language: {
 		searchPlaceholder: "Search ...",
 		search: "",
@@ -180,13 +183,10 @@ const handleCheckoutDetail = () => {
 	});
 };
 
-const formatDateTime = (visits) => {
+const formatData = (visits) => {
 	return visits.map((visit) => {
-		const now = dayjs(visit.date_time);
-
 		if (visit.date_time) {
-			visit.date_time =
-				now.format("dddd, MMMM D, YYYY") + " " + now.format("HH:mm:ss");
+			visit.date_time = formatDateTime(visit.date_time);
 		}
 
 		if (Array.isArray(visit.items)) {

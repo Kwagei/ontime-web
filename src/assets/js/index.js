@@ -213,12 +213,30 @@ export const getVisitorWithVisits = async (id, query) => {
 	}
 };
 
-export const getEvents = async (id, data) => {
+export const getEvents = async (id, query = {}) => {
 	try {
+		const {
+			search = "",
+			start = 0,
+			limit = 20,
+			sort = "",
+			order = "",
+		} = query;
+
 		let url = `${API_URL}/events`;
 
 		if (id) {
 			url += `/${id}`;
+		} else {
+			url += `?&start=${start}&limit=${limit}`;
+
+			if (search) {
+				url += `&search=${search}`;
+			}
+
+			if (sort) {
+				url += `&sort=${sort}&order=${order}`;
+			}
 		}
 
 		const response = await fetch(url);

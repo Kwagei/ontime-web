@@ -61,6 +61,10 @@ watch(
 
 const navItems = [
 	{
+		name: "dashboard",
+		svg: "control-my-data",
+	},
+	{
 		name: "visitors",
 		svg: "group",
 	},

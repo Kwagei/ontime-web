@@ -165,7 +165,7 @@ import {
     API_URL,
 } from "@/assets/js/index.js";
 
-import { showModal } from "@/assets/js/util";
+import { removeDuplicateParticipants, showModal } from "@/assets/js/util";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -207,9 +207,9 @@ const columns = [
         title: "Action",
         className: "w-5 text-center",
         render: (data) => {
-            return !data.participant_id
-                ? `<button class="btn btn-secondary" style="padding: 3px 5px; font-size: 15px">Check In</button>`
-                : `<button class="btn btn-secondary" style="padding: 3px 5px; font-size: 15px" disabled>Check In</button>`;
+            return data.participant_id && !data.visit_departure_time
+                ? `<button class="btn btn-secondary" style="padding: 3px 5px; font-size: 15px" disabled>Check In</button>`
+                : `<button class="btn btn-secondary" style="padding: 3px 5px; font-size: 15px">Check In</button>`;
         },
     },
 ];
@@ -233,10 +233,14 @@ const dataTableOptions = ref({
         dataSrc: (json) => {
             showError.value = false;
 
-            json.recordsTotal = json.data.length;
-            json.recordsFiltered = json.data.length;
+            json.recordsTotal = json.data.totalLength;
+            json.recordsFiltered = json.data.totalLength;
 
-            participants.value = json.data.participants;
+            console.log("1: ", json.data.participants);
+            participants.value = removeDuplicateParticipants(
+                json.data.participants
+            );
+            console.log("2: ", participants.value);
 
             participants.value.forEach((visitor) => {
                 visitor.address = formatAddress(visitor.address);
@@ -316,42 +320,38 @@ const props = defineProps({
 });
 
 function addClickEventListenerOnCheckButtons() {
-    setTimeout(
-        () => {
-            const dt = table.value.dt;
+    // wait a bit, don't know why but that's the only way it'll work
+    setTimeout(() => {
+        const dt = table.value.dt;
 
-            dt.on("click", "button", (event) => {
-                // manually get the email of the clicked participant / row
-                const thisParticipantEmail =
-                    event.target.parentNode.parentNode.childNodes[4]
-                        .textContent;
+        dt.on("click", "button", (event) => {
+            // manually get the email of the clicked participant / row
+            const thisParticipantEmail =
+                event.target.parentNode.parentNode.childNodes[4].textContent;
 
-                // find the participant in the participants array
-                const data = participants.value.find(
-                    (participant) => participant.email == thisParticipantEmail
-                );
+            // find the participant in the participants array
+            const data = participants.value.find(
+                (participant) => participant.email == thisParticipantEmail
+            );
 
-                // only check the participant in if they don't have
-                // a departure_time, meaning they either haven't checked in
-                // or they have checked out already
-                // in this case, if they checked in earlier and checked out for some
-                // reason, they can still check back in, but not if they weren't checked out
-                if (data && data.participant_id && !data.visit_departure_time) {
-                    // inform user visitor is still checked in
-                    showModal();
+            // only check the participant in if they don't have
+            // a departure_time, meaning they either haven't checked in
+            // or they have checked out already
+            // in this case, if they checked in earlier and checked out for some
+            // reason, they can still check back in, but not if they weren't checked out
+            if (data && data.participant_id && !data.visit_departure_time) {
+                // inform user visitor is still checked in
+                showModal();
 
-                    pageLink.value = "/visits";
-                    title.value = "Visitor is Checked In";
-                    status.value = "warning";
-                } else {
-                    // otherwise check visitor in
-                    participantDetail(data.id);
-                }
-            });
-        },
-        // I don't know why, but it has to be this way
-        500
-    );
+                pageLink.value = "/visits";
+                title.value = "Visitor is Checked In";
+                status.value = "warning";
+            } else {
+                // otherwise check visitor in
+                participantDetail(data.id);
+            }
+        });
+    }, 500);
 }
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
@@ -568,6 +568,7 @@ function formatAddress(address) {
     color: #777;
     cursor: pointer;
 }
+
 a {
     text-decoration: none;
 }
@@ -577,9 +578,5 @@ a {
 
 .modal {
     background-color: #1616157a;
-}
-
-.cursorNotAllowed {
-    cursor: not-allowed !important;
 }
 </style>

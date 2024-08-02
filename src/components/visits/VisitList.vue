@@ -3,13 +3,17 @@
         class="table-responsive container p-0 d-flex flex-column"
         style="gap: 0.7rem"
     >
+        <h4 class="mb-0" v-show="dateRangeDates.from || dateRangeDates.to">
+            {{ dateRangeInfo }}
+        </h4>
         <div>
             <DataTable
-                v-if="!showError"
+                v-show="!showError"
                 id="visitsTable"
                 class="display w-100 table"
                 :columns="columns"
                 :options="options"
+                :key="tableKey"
                 ref="table"
             />
             <h3 class="mt-5 text-center fw-bold" v-if="showError">
@@ -21,7 +25,7 @@
 
 <script setup>
 import { API_URL, updateDepartureTime } from "@/assets/js/index.js";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -30,6 +34,10 @@ import { formatDateTime } from "@/assets/js/util";
 
 DataTable.use(DataTablesCore);
 
+const table = ref();
+const tableKey = ref(0);
+const refresh = defineModel("refresh");
+const dateRangeDates = defineModel("dateRangeDates");
 const showError = ref(false);
 
 const columns = [
@@ -79,22 +87,27 @@ const options = {
                 limit: query.length,
                 search: query.search.value,
                 sort: order,
+                from: dateRangeDates.value.from || undefined,
+                to: dateRangeDates.value.to || undefined,
                 order: query.order[0].dir,
             };
         },
         dataSrc: (json) => {
-            const { visits, length } = json.data;
+            const { visits, totalLength } = json.data;
 
-            json.recordsTotal = length;
-            json.recordsFiltered = length;
+            json.recordsTotal = totalLength;
+            json.recordsFiltered = totalLength;
 
             showError.value = false;
+
+            refresh.value = false;
 
             return formatVisit(visits);
         },
         error: (error) => {
             console.log("Error fetching data:", error);
             showError.value = true;
+            refresh.value = false;
         },
     },
     responsive: true,
@@ -102,7 +115,7 @@ const options = {
     language: {
         searchPlaceholder: "Search ...",
         search: "",
-        emptyTable: `
+        zeroRecords: `
 			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
 				No Visits to show!
 				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M82.5 37.5V35l-15-15H60v-3.75A1.25 1.25 0 0058.75 15h-2.5A1.25 1.25 0 0055 16.25V20H40v-3.75A1.25 1.25 0 0038.75 15h-2.5A1.25 1.25 0 0035 16.25V20h-7.5l-15 15v2.5h5V85H15v2.5h65V85h-2.5V37.5zM35 77.5H25V70a5 5 0 015-5 5 5 0 015 5zm0-25H25V45a5 5 0 015-5 5 5 0 015 5zM52.5 85h-10V70a5 5 0 015-5 5 5 0 015 5zm0-32.5h-10V45a5 5 0 015-5 5 5 0 015 5zm17.5 25H60V70a5 5 0 015-5 5 5 0 015 5zm0-25H60V45a5 5 0 015-5 5 5 0 015 5z"/></svg>
@@ -114,7 +127,7 @@ const options = {
                 </button>
 			</div>
 		`,
-        zeroRecords: `
+        emptyTable: `
 			<div class="d-flex gap-3 my-3 flex-column align-items-center">
 				No match found!
 				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-house" viewBox="0 0 1000 1000">
@@ -123,16 +136,29 @@ const options = {
 			</div>
 		`,
         loadingRecords: `
-		<div class="d-flex justify-content-center p-4">
-			<div class="spinner-border" role="status">
-				<span class="visually-hidden">Loading...</span>
+			<div class="d-flex justify-content-center p-4">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
 			</div>
-		</div>
-	`,
+		`,
     },
 
     order: [[0, "desc"]],
 };
+
+const dateRangeInfo = computed(() => {
+    return `Showing Visits ${
+        dateRangeDates.value.from
+            ? "from " +
+              formatDateTime(dateRangeDates.value.from, { date: true })
+            : ""
+    } ${
+        dateRangeDates.value.to
+            ? "up to " + formatDateTime(dateRangeDates.value.to, { date: true })
+            : ""
+    }`;
+});
 
 const MAX_ITEMS_LEN = 30;
 
@@ -166,7 +192,25 @@ const handleCheckout = async (id, tr) => {
     }
 };
 
-const table = ref();
+// reload visits table
+watch(
+    () => refresh.value,
+    () => (tableKey.value += 1)
+);
+
+// retrieve events in date range
+watch(
+    // watch for change on the from or to dates
+    () => [dateRangeDates.value.from, dateRangeDates.value.to],
+    ([newFrom, newTo]) => {
+        // update the date from and to dates for the request query
+        dateRangeDates.value.from = newFrom;
+        dateRangeDates.value.to = newTo;
+
+        // update the table key and force the table to reload
+        tableKey.value += 1;
+    }
+);
 
 const handleCheckoutDetail = () => {
     const dt = table.value.dt;

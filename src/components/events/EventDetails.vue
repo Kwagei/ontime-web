@@ -63,7 +63,7 @@
                     <h4>{{ event.room }}</h4>
                     <span class="fs-6">Created At</span>
                     <h4>
-                        {{ formatDateTime(event.created_at, { date: true }) }}
+                        {{ formatDateTime(event.created_at) }}
                     </h4>
                 </div>
             </div>

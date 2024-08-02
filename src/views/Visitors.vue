@@ -7,7 +7,6 @@
 
             <div class="d-flex" style="gap: 0.521rem">
                 <RefreshList @click="refresh = true" />
-
                 <router-link :to="{ name: 'add-visitor' }">
                     <button
                         id="addVisitorBtn"
@@ -31,9 +30,10 @@ import VisitorList from "../components/visitors/VisitorList.vue";
 import RefreshList from "../components/RefreshList.vue";
 
 import { RouterLink, RouterView } from "vue-router";
+import { ref } from "vue";
 
 const breadCrumbs = defineModel("breadCrumbs");
-const refresh = defineModel("refresh");
+const refresh = ref("refresh");
 </script>
 
 <style scoped>

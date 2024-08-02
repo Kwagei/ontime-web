@@ -1,103 +1,100 @@
 <template>
-	<div
-		class="table-responsive container p-0 d-flex flex-column"
-		style="gap: 0.7rem"
-	>
-		<div>
-			<!-- <DataTable
-				id="visitorsTable"
-				class="display w-100 table nowrap"
-				ref="table"
-				:columns="columns"
-				:options="options"
-                /> -->
-
-			<DataTable
-				id="visitorsTable"
-				:key="tableKey"
-				class="display w-100 table"
-				:columns="columns"
-				:options="options"
-				ref="table"
-				v-show="!showError"
-			/>
-			<h3 class="mt-5 text-center fw-bold" v-if="showError">
-				Unable to load visitors, try again!
-			</h3>
-		</div>
-	</div>
+    <div
+        class="table-responsive container p-0 d-flex flex-column"
+        style="gap: 0.7rem"
+    >
+        <div>
+            <DataTable
+                id="visitorsTable"
+                :key="tableKey"
+                class="display w-100 table"
+                :columns="columns"
+                :options="options"
+                ref="table"
+                v-show="!showError"
+            />
+            <h3 class="mt-5 text-center fw-bold" v-if="showError">
+                Unable to load visitors, try again!
+            </h3>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
 import { useRouter } from "vue-router";
 
-import { API_URL } from "@/assets/js/index.js";
+import { API_URL, registerVisitor } from "@/assets/js/index.js";
 import { formatDateTime } from "@/assets/js/util.js";
 
 DataTable.use(DataTablesCore);
 
+const router = useRouter();
+const visitors = ref();
+const refresh = defineModel("refresh");
+
 const columns = [
-	{ data: "first_name", title: "First name" },
-	{ data: "middle_name", title: "Middle name" },
-	{ data: "last_name", title: "Last name" },
-	{ data: "msisdn", title: "Phone number" },
-	{ data: "email", title: "Email" },
-	{ data: "address", title: "Address" },
-	{ data: "created_at", title: "Created At" },
+    { data: "first_name", title: "First name" },
+    { data: "middle_name", title: "Middle name" },
+    { data: "last_name", title: "Last name" },
+    { data: "msisdn", title: "Phone number" },
+    { data: "email", title: "Email" },
+    { data: "address", title: "Address" },
+    { data: "created_at", title: "Created At" },
 ];
 
 const options = {
-	responsive: true,
-	select: true,
-	serverSide: true,
-	ajax: {
-		url: `${API_URL}visitors`,
-		type: "GET",
-		data: (query) => {
-			return {
-				start: query.start,
-				limit: query.length,
-				search: query.search.value,
-				sort: query.columns[query.order[0].column].data,
-				order: query.order[0].dir,
-			};
-		},
-		dataSrc: (json) => {
-			showError.value = false;
+    responsive: true,
+    select: true,
+    serverSide: true,
+    ajax: {
+        url: `${API_URL}visitors`,
+        type: "GET",
+        data: (query) => {
+            return {
+                start: query.start,
+                limit: query.length,
+                search: query.search.value,
+                sort: query.columns[query.order[0].column].data,
+                order: query.order[0].dir,
+            };
+        },
+        dataSrc: (json) => {
+            showError.value = false;
+            refresh.value = false;
 
-			const { data, length } = json.data;
+            const { data, totalLength } = json.data;
 
-			json.recordsTotal = length;
-			json.recordsFiltered = length;
+            json.recordsTotal = totalLength;
+            json.recordsFiltered = totalLength;
 
-			data.forEach((visitor) => {
-				visitor.address = formatAddress(visitor.address);
-				visitor.msisdn = `0${visitor.msisdn.slice(3)}`;
-				visitor.created_at = formatDateTime(visitor.created_at, {
-					date: true,
-				});
-			});
+            data.forEach((visitor) => {
+                visitor.address = formatAddress(visitor.address);
+                visitor.msisdn = `0${visitor.msisdn.slice(3)}`;
+                visitor.created_at = formatDateTime(visitor.created_at, {
+                    date: true,
+                });
+            });
 
-			// formatCreatedAt(data);
-
-			visitors.value = data;
-			return visitors.value;
-		},
-		error: (error) => {
-			console.log("Error fetching data:", error);
-		},
-	},
-	responsive: true,
-	lengthMenu: [10, 25, 50, 100],
-	language: {
-		searchPlaceholder: "Search ...",
-		search: "",
-		emptyTable: `
+            visitors.value = data;
+            return visitors.value;
+        },
+        error: (error) => {
+            console.log("Error fetching data:", error);
+            showError.value = true;
+            refresh.value = false;
+        },
+    },
+    responsive: true,
+    lengthMenu: [10, 25, 50, 100],
+    language: {
+        searchPlaceholder: "Search ...",
+        search: "",
+        emptyTable: `
 			<div class="d-flex gap-3 my-3 flex-column align-items-center">
 				No Visitor to show!
 				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-group" viewBox="0 0 1000 1000">
@@ -111,7 +108,7 @@ const options = {
 				</button>
 			</div>
         `,
-		zeroRecords: `
+        zeroRecords: `
 			<div class="d-flex gap-3 my-3 flex-column align-items-center">
 				No match found!
 				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-group" viewBox="0 0 1000 1000">
@@ -119,16 +116,16 @@ const options = {
 				</svg>
 			</div>
 		`,
-		loadingRecords: `
+        loadingRecords: `
 			<div class="d-flex justify-content-center p-4">
 				<div class="spinner-border" role="status">
 					<span class="visually-hidden">Loading...</span>
 				</div>
 			</div>
 		`,
-	},
-	order: [[6, "desc"]],
-	destroy: true,
+    },
+    order: [[6, "desc"]],
+    destroy: true,
 };
 
 const table = ref();
@@ -136,82 +133,80 @@ const tableKey = ref(0);
 const showError = ref(false);
 const MAX_DETAIL_LEN = 30;
 
-const router = useRouter();
-const refresh = defineModel("refresh");
-const visitors = ref();
-
 watch(
-	() => refresh.value,
-	() => {
-		// update table Key to force data table to re render
-		tableKey.value += 1;
-	}
+    () => refresh.value,
+    () => {
+        // update table Key to force data table to re-render
+        tableKey.value += 1;
+    }
 );
 
 const visitorDetail = (id) => {
-	router.push({ name: "visitorDetail", params: { id } });
+    router.push({ name: "visitorDetail", params: { id } });
 };
 
 const handleVisitorDetail = () => {
-	const dt = table.value.dt;
-	dt.on("click", "tr", function (event) {
-		if (event.target.dataset.empty) addVisitor();
+    const dt = table.value.dt;
 
-		const visitorData = dt.row(this).data();
+    dt.on("click", "tr", function (event) {
+        if (event.target.dataset.empty) registerVisitor();
 
-		if (visitorData) {
-			visitorDetail(visitorData.id);
-		}
-	});
+        const visitorData = dt.row(this).data();
+
+        if (visitorData) {
+            visitorDetail(visitorData.id);
+        }
+    });
 };
 
 function formatAddress(address) {
-	if (!address) {
-		return "";
-	}
+    if (!address) {
+        return "";
+    }
 
-	const addressLen = address.length;
-	const newAddress =
-		addressLen >= MAX_DETAIL_LEN
-			? `${address.slice(0, MAX_DETAIL_LEN)}...`
-			: address;
+    const addressLen = address.length;
+    const newAddress =
+        addressLen >= MAX_DETAIL_LEN
+            ? `${address.slice(0, MAX_DETAIL_LEN)}...`
+            : address;
 
-	return newAddress;
+    return newAddress;
 }
 
 onMounted(() => {
-	handleVisitorDetail();
+    // wait a bit, don't know why but that's the only way it will work
+    setTimeout(() => handleVisitorDetail(), 500);
 });
 </script>
 
 <style scoped>
 table {
-	margin: 0;
+    margin: 0;
 }
 
 table input {
-	background-color: red !important;
+    background-color: red !important;
 }
 
 tr {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 th,
 td {
-	padding: 0.9rem;
-	font-size: 0.9rem;
+    padding: 0.9rem;
+    font-size: 0.9rem;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {
-	th,
-	td {
-		padding: 0.7rem;
-	}
+    th,
+    td {
+        padding: 0.7rem;
+    }
 }
 
 svg.solaris-icon {
-	width: 1.2rem;
-	height: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
 }
 </style>

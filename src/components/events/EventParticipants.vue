@@ -83,8 +83,8 @@ const options = {
 
             // fix stop data table from showing NAN error
             // in pagination and number of records
-            json.recordsTotal = json.data.length;
-            json.recordsFiltered = json.data.length;
+            json.recordsTotal = json.data.totalLength;
+            json.recordsFiltered = json.data.totalLength;
 
             showError.value = false;
 

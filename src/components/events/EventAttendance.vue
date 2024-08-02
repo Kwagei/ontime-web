@@ -101,19 +101,21 @@ const options = {
 
             // fix stop data table from showing NAN error
             // in pagination and number of records
-            json.recordsTotal = json.data.length;
-            json.recordsFiltered = json.data.length;
+            json.recordsTotal = json.data.totalLength;
+            json.recordsFiltered = json.data.totalLength;
 
             // format each participant record
             participants.forEach((participant) => {
                 participant.msisdn = `0${participant.msisdn.slice(3)}`;
 
+                console.log("dpt: ", participant.visit_date_time);
                 // format visit date time or arrival time if any
                 participant.visit_date_time = participant.visit_date_time
                     ? formatDateTime(participant.visit_date_time, {
                           time: true,
                       })
                     : null;
+                console.log("after dpt: ", participant.visit_date_time);
 
                 // format departure time if any
                 participant.visit_departure_time =

@@ -7,6 +7,12 @@
 
             <div class="d-flex" style="gap: 0.521rem">
                 <RefreshList @click="refresh = true" />
+                <button
+                    @click="displayDateRangeModal"
+                    class="btn btn-secondary"
+                >
+                    Date Range
+                </button>
 
                 <button
                     data-bs-toggle="offcanvas"
@@ -83,7 +89,11 @@
             </div>
         </div>
 
-        <VisitList v-model:refresh="refresh" />
+        <VisitList
+            v-model:refresh="refresh"
+            v-model:dateRangeDates="dateRangeDates"
+        />
+        <DateRangeModal v-if="showDateRangeModal" @done="dateRangeCompleted" />
         <RouterView />
     </div>
 </template>
@@ -92,11 +102,32 @@
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import VisitList from "../components/visits/VisitList.vue";
 import RefreshList from "../components/RefreshList.vue";
+import DateRangeModal from "@/components/DateRangeModal.vue";
+import { showModal } from "@/assets/js/util";
 
 import { RouterLink, RouterView } from "vue-router";
+import { ref } from "vue";
 
 const breadCrumbs = defineModel("breadCrumbs");
-const refresh = defineModel("refresh");
+const refresh = ref(false);
+const showDateRangeModal = ref(false);
+const dateRangeDates = ref({
+    from: "",
+    to: "",
+});
+
+function displayDateRangeModal() {
+    showDateRangeModal.value = true;
+    setTimeout(() => showModal("#dateRangeModal", "#modal-dialog"), 500);
+}
+
+function dateRangeCompleted(newDates) {
+    // remove date range modal
+    showDateRangeModal.value = false;
+
+    // update date ranges, then it will be caught by watchers in events table
+    dateRangeDates.value = newDates;
+}
 </script>
 
 <style scoped>

@@ -179,7 +179,7 @@ async function postParticipants() {
             $("body").css("pointer-events", "auto");
             emit("participantsImported", {
                 status: "success",
-                title: "Participants Imported",
+                message: "Participants Imported",
                 pageLink: `/events/${eventId}`,
             });
         });
@@ -191,7 +191,7 @@ async function postParticipants() {
         if (error.responseJSON.status === 500) {
             emit("errorImportingParticipants", {
                 status: "danger",
-                title: "Unable to Import Participants, try again",
+                message: "Unable to Import Participants, try again",
             });
             return;
         }

@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -81,6 +81,9 @@ const options = {
             });
 
             visitors.value = data;
+
+            handleVisitorDetail();
+
             return visitors.value;
         },
         error: (error) => {
@@ -146,17 +149,20 @@ const visitorDetail = (id) => {
 };
 
 const handleVisitorDetail = () => {
-    const dt = table.value.dt;
+    // wait a bit, don't know why but that's the only way it will work
+    setTimeout(() => {
+        const dt = table.value.dt;
 
-    dt.on("click", "tr", function (event) {
-        if (event.target.dataset.empty) registerVisitor();
+        dt.on("click", "tr", function (event) {
+            if (event.target.dataset.empty) registerVisitor();
 
-        const visitorData = dt.row(this).data();
+            const visitorData = dt.row(this).data();
 
-        if (visitorData) {
-            visitorDetail(visitorData.id);
-        }
-    });
+            if (visitorData) {
+                visitorDetail(visitorData.id);
+            }
+        });
+    }, 500);
 };
 
 function formatAddress(address) {
@@ -172,11 +178,6 @@ function formatAddress(address) {
 
     return newAddress;
 }
-
-onMounted(() => {
-    // wait a bit, don't know why but that's the only way it will work
-    setTimeout(() => handleVisitorDetail(), 500);
-});
 </script>
 
 <style scoped>

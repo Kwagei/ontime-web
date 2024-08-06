@@ -54,35 +54,29 @@
                             <button
                                 type="button"
                                 class="btn btn-primary"
-                                id=""
                                 style="padding: 0.5rem 1.5rem; font-weight: 600"
                             >
                                 Events
                             </button>
                         </router-link>
 
-                        <router-link>
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id=""
-                                style="padding: 0.5rem 1.5rem; font-weight: 600"
-                            >
-                                Meeting
-                            </button>
-                        </router-link>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            style="padding: 0.5rem 1.5rem; font-weight: 600"
+                            disabled
+                        >
+                            Meeting
+                        </button>
 
-                        <router-link>
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id=""
-                                style="padding: 0.5rem 1.5rem; font-weight: 600"
-                                disabled
-                            >
-                                Workspace
-                            </button>
-                        </router-link>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            style="padding: 0.5rem 1.5rem; font-weight: 600"
+                            disabled
+                        >
+                            Workspace
+                        </button>
                     </div>
                 </div>
             </div>

@@ -200,7 +200,7 @@ export const getVisitorWithVisits = async (id, query) => {
 
 export const getEvents = async (id, data) => {
     try {
-        let url = `${API_URL}/events`;
+        let url = `${API_URL}events`;
 
         if (id) {
             url += `/${id}`;
@@ -223,7 +223,7 @@ export const getEvents = async (id, data) => {
 
 export const getHosts = async (id) => {
     try {
-        let url = `${API_URL}/hosts`;
+        let url = `${API_URL}hosts`;
 
         if (id) {
             url += `/${id}`;
@@ -243,7 +243,7 @@ export const getHosts = async (id) => {
 
 export const getRooms = async (id) => {
     try {
-        let url = `${API_URL}/rooms`;
+        let url = `${API_URL}rooms`;
 
         if (id) {
             url += `/${id}`;

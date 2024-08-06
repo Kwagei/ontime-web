@@ -180,7 +180,6 @@
                             autocomplete="off"
                             required
                         />
-
                         <ul class="dropdown-menu w-100">
                             <template v-for="room in roomsData">
                                 <li
@@ -366,17 +365,21 @@ watch(
     }
 );
 
+/**
+ * Commented because it's causing the list of rooms
+ * not to show when editing an Event
+ */
 // Local search for rooms
-watch(
-    () => roomValue.value,
-    (n) => {
-        roomsData.value = n
-            ? roomTem.value.filter((room) =>
-                  room.name.toLocaleLowerCase().includes(n.toLocaleLowerCase())
-              )
-            : roomTem.value;
-    }
-);
+// watch(
+//     () => roomValue.value,
+//     (n) => {
+//         roomsData.value = n
+//             ? roomTem.value.filter((room) =>
+//                   room.name.toLocaleLowerCase().includes(n.toLocaleLowerCase())
+//               )
+//             : roomTem.value;
+//     }
+// );
 
 const onSubmit = async () => {
     if (
@@ -456,6 +459,7 @@ onMounted(async () => {
 
     const { rooms } = await getRooms();
     roomsData.value = rooms;
+    console.log("roomsData: ", roomsData.value);
     roomTem.value = rooms;
 
     if (mode == "edit") await getEventToEdit();
@@ -482,7 +486,7 @@ function setMode() {
 
 async function getEventToEdit() {
     try {
-        $.get(API_URL + `/events/${eventId.value}/`, (data) => {
+        $.get(API_URL + `events/${eventId.value}/`, (data) => {
             const retrievedEvent = data.data[0];
 
             title.value = retrievedEvent.title;
@@ -508,7 +512,7 @@ async function getEventToEdit() {
 
             errorGettingEventToEdit.value = false;
         }).fail((error) => {
-            console.log("Error getting event to edit: ", error.responseJSON);
+            console.log("Unable to get event to edit: ", error.responseJSON);
             errorGettingEventToEdit.value = true;
         });
     } catch (error) {

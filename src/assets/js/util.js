@@ -93,6 +93,8 @@ export const showModal = (parent = "#alertModal", child = "alertModalBody") => {
 };
 
 export const formatDateTime = (dateTime, format = {}) => {
+    if (!dateTime) return null;
+
     const { date, time } = format;
 
     const dateFormat = "ddd, MMM D, YYYY";

@@ -113,6 +113,9 @@
                         />
 
                         <ul class="dropdown-menu w-100 overflow-hidden">
+                            <li v-if="!events.length" class="dropdown-item">
+                                No Ongoing Events!
+                            </li>
                             <template v-for="event in events">
                                 <li
                                     class="dropdown-item"
@@ -136,7 +139,7 @@
             </form>
 
             <!-- All Participants -->
-            <div v-if="showTable" class="container">
+            <div v-if="showTable" class="container mt-0">
                 <DataTable
                     :key="dataTableKey"
                     id="eventParticipantsTable"
@@ -236,11 +239,9 @@ const dataTableOptions = ref({
             json.recordsTotal = json.data.totalLength;
             json.recordsFiltered = json.data.totalLength;
 
-            console.log("1: ", json.data.participants);
             participants.value = removeDuplicateParticipants(
                 json.data.participants
             );
-            console.log("2: ", participants.value);
 
             participants.value.forEach((visitor) => {
                 visitor.address = formatAddress(visitor.address);
@@ -320,7 +321,8 @@ const props = defineProps({
 });
 
 function addClickEventListenerOnCheckButtons() {
-    // wait a bit, don't know why but that's the only way it'll work
+    // wait a bit for the data table to be rendered
+    // then add the event listeners
     setTimeout(() => {
         const dt = table.value.dt;
 
@@ -401,10 +403,6 @@ const updateEventTerm = (event) => {
     if (showTable.value == false) {
         showTable.value = true;
     }
-
-    // ensure event listeners are added to the updated rows
-    // just enough time for the data table to load
-    addClickEventListenerOnCheckButtons();
 };
 
 // function for inserting each username in the select element

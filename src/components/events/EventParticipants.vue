@@ -79,11 +79,11 @@ const options = {
 			};
 		},
 		dataSrc: (json) => {
-			const { participants, length } = json.data;
+			const { participants, totalLength } = json.data;
 
-			json.recordsTotal = length;
-			json.recordsFiltered = length;
-			totalEventParticipants.value = length;
+			json.recordsTotal = totalLength;
+			json.recordsFiltered = totalLength;
+			totalEventParticipants.value = totalLength;
 
 			participants.forEach((participant) => {
 				participant.msisdn = `0${participant.msisdn.slice(3)}`;

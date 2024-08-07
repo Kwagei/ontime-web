@@ -9,25 +9,32 @@
 					<Options />
 					<ul class="dropdown-menu">
 						<li
-							id="export"
+							id="edit-event"
 							class="dropdown-item"
 							@click="$emit('editEvent')"
 						>
 							Edit Event
 						</li>
 						<li
-							id="export"
+							id="export-participants"
 							class="dropdown-item"
 							@click="exportEventParticipants"
 						>
 							Export Participants
 						</li>
 						<li
-							id="export"
+							id="import-participants"
 							class="dropdown-item"
 							@click="emit('switch', 'importParticipants')"
 						>
 							Import Participants
+						</li>
+						<li
+							id="today-addendance"
+							class="dropdown-item"
+							@click="emit('switch', 'todaysAttendance')"
+						>
+							Today's Attendance
 						</li>
 					</ul>
 				</div>

@@ -161,20 +161,14 @@
 					</div>
 				</div>
 
-				<div class="col-md-12 d-flex gap-3">
-					<button
-						type="submit"
-						class="btn btn-primary px-5"
-						style="margin-left: auto"
-					>
-						Save
-					</button>
+				<div class="col-md-12 d-flex justify-content-end gap-3">
 					<button
 						@click="$emit('switch', 'details')"
-						class="btn btn-secondary px-5"
+						class="btn btn-outline-secondary"
 					>
 						Cancel
 					</button>
+					<button type="submit" class="btn btn-primary">Save</button>
 				</div>
 			</form>
 		</div>
@@ -182,7 +176,7 @@
 </template>
 
 <script setup>
-import Modal from "../Modal.vue";
+import Modal from "../modals/AlertModal.vue";
 
 import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";

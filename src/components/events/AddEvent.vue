@@ -1,5 +1,5 @@
 <template>
-	<Modal :data="alert" />
+	<AlertModal :data="alert" />
 	<div id="eventsWrapper" class="d-flex flex-column container">
 		<div class="d-flex justify-content-between">
 			<div>
@@ -259,20 +259,14 @@
 					</div>
 				</div>
 
-				<div class="col-md-12 d-flex gap-3">
-					<button
-						type="submit"
-						class="btn btn-primary px-5"
-						style="margin-left: auto"
-					>
-						Save
-					</button>
+				<div class="col-md-12 d-flex justify-content-end gap-3">
 					<button
 						@click="router.back()"
-						class="btn btn-secondary px-5"
+						class="btn btn-outline-secondary"
 					>
 						Cancel
 					</button>
+					<button type="submit" class="btn btn-primary">Save</button>
 				</div>
 			</form>
 		</div>
@@ -286,7 +280,7 @@ import $ from "jquery";
 import { API_URL, getHosts, getRooms } from "../../assets/js/index.js";
 
 import BreadCrumbs from "../BreadCrumbs.vue";
-import Modal from "../Modal.vue";
+import AlertModal from "../modals/AlertModal.vue";
 import { useRouter } from "vue-router";
 import { showModal } from "@/assets/js/util.js";
 

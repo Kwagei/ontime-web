@@ -64,11 +64,11 @@ const options = {
 		dataSrc: (json) => {
 			showError.value = false;
 
-			const { data, length } = json.data;
+			const { data, totalLength } = json.data;
 
-			json.recordsTotal = length;
-			json.recordsFiltered = length;
-			totalVisitors.value = length;
+			json.recordsTotal = totalLength;
+			json.recordsFiltered = totalLength;
+			totalVisitors.value = totalLength;
 
 			data.forEach((visitor) => {
 				visitor.address = formatAddress(visitor.address);
@@ -85,6 +85,7 @@ const options = {
 		},
 		error: (error) => {
 			console.log("Error fetching data:", error);
+			showError.value = true;
 		},
 	},
 	responsive: true,

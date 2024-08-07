@@ -3,8 +3,13 @@
 		class="table-responsive container p-0 d-flex flex-column"
 		style="gap: 0.7rem"
 	>
+		<h5 class="mb-0" v-show="dateRangeDates.from || dateRangeDates.to">
+			{{ dateRangeInfo }}
+		</h5>
+
 		<div>
 			<DataTable
+				v-show="!showError"
 				:key="tableKey"
 				id="visitsTable"
 				class="display w-100 table"
@@ -12,6 +17,10 @@
 				:options="options"
 				ref="table"
 			/>
+
+			<h3 class="mt-5 text-center fw-bold" v-if="showError">
+				Unable to load visits, try again!
+			</h3>
 		</div>
 	</div>
 </template>
@@ -20,7 +29,7 @@
 import { API_URL, updateDepartureTime } from "@/assets/js/index.js";
 import { formatDateTime } from "@/assets/js/util.js";
 
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -32,7 +41,9 @@ const totalVisits = defineModel("totalVisits");
 const refresh = defineModel("refresh");
 const lengthMenu = defineModel("lengthMenu");
 const recordsFiltered = defineModel("recordsFiltered");
+const dateRangeDates = defineModel("dateRangeDates");
 const tableKey = ref(0);
+const showError = ref(false);
 
 const columns = [
 	{ data: "date_time", title: "Date" },
@@ -69,7 +80,7 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}/visits`,
+		url: `${API_URL}visits`,
 		type: "GET",
 		data: (query) => {
 			const order =
@@ -81,20 +92,24 @@ const options = {
 				limit: query.length,
 				search: query.search.value,
 				sort: order,
+				from: dateRangeDates.value.from || "",
+				to: dateRangeDates.value.to || "",
 				order: query.order[0].dir,
 			};
 		},
 		dataSrc: (json) => {
-			const { visits, length } = json.data;
+			const { visits, totalLength } = json.data;
 
-			totalVisits.value = length;
+			showError.value = false;
+			totalVisits.value = totalLength;
 
-			json.recordsTotal = length;
-			json.recordsFiltered = recordsFiltered.value || length;
+			json.recordsTotal = totalLength;
+			json.recordsFiltered = recordsFiltered.value || totalLength;
 			return formatData(visits);
 		},
 		error: (error) => {
 			console.log("Error fetching data:", error);
+			showError.value = true;
 		},
 	},
 	responsive: true,
@@ -133,6 +148,19 @@ const options = {
 
 	order: [[0, "desc"]],
 };
+
+const dateRangeInfo = computed(() => {
+	return `Showing Visits ${
+		dateRangeDates.value.from
+			? "from " +
+			  formatDateTime(dateRangeDates.value.from, { date: true })
+			: ""
+	} ${
+		dateRangeDates.value.to
+			? "up to " + formatDateTime(dateRangeDates.value.to, { date: true })
+			: ""
+	}`;
+});
 
 const MAX_ITEMS_LEN = 30;
 
@@ -218,7 +246,20 @@ const formatItems = (belonging) => {
 watch(
 	() => refresh.value,
 	() => {
-		// update table Key to force data table to re render
+		tableKey.value += 1;
+	}
+);
+
+// retrieve events in date range
+watch(
+	// watch for change on the from or to dates
+	() => [dateRangeDates.value.from, dateRangeDates.value.to],
+	([newFrom, newTo]) => {
+		// update the date from and to dates for the request query
+		dateRangeDates.value.from = newFrom;
+		dateRangeDates.value.to = newTo;
+
+		// update the table key and force the table to reload
 		tableKey.value += 1;
 	}
 );

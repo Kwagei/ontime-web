@@ -22,6 +22,13 @@
 				</div>
 
 				<button
+					@click="displayDateRangeModal"
+					class="btn btn-secondary"
+				>
+					Date Range
+				</button>
+
+				<button
 					data-bs-toggle="offcanvas"
 					data-bs-target="#offcanvasExample"
 					aria-controls="offcanvasExample"
@@ -93,13 +100,19 @@
 			</div>
 		</div>
 
-		<VisitList v-model:refresh="refresh" />
+		<VisitList
+			v-model:refresh="refresh"
+			v-model:dateRangeDates="dateRangeDates"
+		/>
+
+		<DateRangeModal @done="dateRangeCompleted" />
+
 		<RouterView />
 	</div>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import VisitList from "../components/visits/VisitList.vue";
@@ -110,6 +123,8 @@ const add = "add";
 
 import { RouterLink, RouterView } from "vue-router";
 import { csvExport, getVisits } from "../assets/js/index.js";
+import DateRangeModal from "@/components/modals/DateRangeModal.vue";
+import { showModal } from "@/assets/js/util";
 
 const breadCrumbs = defineModel("breadCrumbs");
 const refresh = defineModel("refresh");
@@ -136,6 +151,20 @@ const formatItems = (belonging) => {
 	const items = belonging.join(", ");
 	return items.length > 30 ? `${items.slice(0, 30)}...` : items;
 };
+
+const dateRangeDates = ref({
+	from: "",
+	to: "",
+});
+
+function displayDateRangeModal() {
+	showModal("#dateRangeModal", "#modal-dialog");
+}
+
+// update date ranges, then it will be caught by watchers in events table
+function dateRangeCompleted(newDates) {
+	dateRangeDates.value = newDates;
+}
 </script>
 
 <style scoped>

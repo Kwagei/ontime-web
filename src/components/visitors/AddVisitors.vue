@@ -162,11 +162,9 @@
 				</div>
 
 				<div class="col-md-12 d-flex gap-3 justify-content-end">
-					<button type="submit" class="btn btn-primary px-5">
-						Save
-					</button>
+					<button type="submit" class="btn btn-primary">Save</button>
 					<button
-						class="btn btn-secondary px-5"
+						class="btn btn-outline-secondary"
 						type="button"
 						@click="router.back()"
 					>
@@ -182,7 +180,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
-import Modal from "../Modal.vue";
+import Modal from "../modals/AlertModal.vue";
 import {
 	registerVisitor,
 	editVisitor,
@@ -371,6 +369,9 @@ onMounted(async () => {
 	border-color: var(--bs-form-invalid-border-color);
 }
 
+.validated:focus {
+	border-color: var(--bs-form-invalid-border-color) !important;
+}
 #list-options {
 	padding: 0.6rem 0.5rem;
 	font-weight: 400;

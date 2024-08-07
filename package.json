@@ -27,6 +27,8 @@
         "datatables.net-select": "^2.0.3",
         "datatables.net-vue3": "^3.0.1",
         "dayjs": "^1.11.11",
+        "devextreme": "24.1.4",
+        "devextreme-vue": "24.1.4",
         "dotenv": "^16.4.5",
         "eslint": "^9.3.0",
         "eslint-plugin-vue": "^9.26.0",

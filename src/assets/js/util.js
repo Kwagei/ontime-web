@@ -93,41 +93,47 @@ export const showModal = (parent = "#alertModal", child = "alertModalBody") => {
 };
 
 export const formatDateTime = (dateTime, format = {}) => {
+	if (!dateTime) {
+		return;
+	}
+
 	const { date, time, month, day, year } = format;
 
 	const dateFormat = "ddd, MMM D, YYYY";
 	const timeFormat = "h:mm A";
-	const parseFormat = "HH:mm:ss";
 
-	// use custom parse format when formatting only time
+	// Create a dayjs instance from the dateTime
+	const now = dayjs(dateTime);
+
+	// Return only the time if time is true
 	if (time) {
-		const now = dayjs(dateTime, parseFormat);
-
 		return now.format(timeFormat);
 	}
 
-	// otherwise use dayjs without the custom parse format plugin
-	else {
-		const now = dayjsWithoutPlugin(dateTime);
-
-		if (date) {
-			return now.format(dateFormat);
-		}
-
-		if (month) {
-			return now.format("MMM");
-		}
-
-		if (day) {
-			return now.format("DDD");
-		}
-
-		if (year) {
-			return now.format("YYYY");
-		}
-
-		if (!date && !time) {
-			return now.format(`${dateFormat} ${timeFormat}`);
-		}
+	// Return formatted date based on the format object
+	if (date) {
+		return now.format(dateFormat);
 	}
+
+	if (month) {
+		return now.format("MMM");
+	}
+
+	if (day) {
+		return now.format("DDD");
+	}
+
+	if (year) {
+		return now.format("YYYY");
+	}
+
+	// Default case: return both date and time
+	return now.format(`${dateFormat} ${timeFormat}`);
 };
+
+export function validateFromAndToDate(from, to) {
+	const newFrom = new Date(from);
+	const newTo = new Date(to);
+
+	return newFrom > newTo ? false : true;
+}

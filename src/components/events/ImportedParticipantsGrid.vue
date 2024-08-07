@@ -1,58 +1,91 @@
 <template>
-    <div id="importedParticipantsGridWrapper">
-        <div class="d-flex gap-3 mt-2">
-            <input
-                type="search"
-                class="input-group-text w-75 text-start"
-                placeholder="Search..."
-                v-model="query"
-                @input="search"
-            />
-            <select class="form-select w-25" v-model="type">
-                <option value="first_name">First Name</option>
-                <option value="middle_name">Middle Name</option>
-                <option value="last_name">Last Name</option>
-                <option value="email">Email</option>
-                <option value="address">Address</option>
-                <option value="msisdn">Contact</option>
-            </select>
-        </div>
-        <div id="importedParticipantsGridContainer">
-            <div
-                class="p-3 boxShadow"
-                v-if="
-                    Array.isArray(participantsToDisplay) &&
-                    !!participantsToDisplay.length
-                "
-                v-for="participant in participantsToDisplay"
-            >
-                <div class="d-flex flex-column gap-2 float-end">
-                    <Edit @click="emit('edit', participant.msisdn)" />
-                    <Delete @click="emit('delete', participant.msisdn)" />
-                </div>
-                <h5>{{ participant.first_name }}</h5>
-                <h5>{{ participant.middle_name }}</h5>
-                <h5>{{ participant.last_name }}</h5>
-                <h5>{{ participant.address }}</h5>
-                <h5>{{ participant.email }}</h5>
-                <h5>+{{ participant.msisdn }}</h5>
-            </div>
-            <h3 v-else>No match found!</h3>
-        </div>
-    </div>
+	<div id="importedParticipantsGridWrapper">
+		<div class="d-flex justify-content-end gap-3 mt-2">
+			<input
+				type="search"
+				class="input-group-text w-50 text-start"
+				placeholder="Search..."
+				v-model="query"
+				@input="search"
+			/>
+			<select class="form-select w-25" v-model="type">
+				<option value="first_name">First Name</option>
+				<option value="middle_name">Middle Name</option>
+				<option value="last_name">Last Name</option>
+				<option value="email">Email</option>
+				<option value="address">Address</option>
+				<option value="msisdn">Contact</option>
+			</select>
+		</div>
+		<div id="importedParticipantsGridContainer">
+			<div
+				class="p-3 boxShadow"
+				v-if="
+					Array.isArray(participantsToDisplay) &&
+					!!participantsToDisplay.length
+				"
+				v-for="(participant, index) in participantsToDisplay"
+			>
+				<div class="d-flex justify-content-between align-items-center">
+					<h5>Participant {{ index + 1 }}</h5>
+					<div class="d-flex justify-content-end gap-2 mb-3">
+						<Icons
+							@click="emit('edit', participant.msisdn)"
+							class="icons"
+							v-model:icon="editIcon"
+						/>
+						<Icons
+							@click="emit('delete', participant.msisdn)"
+							class="icons"
+							v-model:icon="deleteIcon"
+						/>
+					</div>
+				</div>
+				<div class="d-flex flex-column gap-2">
+					<span
+						>First name:
+						<strong>{{ participant.first_name }}</strong></span
+					>
+					<span v-if="participant.middle_name"
+						>Middle name:
+						<strong>{{ participant.middle_name }}</strong></span
+					>
+					<span
+						>Last name:
+						<strong>{{ participant.last_name }}</strong></span
+					>
+					<span
+						>Address:
+						<strong>{{ participant.address }}</strong></span
+					>
+					<span
+						>Email: <strong>{{ participant.email }}</strong></span
+					>
+					<span
+						>Phone number:
+						<strong
+							>0{{ participant.msisdn.slice(3) }}</strong
+						></span
+					>
+				</div>
+			</div>
+			<h3 v-else>No match found!</h3>
+		</div>
+	</div>
 </template>
 
 <script setup>
-import Edit from "../Edit.vue";
-import Delete from "../Delete.vue";
+const deleteIcon = "delete";
+const editIcon = "pencil";
 
 import { computed, ref } from "vue";
+import Icons from "../Icons.vue";
 
 const props = defineProps({
-    participants: {
-        type: Array,
-        required: true,
-    },
+	participants: {
+		type: Array,
+		required: true,
+	},
 });
 
 const query = ref("");
@@ -61,46 +94,58 @@ const type = ref("first_name");
 
 // display query results if any, otherwise, display the participants
 const participantsToDisplay = computed(() => {
-    if (queryResults.value.length) return queryResults.value;
-    else if (query.value && !queryResults.value.length)
-        return "No match found!";
-    return props.participants;
+	if (queryResults.value.length) return queryResults.value;
+	else if (query.value && !queryResults.value.length)
+		return "No match found!";
+	return props.participants;
 });
 
 const emit = defineEmits(["edit", "delete"]);
 
 function search() {
-    // query the original participants array for matching values
-    queryResults.value = props.participants.filter((participant) =>
-        participant[type.value]
-            .toLowerCase()
-            .includes(query.value.toLowerCase())
-    );
+	// query the original participants array for matching values
+	queryResults.value = props.participants.filter((participant) =>
+		participant[type.value]
+			.toLowerCase()
+			.includes(query.value.toLowerCase())
+	);
 }
 </script>
 
 <style scoped>
 #importedParticipantsGridWrapper {
-    min-width: 75%;
+	min-width: 75%;
 }
 
 #importedParticipantsGridContainer {
-    display: grid;
-    grid-template-columns: repeat(3, 31%);
-    justify-content: center;
-    gap: 30px;
-    overflow-y: scroll;
-    max-height: 68vh;
-    min-width: 73%;
-    padding: 10px 5px;
-    margin-top: 15px;
+	display: grid;
+	grid-template-columns: repeat(3, 31%);
+	justify-content: center;
+	gap: 30px;
+	overflow-y: scroll;
+	max-height: 68vh;
+	min-width: 73%;
+	padding: 10px 5px;
+	margin-top: 15px;
 }
 
 .boxShadow {
-    box-shadow: -1.5px -1.5px 5px 3px #ddd;
+	box-shadow: -1.5px -1.5px 5px 3px #ddd;
 }
 
 .boxShadow:hover {
-    box-shadow: -1.5px -1.5px 5px 8px #ccc;
+	box-shadow: -1.5px -1.5px 5px 8px #ccc;
+}
+
+.icons {
+	width: 20px !important;
+	height: 20px !important;
+	cursor: pointer;
+	color: #444;
+}
+
+.icons:hover {
+	border: 2px solid grey;
+	border-radius: 0.3rem;
 }
 </style>

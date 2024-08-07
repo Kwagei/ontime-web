@@ -68,6 +68,10 @@
 					</form>
 				</div>
 				<div class="modal-footer">
+					<button @click="checkParticipantIn" class="btn btn-primary">
+						Check In
+					</button>
+
 					<button
 						type="button"
 						class="btn btn-outline-secondary"
@@ -75,10 +79,6 @@
 						@click="resetForm"
 					>
 						Cancel
-					</button>
-
-					<button @click="checkParticipantIn" class="btn btn-primary">
-						Check In
 					</button>
 				</div>
 			</div>
@@ -165,7 +165,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
-import Modal from "../Modal.vue";
+import Modal from "../modals/AlertModal.vue";
 import {
 	registerVisit,
 	getSingleVisitor,
@@ -213,6 +213,22 @@ const columns = [
 				: `<span class="text-danger fw-bold">No</span>`;
 		},
 	},
+	{
+		data: null,
+		title: "Action",
+		className: "text-center",
+		render: (data) => {
+			return `<button type="button" class="btn btn-secondary"
+                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; width: 5rem; --bs-btn-font-size: .75rem;" ${
+								!data.visit_departure_time &&
+								data.participant_id
+									? "disabled"
+									: ""
+							}>
+                         Check In
+                      </button>`;
+		},
+	},
 ];
 
 // Options for Data Table
@@ -234,8 +250,8 @@ const dataTableOptions = ref({
 		dataSrc: (json) => {
 			showError.value = false;
 
-			json.recordsTotal = json.data.length;
-			json.recordsFiltered = json.data.length;
+			json.recordsTotal = json.data.totalLength;
+			json.recordsFiltered = json.data.totalLength;
 
 			participants.value = json.data.participants;
 
@@ -276,7 +292,7 @@ const dataTableOptions = ref({
 		`,
 	},
 	createdRow: (row, data) => {
-		$(row).on("click", () => {
+		$(row).on("click", "button", () => {
 			if (data && data.participant_id && !data.visit_departure_time) {
 				// inform user visitor is still checked in
 				showModal("#alertModal", "#alertModalBody");

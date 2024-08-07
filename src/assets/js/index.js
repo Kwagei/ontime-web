@@ -14,6 +14,8 @@ export const csvExport = (data) => {
 };
 
 export const API_URL = import.meta.env.VITE_API_URL;
+export const GOOGLE_CALENDAR_API_URL = import.meta.env
+	.VITE_GOOGLE_CALENDAR_API_URL;
 
 export const registerVisit = async (data) => {
 	try {
@@ -118,7 +120,7 @@ export const getVisits = async (query = {}) => {
 			order = "",
 		} = query;
 
-		let url = `${API_URL}/visits?start=${start}&limit=${limit}`;
+		let url = `${API_URL}visits?start=${start}&limit=${limit}`;
 
 		if (search) {
 			url += `&search=${search}`;
@@ -221,9 +223,11 @@ export const getEvents = async (id, query = {}) => {
 			limit = 20,
 			sort = "",
 			order = "",
+			from = "",
+			to = "",
 		} = query;
 
-		let url = `${API_URL}/events`;
+		let url = `${API_URL}events`;
 
 		if (id) {
 			url += `/${id}`;
@@ -232,6 +236,14 @@ export const getEvents = async (id, query = {}) => {
 
 			if (search) {
 				url += `&search=${search}`;
+			}
+
+			if (from) {
+				url += `&from=${from}`;
+			}
+
+			if (to) {
+				url += `&to=${to}`;
 			}
 
 			if (sort) {

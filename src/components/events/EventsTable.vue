@@ -3,8 +3,13 @@
 		class="table-responsive container p-0 d-flex flex-column"
 		style="gap: 0.7rem"
 	>
+		<h5 class="mb-0" v-show="dateRangeDates.from || dateRangeDates.to">
+			{{ dateRangeInfo }}
+		</h5>
+
 		<div>
 			<DataTable
+				v-show="!showError"
 				:key="tableKey"
 				id="eventsTable"
 				class="display w-100 table"
@@ -12,12 +17,15 @@
 				:options="options"
 				ref="table"
 			/>
+			<h3 class="mt-5 text-center fw-bold" v-if="showError">
+				Unable to load events, try again!
+			</h3>
 		</div>
 	</div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -27,10 +35,13 @@ import { API_URL } from "@/assets/js";
 
 DataTable.use(DataTablesCore);
 import dayjs from "dayjs";
+import { formatDateTime } from "@/assets/js/util";
 
 const totalEvents = defineModel("totalEvents");
 const refresh = defineModel("refresh");
 const tableKey = ref(0);
+const showError = ref(false);
+const dateRangeDates = defineModel("dateRangeDates");
 
 const columns = [
 	{ data: "title", title: "Title" },
@@ -46,7 +57,7 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}/events`,
+		url: `${API_URL}events`,
 		type: "GET",
 		data: (query) => {
 			const order =
@@ -58,15 +69,19 @@ const options = {
 				limit: query.length,
 				search: query.search.value,
 				sort: order,
-				direction: query.order[0].dir,
+				from: dateRangeDates.value.from || undefined,
+				to: dateRangeDates.value.to || undefined,
+				order: query.order[0].dir,
 			};
 		},
 		dataSrc: (json) => {
-			const { events, length } = json.data;
+			const { events, totalLength } = json.data;
 
-			json.recordsTotal = length;
-			json.recordsFiltered = length;
-			totalEvents.value = length;
+			json.recordsTotal = totalLength;
+			json.recordsFiltered = totalLength;
+			totalEvents.value = totalLength;
+
+			showError.value = false;
 
 			events.forEach((event) => {
 				event.details = formatDetails(event.details);
@@ -78,6 +93,7 @@ const options = {
 		},
 		error: (error) => {
 			console.log("Error fetching data:", error);
+			showError.value = true;
 		},
 	},
 	responsive: true,
@@ -103,15 +119,36 @@ const options = {
 	},
 	order: [[2, "desc"]],
 	destroy: true,
+	createdRow: (row, data) => {
+		$(row).on("click", (event) => {
+			if (event.target.dataset.empty) addEvent();
+
+			const eventData = data;
+
+			if (eventData) displayEventPage(eventData.id);
+		});
+	},
 };
+
+const dateRangeInfo = computed(() => {
+	return `Showing Events ${
+		dateRangeDates.value.from
+			? "from " +
+			  formatDateTime(dateRangeDates.value.from, { date: true })
+			: ""
+	} ${
+		dateRangeDates.value.to
+			? "up to " + formatDateTime(dateRangeDates.value.to, { date: true })
+			: ""
+	}`;
+});
 
 const router = useRouter();
 const MAX_DETAIL_LEN = 30;
 
 const table = ref();
-
 onMounted(() => {
-	handleEventDetail();
+	// handleEventDetail();
 });
 
 const handleEventDetail = () => {
@@ -149,6 +186,20 @@ watch(
 	() => refresh.value,
 	() => {
 		// update table Key to force data table to re render
+		tableKey.value += 1;
+	}
+);
+
+// retrieve events in date range
+watch(
+	// watch for change on from or to dates
+	() => [dateRangeDates.value.from, dateRangeDates.value.to],
+	([newFrom, newTo]) => {
+		// update the date from and to dates for the request query
+		dateRangeDates.value.from = newFrom;
+		dateRangeDates.value.to = newTo;
+
+		// updatee table key and force table to reload
 		tableKey.value += 1;
 	}
 );

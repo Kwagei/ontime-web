@@ -153,7 +153,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import BreadCrumbs from "@/components/BreadCrumbs.vue";
-import Modal from "@/components/Modal.vue";
+import Modal from "@/components/modals/AlertModal.vue";
 import { registerHost, editHost, getHosts } from "@/assets/js/index.js";
 import { msisdnValidation, showModal } from "@/assets/js/util.js";
 import router from "@/router";

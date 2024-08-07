@@ -19,7 +19,7 @@
 	<Line :data="chartData" :options="options" />
 </template>
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { Line } from "vue-chartjs";
 import {
 	Chart as ChartJS,
@@ -89,29 +89,30 @@ const totalVisits = defineModel("totalVisits");
 const date = new Date();
 const currentYear = date.getFullYear();
 const currentMonth = date.getMonth();
+const todaysVisits = defineModel("todaysVisits");
 
-const fetchVisits = async () => {
-	const { visits } = await getVisits({ limit: totalVisits.value });
+watch(totalVisits, async (n) => {
+	await fetchVisits(n);
+});
 
-	const currentWeekVisits = visits.filter(
-		(visit) =>
-			visit.date_time.startsWith(currentYear) &&
-			+visit.date_time.split("-")[1] === currentMonth + 1
-	);
+const fetchVisits = async (total) => {
+	const { visits } = await getVisits({ limit: total });
 
-	updateWeeklyVisitData(currentWeekVisits);
+	updateWeeklyVisitData(visits);
 };
 
 const updateWeeklyVisitData = (visits) => {
-	const { daysOfWeek, datesOfWeek } = getCurrentWeekDays();
+	const { daysOfWeek, datesOfWeek, currentWeekVisits } =
+		getCurrentWeekData(visits);
 
-	const maleVisits = new Array(7).fill(0);
-	const femaleVisits = new Array(7).fill(0);
+	const maleVisits = new Array(6).fill(0);
+	const femaleVisits = new Array(6).fill(0);
 
-	for (const visit of visits) {
+	for (const visit of currentWeekVisits) {
 		const dayIndex = datesOfWeek.indexOf(
 			new Date(visit.date_time).getDate()
 		);
+
 		if (visit.gender === "male") {
 			maleVisits[dayIndex]++;
 			gender.value.male++;
@@ -120,6 +121,12 @@ const updateWeeklyVisitData = (visits) => {
 			gender.value.female++;
 		}
 	}
+
+	const currentDay = date.getDate();
+	const currentDayIndex = datesOfWeek.indexOf(currentDay);
+
+	todaysVisits.value =
+		maleVisits[currentDayIndex] + femaleVisits[currentDayIndex];
 
 	chartData.value = {
 		labels: daysOfWeek,
@@ -142,10 +149,30 @@ const updateWeeklyVisitData = (visits) => {
 	};
 };
 
-const getCurrentWeekDays = (date = new Date()) => {
+const getCurrentWeekVisits = (visits, datesOfWeek) => {
+	const currentYearVisits = getCurrentYearVisits(visits);
+	const currentMonthVisits = getCurrentMonthVisits(currentYearVisits);
+
+	return currentMonthVisits.filter((visit) =>
+		datesOfWeek.some(
+			(date) =>
+				date === +visit.date_time.split("T")[0].split("-").reverse()[0]
+		)
+	);
+};
+
+const getCurrentYearVisits = (visits) =>
+	visits.filter((visit) => visit.date_time.startsWith(currentYear));
+
+const getCurrentMonthVisits = (visits) =>
+	visits.filter(
+		(visit) => +visit.date_time.split("-")[1] === currentMonth + 1
+	);
+
+const getCurrentWeekData = (visits) => {
 	const startOfWeek = date.getDate() - date.getDay();
-	const daysOfWeek = [];
-	const datesOfWeek = [];
+	const daysOfWeek = [],
+		datesOfWeek = [];
 
 	for (let i = 0; i < 7; i++) {
 		const currentDay = new Date(date);
@@ -157,15 +184,17 @@ const getCurrentWeekDays = (date = new Date()) => {
 		daysOfWeek.push(currentDay.toLocaleDateString("en-US", options));
 	}
 
+	const currentWeekVisits = getCurrentWeekVisits(
+		visits,
+		datesOfWeek.slice(1)
+	);
+
 	return {
 		daysOfWeek: daysOfWeek.slice(1),
 		datesOfWeek: datesOfWeek.slice(1),
+		currentWeekVisits,
 	};
 };
-
-onMounted(async () => {
-	await fetchVisits();
-});
 </script>
 <style scoped>
 h4 {

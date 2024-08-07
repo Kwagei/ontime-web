@@ -4,6 +4,7 @@
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
 		>
 			<BreadCrumbs :breadCrumbs="breadCrumbs" />
+
 			<div class="d-flex" style="gap: 0.521rem">
 				<RefreshList @click="refresh = true" />
 
@@ -20,19 +21,32 @@
 					</ul>
 				</div>
 
+				<button
+					@click="displayDateRangeModal"
+					class="btn btn-secondary"
+				>
+					Date Range
+				</button>
+
 				<router-link :to="{ name: 'add-event' }">
 					<button
 						id="addEventBtn"
 						type="button"
 						class="btn btn-primary"
 					>
-						<Icons v-model:icon="add" />
+						<Icons v-model:icon="plusIcon" />
 						New
 					</button>
 				</router-link>
 			</div>
 		</div>
-		<EventsTable v-model:refresh="refresh" />
+
+		<EventsTable
+			v-model:refresh="refresh"
+			v-model:dateRangeDates="dateRangeDates"
+		/>
+
+		<DateRangeModal @done="dateRangeCompleted" />
 	</div>
 </template>
 
@@ -42,10 +56,12 @@ import BreadCrumbs from "../components/BreadCrumbs.vue";
 import EventsTable from "../components/events/EventsTable.vue";
 import Options from "../components/Options.vue";
 import Icons from "../components/Icons.vue";
-const add = "add";
+const plusIcon = "add";
 
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { csvExport, getEvents } from "../assets/js/index.js";
+import DateRangeModal from "@/components/modals/DateRangeModal.vue";
+import { showModal } from "@/assets/js/util";
 
 const props = defineProps({
 	breadCrumbs: {
@@ -55,6 +71,10 @@ const props = defineProps({
 });
 
 const refresh = ref(false);
+const dateRangeDates = ref({
+	from: "",
+	to: "",
+});
 const totalEvents = defineModel("totalEvents");
 
 const exportEvents = async () => {
@@ -70,6 +90,15 @@ const exportEvents = async () => {
 		})
 	);
 };
+
+function displayDateRangeModal() {
+	setTimeout(() => showModal("#dateRangeModal", "#modal-dialog"), 500);
+}
+
+function dateRangeCompleted(newDates) {
+	// update date ranges, then it will be caught by watchers in events table
+	dateRangeDates.value = newDates;
+}
 </script>
 
 <style scoped>

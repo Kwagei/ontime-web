@@ -61,15 +61,17 @@
 				</div>
 
 				<div class="col-md-12 d-flex gap-3 justify-content-end">
-					<button type="submit" class="btn btn-primary px-5">
-						{{ buttonLabel }}
-					</button>
 					<button
-						class="btn btn-secondary px-5"
 						type="button"
+						class="btn btn-outline-secondary"
+						data-bs-dismiss="modal"
 						@click="router.back()"
 					>
 						Cancel
+					</button>
+
+					<button type="submit" class="btn btn-primary">
+						{{ buttonLabel }}
 					</button>
 				</div>
 			</form>
@@ -81,7 +83,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
-import Modal from "../components/Modal.vue";
+import Modal from "./modals/AlertModal.vue";
 import { registerRoom, editRoom, getRooms } from "@/assets/js/index.js";
 import { showModal } from "@/assets/js/util.js";
 // Route and State

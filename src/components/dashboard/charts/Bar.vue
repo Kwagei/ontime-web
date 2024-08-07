@@ -101,17 +101,23 @@ const colors = [
 	{ rank: "min", color: "#e03131" },
 ];
 
-const fetchVisits = async () => {
+const fetchVisits = async (total) => {
 	const { visits } = await getVisits({
-		limit: totalVisits.value,
+		limit: total,
 	});
 
-	const currentYearVisits = visits.filter((visit) =>
-		visit.date_time.startsWith(currentYear)
-	);
+	const currentYearVisits = getCurrentYearVisits(visits);
 
 	updateMonthlyVisitData(currentYearVisits);
 };
+
+const getCurrentYearVisits = (visits) =>
+	visits.filter((visit) => visit.date_time.startsWith(currentYear));
+
+const getCurrentMonthVisits = (visits) =>
+	visits.filter(
+		(visit) => +visit.date_time.split("-")[1] === currentMonth + 1
+	);
 
 const monthlyVisitData = ref([]);
 
@@ -128,10 +134,9 @@ const updateMonthlyVisitData = (visits) => {
 		const targetMonthNumber = monthIndex + 1;
 
 		// Filter visits for the specific month
-		const filteredVisits = visits.filter((visit) => {
-			const visitMonthNumber = +visit.date_time.split("-")[1];
-			return targetMonthNumber === visitMonthNumber;
-		});
+		const filteredVisits = visits.filter(
+			(visit) => +visit.date_time.split("-")[1] === targetMonthNumber
+		);
 
 		// Update the monthly visit data
 		monthlyVisitData.value.push({
@@ -206,8 +211,8 @@ watch(
 	{ immediate: true }
 );
 
-onMounted(async () => {
-	await fetchVisits();
+watch(totalVisits, async (n) => {
+	await fetchVisits(n);
 });
 </script>
 <style scoped>

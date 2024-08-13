@@ -16,7 +16,10 @@
 			<hr class="text-center w-75" />
 		</h3>
 
-		<div class="form-control input" style="margin: auto; padding: 3rem">
+		<div
+			class="form-control input rounded"
+			style="margin: auto; padding: 3rem"
+		>
 			<form
 				class="row g-3 needs-validation"
 				novalidate
@@ -260,13 +263,13 @@
 				</div>
 
 				<div class="col-md-12 d-flex justify-content-end gap-3">
+					<button type="submit" class="btn btn-primary">Save</button>
 					<button
 						@click="router.back()"
 						class="btn btn-outline-secondary"
 					>
 						Cancel
 					</button>
-					<button type="submit" class="btn btn-primary">Save</button>
 				</div>
 			</form>
 		</div>

@@ -40,10 +40,11 @@ DataTable.use(DataTablesCore);
 const totalVisits = defineModel("totalVisits");
 const refresh = defineModel("refresh");
 const lengthMenu = defineModel("lengthMenu");
-const recordsFiltered = defineModel("recordsFiltered");
 const dateRangeDates = defineModel("dateRangeDates");
 const tableKey = ref(0);
 const showError = ref(false);
+const dashboardTableData = defineModel("dtd");
+dashboardTableData.value = {};
 
 const columns = [
 	{ data: "date_time", title: "Date" },
@@ -104,7 +105,8 @@ const options = {
 			totalVisits.value = totalLength;
 
 			json.recordsTotal = totalLength;
-			json.recordsFiltered = recordsFiltered.value || totalLength;
+			json.recordsFiltered =
+				dashboardTableData.value.recordsFiltered || totalLength;
 			return formatData(visits);
 		},
 		error: (error) => {
@@ -112,8 +114,10 @@ const options = {
 			showError.value = true;
 		},
 	},
-	responsive: true,
 	lengthMenu: lengthMenu.value || [10, 25, 50, 100],
+	searching: dashboardTableData.value.searching,
+	bLengthChange: dashboardTableData.value.bLengthChange,
+	bInfo: dashboardTableData.value.bInfo,
 	language: {
 		searchPlaceholder: "Search ...",
 		search: "",

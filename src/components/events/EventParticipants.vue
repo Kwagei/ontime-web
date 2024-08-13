@@ -85,8 +85,12 @@ const options = {
 			json.recordsFiltered = totalLength;
 			totalEventParticipants.value = totalLength;
 
+			console.log(participants);
+
 			participants.forEach((participant) => {
-				participant.msisdn = `0${participant.msisdn.slice(3)}`;
+				participant.msisdn = participant.msisdn
+					? `0${participant.msisdn.slice(3)}`
+					: "";
 			});
 
 			allParticipants = participants;

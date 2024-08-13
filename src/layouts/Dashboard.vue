@@ -85,10 +85,9 @@
 			<div class="row">
 				<div class="col p-0">
 					<VisitList
-						v-model:lengthMenu="lengthMenu"
-						v-model:recordsFiltered="recordsFiltered"
 						v-model:totalVisits="totalVisits"
 						v-model:dateRangeDates="dateRangeDates"
+						v-model:dtd="dashboardTableData"
 					/>
 				</div>
 			</div>
@@ -110,19 +109,24 @@ const visitIcon = "house";
 const eventIcon = "calendar-event-agenda";
 
 const totalVisits = defineModel("totalVisits");
-const lengthMenu = defineModel("recordsTotal");
-const recordsFiltered = defineModel("recordsFiltered");
 const todaysVisits = defineModel("todaysVisits");
 const todaysEvents = ref(0);
 const allEvents = defineModel("allEvents");
-
-lengthMenu.value = [5];
-recordsFiltered.value = 5;
+allEvents.value = [];
 
 const dateRangeDates = ref({
 	from: "",
 	to: "",
 });
+
+const dashboardTableData = defineModel("dtd");
+dashboardTableData.value = {
+	lengthMenu: [5],
+	bLengthChange: false,
+	searching: false,
+	recordsFiltered: 5,
+	bInfo: false,
+};
 
 watch(allEvents, (events) => {
 	todaysEvents.value = getTodaysEvents(events).length;
@@ -136,8 +140,8 @@ const isEventHappeningToday = (event) => {
 	const endOfToday = new Date(today.setHours(23, 59, 59, 999)).toISOString();
 
 	return (
-		new Date(event.start_date) <= new Date(endOfToday) &&
-		new Date(event.end_date) >= new Date(startOfToday)
+		new Date(event.time.start) <= new Date(endOfToday) &&
+		new Date(event.time.end) >= new Date(startOfToday)
 	);
 };
 
@@ -146,7 +150,7 @@ const getTodaysEvents = (events) => {
 };
 </script>
 
-<style>
+<style scoped>
 .col {
 	padding: 3rem;
 }
@@ -193,5 +197,9 @@ span {
 
 #eventIcon {
 	color: #1971c2;
+}
+
+.dt-layout-cell.dt-start {
+	display: none !important;
 }
 </style>

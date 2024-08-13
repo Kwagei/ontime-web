@@ -18,15 +18,15 @@
 						>
 							Export
 						</li>
+						<li
+							@click="displayDateRangeModal"
+							id="filter-events"
+							class="dropdown-item"
+						>
+							Filter Events
+						</li>
 					</ul>
 				</div>
-
-				<button
-					@click="displayDateRangeModal"
-					class="btn btn-secondary"
-				>
-					Date Range
-				</button>
 
 				<button
 					data-bs-toggle="offcanvas"

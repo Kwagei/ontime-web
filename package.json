@@ -10,13 +10,6 @@
         "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
     },
     "dependencies": {
-        "@floating-ui/vue": "^1.0.6",
-        "@fullcalendar/core": "^6.1.15",
-        "@fullcalendar/daygrid": "^6.1.15",
-        "@fullcalendar/interaction": "^6.1.15",
-        "@fullcalendar/list": "^6.1.15",
-        "@fullcalendar/timegrid": "^6.1.15",
-        "@fullcalendar/vue3": "^6.1.15",
         "@vue/compiler-sfc": "^3.4.27",
         "boosted": "^5.3.3",
         "chart.js": "^4.4.3",
@@ -27,8 +20,6 @@
         "datatables.net-select": "^2.0.3",
         "datatables.net-vue3": "^3.0.1",
         "dayjs": "^1.11.11",
-        "devextreme": "24.1.4",
-        "devextreme-vue": "24.1.4",
         "dotenv": "^16.4.5",
         "eslint": "^9.3.0",
         "eslint-plugin-vue": "^9.26.0",
@@ -36,6 +27,7 @@
         "jquery": "^3.7.1",
         "papaparse": "^5.4.1",
         "portal-vue": "^3.0.0-beta.0",
+        "qalendar": "^3.8.1",
         "vue": "^3.4.21",
         "vue-chartjs": "^5.3.1",
         "vue-router": "^4.3.0"

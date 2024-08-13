@@ -9,7 +9,7 @@
 		</div>
 
 		<div
-			class="mt-1 form-control input"
+			class="mt-1 form-control input rounded"
 			style="margin: auto; padding: 3rem"
 		>
 			<form

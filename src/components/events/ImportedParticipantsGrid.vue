@@ -97,9 +97,17 @@ const participantsToDisplay = computed(() => {
 	if (queryResults.value.length) return queryResults.value;
 	else if (query.value && !queryResults.value.length)
 		return "No match found!";
-	return props.participants;
+
+	return sortParticipans(props.participants);
 });
 
+const sortParticipans = (participants) => {
+	return participants.sort((a, b) => {
+		if (a[type.value] < b[type.value]) return -1;
+		if (a[type.value] > b[type.value]) return 1;
+		return 0;
+	});
+};
 const emit = defineEmits(["edit", "delete"]);
 
 function search() {

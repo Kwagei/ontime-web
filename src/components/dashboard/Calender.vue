@@ -1,44 +1,18 @@
 <template>
-	<div>
-		<div class="">
-			<h4 class="mb-2">Calender</h4>
+	<div class="is-light-mode">
+		<div class="mb-4" style="text-align: left">
+			<h4>Calender</h4>
 		</div>
-		<DxScheduler
-			:data-source="dataSource"
-			:current-date="currentDate"
-			:views="views"
-			:height="500"
-			:editing="false"
-			:show-all-day-panel="false"
-			:start-day-hour="7"
-			:start-date-expr="'start.dateTime'"
-			:end-date-expr="'end.dateTime'"
-			:text-expr="'summary'"
-			time-zone="America/Los_Angeles"
-			current-view="month"
-		/>
+		<Qalendar style="height: 50vh" :events="allEvents" :config="config" />
 	</div>
 </template>
 
 <script setup>
-import { GOOGLE_CALENDAR_API_URL, getEvents } from "@/assets/js";
-import DxScheduler from "devextreme-vue/scheduler";
-import CustomStore from "devextreme/data/custom_store";
 import { onMounted, ref } from "vue";
+import { Qalendar } from "qalendar";
+import { getEvents } from "@/assets/js";
 
-const views = ["day", "workWeek", "month"];
-const currentDate = new Date();
-const dataSource = new CustomStore({
-	load: async (options) => await getData(options, { showDeleted: false }),
-});
-
-const getData = async (_, requestOptions) => {
-	return fetch(GOOGLE_CALENDAR_API_URL, requestOptions)
-		.then((response) => response.json())
-		.then(async (data) => {
-			return await fetchEvents();
-		});
-};
+const allEvents = defineModel("allEvents");
 
 const fetchEvents = async () => {
 	const { totalLength } = await getEvents();
@@ -46,31 +20,93 @@ const fetchEvents = async () => {
 	const { events } = await getEvents(null, {
 		limit: totalLength,
 	});
-	return formatEvents(events);
+
+	const formattedEvents = formatEvents(events);
+	allEvents.value = formattedEvents;
 };
 
 const formatEvents = (events) => {
 	return events.map((event) => {
 		return {
-			summary: event.title,
-			start: {
-				dateTime: event.start_date,
+			title: event.title,
+			with: event.host,
+			time: {
+				start: formatEventDateTime(event.start_date),
+				end: formatEventDateTime(event.end_date),
 			},
-			end: {
-				dateTime: event.end_date,
-			},
+			color: "blue",
+			isEditable: false,
+			id: event.id,
+			description: event.details,
+			location: event.room,
 		};
 	});
 };
+
+const formatEventDateTime = (dateTime) => {
+	const [date, time] = dateTime.split("T");
+	return `${date} ${time ? time.slice(0, 5) : ""}`;
+};
+
+onMounted(async () => {
+	await fetchEvents();
+});
+
+const config = ref({
+	week: {
+		startsOn: "sunday",
+		nDays: 6,
+		scrollToHour: 5,
+	},
+	month: {
+		showTrailingAndLeadingDates: false,
+	},
+	style: {
+		fontFamily: "inherit",
+	},
+	showCurrentTime: true,
+	defaultMode: "month",
+});
 </script>
 
 <style>
-.long-title h3 {
-	font-family: "Segoe UI Light", "Helvetica Neue Light", "Segoe UI",
-		"Helvetica Neue", "Trebuchet MS", Verdana;
-	font-weight: 200;
-	font-size: 28px;
-	text-align: center;
-	margin-bottom: 20px;
+@import "qalendar/dist/style.css";
+
+.svg-inline--fa.fa-calendar-day,
+.date-picker__value-display-text {
+	margin: auto;
+}
+
+.calendar-month__week-day-name,
+.calendar-month__day-name {
+	margin: 0 !important;
+	padding: 1rem;
+	font-weight: 700 !important;
+}
+
+.calendar-month__weekday {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.calendar-month__event {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.date-picker__value-display,
+.calendar-header__chevron-arrows {
+	gap: 0rem !important;
+}
+
+.calendar-header {
+	padding: 0.7rem 2rem !important;
+}
+
+.event-flyout__row.is-description {
+	font-size: small;
+	text-align: left;
 }
 </style>

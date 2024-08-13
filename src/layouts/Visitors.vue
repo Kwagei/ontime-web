@@ -15,7 +15,14 @@
 							id="export"
 							class="dropdown-item"
 						>
-							Export
+							Export visitors
+						</li>
+						<li
+							@click="exportVisitors"
+							id="filter-visitors"
+							class="dropdown-item"
+						>
+							Filter Visitors
 						</li>
 					</ul>
 				</div>

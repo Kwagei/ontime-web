@@ -11,7 +11,7 @@
 			class="modal-dialog modal-lg modal-dialog-centered"
 			id="editParticipantModalBody"
 		>
-			<div class="modal-content py-4 px-3">
+			<div class="modal-content py-4 px-3 rounded">
 				<div class="modal-header">
 					<h4>Edit Participant {{ participantIndex }}</h4>
 					<button
@@ -362,6 +362,6 @@ onMounted(async () => {
 }
 
 .modal {
-	background-color: #1616157a;
+	background-color: #1616158f;
 }
 </style>

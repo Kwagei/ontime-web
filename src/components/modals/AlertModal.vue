@@ -35,7 +35,7 @@
 				</div>
 				<div
 					v-if="data.pageLink"
-					class="modal-body py-0 d-flex justify-content-between align-items-center"
+					class="modal-body py-0 d-flex justify-content-end align-items-center"
 				>
 					<!-- Router Link only works if the route is differentso the -->
 					<!-- `handleIdenticalRoute` function will reload the page if the -->

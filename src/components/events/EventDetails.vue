@@ -7,7 +7,7 @@
 
 				<div class="dropdown">
 					<Options />
-					<ul class="dropdown-menu">
+					<ul class="dropdown-menu boxShadow rounded">
 						<li
 							id="edit-event"
 							class="dropdown-item"
@@ -140,5 +140,11 @@ svg {
 
 #addParticipantBtn {
 	padding: 0.5rem;
+}
+
+li {
+	font-size: 1rem;
+	font-weight: 600;
+	padding: 0.75rem 1rem;
 }
 </style>

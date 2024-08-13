@@ -3,9 +3,22 @@
 		class="table-responsive container p-0 d-flex flex-column"
 		style="gap: 0.7rem"
 	>
-		<h5 class="mb-0" v-show="dateRangeDates.from || dateRangeDates.to">
-			{{ dateRangeInfo }}
-		</h5>
+		<div class="mb-0" v-show="filterDates.from || filterDates.to">
+			{{ filterInfo }}
+
+			<button
+				type="button"
+				class="btn btn-primary mx-2"
+				style="
+					--bs-btn-padding-y: 0.25rem;
+					--bs-btn-padding-x: 0.5rem;
+					--bs-btn-font-size: 0.75rem;
+				"
+				@click="clearFilter"
+			>
+				Clear
+			</button>
+		</div>
 
 		<div>
 			<DataTable
@@ -40,7 +53,7 @@ DataTable.use(DataTablesCore);
 const totalVisits = defineModel("totalVisits");
 const refresh = defineModel("refresh");
 const lengthMenu = defineModel("lengthMenu");
-const dateRangeDates = defineModel("dateRangeDates");
+const filterDates = defineModel("filterDates");
 const tableKey = ref(0);
 const showError = ref(false);
 const dashboardTableData = defineModel("dtd");
@@ -93,8 +106,8 @@ const options = {
 				limit: query.length,
 				search: query.search.value,
 				sort: order,
-				from: dateRangeDates.value.from || "",
-				to: dateRangeDates.value.to || "",
+				from: filterDates.value.from || "",
+				to: filterDates.value.to || "",
 				order: query.order[0].dir,
 			};
 		},
@@ -106,7 +119,9 @@ const options = {
 
 			json.recordsTotal = totalLength;
 			json.recordsFiltered =
-				dashboardTableData.value.recordsFiltered || totalLength;
+				dashboardTableData.value.recordsFiltered === 0
+					? 0
+					: totalLength;
 			return formatData(visits);
 		},
 		error: (error) => {
@@ -114,7 +129,7 @@ const options = {
 			showError.value = true;
 		},
 	},
-	lengthMenu: lengthMenu.value || [10, 25, 50, 100],
+	lengthMenu: dashboardTableData.value.lengthMenu || [10, 25, 50, 100],
 	searching: dashboardTableData.value.searching,
 	bLengthChange: dashboardTableData.value.bLengthChange,
 	bInfo: dashboardTableData.value.bInfo,
@@ -153,17 +168,16 @@ const options = {
 	order: [[0, "desc"]],
 };
 
-const dateRangeInfo = computed(() => {
+const filterInfo = computed(() => {
 	return `Showing Visits ${
-		dateRangeDates.value.from
-			? "from " +
-			  formatDateTime(dateRangeDates.value.from, { date: true })
+		filterDates.value.from
+			? "from " + formatDateTime(filterDates.value.from, { date: true })
 			: ""
 	} ${
-		dateRangeDates.value.to
-			? "up to " + formatDateTime(dateRangeDates.value.to, { date: true })
+		filterDates.value.to
+			? "up to " + formatDateTime(filterDates.value.to, { date: true })
 			: ""
-	}`;
+	} `;
 });
 
 const MAX_ITEMS_LEN = 30;
@@ -250,23 +264,29 @@ const formatItems = (belonging) => {
 watch(
 	() => refresh.value,
 	() => {
-		tableKey.value += 1;
+		tableKey.value++;
 	}
 );
 
 // retrieve events in date range
 watch(
 	// watch for change on the from or to dates
-	() => [dateRangeDates.value.from, dateRangeDates.value.to],
+	() => [filterDates.value.from, filterDates.value.to],
 	([newFrom, newTo]) => {
 		// update the date from and to dates for the request query
-		dateRangeDates.value.from = newFrom;
-		dateRangeDates.value.to = newTo;
+		filterDates.value.from = newFrom;
+		filterDates.value.to = newTo;
 
 		// update the table key and force the table to reload
 		tableKey.value += 1;
 	}
 );
+
+const clearFilter = () => {
+	filterDates.value.from = "";
+	filterDates.value.to = "";
+	tableKey.value++;
+};
 
 onMounted(async () => {
 	handleCheckoutDetail();

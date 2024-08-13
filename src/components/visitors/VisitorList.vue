@@ -3,6 +3,27 @@
 		class="table-responsive container p-0 d-flex flex-column"
 		style="gap: 0.7rem"
 	>
+		<div
+			style="font-weight: 400; font-size: 1rem"
+			class="mb-0 d-flex align-items-center"
+			v-if="filterDates.from || filterDates.to"
+		>
+			{{ filterInfo }}
+
+			<button
+				type="button"
+				class="btn btn-primary mx-2"
+				style="
+					--bs-btn-padding-y: 0.25rem;
+					--bs-btn-padding-x: 0.5rem;
+					--bs-btn-font-size: 0.75rem;
+				"
+				@click="clearFilter"
+			>
+				Clear
+			</button>
+		</div>
+
 		<div>
 			<DataTable
 				id="visitorsTable"
@@ -21,7 +42,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -33,6 +54,7 @@ import { formatDateTime } from "@/assets/js/util.js";
 
 DataTable.use(DataTablesCore);
 
+const filterDates = defineModel("filterDates");
 const totalVisitors = defineModel("totalVisitors");
 
 const columns = [
@@ -57,6 +79,8 @@ const options = {
 				start: query.start,
 				limit: query.length,
 				search: query.search.value,
+				from: filterDates.value.from || "",
+				to: filterDates.value.to || "",
 				sort: query.columns[query.order[0].column].data,
 				order: query.order[0].dir,
 			};
@@ -151,7 +175,7 @@ const visitorDetail = (id) => {
 const handleVisitorDetail = () => {
 	const dt = table.value.dt;
 	dt.on("click", "tr", function (event) {
-		if (event.target.dataset.empty) addVisitor();
+		// if (event.target.dataset.empty) addVisitor();
 
 		const visitorData = dt.row(this).data();
 
@@ -174,6 +198,38 @@ function formatAddress(address) {
 
 	return newAddress;
 }
+
+const filterInfo = computed(() => {
+	return `Showing Visitors ${
+		filterDates.value.from
+			? "from " + formatDateTime(filterDates.value.from, { date: true })
+			: ""
+	} ${
+		filterDates.value.to
+			? "up to " + formatDateTime(filterDates.value.to, { date: true })
+			: ""
+	} `;
+});
+
+// retrieve events in date range
+watch(
+	// watch for change on the from or to dates
+	() => [filterDates.value.from, filterDates.value.to],
+	([newFrom, newTo]) => {
+		// update the date from and to dates for the request query
+		filterDates.value.from = newFrom;
+		filterDates.value.to = newTo;
+
+		// update the table key and force the table to reload
+		tableKey.value += 1;
+	}
+);
+
+const clearFilter = () => {
+	filterDates.value.from = "";
+	filterDates.value.to = "";
+	tableKey.value++;
+};
 
 onMounted(() => {
 	handleVisitorDetail();

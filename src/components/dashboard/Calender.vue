@@ -34,7 +34,6 @@ const formatEvents = (events) => {
 				start: formatEventDateTime(event.start_date),
 				end: formatEventDateTime(event.end_date),
 			},
-			color: "blue",
 			isEditable: false,
 			id: event.id,
 			description: event.details,

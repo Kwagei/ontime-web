@@ -54,7 +54,7 @@
 					/>
 				</div>
 				<form
-					class="d-flex gap-2 pt-3 text-center justify-content-start"
+					class="d-flex gap-2 pt-2 text-center justify-content-start"
 					v-if="participants.length"
 					@submit.prevent="postParticipants"
 				>

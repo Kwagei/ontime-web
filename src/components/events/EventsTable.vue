@@ -3,9 +3,26 @@
 		class="table-responsive container p-0 d-flex flex-column"
 		style="gap: 0.7rem"
 	>
-		<h5 class="mb-0" v-show="dateRangeDates.from || dateRangeDates.to">
-			{{ dateRangeInfo }}
-		</h5>
+		<div
+			style="font-weight: 400; font-size: 1rem"
+			class="mb-0 d-flex align-items-center"
+			v-if="filterDates.from || filterDates.to"
+		>
+			{{ filterInfo }}
+
+			<button
+				type="button"
+				class="btn btn-primary mx-2"
+				style="
+					--bs-btn-padding-y: 0.25rem;
+					--bs-btn-padding-x: 0.5rem;
+					--bs-btn-font-size: 0.75rem;
+				"
+				@click="clearFilter"
+			>
+				Clear
+			</button>
+		</div>
 
 		<div>
 			<DataTable
@@ -41,7 +58,7 @@ const totalEvents = defineModel("totalEvents");
 const refresh = defineModel("refresh");
 const tableKey = ref(0);
 const showError = ref(false);
-const dateRangeDates = defineModel("dateRangeDates");
+const filterDates = defineModel("filterDates");
 
 const columns = [
 	{ data: "title", title: "Title" },
@@ -69,8 +86,8 @@ const options = {
 				limit: query.length,
 				search: query.search.value,
 				sort: order,
-				from: dateRangeDates.value.from || undefined,
-				to: dateRangeDates.value.to || undefined,
+				from: filterDates.value.from || undefined,
+				to: filterDates.value.to || undefined,
 				order: query.order[0].dir,
 			};
 		},
@@ -130,15 +147,14 @@ const options = {
 	},
 };
 
-const dateRangeInfo = computed(() => {
+const filterInfo = computed(() => {
 	return `Showing Events ${
-		dateRangeDates.value.from
-			? "from " +
-			  formatDateTime(dateRangeDates.value.from, { date: true })
+		filterDates.value.from
+			? "from " + formatDateTime(filterDates.value.from, { date: true })
 			: ""
 	} ${
-		dateRangeDates.value.to
-			? "up to " + formatDateTime(dateRangeDates.value.to, { date: true })
+		filterDates.value.to
+			? "up to " + formatDateTime(filterDates.value.to, { date: true })
 			: ""
 	}`;
 });
@@ -193,16 +209,22 @@ watch(
 // retrieve events in date range
 watch(
 	// watch for change on from or to dates
-	() => [dateRangeDates.value.from, dateRangeDates.value.to],
+	() => [filterDates.value.from, filterDates.value.to],
 	([newFrom, newTo]) => {
 		// update the date from and to dates for the request query
-		dateRangeDates.value.from = newFrom;
-		dateRangeDates.value.to = newTo;
+		filterDates.value.from = newFrom;
+		filterDates.value.to = newTo;
 
 		// updatee table key and force table to reload
 		tableKey.value += 1;
 	}
 );
+
+const clearFilter = () => {
+	filterDates.value.from = "";
+	filterDates.value.to = "";
+	tableKey.value++;
+};
 </script>
 
 <style scoped>

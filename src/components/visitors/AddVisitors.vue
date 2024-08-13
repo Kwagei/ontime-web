@@ -161,7 +161,7 @@
 					</div>
 				</div>
 
-				<div class="col-md-12 d-flex gap-3 justify-content-end">
+				<div class="col-md-12 d-flex gap-2 justify-content-end">
 					<button type="submit" class="btn btn-primary">Save</button>
 					<button
 						class="btn btn-outline-secondary"
@@ -366,12 +366,9 @@ onMounted(async () => {
 }
 
 .validated {
-	border-color: var(--bs-form-invalid-border-color);
-}
-
-.validated:focus {
 	border-color: var(--bs-form-invalid-border-color) !important;
 }
+
 #list-options {
 	padding: 0.6rem 0.5rem;
 	font-weight: 400;
@@ -387,9 +384,14 @@ svg {
 	gap: 1.5rem;
 }
 
+#emailHelp {
+	font-weight: 400;
+}
+
 @media (max-width: 1440px) {
 	#emailHelp {
 		font-size: small;
+		font-weight: 400;
 	}
 }
 </style>

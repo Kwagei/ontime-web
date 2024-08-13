@@ -60,7 +60,10 @@
 					</div>
 				</div>
 
-				<div class="col-md-12 d-flex gap-3 justify-content-end">
+				<div class="col-md-12 d-flex gap-2 justify-content-end">
+					<button type="submit" class="btn btn-primary">
+						{{ buttonLabel }}
+					</button>
 					<button
 						type="button"
 						class="btn btn-outline-secondary"
@@ -68,10 +71,6 @@
 						@click="router.back()"
 					>
 						Cancel
-					</button>
-
-					<button type="submit" class="btn btn-primary">
-						{{ buttonLabel }}
 					</button>
 				</div>
 			</form>

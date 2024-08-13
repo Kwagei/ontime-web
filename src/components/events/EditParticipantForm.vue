@@ -183,7 +183,7 @@
 							</div>
 						</div>
 
-						<div class="col-md-12 d-flex gap-3 justify-content-end">
+						<div class="col-md-12 d-flex gap-2 justify-content-end">
 							<button
 								@click="update"
 								type="submit"

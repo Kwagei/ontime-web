@@ -9,7 +9,7 @@
 		<div class="d-flex" style="gap: 0.521rem">
 			<div class="dropdown">
 				<Options />
-				<ul class="dropdown-menu">
+				<ul class="dropdown-menu boxShadow rounded">
 					<li
 						@click="exportEventsAttendance"
 						id="export"
@@ -113,7 +113,9 @@ const options = {
 
 			// format each participant record
 			participants.forEach((participant) => {
-				participant.msisdn = `0${participant.msisdn.slice(3)}`;
+				participant.msisdn = participant.msisdn
+					? `0${participant.msisdn.slice(3)}`
+					: "";
 
 				// format visit date time or arrival time if any
 				if (participant.visit_date_time) {
@@ -231,5 +233,11 @@ const exportEventsAttendance = () => {
 svg {
 	height: 20px !important;
 	margin: 0 !important;
+}
+
+li {
+	font-size: 1rem;
+	font-weight: 600;
+	padding: 0.75rem 1rem;
 }
 </style>

@@ -86,7 +86,7 @@
 				<div class="col p-0">
 					<VisitList
 						v-model:totalVisits="totalVisits"
-						v-model:dateRangeDates="dateRangeDates"
+						v-model:filterDates="filterDates"
 						v-model:dtd="dashboardTableData"
 					/>
 				</div>
@@ -103,7 +103,7 @@ import { RouterLink } from "vue-router";
 
 import VisitList from "@/components/visits/VisitList.vue";
 import Icons from "@/components/Icons.vue";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 const visitIcon = "house";
 const eventIcon = "calendar-event-agenda";
@@ -114,7 +114,7 @@ const todaysEvents = ref(0);
 const allEvents = defineModel("allEvents");
 allEvents.value = [];
 
-const dateRangeDates = ref({
+const filterDates = ref({
 	from: "",
 	to: "",
 });
@@ -124,7 +124,7 @@ dashboardTableData.value = {
 	lengthMenu: [5],
 	bLengthChange: false,
 	searching: false,
-	recordsFiltered: 5,
+	recordsFiltered: 0,
 	bInfo: false,
 };
 
@@ -148,6 +148,10 @@ const isEventHappeningToday = (event) => {
 const getTodaysEvents = (events) => {
 	return events.filter(isEventHappeningToday);
 };
+
+onMounted(() => {
+	document.querySelector(".dt-paging").style.display = "none";
+});
 </script>
 
 <style scoped>
@@ -197,9 +201,5 @@ span {
 
 #eventIcon {
 	color: #1971c2;
-}
-
-.dt-layout-cell.dt-start {
-	display: none !important;
 }
 </style>

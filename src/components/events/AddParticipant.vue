@@ -6,7 +6,10 @@
 		>
 			<BreadCrumbs class="mb-0 mt-4" :breadCrumbs="breadCrumbs" />
 		</div>
-		<div class="form-control input" style="margin: auto; padding: 3rem">
+		<div
+			class="form-control input rounded"
+			style="margin: auto; padding: 3rem"
+		>
 			<form
 				class="row g-3 needs-validation"
 				novalidate
@@ -161,14 +164,14 @@
 					</div>
 				</div>
 
-				<div class="col-md-12 d-flex justify-content-end gap-3">
+				<div class="col-md-12 d-flex justify-content-end gap-2">
+					<button type="submit" class="btn btn-primary">Save</button>
 					<button
 						@click="$emit('switch', 'details')"
 						class="btn btn-outline-secondary"
 					>
 						Cancel
 					</button>
-					<button type="submit" class="btn btn-primary">Save</button>
 				</div>
 			</form>
 		</div>
@@ -371,6 +374,10 @@ svg {
 
 #visitor-view {
 	gap: 1.5rem;
+}
+
+#emailHelp {
+	font-weight: 400;
 }
 
 @media (max-width: 1440px) {

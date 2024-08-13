@@ -2,9 +2,9 @@
 	<AlertModal :data="modalData" />
 	<div
 		class="modal fade"
-		id="dateRangeModal"
+		id="filterModal"
 		tabindex="-1"
-		aria-labelledby="dateRangeModalLabel"
+		aria-labelledby="filterModalLabel"
 		style="z-index: 2000"
 	>
 		<div

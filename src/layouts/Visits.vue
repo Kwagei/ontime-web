@@ -10,7 +10,7 @@
 
 				<div class="dropdown">
 					<Options />
-					<ul class="dropdown-menu">
+					<ul class="dropdown-menu boxShadow rounded">
 						<li
 							@click="exportVisits"
 							id="export"
@@ -19,11 +19,11 @@
 							Export
 						</li>
 						<li
-							@click="displayDateRangeModal"
-							id="filter-events"
+							@click="displayFilterModal"
+							id="filter-visits"
 							class="dropdown-item"
 						>
-							Filter Events
+							Filter Visits
 						</li>
 					</ul>
 				</div>
@@ -102,10 +102,10 @@
 
 		<VisitList
 			v-model:refresh="refresh"
-			v-model:dateRangeDates="dateRangeDates"
+			v-model:filterDates="filterDates"
 		/>
 
-		<DateRangeModal @done="dateRangeCompleted" />
+		<FilterModal @done="filterCompleted" />
 
 		<RouterView />
 	</div>
@@ -123,7 +123,7 @@ const add = "add";
 
 import { RouterLink, RouterView } from "vue-router";
 import { csvExport, getVisits } from "../assets/js/index.js";
-import DateRangeModal from "@/components/modals/DateRangeModal.vue";
+import FilterModal from "@/components/modals/FilterModal.vue";
 import { showModal } from "@/assets/js/util";
 
 const breadCrumbs = defineModel("breadCrumbs");
@@ -152,18 +152,18 @@ const formatItems = (belonging) => {
 	return items.length > 30 ? `${items.slice(0, 30)}...` : items;
 };
 
-const dateRangeDates = ref({
+const filterDates = ref({
 	from: "",
 	to: "",
 });
 
-function displayDateRangeModal() {
-	showModal("#dateRangeModal", "#modal-dialog");
+function displayFilterModal() {
+	showModal("#filterModal", "#modal-dialog");
 }
 
-// update date ranges, then it will be caught by watchers in events table
-function dateRangeCompleted(newDates) {
-	dateRangeDates.value = newDates;
+// update date ranges, then it will be caught by watchers in visits table
+function filterCompleted(newDates) {
+	filterDates.value = newDates;
 }
 </script>
 
@@ -210,9 +210,9 @@ svg {
 	z-index: 9999;
 }
 
-/* @media (min-width: 768px) and (max-width: 1440px) {
-	#visit-view {
-		padding: 1rem 3rem 0 3rem;
-	}
-} */
+li {
+	font-size: 1rem;
+	font-weight: 600;
+	padding: 0.75rem 1rem;
+}
 </style>

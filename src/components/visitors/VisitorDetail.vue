@@ -18,11 +18,11 @@
 			<div class="row g-3">
 				<div class="col-md-6">
 					<div class="input-group">
-						<div class="form-control" style="padding: 2rem">
+						<div class="form-control rounded" style="padding: 2rem">
 							<div
 								class="d-flex justify-content-between align-items-center"
 							>
-								<h4 class="m-0">Visitor Information</h4>
+								<h4 class="m-0">Visitor's Information</h4>
 								<router-link
 									:to="{
 										name: 'edit-visitor',
@@ -31,7 +31,11 @@
 								>
 									<button
 										class="btn btn-secondary editBtn"
-										style="border: 0.125rem solid black"
+										style="
+											padding: 0.25rem 0.5rem;
+											font-size: 0.75rem;
+											border: 0.125rem solid black;
+										"
 										type="button"
 										data-bs-theme="dark"
 									>
@@ -65,9 +69,11 @@
 													key !== 'email'
 												"
 											>
-												<span>{{
-													formatVisitorInfo(key)
-												}}</span
+												<span
+													style="font-weight: 400"
+													>{{
+														formatVisitorInfo(key)
+													}}</span
 												>:
 
 												<span
@@ -109,13 +115,12 @@ import Icons from "../Icons.vue";
 import { API_URL } from "@/assets/js";
 
 import { useRoute } from "vue-router";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { RouterLink } from "vue-router";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
-import dayjs from "dayjs";
 import { formatDateTime } from "@/assets/js/util";
 
 DataTable.use(DataTablesCore);
@@ -213,6 +218,7 @@ const formatVisitorInfo = (key) => {
 
 	const v = key.split("_").join(" ");
 	const formattedString = v.charAt(0).toUpperCase() + v.slice(1);
+	console.log(formattedString);
 
 	return formattedString;
 };

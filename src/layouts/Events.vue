@@ -10,7 +10,7 @@
 
 				<div class="dropdown">
 					<Options />
-					<ul class="dropdown-menu">
+					<ul class="dropdown-menu boxShadow rounded">
 						<li
 							@click="exportEvents"
 							id="export"
@@ -18,15 +18,15 @@
 						>
 							Export
 						</li>
+						<li
+							@click="displayFilterModal"
+							id="filter-events"
+							class="dropdown-item"
+						>
+							Filter Events
+						</li>
 					</ul>
 				</div>
-
-				<button
-					@click="displayDateRangeModal"
-					class="btn btn-secondary"
-				>
-					Date Range
-				</button>
 
 				<router-link :to="{ name: 'add-event' }">
 					<button
@@ -43,10 +43,10 @@
 
 		<EventsTable
 			v-model:refresh="refresh"
-			v-model:dateRangeDates="dateRangeDates"
+			v-model:filterDates="filterDates"
 		/>
 
-		<DateRangeModal @done="dateRangeCompleted" />
+		<FilterModal @done="filterCompleted" />
 	</div>
 </template>
 
@@ -60,7 +60,7 @@ const plusIcon = "add";
 
 import { ref } from "vue";
 import { csvExport, getEvents } from "../assets/js/index.js";
-import DateRangeModal from "@/components/modals/DateRangeModal.vue";
+import FilterModal from "@/components/modals/FilterModal.vue";
 import { showModal } from "@/assets/js/util";
 
 const props = defineProps({
@@ -71,7 +71,7 @@ const props = defineProps({
 });
 
 const refresh = ref(false);
-const dateRangeDates = ref({
+const filterDates = ref({
 	from: "",
 	to: "",
 });
@@ -91,13 +91,13 @@ const exportEvents = async () => {
 	);
 };
 
-function displayDateRangeModal() {
-	setTimeout(() => showModal("#dateRangeModal", "#modal-dialog"), 500);
+function displayFilterModal() {
+	setTimeout(() => showModal("#filterModal", "#modal-dialog"), 500);
 }
 
-function dateRangeCompleted(newDates) {
+function filterCompleted(newDates) {
 	// update date ranges, then it will be caught by watchers in events table
-	dateRangeDates.value = newDates;
+	filterDates.value = newDates;
 }
 </script>
 
@@ -130,5 +130,11 @@ svg {
 .list-options svg {
 	height: 20px !important;
 	margin: 0 !important;
+}
+
+li {
+	font-size: 1rem;
+	font-weight: 600;
+	padding: 0.75rem 1rem;
 }
 </style>

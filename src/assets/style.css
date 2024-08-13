@@ -105,3 +105,7 @@ textarea,
 a {
 	border-radius: 0.3rem !important;
 }
+
+.boxShadow {
+	box-shadow: 0 4px 4px rgba(0 0 0 / 6%), 0 1px 4px rgba(0 0 0 / 18%);
+}

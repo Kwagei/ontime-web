@@ -262,7 +262,7 @@
 					</div>
 				</div>
 
-				<div class="col-md-12 d-flex justify-content-end gap-3">
+				<div class="col-md-12 d-flex justify-content-end gap-2">
 					<button type="submit" class="btn btn-primary">Save</button>
 					<button
 						@click="router.back()"

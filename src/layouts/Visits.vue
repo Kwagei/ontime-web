@@ -130,7 +130,11 @@ import { RouterLink, RouterView } from "vue-router";
 import { csvExport, getVisits } from "../assets/js/index.js";
 import FilterModal from "@/components/modals/FilterModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
-import { formatVisitData, showModal } from "@/assets/js/util";
+import {
+	formatDepartureTime,
+	formatVisitData,
+	showModal,
+} from "@/assets/js/util";
 
 const breadCrumbs = defineModel("breadCrumbs");
 const refresh = defineModel("refresh");

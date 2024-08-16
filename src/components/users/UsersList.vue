@@ -26,7 +26,7 @@
 
 		<div>
 			<DataTable
-				id="visitorsTable"
+				id="usersTable"
 				:key="tableKey"
 				class="display w-100 table"
 				:columns="columns"
@@ -35,7 +35,7 @@
 				v-show="!showError"
 			/>
 			<h3 class="mt-5 text-center fw-bold" v-if="showError">
-				Unable to load visitors, try again!
+				Unable to load users, try again!
 			</h3>
 		</div>
 	</div>
@@ -157,6 +157,15 @@ const options = {
 	},
 	order: [[5, "desc"]],
 	destroy: true,
+	createdRow: (row, data) => {
+		$(row).on("click", (event) => {
+			// if (event.target.dataset.empty) addVisitor();
+
+			const visitorData = data;
+
+			if (visitorData) userDetail(visitorData.id);
+		});
+	},
 };
 
 const table = ref();
@@ -175,21 +184,8 @@ watch(
 	}
 );
 
-const visitorDetail = (id) => {
-	router.push({ name: "visitorDetail", params: { id } });
-};
-
-const handleVisitorDetail = () => {
-	const dt = table.value.dt;
-	dt.on("click", "tr", function (event) {
-		// if (event.target.dataset.empty) addVisitor();
-
-		const visitorData = dt.row(this).data();
-
-		if (visitorData) {
-			visitorDetail(visitorData.id);
-		}
-	});
+const userDetail = (id) => {
+	router.push({ name: "userDetail", params: { id } });
 };
 
 function formatAddress(address) {
@@ -207,7 +203,7 @@ function formatAddress(address) {
 }
 
 const filterInfo = computed(() => {
-	return `Showing Visitors ${
+	return `Showing users ${
 		filterDates.value.from
 			? "from " + formatDateTime(filterDates.value.from, { date: true })
 			: ""
@@ -237,10 +233,6 @@ const clearFilter = () => {
 	filterDates.value.to = "";
 	tableKey.value++;
 };
-
-onMounted(() => {
-	handleVisitorDetail();
-});
 </script>
 
 <style scoped>

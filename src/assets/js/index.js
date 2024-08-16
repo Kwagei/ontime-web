@@ -258,7 +258,7 @@ export const editUser = async (id, data) => {
 			body: JSON.stringify(data),
 		};
 
-		const response = await fetch(`${API_URL}/users/${id}`, options);
+		const response = await fetch(`${API_URL}users/${id}`, options);
 
 		const result = await response.json();
 
@@ -270,7 +270,7 @@ export const editUser = async (id, data) => {
 
 export const getUsers = async () => {
 	try {
-		const response = await fetch(`${API_URL}/users`);
+		const response = await fetch(`${API_URL}users`);
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
 		}
@@ -286,9 +286,9 @@ export const getSingleUser = async (data) => {
 
 	try {
 		if (id) {
-			response = await fetch(`${API_URL}/users/${id}`);
+			response = await fetch(`${API_URL}users/${id}`);
 		} else if (msisdn) {
-			response = await fetch(`${API_URL}/users?search=${msisdn}`);
+			response = await fetch(`${API_URL}users?search=${msisdn}`);
 		}
 
 		if (!response.ok) {
@@ -297,8 +297,22 @@ export const getSingleUser = async (data) => {
 
 		const { data } = await response.json();
 
-		return data.data[0];
+		return data.users;
 	} catch (error) {}
+};
+
+export const deleteUser = async (id) => {
+	const options = {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	};
+	const response = await fetch(`${API_URL}users/${id}`, options);
+
+	const result = await response.json();
+
+	return { ok: response.ok, result };
 };
 
 // Events functions

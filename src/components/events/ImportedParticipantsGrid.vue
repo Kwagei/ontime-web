@@ -41,35 +41,79 @@
 						/>
 					</div>
 				</div>
-				<div class="d-flex flex-column gap-2">
-					<span
-						>First name:
-						<strong>{{ participant.first_name }}</strong></span
-					>
-					<span v-if="participant.middle_name"
-						>Middle name:
-						<strong>{{ participant.middle_name }}</strong></span
-					>
-					<span
-						>Last name:
-						<strong>{{ participant.last_name }}</strong></span
-					>
-					<span
-						>Address:
-						<strong>{{ participant.address }}</strong></span
-					>
-					<span
-						>Email: <strong>{{ participant.email }}</strong></span
-					>
-					<span
-						>Phone number:
-						<strong
-							>0{{ participant.msisdn.slice(3) }}</strong
-						></span
-					>
-					<span
-						>Gender: <strong>{{ participant.gender }}</strong></span
-					>
+				<div class="visitor-info">
+					<div>
+						<span style="font-weight: 600">
+							{{ participant.first_name }}
+							{{ participant?.middle_name }}
+							{{ participant.last_name }}
+						</span>
+					</div>
+					<div v-if="participant.address">
+						<span>
+							<Icons
+								style="width: 1.2rem"
+								v-model:icon="locationIcon"
+							/>
+						</span>
+						<span style="font-weight: 400; font-size: small">
+							{{ participant.address }}
+						</span>
+					</div>
+					<div v-if="participant.email">
+						<span>
+							<Icons
+								style="width: 1.2rem"
+								v-model:icon="emailIcon"
+							/>
+						</span>
+						<span
+							style="
+								font-weight: 400;
+								font-size: small;
+								margin-left: 0.3rem;
+							"
+						>
+							{{ participant.email }}
+						</span>
+					</div>
+
+					<div>
+						<span>
+							<Icons
+								style="width: 1.2rem"
+								v-model:icon="phoneIcon"
+							/>
+						</span>
+						<span
+							style="
+								font-weight: 400;
+								font-size: small;
+								margin-left: 0.3rem;
+							"
+						>
+							{{ participant.msisdn }}
+						</span>
+					</div>
+
+					<div v-if="participant.gender">
+						<span>
+							<Icons
+								style="width: 1.2rem"
+								v-model:icon="genderIcon"
+							/>
+						</span>
+						<span
+							style="
+								font-weight: 400;
+								font-size: small;
+								margin-left: 0.3rem;
+								text-transform: capitalize;
+							"
+						>
+							{{ participant.gender }}
+						</span>
+					</div>
 				</div>
 			</div>
 			<h3 v-else>No match found!</h3>
@@ -80,6 +124,10 @@
 <script setup>
 const deleteIcon = "delete";
 const editIcon = "pencil";
+const locationIcon = "mahali";
+const emailIcon = "email";
+const genderIcon = "adult";
+const phoneIcon = "device-smartphone";
 
 import { computed, ref } from "vue";
 import Icons from "../Icons.vue";

@@ -1,5 +1,5 @@
 <template>
-	<Modal :data="alert" />
+	<AlertModal :data="alert" />
 
 	<!-- BELONGING MODAL -->
 	<div
@@ -168,7 +168,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
-import Modal from "../modals/AlertModal.vue";
+import AlertModal from "../modals/AlertModal.vue";
 import {
 	registerVisit,
 	getSingleVisitor,

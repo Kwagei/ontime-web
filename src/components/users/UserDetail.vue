@@ -1,5 +1,8 @@
 <template>
-	<div id="visitor-view" class="d-flex flex-column container">
+	<DeleteModal @delete="handleDeleteUser" />
+	<AlertModal :data="alert" />
+
+	<div id="user-view" class="d-flex flex-column container">
 		<div
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
 			style="margin-top: 0.3rem"
@@ -16,35 +19,11 @@
 			"
 		>
 			<div class="row g-3">
-				<div class="col-md-6">
+				<div class="col-md-8">
 					<div class="input-group">
 						<div class="form-control rounded" style="padding: 2rem">
 							<div
-								class="d-flex justify-content-between align-items-center"
-							>
-								<h4 class="m-0">Visitor's Information</h4>
-								<router-link
-									:to="{
-										name: 'edit-visitor',
-									}"
-									v-model:visitor-info="visitorInfo"
-								>
-									<button
-										class="btn btn-secondary editBtn"
-										style="
-											padding: 0.25rem 0.5rem;
-											font-size: 0.75rem;
-											border: 0.125rem solid black;
-										"
-										type="button"
-										data-bs-theme="dark"
-									>
-										<Icons v-model:icon="edit" />
-									</button>
-								</router-link>
-							</div>
-							<div
-								class="d-flex align-items-center"
+								class="d-flex align-items-start"
 								style="gap: 1.5rem; padding-top: 1rem"
 							>
 								<div>
@@ -56,33 +35,122 @@
 										/>
 									</div>
 								</div>
-								<div class="visitor-info">
-									<ul>
-										<li v-for="(info, key) in visitorInfo">
-											<!-- First name <br /> -->
-											<div
-												class="card-body"
-												v-if="
-													key !== 'id' &&
-													key !== 'middle_name' &&
-													key !== 'created_at' &&
-													key !== 'email'
+								<div class="user-info">
+									<div>
+										<h4 class="m-0">
+											{{ userInfo.username }}
+										</h4>
+									</div>
+									<div v-if="userInfo.address">
+										<Icons
+											class="icons"
+											v-model:icon="locationIcon"
+										/>
+										<span class="user-item">
+											{{ userInfo.address }}
+										</span>
+									</div>
+									<div
+										v-if="userInfo.email"
+										class="d-flex gap-3"
+									>
+										<div>
+											<Icons
+												class="icons"
+												v-model:icon="emailIcon"
+											/>
+											<span class="user-item">
+												{{ userInfo.email }}
+											</span>
+										</div>
+
+										<div>
+											<Icons
+												class="icons"
+												v-model:icon="phoneIcon"
+											/>
+											<span class="user-item">
+												{{
+													`0${userInfo.msisdn[0].slice(
+														3
+													)}`
+												}}
+											</span>
+										</div>
+									</div>
+									<div
+										v-if="userInfo.email"
+										class="d-flex gap-3"
+									>
+										<div>
+											<Icons
+												class="icons"
+												v-model:icon="genderIcon"
+											/>
+											<span
+												class="user-item"
+												style="
+													text-transform: capitalize;
 												"
 											>
-												<span
-													style="font-weight: 400"
-													>{{
-														formatVisitorInfo(key)
-													}}</span
-												>:
+												{{ userInfo.gender }}
+											</span>
+										</div>
 
-												<span
-													class="card-text fw-bold"
-													>{{ info }}</span
-												>
-											</div>
-										</li>
-									</ul>
+										<div>
+											<Icons
+												class="icons"
+												v-model:icon="roleIcon"
+											/>
+											<span
+												style="
+													text-transform: capitalize;
+												"
+												class="user-item"
+											>
+												{{ userInfo.roles[0] }}
+											</span>
+										</div>
+									</div>
+								</div>
+								<div
+									class="d-flex gap-2"
+									style="margin-left: auto"
+								>
+									<router-link
+										:to="{
+											name: 'edit-user',
+										}"
+										v-model:user-info="userInfo"
+									>
+										<button
+											type="button"
+											class="btn btn-outline-secondary"
+											style="
+												--bs-btn-font-size: 0.75rem;
+												padding: 0.25rem 2rem;
+											"
+										>
+											<Icons
+												class="icons"
+												v-model:icon="editIcon"
+											/>
+										</button>
+									</router-link>
+									<button
+										type="button"
+										class="btn btn-outline-secondary"
+										style="
+											--bs-btn-font-size: 0.75rem;
+											padding: 0.25rem 2rem;
+										"
+										@click="displayFilterModal"
+									>
+										<Icons
+											class="icons"
+											v-model:icon="deleteIcon"
+										/>
+									</button>
 								</div>
 							</div>
 						</div>
@@ -93,149 +161,79 @@
 				</div>
 			</div>
 		</div>
-
-		<div>
-			<DataTable
-				id="eventssTable"
-				class="display w-100 table"
-				:columns="columns"
-				:options="options"
-				ref="table"
-				v-show="!showError"
-			/>
-			<h3 class="mt-5 text-center fw-bold" v-if="showError">
-				Unable to load visitor's visits, try again!
-			</h3>
-		</div>
 	</div>
 </template>
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Icons from "../Icons.vue";
-import { API_URL } from "@/assets/js";
+import { deleteUser, getSingleUser } from "@/assets/js";
+import { useRouter } from "vue-router";
 
 import { useRoute } from "vue-router";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
-import DataTable from "datatables.net-vue3";
-import DataTablesCore from "datatables.net";
-import "datatables.net-responsive";
-import "datatables.net-responsive-dt";
-import { formatDateTime } from "@/assets/js/util";
-
-DataTable.use(DataTablesCore);
-
-const edit = "pencil";
+import DeleteModal from "../modals/DeleteModal.vue";
+import { getElement, removeClass, showModal } from "@/assets/js/util";
+import AlertModal from "../modals/AlertModal.vue";
 
 const route = useRoute();
 
 const breadCrumbs = defineModel("breadCrumbs");
 breadCrumbs.value = route.path.split("/").slice(1);
-
-const table = ref("");
-const showError = ref(false);
+const refresh = defineModel("refresh");
 
 const id = ref(route.params.id);
-const visitorInfo = ref("");
+const userInfo = ref("");
+const router = useRouter();
 
-const columns = [
-	{ data: "date_time", title: "Date" },
-	{ data: "host", title: "Host" },
-	{ data: "institution", title: "Institution" },
-	{ data: "room", title: "Room" },
-	{ data: "departure_time", title: "Departure Time" },
-	{ data: "purpose", title: "Purpose" },
-	{ data: "items", title: "Items" },
-];
+const locationIcon = "mahali";
+const emailIcon = "email";
+const genderIcon = "adult";
+const phoneIcon = "device-smartphone";
+const editIcon = "pencil";
+const deleteIcon = "delete";
+const roleIcon = "administrator";
 
-const options = {
-	responsive: true,
-	select: true,
-	serverSide: true,
-	ajax: {
-		url: `${API_URL}visitors/${id.value}/visits`,
-		type: "GET",
-		data: (query) => {
-			const order =
-				query.columns[query.order[0].column].data === "date"
-					? "date_time"
-					: query.columns[query.order[0].column].data;
-			return {
-				start: query.start,
-				limit: query.length,
-				search: query.search.value,
-				sort: order,
-				direction: query.order[0].dir,
-			};
-		},
-		dataSrc: (json) => {
-			showError.value = false;
-			refresh.value = false;
+// Modal Data
+const alert = ref({
+	status: "",
+	title: "",
+	message: "",
+	pageLink: "",
+});
 
-			const { visitor, visits } = json.data;
-			visitor.msisdn = `0${visitor.msisdn.slice(3)}`;
-
-			visitorInfo.value = visitor;
-
-			json.recordsTotal = visits.length;
-			json.recordsFiltered = visits.length;
-
-			return formatVisitorVisits(visits.visitorVisits);
-		},
-		error: (error) => {
-			console.log("Error fetching data:", error.responseJSON);
-			showError.value = true;
-			refresh.value = false;
-		},
-	},
-	responsive: true,
-	lengthMenu: [10, 25, 50, 100],
-	language: {
-		searchPlaceholder: "Search ...",
-		search: "",
-		emptyTable: `
-			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
-				No Visits to show!
-				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M82.5 37.5V35l-15-15H60v-3.75A1.25 1.25 0 0058.75 15h-2.5A1.25 1.25 0 0055 16.25V20H40v-3.75A1.25 1.25 0 0038.75 15h-2.5A1.25 1.25 0 0035 16.25V20h-7.5l-15 15v2.5h5V85H15v2.5h65V85h-2.5V37.5zM35 77.5H25V70a5 5 0 015-5 5 5 0 015 5zm0-25H25V45a5 5 0 015-5 5 5 0 015 5zM52.5 85h-10V70a5 5 0 015-5 5 5 0 015 5zm0-32.5h-10V45a5 5 0 015-5 5 5 0 015 5zm17.5 25H60V70a5 5 0 015-5 5 5 0 015 5zm0-25H60V45a5 5 0 015-5 5 5 0 015 5z"/></svg>
-			</div>
-        `,
-		zeroRecords: `
-			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
-				No match found!
-				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M82.5 37.5V35l-15-15H60v-3.75A1.25 1.25 0 0058.75 15h-2.5A1.25 1.25 0 0055 16.25V20H40v-3.75A1.25 1.25 0 0038.75 15h-2.5A1.25 1.25 0 0035 16.25V20h-7.5l-15 15v2.5h5V85H15v2.5h65V85h-2.5V37.5zM35 77.5H25V70a5 5 0 015-5 5 5 0 015 5zm0-25H25V45a5 5 0 015-5 5 5 0 015 5zM52.5 85h-10V70a5 5 0 015-5 5 5 0 015 5zm0-32.5h-10V45a5 5 0 015-5 5 5 0 015 5zm17.5 25H60V70a5 5 0 015-5 5 5 0 015 5zm0-25H60V45a5 5 0 015-5 5 5 0 015 5z"/></svg>
-			</div>
-        `,
-		loadingRecords: `<div class="d-flex justify-content-center p-4">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        </div>`,
-	},
-	order: [[2, "desc"]],
-	destroy: true,
+const fetchUser = async () => {
+	const [user] = await getSingleUser({ id: id.value });
+	userInfo.value = user;
 };
 
-const formatVisitorInfo = (key) => {
-	if (!key) return "";
-
-	const v = key.split("_").join(" ");
-	const formattedString = v.charAt(0).toUpperCase() + v.slice(1);
-	console.log(formattedString);
-
-	return formattedString;
+const displayFilterModal = () => {
+	showModal("#deleteModal", "#modal-dialog");
 };
 
-const formatVisitorVisits = (visits) => {
-	for (const visit of visits) {
-		if (visit.date_time) {
-			visit.date_time = formatDateTime(visit.date_time);
-		}
+const handleDeleteUser = async () => {
+	const response = await deleteUser(id.value);
 
-		visit.items = visit.items ? visit.items.join(", ") : "";
+	getElement("body").removeAttribute("style");
+
+	showModal("#alertModal", "#alertModalBody");
+	alert.value.status = response.ok ? "success" : "danger";
+	alert.value.message = response.result.message;
+
+	if (response.ok) {
+		const deleteModal = getElement("#deleteModal");
+		removeClass(deleteModal, "show");
+		deleteModal.style.display = "none";
+
+		setTimeout(() => {
+			router.push("/users");
+		}, 2000);
 	}
-
-	return visits;
 };
+
+onMounted(async () => {
+	await fetchUser();
+});
 </script>
 
 <style scoped>
@@ -247,7 +245,7 @@ const formatVisitorVisits = (visits) => {
 	height: 8rem;
 	padding: 0.5rem;
 	background-color: black;
-	border-radius: 50%;
+	border-radius: 0.5rem;
 	overflow: hidden;
 }
 
@@ -257,22 +255,11 @@ const formatVisitorVisits = (visits) => {
 	object-fit: cover;
 }
 
-.visitor-info {
+.user-info {
 	margin-top: 0.5rem;
-}
-
-.visitor-info ul {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
-}
-
-.visitor-info li {
-	margin-bottom: 0.5rem;
-}
-
-.visitor-item {
-	color: gray;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 
 .btn {
@@ -285,8 +272,14 @@ const formatVisitorVisits = (visits) => {
 .btn:hover path {
 	fill: white;
 }
-.editBtn svg {
-	height: 1.3rem !important;
-	margin: 0 !important;
+
+.icons {
+	width: 1.3rem;
+	height: 1rem !important;
+}
+
+.user-item {
+	font-weight: 400;
+	font-size: small;
 }
 </style>

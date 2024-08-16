@@ -16,35 +16,11 @@
 			"
 		>
 			<div class="row g-3">
-				<div class="col-md-6">
+				<div class="col-md-7">
 					<div class="input-group">
 						<div class="form-control rounded" style="padding: 2rem">
 							<div
-								class="d-flex justify-content-between align-items-center"
-							>
-								<h4 class="m-0">Visitor's Information</h4>
-								<router-link
-									:to="{
-										name: 'edit-visitor',
-									}"
-									v-model:visitor-info="visitorInfo"
-								>
-									<button
-										class="btn btn-secondary editBtn"
-										style="
-											padding: 0.25rem 0.5rem;
-											font-size: 0.75rem;
-											border: 0.125rem solid black;
-										"
-										type="button"
-										data-bs-theme="dark"
-									>
-										<Icons v-model:icon="edit" />
-									</button>
-								</router-link>
-							</div>
-							<div
-								class="d-flex align-items-center"
+								class="d-flex align-items-start"
 								style="gap: 1.5rem; padding-top: 1rem"
 							>
 								<div>
@@ -57,32 +33,91 @@
 									</div>
 								</div>
 								<div class="visitor-info">
-									<ul>
-										<li v-for="(info, key) in visitorInfo">
-											<!-- First name <br /> -->
-											<div
-												class="card-body"
-												v-if="
-													key !== 'id' &&
-													key !== 'middle_name' &&
-													key !== 'created_at' &&
-													key !== 'email'
-												"
-											>
-												<span
-													style="font-weight: 400"
-													>{{
-														formatVisitorInfo(key)
-													}}</span
-												>:
+									<div>
+										<span>
+											{{ visitorInfo.first_name }}
+											{{ visitorInfo?.middle_name }}
+											{{ visitorInfo.last_name }}
+										</span>
+									</div>
+									<div v-if="visitorInfo.address">
+										<span>
+											<Icons
+												class="icons"
+												v-model:icon="locationIcon"
+											/>
+										</span>
+										<span class="visitor-item">
+											{{ visitorInfo.address }}
+										</span>
+									</div>
+									<div
+										v-if="visitorInfo.email"
+										class="d-flex gap-3"
+									>
+										<div>
+											<span>
+												<Icons
+													class="icons"
+													v-model:icon="emailIcon"
+												/>
+											</span>
+											<span class="visitor-item">
+												{{ visitorInfo.email }}
+											</span>
+										</div>
 
-												<span
-													class="card-text fw-bold"
-													>{{ info }}</span
-												>
-											</div>
-										</li>
-									</ul>
+										<div>
+											<span>
+												<Icons
+													class="icons"
+													v-model:icon="phoneIcon"
+												/>
+											</span>
+											<span class="visitor-item">
+												{{ visitorInfo.msisdn }}
+											</span>
+										</div>
+									</div>
+									<div>
+										<span>
+											<Icons
+												class="icons"
+												v-model:icon="genderIcon"
+											/>
+										</span>
+										<span
+											style="text-transform: capitalize"
+											class="visitor-item"
+										>
+											{{ visitorInfo.gender }}
+										</span>
+									</div>
+								</div>
+								<div style="margin-left: auto">
+									<router-link
+										:to="{
+											name: 'edit-visitor',
+										}"
+										v-model:visitor-info="visitorInfo"
+									>
+										<button
+											type="button"
+											class="btn btn-outline-secondary"
+											style="
+												--bs-btn-font-size: 0.75rem;
+												padding: 0.25rem 2rem;
+											"
+										>
+											<Icons
+												style="
+													width: 1.1rem;
+													height: 1rem;
+												"
+												v-model:icon="edit"
+											/>
+										</button>
+									</router-link>
 								</div>
 							</div>
 						</div>
@@ -138,6 +173,11 @@ const showError = ref(false);
 
 const id = ref(route.params.id);
 const visitorInfo = ref("");
+
+const locationIcon = "mahali";
+const emailIcon = "email";
+const genderIcon = "adult";
+const phoneIcon = "device-smartphone";
 
 const columns = [
 	{ data: "date_time", title: "Date" },
@@ -247,7 +287,7 @@ const formatVisitorVisits = (visits) => {
 	height: 8rem;
 	padding: 0.5rem;
 	background-color: black;
-	border-radius: 50%;
+	border-radius: 0.5rem;
 	overflow: hidden;
 }
 
@@ -259,20 +299,14 @@ const formatVisitorVisits = (visits) => {
 
 .visitor-info {
 	margin-top: 0.5rem;
-}
-
-.visitor-info ul {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
-}
-
-.visitor-info li {
-	margin-bottom: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 
 .visitor-item {
-	color: gray;
+	font-weight: 400;
+	font-size: small;
 }
 
 .btn {
@@ -285,8 +319,9 @@ const formatVisitorVisits = (visits) => {
 .btn:hover path {
 	fill: white;
 }
-.editBtn svg {
-	height: 1.3rem !important;
-	margin: 0 !important;
+
+.icons {
+	width: 1.3rem;
+	height: 1rem !important;
 }
 </style>

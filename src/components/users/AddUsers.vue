@@ -303,15 +303,15 @@ const onSubmit = async () => {
 const fetchUser = async () => {
 	if (formStatus.startsWith("edit")) {
 		const id = breadCrumbs.value[1];
-		userInfo = await getSingleUser({ id });
-
+		const [user] = await getSingleUser({ id });
+		userInfo = user;
 		// update references for input fields
-		username.value = userInfo.username;
-		msisdn.value = userInfo.msisdn;
-		email.value = userInfo.email;
-		address.value = userInfo.address;
-		gender.value = userInfo.gender;
-		roles.value = userInfo.roles;
+		username.value = user.username;
+		msisdn.value = user.msisdn[0];
+		email.value = user.email;
+		address.value = user.address;
+		gender.value = user.gender;
+		roles.value = user.roles[0];
 	}
 };
 

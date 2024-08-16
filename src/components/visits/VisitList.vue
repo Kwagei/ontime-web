@@ -40,7 +40,11 @@
 
 <script setup>
 import { API_URL, updateDepartureTime } from "@/assets/js/index.js";
-import { formatDateTime, formatVisitData } from "@/assets/js/util.js";
+import {
+	formatDateTime,
+	formatDepartureTime,
+	formatVisitData,
+} from "@/assets/js/util.js";
 
 import { onMounted, ref, watch, computed } from "vue";
 import DataTable from "datatables.net-vue3";
@@ -170,6 +174,15 @@ const options = {
 	},
 
 	order: [[0, "desc"]],
+	createdRow: (row, data) => {
+		$(row).on("click", "button", () => {
+			const visitData = data;
+
+			if (visitData) {
+				handleCheckout(visitData.id, row);
+			}
+		});
+	},
 };
 
 const filterInfo = computed(() => {
@@ -208,27 +221,10 @@ const handleCheckout = async (id, tr) => {
 		status.html(`<span class="text-default fw-bold">Checked Out</span>`);
 
 		const departure_time = $(td[2]);
-		departure_time.text(time);
+		departure_time.text(formatDepartureTime(time));
 	} catch (error) {
 		console.error("Error updating departure time:", error);
 	}
-};
-
-const table = ref();
-
-const handleCheckoutDetail = () => {
-	const dt = table.value.dt;
-
-	dt.on("click", "button", function (event) {
-		const checkOutBtn = event.target;
-
-		const tr = $(checkOutBtn).closest("tr");
-		const visitData = dt.row(tr).data();
-
-		if (visitData) {
-			handleCheckout(visitData.id, tr);
-		}
-	});
 };
 
 watch(
@@ -257,10 +253,6 @@ const clearFilter = () => {
 	filterDates.value.to = "";
 	tableKey.value++;
 };
-
-onMounted(async () => {
-	handleCheckoutDetail();
-});
 </script>
 
 <style scoped>

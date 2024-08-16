@@ -249,6 +249,7 @@ import {
 	getHosts,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
+import { addClass, getElement, removeClass } from "@/assets/js/util";
 
 const events = ref(null);
 const options = ref([]);
@@ -290,7 +291,7 @@ onMounted(async () => {
 	(() => {
 		"use strict";
 
-		const form = document.querySelector(".needs-validation");
+		const form = getElement(".needs-validation");
 
 		form.addEventListener(
 			"submit",
@@ -300,7 +301,7 @@ onMounted(async () => {
 					event.stopPropagation();
 				}
 
-				form.classList.add("was-validated");
+				addClass(form, "was-validated");
 			},
 			false
 		);
@@ -381,7 +382,7 @@ const onSubmit = async () => {
 	const response = await registerVisit(visitData);
 
 	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-	myModal.show(document.querySelector("#toggleMyModal"));
+	myModal.show(getElement("#toggleMyModal"));
 	status.value = response.ok ? "success" : "danger";
 	message.value = response.result.message;
 	title.value = response.ok ? "Success" : "Error";
@@ -395,7 +396,7 @@ const onSubmit = async () => {
 };
 
 function visuallyHideModalBackdrop() {
-	const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
+	const modalsBackdrops = getElementAll(".modal-backdrop");
 
 	if (modalsBackdrops.length) {
 		modalsBackdrops.forEach((modal) =>
@@ -415,8 +416,8 @@ const resetForm = () => {
 	institution.value = "";
 
 	// Remove validation classes
-	const form = document.querySelector(".needs-validation");
-	form.classList.remove("was-validated");
+	const form = getElement(".needs-validation");
+	removeClass(form, "was-validated");
 };
 </script>
 

@@ -12,7 +12,7 @@
 					<Options />
 					<ul class="dropdown-menu boxShadow rounded">
 						<li
-							@click="exportEvents"
+							@click="displayExportModay"
 							id="export"
 							class="dropdown-item"
 						>
@@ -47,6 +47,11 @@
 		/>
 
 		<FilterModal @done="filterCompleted" />
+		<ExportModal
+			:exportFields="exportFields"
+			v-model:exportTitle="exportTitle"
+			@export="exportEvents"
+		/>
 	</div>
 </template>
 
@@ -61,7 +66,23 @@ const plusIcon = "add";
 import { ref } from "vue";
 import { csvExport, getEvents } from "../assets/js/index.js";
 import FilterModal from "@/components/modals/FilterModal.vue";
-import { showModal } from "@/assets/js/util";
+import ExportModal from "@/components/modals/ExportModal.vue";
+import { formatDateTime, showModal } from "@/assets/js/util";
+
+const exportTitle = defineModel("exportTitle");
+
+const exportFields = ref([
+	{ name: "Title", selected: false },
+	{ name: "Host", selected: false },
+	{ name: "Room", selected: false },
+	{ name: "Start Date", selected: false },
+	{ name: "End Date", selected: false },
+	{ name: "Facilitator", selected: false },
+	{ name: "Type", selected: false },
+	{ name: "Details", selected: false },
+]);
+
+exportTitle.value = "Events";
 
 const props = defineProps({
 	breadCrumbs: {
@@ -75,25 +96,38 @@ const filterDates = ref({
 	from: "",
 	to: "",
 });
+
 const totalEvents = defineModel("totalEvents");
 
-const exportEvents = async () => {
+const exportEvents = async (fields) => {
 	const { events } = await getEvents("", {
 		limit: totalEvents.value,
 	});
 
-	csvExport(
-		events.map((event) => {
-			delete event.room_id;
-			delete event.host_id;
-			return event;
-		})
-	);
+	events.forEach((event) => {
+		event.start_date = formatDateTime(event.start_date);
+		event.end_date = formatDateTime(event.end_date);
+	});
+
+	const selectedEvents = events.map((visit) => {
+		const data = {};
+		for (const field of fields) {
+			data[field] = visit[field];
+		}
+
+		return data;
+	});
+
+	csvExport(selectedEvents);
 };
 
 function displayFilterModal() {
-	setTimeout(() => showModal("#filterModal", "#modal-dialog"), 500);
+	showModal("#filterModal", "#modal-dialog");
 }
+
+const displayExportModay = () => {
+	showModal("#exportModal", "#modal-dialog");
+};
 
 function filterCompleted(newDates) {
 	// update date ranges, then it will be caught by watchers in events table

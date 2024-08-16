@@ -231,6 +231,7 @@ import {
 	getUsers,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
+import { addClass, formValidation, getElement } from "@/assets/js/util";
 
 const msisdn = ref("");
 const visitor = ref("");
@@ -260,27 +261,10 @@ const props = defineProps({
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
 
-onMounted(() => {
-	(() => {
-		"use strict";
+onMounted(async () => {
+	formValidation();
 
-		const forms = document.querySelectorAll(".needs-validation");
-
-		Array.prototype.slice.call(forms).forEach((form) => {
-			form.addEventListener(
-				"submit",
-				(event) => {
-					if (!form.checkValidity()) {
-						event.preventDefault();
-						event.stopPropagation();
-					}
-					form.classList.add("was-validated");
-				},
-				false
-			);
-		});
-	})();
-	getUserOptions();
+	await getUserOptions();
 });
 
 // function for inserting each username in the select element
@@ -360,29 +344,17 @@ const onSubmit = async () => {
 
 	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
 	if (!response.ok) {
-		myModal.show(document.querySelector("#toggleMyModal"));
+		myModal.show(getElement("#toggleMyModal"));
 		status.value = "danger";
 		message.value = response.result.message;
 		title.value = "Error";
 	} else {
-		myModal.show(document.querySelector("#toggleMyModal"));
+		myModal.show(getElement("#toggleMyModal"));
 		status.value = "success";
 		message.value = response.result.message;
 		title.value = "Success";
 	}
-
-	visuallyHideModalBackdrop();
 };
-
-function visuallyHideModalBackdrop() {
-	const modalsBackdrops = document.querySelectorAll(".modal-backdrop");
-
-	if (modalsBackdrops.length) {
-		modalsBackdrops.forEach((modal) =>
-			modal.classList.add("visually-hidden")
-		);
-	}
-}
 </script>
 
 <style scoped>

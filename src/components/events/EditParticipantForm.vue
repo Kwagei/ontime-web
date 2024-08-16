@@ -6,14 +6,18 @@
 		tabindex="-1"
 		aria-hidden="true"
 		aria-labelledby="editParticipantModalLabel"
+		style="z-index: 999999"
 	>
 		<div
 			class="modal-dialog modal-lg modal-dialog-centered"
 			id="editParticipantModalBody"
 		>
 			<div class="modal-content py-4 px-3 rounded">
+				<div class="text-center">
+					<h5 class="text-danger">{{ errorMessage }}</h5>
+				</div>
 				<div class="modal-header">
-					<h4>Edit Participant {{ participantIndex }}</h4>
+					<h4>Editing Participant {{ participantIndex }}</h4>
 					<button
 						type="button"
 						class="btn-close"
@@ -85,7 +89,7 @@
 									{{ validMsisdnMessage }}
 								</div>
 							</div>
-							<div id="emailHelp" class="form-text">
+							<div class="helpMessage form-text">
 								Phone number should start with 0. For example:
 								0778675908
 							</div>
@@ -129,7 +133,7 @@
 									{{ validEmailMessage }}
 								</div>
 							</div>
-							<div id="emailHelp" class="form-text">
+							<div class="helpMessage form-text">
 								Enter a valid email address. For example:
 								john12@gmail.com
 							</div>
@@ -177,9 +181,33 @@
 									Please provide an address.
 								</div>
 							</div>
-							<div id="emailHelp" class="form-text">
+							<div class="helpMessage form-text">
 								Enter descriptive address. For example: Congo
 								Town, Adjacent Satcom, Monrovia, Liberia
+							</div>
+						</div>
+
+						<!-- GENDER -->
+						<div class="col-md-6">
+							<label for="address" class="form-label is-required"
+								>Gender<span class="visually-hidden">
+									(required)</span
+								></label
+							>
+							<div class="input-group has-validation">
+								<select
+									class="form-select"
+									aria-label="Default select example"
+									required
+									v-model="gender"
+								>
+									<option selected></option>
+									<option value="male">Male</option>
+									<option value="female">Female</option>
+								</select>
+								<div class="invalid-feedback">
+									Please select a gender.
+								</div>
 							</div>
 						</div>
 
@@ -209,7 +237,14 @@
 
 <script setup>
 import { ref, watch, onMounted } from "vue";
-import { emailValidation, msisdnValidation } from "@/assets/js/util";
+import {
+	addClass,
+	emailValidation,
+	formValidation,
+	getElement,
+	msisdnValidation,
+	removeClass,
+} from "@/assets/js/util";
 
 const props = defineProps({
 	data: {
@@ -225,6 +260,7 @@ const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
 const address = ref("");
+const gender = ref("");
 
 const emit = defineEmits(["updated", "cancel"]);
 
@@ -240,10 +276,8 @@ function update() {
 		return;
 	}
 
-	const editParticipantModal = document.querySelector(
-		"#editParticipantModal"
-	);
-	editParticipantModal.classList.remove("show");
+	const editParticipantModal = getElement("#editParticipantModal");
+	removeClass(editParticipantModal, "show");
 	editParticipantModal.style.display = "none";
 
 	emit("updated", {
@@ -253,18 +287,24 @@ function update() {
 		address: address.value,
 		email: email.value,
 		msisdn: msisdn.value,
+		gender: gender.value,
 	});
 }
+
+const errorMessage = ref();
 
 watch(
 	() => props.data,
 	(n) => {
+		errorMessage.value = n.errorMessage;
+		participantIndex.value = n.idx + 1;
 		first_name.value = n.participant?.first_name;
 		middle_name.value = n.participant?.middle_name;
 		last_name.value = n.participant?.last_name;
 		msisdn.value = n.participant?.msisdn;
 		email.value = n.participant?.email;
 		address.value = n.participant?.address;
+		gender.value = n.participant?.gender;
 	}
 );
 
@@ -273,7 +313,7 @@ const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
 const validEmailMessage = ref("Please provide a valid email address");
 
-const contactValidation = (number) => {
+const validateMsisdn = (number) => {
 	if (!number) {
 		validMsisdn.value = false;
 		validMsisdnMessage.value = "Please provide a phone number";
@@ -297,7 +337,7 @@ watch(
 		if (!n) {
 			return;
 		}
-		contactValidation(n);
+		validateMsisdn(n);
 	}
 );
 
@@ -312,7 +352,6 @@ watch(
 );
 
 const validateEmail = (mail) => {
-	console.log({ mail });
 	if (!mail) {
 		validEmail.value = false;
 		validEmailMessage.value = "Please provide a valid email address";
@@ -329,18 +368,7 @@ const validateEmail = (mail) => {
 
 // Lifecycle Hooks
 onMounted(async () => {
-	const form = document.querySelector(".needs-validation");
-	form.addEventListener(
-		"submit",
-		(event) => {
-			if (!form.checkValidity()) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-			form.classList.add("was-validated");
-		},
-		false
-	);
+	formValidation();
 });
 </script>
 

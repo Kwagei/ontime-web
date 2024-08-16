@@ -11,7 +11,7 @@
 					<Options />
 					<ul class="dropdown-menu boxShadow rounded">
 						<li
-							@click="exportVisitors"
+							@click="displayExportModay"
 							id="export"
 							class="dropdown-item"
 						>
@@ -31,7 +31,7 @@
 					<button
 						id="addVisitorBtn"
 						type="button"
-						class="btn btn-primary px-5"
+						class="btn btn-primary"
 					>
 						<Icons v-model:icon="add" />
 						New
@@ -47,6 +47,11 @@
 		/>
 
 		<FilterModal @done="filterCompleted" />
+		<ExportModal
+			:exportFields="exportFields"
+			v-model:exportTitle="exportTitle"
+			@export="exportVisitors"
+		/>
 
 		<RouterView :breadCrumbs="breadCrumbs" />
 	</div>
@@ -65,17 +70,41 @@ import { RouterLink, RouterView } from "vue-router";
 import { csvExport, getVisitors } from "../assets/js/index.js";
 import { showModal } from "@/assets/js/util";
 import FilterModal from "@/components/modals/FilterModal.vue";
+import ExportModal from "@/components/modals/ExportModal.vue";
 
 const totalVisitors = defineModel("totalVisitors");
 const breadCrumbs = defineModel("breadCrumbs");
 const refresh = defineModel("refresh");
+const exportFields = ref([
+	{ name: "First name", selected: false },
+	{ name: "Middle name", selected: false },
+	{ name: "Last name", selected: false },
+	{ name: "Phone number", selected: false },
+	{ name: "Email", selected: false },
+	{ name: "Address", selected: false },
+]);
+const exportTitle = defineModel("exportTitle");
+exportTitle.value = "Visitors";
 
-const exportVisitors = async () => {
+const exportVisitors = async (fields) => {
 	const { data: visitors } = await getVisitors({
 		limit: totalVisitors.value,
 	});
 
-	csvExport(visitors);
+	const selectedVisitors = visitors.map((visitor) => {
+		const data = {};
+		for (const field of fields) {
+			if (field === "phone_number") {
+				data[field] = `0${visitor.msisdn.slice(3)}`;
+			} else {
+				data[field] = visitor[field];
+			}
+		}
+
+		return data;
+	});
+
+	csvExport(selectedVisitors);
 };
 
 const filterDates = ref({
@@ -83,9 +112,13 @@ const filterDates = ref({
 	to: "",
 });
 
-function displayFilterModal() {
+const displayFilterModal = () => {
 	showModal("#filterModal", "#modal-dialog");
-}
+};
+
+const displayExportModay = () => {
+	showModal("#exportModal", "#modal-dialog");
+};
 
 // update date ranges, then it will be caught by watchers in visitors table
 const filterCompleted = (newDates) => {

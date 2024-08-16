@@ -84,7 +84,13 @@ import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import Modal from "./modals/AlertModal.vue";
 import { registerRoom, editRoom, getRooms } from "@/assets/js/index.js";
-import { showModal } from "@/assets/js/util.js";
+import {
+	addClass,
+	formValidation,
+	getElement,
+	removeClass,
+	showModal,
+} from "@/assets/js/util.js";
 // Route and State
 const route = useRoute();
 const router = useRouter();
@@ -153,26 +159,14 @@ const resetForm = () => {
 	buttonLabel.value = "Save";
 
 	// Remove validation classes
-	const form = document.querySelector(".needs-validation");
-	form.classList.remove("was-validated");
+	const form = getElement(".needs-validation");
+	removeClass(form, "was-validated");
 };
 
 // Lifecycle Hooks
-onMounted(() => {
-	fetchRoom();
-
-	const form = document.querySelector(".needs-validation");
-	form.addEventListener(
-		"submit",
-		(event) => {
-			if (!form.checkValidity()) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-			form.classList.add("was-validated");
-		},
-		false
-	);
+onMounted(async () => {
+	formValidation();
+	await fetchRoom();
 });
 </script>
 

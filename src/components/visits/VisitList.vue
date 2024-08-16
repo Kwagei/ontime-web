@@ -40,7 +40,7 @@
 
 <script setup>
 import { API_URL, updateDepartureTime } from "@/assets/js/index.js";
-import { formatDateTime } from "@/assets/js/util.js";
+import { formatDateTime, formatVisitData } from "@/assets/js/util.js";
 
 import { onMounted, ref, watch, computed } from "vue";
 import DataTable from "datatables.net-vue3";
@@ -112,21 +112,24 @@ const options = {
 			};
 		},
 		dataSrc: (json) => {
-			const { visits, totalLength } = json.data;
-
 			showError.value = false;
-			totalVisits.value = totalLength;
+			refresh.value = false;
+
+			const { visits, totalLength } = json.data;
 
 			json.recordsTotal = totalLength;
 			json.recordsFiltered =
 				dashboardTableData.value.recordsFiltered === 0
 					? 0
 					: totalLength;
-			return formatData(visits);
+			totalVisits.value = totalLength;
+
+			return formatVisitData(visits);
 		},
 		error: (error) => {
 			console.log("Error fetching data:", error);
 			showError.value = true;
+			refresh.value = false;
 		},
 	},
 	lengthMenu: dashboardTableData.value.lengthMenu || [10, 25, 50, 100],
@@ -144,7 +147,8 @@ const options = {
                         data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasExample"
                     aria-controls="offcanvasExample">
-                    Add Visit
+                   <svg style="width: 1rem; height: 2rem;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" fill-rule="evenodd" d="M85 40H60V15a5 5 0 00-5-5H45a5 5 0 00-5 5v25H15a5 5 0 00-5 5v10a5 5 0 005 5h25v25a5 5 0 005 5h10a5 5 0 005-5V60h25a5 5 0 005-5V45a5 5 0 00-5-5"/></svg>
+					New
                 </button>
 			</div>
 		`,
@@ -179,8 +183,6 @@ const filterInfo = computed(() => {
 			: ""
 	} `;
 });
-
-const MAX_ITEMS_LEN = 30;
 
 // function to update departure time
 const checkout = async (id) => {
@@ -227,38 +229,6 @@ const handleCheckoutDetail = () => {
 			handleCheckout(visitData.id, tr);
 		}
 	});
-};
-
-const formatData = (visits) => {
-	return visits.map((visit) => {
-		if (visit.date_time) {
-			visit.date_time = formatDateTime(visit.date_time);
-		}
-
-		if (Array.isArray(visit.items)) {
-			visit.items = formatItems(visit.items);
-		}
-
-		if (visit.purpose) {
-			const purpose = visit.purpose.split(" ");
-			visit.purpose =
-				purpose.length > MAX_ITEMS_LEN
-					? `${purpose.slice(0, MAX_ITEMS_LEN).join(" ")}...`
-					: visit.purpose;
-		}
-
-		return {
-			...visit,
-			visitor: `${visit.first_name} ${visit.last_name}`,
-		};
-	});
-};
-
-const formatItems = (belonging) => {
-	const items = belonging.join(", ");
-	return items.length > MAX_ITEMS_LEN
-		? `${items.slice(0, MAX_ITEMS_LEN)}...`
-		: items;
 };
 
 watch(

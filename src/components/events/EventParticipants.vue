@@ -37,6 +37,9 @@ const emit = defineEmits(["switch"]);
 
 let allParticipants = [];
 
+const refresh = defineModel("refresh");
+const tableKey = ref(0);
+
 DataTable.use(DataTablesCore);
 
 const columns = [
@@ -79,13 +82,14 @@ const options = {
 			};
 		},
 		dataSrc: (json) => {
+			showError.value = false;
+			refresh.value = false;
+
 			const { participants, totalLength } = json.data;
 
 			json.recordsTotal = totalLength;
 			json.recordsFiltered = totalLength;
 			totalEventParticipants.value = totalLength;
-
-			console.log(participants);
 
 			participants.forEach((participant) => {
 				participant.msisdn = participant.msisdn
@@ -100,6 +104,7 @@ const options = {
 		error: (error) => {
 			console.log("Error fetching data:", error.responseJSON);
 			showError.value = true;
+			refresh.value = false;
 		},
 	},
 	responsive: true,
@@ -115,7 +120,8 @@ const options = {
 					class="btn btn-secondary" 
 					onclick="document.getElementById('addParticipantBtn').click()"
 				>
-					Add Participant
+					<svg style="width: 1rem; height: 2rem;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" fill-rule="evenodd" d="M85 40H60V15a5 5 0 00-5-5H45a5 5 0 00-5 5v25H15a5 5 0 00-5 5v10a5 5 0 005 5h25v25a5 5 0 005 5h10a5 5 0 005-5V60h25a5 5 0 005-5V45a5 5 0 00-5-5"/></svg>    
+                    New  
 				</button>
 			</div>
         `,
@@ -159,9 +165,6 @@ const handleEventDetail = () => {
 function displayEventPage(eventId) {
 	router.push({ name: "specific-event", params: { id: eventId } });
 }
-
-const refresh = defineModel("refresh");
-const tableKey = ref(0);
 
 watch(
 	() => refresh.value,

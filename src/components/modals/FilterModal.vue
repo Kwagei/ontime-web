@@ -11,7 +11,7 @@
 			class="modal-dialog modal-lg modal-dialog-centered"
 			id="modal-dialog"
 		>
-			<div class="modal-content py-4 px-3">
+			<div class="modal-content py-4 px-3 rounded">
 				<div class="modal-header mb-3">
 					<span class="fw-bold fs-5">Date Range</span>
 					<button

@@ -109,7 +109,7 @@
 							{{ validMsisdnMessage }}
 						</div>
 					</div>
-					<div id="emailHelp" class="form-text">
+					<div class="helpMessage form-text">
 						For example: 0778456789
 					</div>
 				</div>
@@ -155,7 +155,14 @@ import { useRoute } from "vue-router";
 import BreadCrumbs from "@/components/BreadCrumbs.vue";
 import Modal from "@/components/modals/AlertModal.vue";
 import { registerHost, editHost, getHosts } from "@/assets/js/index.js";
-import { msisdnValidation, showModal } from "@/assets/js/util.js";
+import {
+	addClass,
+	formValidation,
+	getElement,
+	msisdnValidation,
+	removeClass,
+	showModal,
+} from "@/assets/js/util.js";
 import router from "@/router";
 
 // Route and State
@@ -233,7 +240,7 @@ const fetchHost = async () => {
 const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
 
-const contactValidation = () => {
+const validateMsisdn = () => {
 	if (!msisdn.value) {
 		validMsisdn.value = false;
 		validMsisdnMessage.value = "Please provide a phone number";
@@ -253,7 +260,7 @@ const contactValidation = () => {
 watch(
 	() => msisdn.value,
 	(n) => {
-		contactValidation(n);
+		validateMsisdn(n);
 	}
 );
 
@@ -264,26 +271,15 @@ const resetForm = () => {
 	buttonLabel.value = "Save";
 
 	// Remove validation classes
-	const form = document.querySelector(".needs-validation");
-	form.classList.remove("was-validated");
+	const form = getElement(".needs-validation");
+	removeClass(form, "was-validated");
 };
 
 // Lifecycle Hooks
 onMounted(() => {
 	fetchHost();
 
-	const form = document.querySelector(".needs-validation");
-	form.addEventListener(
-		"submit",
-		(event) => {
-			if (!form.checkValidity()) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-			form.classList.add("was-validated");
-		},
-		false
-	);
+	formValidation();
 });
 </script>
 

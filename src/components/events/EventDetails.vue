@@ -2,7 +2,7 @@
 	<div class="d-flex align-items-center flex-column">
 		<div class="w-100 d-flex justify-content-between gap-4 pt-3">
 			<BreadCrumbs :breadCrumbs="['events', event.title]" />
-			<div class="d-flex" style="gap: 0.521rem">
+			<div class="d-flex mb-3" style="gap: 0.521rem">
 				<RefreshList @click="refresh = true" />
 
 				<div class="dropdown">
@@ -18,7 +18,7 @@
 						<li
 							id="export-participants"
 							class="dropdown-item"
-							@click="exportEventParticipants"
+							@click="displayExportModay"
 						>
 							Export Participants
 						</li>
@@ -50,44 +50,47 @@
 			</div>
 		</div>
 		<div class="w-100 d-flex justify-content-between gap-4">
-			<div
-				class="d-flex justify-content-between mt-3 gap-4 mx-auto"
-				style="width: 70%"
-			>
+			<div class="d-flex justify-content-between mt-3 gap-4 mx-auto w-50">
 				<div class="d-flex flex-column align-items-start">
 					<span class="fs-6">Facilitator</span>
-					<h4>{{ event.facilitator }}</h4>
+					<h6>{{ event.facilitator }}</h6>
 					<span class="fs-6">Type</span>
-					<h4>{{ event.type }}</h4>
+					<h6>{{ event.type }}</h6>
 					<span class="fs-6">Host</span>
-					<h4>{{ event.host }}</h4>
+					<h6>{{ event.host }}</h6>
 					<span class="fs-6">Host Type</span>
-					<h4>{{ event.host_type }}</h4>
+					<h6>{{ event.host_type }}</h6>
 				</div>
 				<div class="d-flex flex-column align-items-end">
 					<span class="fs-6">Start Date</span>
-					<h4>
+					<h6>
 						{{ formatDateTime(event.start_date, { date: true }) }}
-					</h4>
+					</h6>
 					<span class="fs-6">End Date</span>
-					<h4>
+					<h6>
 						{{ formatDateTime(event.end_date, { date: true }) }}
-					</h4>
+					</h6>
 					<span class="fs-6">Room</span>
-					<h4>{{ event.room }}</h4>
+					<h6>{{ event.room }}</h6>
 					<span class="fs-6">Created At</span>
-					<h4>
+					<h6>
 						{{ formatDateTime(event.created_at, { date: true }) }}
-					</h4>
+					</h6>
 				</div>
 			</div>
 			<div v-show="event.details" class="border border-1"></div>
 			<div v-show="event.details" class="w-50 pt-2 text-left flex-grow-1">
 				<span class="fs-6">Details</span>
-				<h5 class="mt-2 mb-0">{{ event.details }}</h5>
+				<h6 class="mt-2 mb-0">{{ event.details }}</h6>
 			</div>
 		</div>
 		<EventParticipants v-model:refresh="refresh" />
+
+		<ExportModal
+			:exportFields="exportFields"
+			v-model:exportTitle="exportTitle"
+			@export="exportEventParticipants"
+		/>
 	</div>
 </template>
 
@@ -95,31 +98,48 @@
 import BreadCrumbs from "../BreadCrumbs.vue";
 import EventParticipants from "./EventParticipants.vue";
 import Icons from "../Icons.vue";
-import { formatDateTime } from "@/assets/js/util.js";
+import { formatDateTime, showModal } from "@/assets/js/util.js";
 import RefreshList from "../RefreshList.vue";
 import { csvExport, getParticipants } from "@/assets/js";
 import { ref, onMounted } from "vue";
 import Options from "../Options.vue";
+import ExportModal from "../modals/ExportModal.vue";
 
 const add = "add";
 const refresh = defineModel("refresh");
 const totalEventParticipants = defineModel("totalEventParticipants");
 
-const exportEventParticipants = async () => {
+const exportFields = ref([
+	{ name: "First name", selected: false },
+	{ name: "Middle name", selected: false },
+	{ name: "Last name", selected: false },
+	{ name: "Phone number", selected: false },
+	{ name: "Email", selected: false },
+	{ name: "Address", selected: false },
+]);
+const exportTitle = defineModel("exportTitle");
+
+exportTitle.value = "Participants";
+
+const exportEventParticipants = async (fields) => {
 	const { participants } = await getParticipants(props.event.id, {
 		limit: totalEventParticipants.value,
 	});
 
-	csvExport(
-		participants.map((participant) => {
-			participant.event_title = props.event.title;
-			delete participant.event_id;
-			delete participant.participant_id;
-			delete participant.visit_date_time;
-			delete participant.visit_departure_time;
-			return participant;
-		})
-	);
+	const selectedParticipants = participants.map((participant) => {
+		const data = {};
+		for (const field of fields) {
+			if (field === "phone_number") {
+				data[field] = `0${participant.msisdn.slice(3)}`;
+			} else {
+				data[field] = participant[field];
+			}
+		}
+
+		return data;
+	});
+
+	csvExport(selectedParticipants);
 };
 
 const props = defineProps({
@@ -130,6 +150,10 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["editEvent", "switch"]);
+
+const displayExportModay = () => {
+	showModal("#exportModal", "#modal-dialog");
+};
 </script>
 
 <style scoped>

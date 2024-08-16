@@ -104,6 +104,7 @@ import { RouterLink } from "vue-router";
 import VisitList from "@/components/visits/VisitList.vue";
 import Icons from "@/components/Icons.vue";
 import { onMounted, ref, watch } from "vue";
+import { getElement } from "@/assets/js/util";
 
 const visitIcon = "house";
 const eventIcon = "calendar-event-agenda";
@@ -150,7 +151,7 @@ const getTodaysEvents = (events) => {
 };
 
 onMounted(() => {
-	document.querySelector(".dt-paging").style.display = "none";
+	getElement(".dt-paging").style.display = "none";
 });
 </script>
 

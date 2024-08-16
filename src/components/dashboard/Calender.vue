@@ -38,8 +38,19 @@ const formatEvents = (events) => {
 			id: event.id,
 			description: event.details,
 			location: event.room,
+			color: "orange",
 		};
 	});
+};
+
+/**
+ * Generating random colors for user's friends
+ */
+const generateEventColor = () => {
+	return `rgb(${new Array(3)
+		.fill()
+		.map(() => Math.floor(Math.random() * 256))
+		.join(", ")})`;
 };
 
 const formatEventDateTime = (dateTime) => {

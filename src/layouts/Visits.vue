@@ -12,7 +12,7 @@
 					<Options />
 					<ul class="dropdown-menu boxShadow rounded">
 						<li
-							@click="exportVisits"
+							@click="displayExportModay"
 							id="export"
 							class="dropdown-item"
 						>
@@ -103,10 +103,15 @@
 		<VisitList
 			v-model:refresh="refresh"
 			v-model:filterDates="filterDates"
+			v-model:totalVisits="totalVisits"
 		/>
 
 		<FilterModal @done="filterCompleted" />
-
+		<ExportModal
+			:exportFields="exportFields"
+			v-model:exportTitle="exportTitle"
+			@export="exportVisits"
+		/>
 		<RouterView />
 	</div>
 </template>
@@ -124,32 +129,51 @@ const add = "add";
 import { RouterLink, RouterView } from "vue-router";
 import { csvExport, getVisits } from "../assets/js/index.js";
 import FilterModal from "@/components/modals/FilterModal.vue";
-import { showModal } from "@/assets/js/util";
+import ExportModal from "@/components/modals/ExportModal.vue";
+import { formatVisitData, showModal } from "@/assets/js/util";
 
 const breadCrumbs = defineModel("breadCrumbs");
 const refresh = defineModel("refresh");
-
 const totalVisits = defineModel("totalVisits");
+const exportTitle = defineModel("exportTitle");
 
-const exportVisits = async () => {
+const exportFields = ref([
+	{ name: "Date time", selected: false },
+	{ name: "Visitor", selected: false },
+	{ name: "Purpose", selected: false },
+	{ name: "Items", selected: false },
+	{ name: "Gender", selected: false },
+	{ name: "Room name", selected: false },
+	{ name: "Host name", selected: false },
+	{ name: "Phone number", selected: false },
+	{ name: "Departure time", selected: false },
+]);
+
+exportTitle.value = "Visits";
+
+const exportVisits = async (fields) => {
 	const { visits } = await getVisits({
 		limit: totalVisits.value,
 	});
 
-	csvExport(
-		visits.map((visit) => {
-			visit.items = formatItems(visit.items);
-			delete visit.room_id;
-			delete visit.host_id;
-			delete visit.participant_id;
-			return visit;
-		})
-	);
-};
+	const formattedVisitData = formatVisitData(visits);
 
-const formatItems = (belonging) => {
-	const items = belonging.join(", ");
-	return items.length > 30 ? `${items.slice(0, 30)}...` : items;
+	const selectedVisits = formattedVisitData.map((visit) => {
+		const data = {};
+		for (const field of fields) {
+			if (field === "phone_number") {
+				data[field] = `0${visit.msisdn.slice(3)}`;
+			} else if (field === "items") {
+				data[field] = visit[field].join(", ");
+			} else {
+				data[field] = visit[field];
+			}
+		}
+
+		return data;
+	});
+
+	csvExport(selectedVisits);
 };
 
 const filterDates = ref({
@@ -160,6 +184,10 @@ const filterDates = ref({
 function displayFilterModal() {
 	showModal("#filterModal", "#modal-dialog");
 }
+
+const displayExportModay = () => {
+	showModal("#exportModal", "#modal-dialog");
+};
 
 // update date ranges, then it will be caught by watchers in visits table
 function filterCompleted(newDates) {

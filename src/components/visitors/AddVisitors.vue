@@ -1,5 +1,5 @@
 <template>
-	<Modal :data="alert" />
+	<AlertModal :data="alert" />
 	<div id="visitor-view" class="d-flex flex-column container">
 		<div
 			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -68,7 +68,7 @@
 							{{ validMsisdnMessage }}
 						</div>
 					</div>
-					<div id="emailHelp" class="form-text">
+					<div class="helpMessage form-text">
 						Phone number should start with 0. For example:
 						0778675908
 					</div>
@@ -109,7 +109,7 @@
 							{{ validEmailMessage }}
 						</div>
 					</div>
-					<div id="emailHelp" class="form-text">
+					<div class="helpMessage form-text">
 						Enter a valid email address. For example:
 						john12@gmail.com
 					</div>
@@ -155,9 +155,33 @@
 							Please provide an address.
 						</div>
 					</div>
-					<div id="emailHelp" class="form-text">
+					<div class="helpMessage form-text">
 						Enter descriptive address. For example: Congo Town,
 						Adjacent Satcom, Monrovia, Liberia
+					</div>
+				</div>
+
+				<!-- GENDER -->
+				<div class="col-md-6">
+					<label for="address" class="form-label is-required"
+						>Gender<span class="visually-hidden">
+							(required)</span
+						></label
+					>
+					<div class="input-group has-validation">
+						<select
+							class="form-select"
+							aria-label="Default select example"
+							required
+							v-model="gender"
+						>
+							<option selected></option>
+							<option value="male">Male</option>
+							<option value="female">Female</option>
+						</select>
+						<div class="invalid-feedback">
+							Please select a gender.
+						</div>
 					</div>
 				</div>
 
@@ -180,7 +204,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
-import Modal from "../modals/AlertModal.vue";
+import AlertModal from "../modals/AlertModal.vue";
 import {
 	registerVisitor,
 	editVisitor,
@@ -190,6 +214,9 @@ import {
 	msisdnValidation,
 	emailValidation,
 	showModal,
+	getElement,
+	removeClass,
+	formValidation,
 } from "@/assets/js/util.js";
 
 // Route and State
@@ -203,6 +230,7 @@ const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
 const address = ref("");
+const gender = ref("");
 
 const alert = ref({
 	status: "",
@@ -227,7 +255,8 @@ const onSubmit = async () => {
 		!first_name.value ||
 		!last_name.value ||
 		!msisdn.value ||
-		!address.value
+		!address.value ||
+		!gender.value
 	) {
 		return;
 	}
@@ -244,6 +273,7 @@ const onSubmit = async () => {
 
 		email: email.value,
 		address: address.value,
+		gender: gender.value,
 	};
 
 	const response = formStatus.startsWith("new")
@@ -273,6 +303,7 @@ const fetchVisitor = async () => {
 		msisdn.value = visitorInfo.msisdn;
 		email.value = visitorInfo.email;
 		address.value = visitorInfo.address;
+		gender.value = visitorInfo.gender;
 	}
 };
 
@@ -281,7 +312,7 @@ const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
 const validEmailMessage = ref("Please provide a valid email address");
 
-const contactValidation = (number) => {
+const validateMsisdn = (number) => {
 	if (!number) {
 		validMsisdn.value = false;
 		validMsisdnMessage.value = "Please provide a phone number";
@@ -302,7 +333,7 @@ const contactValidation = (number) => {
 watch(
 	() => msisdn.value,
 	(n) => {
-		contactValidation(n);
+		validateMsisdn(n);
 	}
 );
 
@@ -335,28 +366,17 @@ const resetForm = () => {
 	msisdn.value = "";
 	email.value = "";
 	address.value = "";
+	gender.value = "";
 
 	// Remove validation classes
-	const form = document.querySelector(".needs-validation");
-	form.classList.remove("was-validated");
+	const form = getElement(".needs-validation");
+	removeClass(form, "was-validated");
 };
 
 // Lifecycle Hooks
 onMounted(async () => {
 	await fetchVisitor();
-
-	const form = document.querySelector(".needs-validation");
-	form.addEventListener(
-		"submit",
-		(event) => {
-			if (!form.checkValidity()) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-			form.classList.add("was-validated");
-		},
-		false
-	);
+	formValidation();
 });
 </script>
 
@@ -382,16 +402,5 @@ svg {
 
 #visitor-view {
 	gap: 1.5rem;
-}
-
-#emailHelp {
-	font-weight: 400;
-}
-
-@media (max-width: 1440px) {
-	#emailHelp {
-		font-size: small;
-		font-weight: 400;
-	}
 }
 </style>

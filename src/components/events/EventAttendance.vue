@@ -7,7 +7,7 @@
 			/>
 		</div>
 		<div class="d-flex" style="gap: 0.521rem">
-			<div class="dropdown">
+			<div class="dropdown d-none">
 				<Options />
 				<ul class="dropdown-menu boxShadow rounded">
 					<li
@@ -61,7 +61,7 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
-import { formatDateTime } from "@/assets/js/util";
+import { formatDateTime, formatDepartureTime } from "@/assets/js/util";
 import { RouterLink } from "vue-router";
 import Options from "../Options.vue";
 import Icons from "../Icons.vue";
@@ -72,6 +72,7 @@ const props = defineProps({
 });
 
 const eventId = ref(props.eventId);
+const refresh = defineModel("refresh");
 const showError = ref(false);
 const attendanceList = ref("");
 
@@ -109,6 +110,9 @@ const options = {
 			};
 		},
 		dataSrc: (json) => {
+			showError.value = false;
+			refresh.value = false;
+
 			const { participants } = json.data;
 
 			// format each participant record
@@ -129,20 +133,9 @@ const options = {
 
 				// format departure time if any
 				if (participant.visit_departure_time) {
-					// Destructuring the hour, minutes and seconds from the departure time.
-					const [hour, minutes, seconds] =
-						participant.visit_departure_time.split(":");
-
-					// Create a custom date and add the departure time to be able to format the date time to get only time format
-					const departure_time = new Date();
-					departure_time.setHours(hour, minutes, seconds);
-
-					participant.visit_departure_time = formatDateTime(
-						departure_time,
-						{
-							time: true,
-						}
-					);
+					const time = participant.visit_departure_time;
+					participant.visit_departure_time =
+						formatDepartureTime(time);
 				}
 
 				// format items if any
@@ -166,6 +159,7 @@ const options = {
 		error: (error) => {
 			console.log("Error fetching data:", error.responseJSON);
 			showError.value = true;
+			refresh.value = false;
 		},
 	},
 	responsive: true,

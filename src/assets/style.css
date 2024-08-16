@@ -109,3 +109,27 @@ a {
 .boxShadow {
 	box-shadow: 0 4px 4px rgba(0 0 0 / 6%), 0 1px 4px rgba(0 0 0 / 18%);
 }
+
+.helpMessage {
+	font-weight: 400;
+	font-size: small;
+}
+
+.multiselect-form-control {
+	display: block !important;
+	width: 100% !important;
+	padding: calc(1rem - 1px) 1rem calc(0.5rem + 1px) !important;
+	font-family: inherit !important;
+	font-size: 1rem !important;
+	font-weight: 700 !important;
+	line-height: 1.25 !important;
+	color: var(--bs-body-color) !important;
+	-webkit-appearance: none !important;
+	-moz-appearance: none !important;
+	appearance: none !important;
+	background-color: var(--bs-body-bg) !important;
+	background-clip: padding-box !important;
+	border: var(--bs-border-width) solid var(--bs-border-color-subtle) !important;
+	border-radius: 0 !important;
+	transition: border-color 0.2s ease-in-out !important;
+}

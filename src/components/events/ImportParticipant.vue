@@ -163,7 +163,7 @@ async function onParticipantUpdate(updatedParticipant) {
 }
 
 async function postParticipants() {
-	$("body").css("pointer-events", "none");
+	// $("body").css("pointer-events", "none");
 
 	const data = {
 		event_id: props.eventId,
@@ -178,22 +178,24 @@ async function postParticipants() {
 			$("body").css("pointer-events", "auto");
 			emit("participantsImported", {
 				status: "success",
-				title: "Participants Imported",
+				message: "Participants Successfully Imported",
 				pageLink: `/events/${eventId}`,
 			});
 		});
-		$("body").css("pointer-events", "auto");
+		// $("body").css("pointer-events", "auto");
 	} catch (error) {
-		$("body").css("pointer-events", "auto");
+		// $("body").css("pointer-events", "auto");
 
 		// only show the modal if there was an actual error
 		if (error.responseJSON.status === 500) {
 			emit("errorImportingParticipants", {
 				status: "danger",
-				title: "Unable to Import Participants, try again",
+				message: "Unable to Import Participants, try again",
 			});
 			return;
 		}
+
+		showModal("#editParticipantModal", "#editParticipantModalBody");
 
 		// otherwise show the form to edit the specific participant with
 		// issue if it's a conflict or invalid data issue
@@ -205,10 +207,10 @@ async function postParticipants() {
 		};
 
 		// stop user from clicking around until the participant has been edited
-		$("body").css("pointer-events", "none");
+		// $("body").css("pointer-events", "none");
 
 		// allow them to only click the form
-		$("#editParticipantFormWrapper").css("pointer-events", "auto");
+		// $("#editParticipantFormWrapper").css("pointer-events", "auto");
 	}
 }
 

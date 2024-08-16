@@ -19,7 +19,7 @@
 		</div>
 		<div id="importedParticipantsGridContainer">
 			<div
-				class="p-3 boxShadow"
+				class="p-3 boxShadow bg-white rounded"
 				v-if="
 					Array.isArray(participantsToDisplay) &&
 					!!participantsToDisplay.length
@@ -66,6 +66,9 @@
 						<strong
 							>0{{ participant.msisdn.slice(3) }}</strong
 						></span
+					>
+					<span
+						>Gender: <strong>{{ participant.gender }}</strong></span
 					>
 				</div>
 			</div>

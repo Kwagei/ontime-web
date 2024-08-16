@@ -87,9 +87,42 @@ export const emailValidation = (mail) => {
 	}
 };
 
+/**
+ * Validating a valid password. If password is valid return true else return false.
+ * Password should be greater than 4 character and it should include atleast one Upper case letter, Lower case letter, digit and symbol.
+ *
+ * @param {String} password - User password to be validated.
+ * @returns {Boolean} - True or False
+ */
+
+export const passwordValidation = (password) => {
+	const upperCase = /[A-Z]/,
+		lowerCase = /[a-z]/,
+		digitCase = /[0-9]/,
+		symbolCase = /[.!#$%&'*+/=?^/_`{|}~-]/;
+	let upper, lower, digit, symbol;
+
+	const minPasswordLen = 5;
+
+	if (password.length >= minPasswordLen) {
+		for (const char of password) {
+			if (char.match(upperCase)) upper = true;
+			if (char.match(lowerCase)) lower = true;
+			if (char.match(digitCase)) digit = true;
+			if (char.match(symbolCase)) symbol = true;
+			if (upper && lower && digit && symbol) {
+				return { valid: true };
+			}
+		}
+	}
+
+	return { valid: false, message: "Invalid password!" };
+};
+
 export const showModal = (parent = "#alertModal", child = "alertModalBody") => {
 	const modal = new boosted.Modal(parent, { backdrop: false });
-	modal.show(document.querySelector(child));
+
+	modal.show(getElement(child));
 };
 
 export const formatDateTime = (dateTime, format = {}) => {
@@ -137,3 +170,149 @@ export function validateFromAndToDate(from, to) {
 
 	return newFrom > newTo ? false : true;
 }
+
+export const formatDepartureTime = (time) => {
+	// Destructuring the hour, minutes and seconds from the departure time.
+	const [hour, minutes, seconds] = time.split(":");
+
+	// Create a custom date and add the departure time to be able to format the date time to get only time format
+	const departure_time = new Date();
+	departure_time.setHours(hour, minutes, seconds);
+
+	return formatDateTime(departure_time, {
+		time: true,
+	});
+};
+
+const MAX_ITEMS_LEN = 30;
+const MAX_DETAIL_LEN = 30;
+
+export const formatVisitData = (visits) => {
+	return visits.map((visit) => {
+		if (visit.date_time) {
+			visit.date_time = formatDateTime(visit.date_time);
+		}
+
+		if (visit.items.length) {
+			visit.items = formatItems(visit.items);
+		}
+
+		if (visit.purpose) {
+			const purpose = visit.purpose.split(" ");
+			visit.purpose =
+				purpose.length > MAX_ITEMS_LEN
+					? `${purpose.slice(0, MAX_ITEMS_LEN).join(" ")}...`
+					: visit.purpose;
+		}
+
+		if (visit.departure_time) {
+			visit.departure_time = formatDepartureTime(visit.departure_time);
+		}
+
+		return {
+			...visit,
+			visitor: `${visit.first_name} ${visit.last_name}`,
+		};
+	});
+};
+
+export const formatItems = (belonging) => {
+	const items = belonging.join(", ");
+	return items.length > MAX_ITEMS_LEN
+		? `${items.slice(0, MAX_ITEMS_LEN)}...`
+		: items;
+};
+
+export const formatDetails = (detail) => {
+	return detail.length > MAX_DETAIL_LEN
+		? `${detail.slice(0, MAX_DETAIL_LEN)}...`
+		: detail;
+};
+
+// async function signIn(result) {
+// 	const id = await postUser(result, "signIn");
+// 	console.log({ id });
+// 	if (id) {
+// 		warning("Login Successfully!", "success", "#83d61631");
+// 		setTimeout(() => redirect("chat.html", id), 2000);
+// 	} else {
+// 		warning("Wrong email or password!", "danger", "#ea060629");
+// 	}
+// }
+
+// /**
+//  * Displays a warning message with the specified content, class name, and background color.
+//  * The message will be automatically hidden after 10 seconds.
+//  *
+//  * @param {string} message - The message text to display.
+//  * @param {string} className - The CSS class name to apply to the warning message element.
+//  * @param {string} bgColor - The background color to apply to the warning message container.
+//  */
+// export const warning = (message, className, bgColor) => {
+// 	const warningMessageContainer = getElement(".message");
+
+// 	warningMessageContainer.innerHTML = `<span class="${className}">${message}</span>`;
+// 	warningMessageContainer.style.backgroundColor = bgColor;
+// 	removeClass(warningMessageContainer, "hide");
+// };
+
+/**
+ * Retrieves an element from the document by matching its selector value.
+ *
+ * @param {string} selector - The value of the selector to match when retrieving the element.
+ * @returns {Element | null} - The element found with the matching selector value, or null if no element is found.
+ */
+export const getElement = (selector) => document.querySelector(selector);
+
+/**
+ * Retrieves a collection of elements from the document based on the provided selector.
+ *
+ * @param {string} selector - The CSS selector or element name to match when retrieving elements.
+ * @returns {NodeList | null} - A collection of elements matching the selector, or null if no elements are found.
+ */
+export const getElementAll = (selector) => document.querySelectorAll(selector);
+
+/**
+ * Removes a classname from an html element
+ * @param {Element} element - The HTML element to which the class name should be removed.
+ * @param {string} className - The class name to be removed
+ */
+export const removeClass = (element, className) =>
+	element.classList.remove(className);
+
+/**
+ * Adds the specified class name to the provided HTML element.
+ *
+ * @param {Element} element - The HTML element to which the class name should be added.
+ * @param {string} className - The class name to add.
+ */
+export const addClass = (element, className) =>
+	element.classList.add(className);
+
+/**
+ * Toggles the visibility of an element by adding or removing the specified class name.
+ *
+ * @param {Element} element - The element whose visibility should be toggled.
+ * @param {string} className - The class name to toggle.
+ */
+export const toggleVisibility = (element, className) =>
+	element.classList.toggle(className);
+
+export const formValidation = () => {
+	"use strict";
+
+	const form = getElement(".needs-validation");
+
+	form.addEventListener(
+		"submit",
+		(event) => {
+			if (!form.checkValidity()) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+
+			addClass(form, "was-validated");
+		},
+		false
+	);
+};

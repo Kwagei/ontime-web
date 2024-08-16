@@ -122,6 +122,9 @@
 						/>
 
 						<ul class="dropdown-menu w-100">
+							<li v-if="!events.length" class="dropdown-item">
+								No Ongoing Events!
+							</li>
 							<template v-for="event in events">
 								<li
 									class="dropdown-item"
@@ -175,7 +178,13 @@ import {
 } from "@/assets/js/index.js";
 import $ from "jquery";
 
-import { showModal } from "@/assets/js/util";
+import {
+	addClass,
+	formValidation,
+	getElement,
+	removeClass,
+	showModal,
+} from "@/assets/js/util";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -350,28 +359,10 @@ const props = defineProps({
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
 
+// Lifecycle Hooks
 onMounted(async () => {
-	(() => {
-		"use strict";
-
-		const forms = document.querySelectorAll(".needs-validation");
-
-		Array.prototype.slice.call(forms).forEach((form) => {
-			form.addEventListener(
-				"submit",
-				(event) => {
-					if (!form.checkValidity()) {
-						event.preventDefault();
-						event.stopPropagation();
-					}
-					form.classList.add("was-validated");
-				},
-				false
-			);
-		});
-	})();
-
 	await getEventsOptions();
+	formValidation();
 });
 
 const updateEventTerm = (event) => {
@@ -401,7 +392,7 @@ const updateEventTerm = (event) => {
 // function for inserting each username in the select element
 const getEventsOptions = async () => {
 	try {
-		events.value = await getEvents();
+		events.value = await getEvents(null, { current: true });
 
 		events.value = events.value.events.map((event) => ({
 			id: event.id,
@@ -422,7 +413,7 @@ const checkParticipantIn = async () => {
 		return;
 	}
 
-	document.body.removeAttribute("style");
+	getElement("body").removeAttribute("style");
 
 	// Required values for checking a visitor in
 	const visitData = {
@@ -446,8 +437,8 @@ const checkParticipantIn = async () => {
 	alert.value.pageLink = `/visits`;
 
 	if (response.ok) {
-		const visitModal = document.querySelector("#visitModal");
-		visitModal.classList.remove("show");
+		const visitModal = getElement("#visitModal");
+		removeClass(visitModal, "show");
 		visitModal.style.display = "none";
 
 		// Update visitor status for last visit
@@ -465,6 +456,10 @@ const resetForm = () => {
 	belongings.value = [];
 	temBelonging.value = "";
 	institution.value = "";
+
+	// Remove validation classes
+	const form = getElement(".needs-validation");
+	removeClass(form, "was-validated");
 };
 
 const addBelongings = (event) => {
@@ -488,6 +483,7 @@ const participantDetail = async (id) => {
 
 	// Find the specific participant being checked in
 	const participant = participants.value.find((val) => val.id === id);
+	console.log({ participant });
 
 	// Assign participant id for visit checking in
 	participant_id.value = participant.id;
@@ -504,6 +500,7 @@ const participantDetail = async (id) => {
 			email: participant.email,
 			msisdn: participant.msisdn,
 			address: address.value,
+			gender: participant.gender,
 		});
 		visitorData = insertedVisitorData.result.data[0];
 	}

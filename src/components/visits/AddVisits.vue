@@ -67,7 +67,7 @@
 							{{ validMsisdnMessage }}
 						</div>
 					</div>
-					<div id="emailHelp" class="form-text">
+					<div class="helpMessage form-text">
 						Phone number should start with 0. For example:
 						0778675908
 					</div>
@@ -108,7 +108,7 @@
 							{{ validEmailMessage }}
 						</div>
 					</div>
-					<div id="emailHelp" class="form-text">
+					<div class="helpMessage form-text">
 						Enter a valid email address. For example:
 						john12@gmail.com
 					</div>
@@ -163,6 +163,12 @@
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
 import { registerVisitor } from "@/assets/js/index.js";
+import {
+	addClass,
+	formValidation,
+	getElement,
+	toggleVisibility,
+} from "@/assets/js/util";
 
 import { ref, onMounted } from "vue";
 
@@ -198,9 +204,8 @@ const onSubmit = async () => {
 	const response = await registerVisitor(visitor);
 
 	if (!response.ok) {
-		console.log("");
 		onMounted(() => {
-			document.querySelector("#exampleModal").classList.toggle("show");
+			toggleVisibility(getElement("#exampleModal"), "show");
 		});
 	}
 	console.log({ response });
@@ -219,25 +224,8 @@ const props = defineProps({
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "new-visit"];
 
-const formValidation = onMounted(() => {
-	(() => {
-		"use strict";
-
-		const form = document.querySelector(".needs-validation");
-
-		form.addEventListener(
-			"submit",
-			(event) => {
-				if (!form.checkValidity()) {
-					event.preventDefault();
-					event.stopPropagation();
-				}
-
-				form.classList.add("was-validated");
-			},
-			false
-		);
-	})();
+onMounted(async () => {
+	formValidation();
 });
 </script>
 

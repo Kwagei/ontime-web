@@ -1,5 +1,5 @@
 <template>
-	<Modal v-if="!!Object.keys(modalData).length" :data="modalData" />
+	<AlertModal :data="modalData" />
 	<h2 v-if="event == 'error'" class="d-flex justify-content-center pt-5">
 		Unable to load event, Try again
 	</h2>
@@ -24,7 +24,6 @@
 		<div style="width: 45%">
 			<EventDetails
 				:event="event"
-				v-model:participants="participants"
 				v-if="state == 'details'"
 				@switch="switchState"
 				@displayEventParticipants="switchState"
@@ -62,9 +61,9 @@ import AddParticipant from "./AddParticipant.vue";
 import ImportParticipant from "./ImportParticipant.vue";
 import EventDetails from "./EventDetails.vue";
 import EventTitle from "./EventTitle.vue";
-import Modal from "../modals/AlertModal.vue";
+import AlertModal from "../modals/AlertModal.vue";
 
-import { API_URL } from "@/assets/js/index.js";
+import { API_URL, getEvents } from "@/assets/js/index.js";
 import { showModal } from "@/assets/js/util.js";
 import EventAttendance from "./EventAttendance.vue";
 
@@ -73,7 +72,6 @@ const router = useRouter();
 const event = ref("loading");
 const eventId = ref(router.currentRoute.value.params.id);
 const state = ref("details");
-const participants = ref("loading");
 const modalData = ref({});
 
 const props = defineProps({
@@ -81,32 +79,15 @@ const props = defineProps({
 });
 
 onMounted(async () => {
-	getEvent();
-	getParticipants();
+	fetchEvents();
 });
 
-async function getEvent() {
+async function fetchEvents() {
 	try {
-		await $.get(API_URL + `/events/${eventId.value}`, (data) => {
-			event.value = data.data[0];
-		});
+		const data = await getEvents(eventId.value);
+		event.value = data[0];
 	} catch {
 		event.value = "error";
-		// do nothing
-	}
-}
-
-async function getParticipants() {
-	try {
-		await $.get(
-			API_URL + `/events/${eventId.value}/participants`,
-			(data) => {
-				participants.value = data.data;
-			}
-		);
-	} catch {
-		participants.value = "error";
-		// do nothing
 	}
 }
 
@@ -117,12 +98,7 @@ function switchState(newState) {
 function setModalData(newData) {
 	modalData.value = newData;
 
-	// wait a little bit for I don't know what
-	// still tryna understand this part
-	// but that's the only way it'll work
-	setTimeout(() => {
-		showModal("#alertModal", "#alertModalBody");
-	}, 500);
+	showModal("#alertModal", "#alertModalBody");
 }
 
 function editEvent() {

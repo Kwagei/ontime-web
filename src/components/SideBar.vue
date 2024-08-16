@@ -76,6 +76,10 @@ const navItems = [
 		name: "events",
 		svg: "calendar-event-agenda",
 	},
+	{
+		name: "users",
+		svg: "avatar",
+	},
 ];
 </script>
 

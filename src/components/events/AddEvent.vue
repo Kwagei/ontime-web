@@ -285,7 +285,13 @@ import { API_URL, getHosts, getRooms } from "../../assets/js/index.js";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
 import { useRouter } from "vue-router";
-import { showModal } from "@/assets/js/util.js";
+import {
+	addClass,
+	formValidation,
+	getElement,
+	removeClass,
+	showModal,
+} from "@/assets/js/util.js";
 
 // Event Creation Data
 const title = ref("");
@@ -305,7 +311,7 @@ const roomTem = ref("");
 const hostValue = ref("");
 const hostID = ref("");
 const hostsData = ref("");
-const hostsTem = ref("");
+const hostsTerm = ref("");
 
 // Event types
 const eventTypes = ["Course", "Conference", "Workshop", "Hackathon"];
@@ -356,12 +362,12 @@ watch(
 	() => hostValue.value,
 	(n) => {
 		hostsData.value = n
-			? hostsTem.value.filter((host) =>
+			? hostsTerm.value.filter((host) =>
 					host.name
 						.toLocaleLowerCase()
 						.includes(n.toLocaleLowerCase())
 			  )
-			: hostsTem.value;
+			: hostsTerm.value;
 	}
 );
 
@@ -443,8 +449,8 @@ function resetForm() {
 	details.value = "";
 
 	// Remove validation classes
-	const form = document.querySelector(".needs-validation");
-	form.classList.remove("was-validated");
+	const form = getElement(".needs-validation");
+	removeClass(form, "was-validated");
 }
 
 // Lifecycle Hooks
@@ -453,7 +459,7 @@ onMounted(async () => {
 
 	const { hosts } = await getHosts();
 	hostsData.value = hosts;
-	hostsTem.value = hosts;
+	hostsTerm.value = hosts;
 
 	const { rooms } = await getRooms();
 	roomsData.value = rooms;
@@ -461,20 +467,7 @@ onMounted(async () => {
 
 	if (mode == "edit") await getEventToEdit();
 
-	("use strict");
-
-	const form = document.querySelector(".needs-validation");
-	form.addEventListener(
-		"submit",
-		(event) => {
-			if (!form.checkValidity()) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-			form.classList.add("was-validated");
-		},
-		false
-	);
+	formValidation();
 });
 
 function setMode() {

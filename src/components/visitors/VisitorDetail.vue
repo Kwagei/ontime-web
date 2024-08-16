@@ -131,6 +131,7 @@ const route = useRoute();
 
 const breadCrumbs = defineModel("breadCrumbs");
 breadCrumbs.value = route.path.split("/").slice(1);
+const refresh = defineModel("refresh");
 
 const table = ref("");
 const showError = ref(false);
@@ -170,6 +171,7 @@ const options = {
 		},
 		dataSrc: (json) => {
 			showError.value = false;
+			refresh.value = false;
 
 			const { visitor, visits } = json.data;
 			visitor.msisdn = `0${visitor.msisdn.slice(3)}`;
@@ -184,6 +186,7 @@ const options = {
 		error: (error) => {
 			console.log("Error fetching data:", error.responseJSON);
 			showError.value = true;
+			refresh.value = false;
 		},
 	},
 	responsive: true,
@@ -218,7 +221,6 @@ const formatVisitorInfo = (key) => {
 
 	const v = key.split("_").join(" ");
 	const formattedString = v.charAt(0).toUpperCase() + v.slice(1);
-	console.log(formattedString);
 
 	return formattedString;
 };

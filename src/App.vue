@@ -1,11 +1,11 @@
 <template>
 	<div id="wrapper">
-		<AppView />
+		<RouterView />
 	</div>
 </template>
 
 <script setup>
-import AppView from "./views/AppView.vue";
+import { RouterView } from "vue-router";
 </script>
 
 <style></style>

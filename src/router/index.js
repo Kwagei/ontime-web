@@ -26,126 +26,162 @@ import Rooms from "@/components/Room.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
+import AppView from "@/views/AppView.vue";
+import AddUsers from "@/components/users/AddUsers.vue";
+import UserDetail from "@/components/users/UserDetail.vue";
 
 const routes = [
+	{
+		path: "",
+		redirect: "/sign-in",
+	},
 	{
 		path: "/sign-in",
 		component: SignIn,
 		name: "sign-in",
 	},
 	{
-		path: "",
-		redirect: "/dashboard",
-	},
-	{
-		path: "/dashboard",
-		component: Dashboard,
-		name: "dashboard",
-	},
-	{
-		path: "/visitors",
+		path: "/app",
+		component: AppView,
+		name: "app",
 		children: [
 			{
-				path: "",
-				component: Visitors,
-				name: "visitors",
+				path: "/dashboard",
+				component: Dashboard,
+				name: "dashboard",
 			},
 			{
-				path: "new-visitor",
-				component: AddVisitors,
-				name: "add-visitor",
-				prop: true,
-			},
-			{
-				path: ":id",
+				path: "/visitors",
 				children: [
 					{
 						path: "",
-						component: VisitorDetail,
-						name: "visitorDetail",
+						component: Visitors,
+						name: "visitors",
 					},
 					{
-						path: "edit-visitor",
+						path: "new-visitor",
 						component: AddVisitors,
-						name: "edit-visitor",
+						name: "add-visitor",
+						prop: true,
+					},
+					{
+						path: ":id",
+						children: [
+							{
+								path: "",
+								component: VisitorDetail,
+								name: "visitorDetail",
+							},
+							{
+								path: "edit-visitor",
+								component: AddVisitors,
+								name: "edit-visitor",
+							},
+						],
 					},
 				],
 			},
-		],
-	},
-	{
-		path: "/visits",
-		children: [
 			{
-				path: "",
-				component: Visits,
-				name: "visits",
-			},
-			{
-				path: "new-visit",
-				component: AddVisits,
-				name: "add-visit",
-			},
-			{
-				path: "purpose-meeting",
-				component: AddMeeting,
-				name: "add-meeting",
-			},
-			{
-				path: "purpose-event",
-				component: AddEvents,
-				name: "visits-event",
-			},
-			{
-				path: "purpose-workspace",
-				component: AddWorkspace,
-				name: "add-workspace",
-			},
-		],
-	},
-	{
-		path: "/users",
-		component: Users,
-		name: "users",
-	},
-	{
-		path: "/events",
-		children: [
-			{ path: "", component: Events, name: "events" },
-			{
-				path: "/events/add-event",
-				component: AddEvent,
-				name: "add-event",
-			},
-			{
-				path: "/events/:id",
+				path: "/visits",
 				children: [
 					{
 						path: "",
-						component: Event,
-						name: "specific-event",
+						component: Visits,
+						name: "visits",
 					},
 					{
-						path: "edit-event",
-						component: AddEvent,
-						name: "specific-event-participants",
+						path: "new-visit",
+						component: AddVisits,
+						name: "add-visit",
 					},
 					{
-						path: "add-participant",
-						component: AddParticipant,
-						name: "add-event-participant",
+						path: "purpose-meeting",
+						component: AddMeeting,
+						name: "add-meeting",
+					},
+					{
+						path: "purpose-event",
+						component: AddEvents,
+						name: "visits-event",
+					},
+					{
+						path: "purpose-workspace",
+						component: AddWorkspace,
+						name: "add-workspace",
 					},
 				],
 			},
 			{
-				path: "new-host",
-				component: Hosts,
-				name: "new-host",
+				path: "/users",
+				children: [
+					{
+						path: "",
+						component: Users,
+						name: "users",
+					},
+					{
+						path: "new-user",
+						component: AddUsers,
+						name: "add-user",
+						prop: true,
+					},
+					{
+						path: ":id",
+						children: [
+							{
+								path: "",
+								component: UserDetail,
+								name: "userDetail",
+							},
+							{
+								path: "edit-user",
+								component: AddUsers,
+								name: "edit-user",
+							},
+						],
+					},
+				],
 			},
 			{
-				path: "new-room",
-				component: Rooms,
-				name: "new-room",
+				path: "/events",
+				children: [
+					{ path: "", component: Events, name: "events" },
+					{
+						path: "/events/add-event",
+						component: AddEvent,
+						name: "add-event",
+					},
+					{
+						path: "/events/:id",
+						children: [
+							{
+								path: "",
+								component: Event,
+								name: "specific-event",
+							},
+							{
+								path: "edit-event",
+								component: AddEvent,
+								name: "specific-event-participants",
+							},
+							{
+								path: "add-participant",
+								component: AddParticipant,
+								name: "add-event-participant",
+							},
+						],
+					},
+					{
+						path: "new-host",
+						component: Hosts,
+						name: "new-host",
+					},
+					{
+						path: "new-room",
+						component: Rooms,
+						name: "new-room",
+					},
+				],
 			},
 		],
 	},

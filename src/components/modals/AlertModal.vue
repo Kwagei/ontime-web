@@ -9,7 +9,7 @@
 		style="z-index: 4000"
 	>
 		<div class="modal-dialog modal-lg" id="alertModalBody">
-			<div :class="`modal-content py-1 border-${data.status}`">
+			<div :class="`modal-content py-1 border-${data.status} rounded`">
 				<div class="modal-header">
 					<div
 						:class="`alert alert-${data.status} mb-0`"

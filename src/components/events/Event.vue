@@ -64,7 +64,7 @@ import EventTitle from "./EventTitle.vue";
 import AlertModal from "../modals/AlertModal.vue";
 
 import { API_URL, getEvents } from "@/assets/js/index.js";
-import { showModal } from "@/assets/js/util.js";
+import { showModal } from "@/util/util.js";
 import EventAttendance from "./EventAttendance.vue";
 
 const router = useRouter();

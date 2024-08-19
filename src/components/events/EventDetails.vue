@@ -98,7 +98,7 @@
 import BreadCrumbs from "../BreadCrumbs.vue";
 import EventParticipants from "./EventParticipants.vue";
 import Icons from "../Icons.vue";
-import { formatDateTime, showModal } from "@/assets/js/util.js";
+import { formatDateTime, showModal } from "@/util/util.js";
 import RefreshList from "../RefreshList.vue";
 import { csvExport, getParticipants } from "@/assets/js";
 import { ref, onMounted } from "vue";

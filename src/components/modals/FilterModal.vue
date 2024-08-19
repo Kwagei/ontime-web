@@ -81,7 +81,7 @@
 
 <script setup>
 import AlertModal from "@/components/modals/AlertModal.vue";
-import { showModal, validateFromAndToDate } from "@/assets/js/util";
+import { showModal, validateFromAndToDate } from "@/util/util";
 
 import { ref, watch } from "vue";
 

@@ -9,7 +9,7 @@
 		style="z-index: 4000"
 	>
 		<div class="modal-dialog modal-lg modal-dialog-centered">
-			<div class="modal-content">
+			<div class="modal-content rounded border-warning">
 				<div class="modal-header">
 					<div
 						:class="`alert alert-warning mb-0`"

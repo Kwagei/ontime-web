@@ -39,12 +39,12 @@
 </template>
 
 <script setup>
-import { API_URL, updateDepartureTime } from "@/assets/js/index.js";
+import { API_KEY, API_URL, updateDepartureTime } from "@/assets/js/index.js";
 import {
 	formatDateTime,
 	formatDepartureTime,
 	formatVisitData,
-} from "@/assets/js/util.js";
+} from "@/util/util.js";
 
 import { onMounted, ref, watch, computed } from "vue";
 import DataTable from "datatables.net-vue3";
@@ -98,8 +98,11 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}visits`,
+		url: `${API_URL}/visits`,
 		type: "GET",
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("Authorization", API_KEY);
+		},
 		data: (query) => {
 			const order =
 				query.columns[query.order[0].column].data === "date"
@@ -137,9 +140,11 @@ const options = {
 		},
 	},
 	lengthMenu: dashboardTableData.value.lengthMenu || [10, 25, 50, 100],
-	searching: dashboardTableData.value.searching,
 	bLengthChange: dashboardTableData.value.bLengthChange,
 	bInfo: dashboardTableData.value.bInfo,
+	paging: dashboardTableData.value.paging,
+	searching: dashboardTableData.value.searching,
+
 	language: {
 		searchPlaceholder: "Search ...",
 		search: "",
@@ -172,7 +177,6 @@ const options = {
 		</div>
 	`,
 	},
-
 	order: [[0, "desc"]],
 	createdRow: (row, data) => {
 		$(row).on("click", "button", () => {

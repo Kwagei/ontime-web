@@ -14,8 +14,7 @@ export const csvExport = (data) => {
 };
 
 export const API_URL = import.meta.env.VITE_API_URL;
-export const GOOGLE_CALENDAR_API_URL = import.meta.env
-	.VITE_GOOGLE_CALENDAR_API_URL;
+export const API_KEY = import.meta.env.VITE_API_KEY;
 
 // Visits functions
 export const registerVisit = async (data) => {
@@ -23,6 +22,7 @@ export const registerVisit = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
+				Authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -38,7 +38,22 @@ export const registerVisit = async (data) => {
 	}
 };
 
-export const getVisits = async (query = {}) => {
+/**
+ * @typedef {Object} GetVisitsQueryParams
+ * @property {number} [start=0] - The index of the first visit to return.
+ * @property {number} [limit=20] - The maximum number of visits to return.
+ * @property {string} [search=''] - The search string to filter the returned visits.
+ * @property {string} [sort=''] - The field to sort the visits by.
+ * @property {string} [order=''] - The order of the sort.
+ */
+
+/**
+ * Gets a paginated list of visits.
+ *
+ * @param {GetVisitsQueryParams} [queryParams={}] - The query parameters for the request.
+ * @returns {Promise<Object[]>} - The list of visits.
+ */
+export const getVisits = async (queryParams = {}) => {
 	try {
 		const {
 			search = "",
@@ -46,9 +61,10 @@ export const getVisits = async (query = {}) => {
 			limit = 20,
 			sort = "",
 			order = "",
-		} = query;
+		} = queryParams;
 
-		let url = `${API_URL}visits?start=${start}&limit=${limit}`;
+		const apiUrl = `${API_URL}/visits`;
+		let url = `${apiUrl}?start=${start}&limit=${limit}`;
 
 		if (search) {
 			url += `&search=${search}`;
@@ -58,14 +74,21 @@ export const getVisits = async (query = {}) => {
 			url += `&sort=${sort}&order=${order}`;
 		}
 
-		const response = await fetch(url);
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+		});
+
 		if (!response.ok) {
 			throw new Error(
-				"Error getting visits. Please try again after few seconds"
+				"Failed to fetch visits. Please try again after a few seconds."
 			);
 		}
-		const { data } = await response.json();
 
+		const { data } = await response.json();
 		return data;
 	} catch (error) {
 		throw error;
@@ -74,13 +97,16 @@ export const getVisits = async (query = {}) => {
 
 export const updateDepartureTime = async (id, data) => {
 	try {
+		// Update departure time
 		const options = {
 			method: "PUT",
 			headers: {
+				Authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
 		};
+
 		const response = await fetch(`${API_URL}/visits/${id}`, options);
 
 		if (!response.ok) {
@@ -102,6 +128,7 @@ export const registerVisitor = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
+				Authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -137,7 +164,13 @@ export const getVisitors = async (query = {}) => {
 			url += `&sort=${sort}&order=${order}`;
 		}
 
-		const response = await fetch(url);
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+		});
 
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
@@ -151,25 +184,37 @@ export const getVisitors = async (query = {}) => {
 	}
 };
 
-export const getSingleVisitor = async (data) => {
-	const { id, msisdn } = data;
-	let response;
-
+/**
+ * Get a single visitor by id or phone number.
+ *
+ * @param {{ id?: number, msisdn?: string }} query - The query parameters.
+ * @returns {Promise<Object>} - The visitor object.
+ */
+export const getSingleVisitor = async ({ id, msisdn }) => {
 	try {
-		if (id) {
-			response = await fetch(`${API_URL}/visitors/${id}`);
-		} else if (msisdn) {
-			response = await fetch(`${API_URL}/visitors?search=${msisdn}`);
-		}
+		const url = id
+			? // Get by id
+			  `${API_URL}/visitors/${id}`
+			: // Get by phone number
+			  `${API_URL}/visitors?search=${msisdn}`;
+
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+		});
 
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
 		}
 
 		const { data } = await response.json();
-
 		return data.data[0];
-	} catch (error) {}
+	} catch (error) {
+		throw error;
+	}
 };
 
 export const editVisitor = async (id, data) => {
@@ -177,6 +222,7 @@ export const editVisitor = async (id, data) => {
 		const options = {
 			method: "PUT",
 			headers: {
+				Authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -192,6 +238,19 @@ export const editVisitor = async (id, data) => {
 	}
 };
 
+/**
+ * Retrieves a visitor along with their associated visits.
+ *
+ * @param {number} id - The id of the visitor.
+ * @param {Object} query - The query parameters for the request.
+ * @param {string} [query.search=''] - The search string to filter the returned visits.
+ * @param {number} [query.start=0] - The starting index for the returned visits.
+ * @param {number} [query.limit=20] - The maximum number of visits to return.
+ * @param {string} [query.sort=''] - The field to sort the visits by.
+ * @param {string} [query.order=''] - The order of the sort.
+ *
+ * @returns {Promise<Object[]>} - The list of visits associated with the visitor.
+ */
 export const getVisitorWithVisits = async (id, query) => {
 	try {
 		const {
@@ -212,14 +271,19 @@ export const getVisitorWithVisits = async (id, query) => {
 			url += `&sort=${sort}&order=${order}`;
 		}
 
-		const response = await fetch(url);
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+		});
 
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
 		}
 
 		const { data } = await response.json();
-		console.log({ data });
 
 		return data;
 	} catch (error) {
@@ -233,6 +297,7 @@ export const registerUser = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
+				Authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -253,12 +318,13 @@ export const editUser = async (id, data) => {
 		const options = {
 			method: "PUT",
 			headers: {
+				Authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
 		};
 
-		const response = await fetch(`${API_URL}users/${id}`, options);
+		const response = await fetch(`${API_URL}/users/${id}`, options);
 
 		const result = await response.json();
 
@@ -268,28 +334,95 @@ export const editUser = async (id, data) => {
 	}
 };
 
+/**
+ * Retrieves a list of users from the API.
+ *
+ * @returns {Promise<Object[]>} - A promise that resolves to an array of user objects.
+ * If the request fails, the promise will reject with an error.
+ */
 export const getUsers = async () => {
 	try {
-		const response = await fetch(`${API_URL}users`);
+		const url = `${API_URL}/users/`;
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+		});
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
 		}
 
 		const { data } = await response.json();
 		return data;
-	} catch (error) {}
+	} catch (error) {
+		console.log({ error });
+	}
 };
 
+/**
+ * Performs a login request to the API.
+ *
+ * @param {Object} data - The login data.
+ * @param {string} data.username - The username for the login.
+ * @param {string} data.password - The password for the login.
+ *
+ * @returns {Promise<Object>} - A promise that resolves to an object containing the login status and result.
+ * The object has the following properties:
+ * - ok: A boolean indicating whether the login was successful.
+ * - result: An object containing the login result.
+ *
+ * @throws {Error} - If the login request fails, the promise will reject with an error.
+ */
+export const login = async (data) => {
+	try {
+		const options = {
+			method: "POST",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		};
+
+		const response = await fetch(`${API_URL}/login`, options);
+
+		const result = await response.json();
+
+		return { ok: response.ok, result };
+	} catch (error) {
+		console.log({ error });
+	}
+};
+
+/**
+ * Retrieves a single user by id or phone number.
+ *
+ * @param {Object} data - The query parameters.
+ * @param {number} [data.id] - The id of the user.
+ * @param {string} [data.msisdn] - The phone number of the user.
+ *
+ * @returns {Promise<Object>} - A promise that resolves to the user object.
+ * If the request fails, the promise will reject with an error.
+ */
 export const getSingleUser = async (data) => {
 	const { id, msisdn } = data;
-	let response;
 
 	try {
-		if (id) {
-			response = await fetch(`${API_URL}users/${id}`);
-		} else if (msisdn) {
-			response = await fetch(`${API_URL}users?search=${msisdn}`);
-		}
+		const url = id
+			? // Get by id
+			  `${API_URL}/users/${id}`
+			: // Get by phone number
+			  `${API_URL}/users?search=${msisdn}`;
+
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+		});
 
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
@@ -301,10 +434,23 @@ export const getSingleUser = async (data) => {
 	} catch (error) {}
 };
 
+/**
+ * Deletes a user from the API by their id.
+ *
+ * @param {number} id - The id of the user to delete.
+ *
+ * @returns {Promise<Object>} - A promise that resolves to an object containing the deletion status and result.
+ * The object has the following properties:
+ * - ok: A boolean indicating whether the deletion was successful.
+ * - result: An object containing the deletion result.
+ *
+ * @throws {Error} - If the deletion request fails, the promise will reject with an error.
+ */
 export const deleteUser = async (id) => {
 	const options = {
 		method: "DELETE",
 		headers: {
+			Authorization: API_KEY,
 			"Content-Type": "application/json",
 		},
 	};
@@ -315,7 +461,7 @@ export const deleteUser = async (id) => {
 	return { ok: response.ok, result };
 };
 
-// Events functions
+// EVENTS
 export const getEvents = async (id, query = {}) => {
 	try {
 		const {
@@ -329,10 +475,10 @@ export const getEvents = async (id, query = {}) => {
 			current = 0,
 		} = query;
 
-		let url = `${API_URL}events`;
+		let url = `${API_URL}/events/`;
 
 		if (id) {
-			url += `/${id}`;
+			url += id;
 		} else {
 			url += `?&start=${start}&limit=${limit}`;
 
@@ -357,7 +503,13 @@ export const getEvents = async (id, query = {}) => {
 			}
 		}
 
-		const response = await fetch(url);
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+		});
 
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
@@ -390,7 +542,13 @@ export const getParticipants = async (id, query = {}) => {
 			url += `&sort=${sort}&order=${order}`;
 		}
 
-		const response = await fetch(url);
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+		});
 
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
@@ -411,7 +569,13 @@ export const getHosts = async (id) => {
 			url += `/${id}`;
 		}
 
-		const response = await fetch(url);
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+		});
 
 		if (!response.ok) {
 			console.log("Unable to get Host: ", response.body);
@@ -428,6 +592,7 @@ export const registerHost = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
+				Authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -448,6 +613,7 @@ export const editHost = async (id, data) => {
 		const options = {
 			method: "PUT",
 			headers: {
+				Authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -472,7 +638,13 @@ export const getRooms = async (id) => {
 			url += `/${id}`;
 		}
 
-		const response = await fetch(url);
+		const response = await fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+		});
 
 		if (!response.ok) {
 			throw new Error("Network response was not ok");
@@ -488,6 +660,7 @@ export const registerRoom = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
+				Authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -508,6 +681,7 @@ export const editRoom = async (id, data) => {
 		const options = {
 			method: "PUT",
 			headers: {
+				Authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),

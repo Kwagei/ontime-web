@@ -173,7 +173,7 @@ import { useRoute } from "vue-router";
 import { computed, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import DeleteModal from "../modals/DeleteModal.vue";
-import { getElement, removeClass, showModal } from "@/assets/js/util";
+import { getElement, removeClass, showModal } from "@/util/util.js";
 import AlertModal from "../modals/AlertModal.vue";
 
 const route = useRoute();

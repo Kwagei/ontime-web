@@ -1,8 +1,6 @@
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
-import dayjsWithoutPlugin from "./dayjsWithoutPlugin.js";
-
 dayjs.extend(customParseFormat);
 
 /**
@@ -229,33 +227,6 @@ export const formatDetails = (detail) => {
 		: detail;
 };
 
-// async function signIn(result) {
-// 	const id = await postUser(result, "signIn");
-// 	console.log({ id });
-// 	if (id) {
-// 		warning("Login Successfully!", "success", "#83d61631");
-// 		setTimeout(() => redirect("chat.html", id), 2000);
-// 	} else {
-// 		warning("Wrong email or password!", "danger", "#ea060629");
-// 	}
-// }
-
-// /**
-//  * Displays a warning message with the specified content, class name, and background color.
-//  * The message will be automatically hidden after 10 seconds.
-//  *
-//  * @param {string} message - The message text to display.
-//  * @param {string} className - The CSS class name to apply to the warning message element.
-//  * @param {string} bgColor - The background color to apply to the warning message container.
-//  */
-// export const warning = (message, className, bgColor) => {
-// 	const warningMessageContainer = getElement(".message");
-
-// 	warningMessageContainer.innerHTML = `<span class="${className}">${message}</span>`;
-// 	warningMessageContainer.style.backgroundColor = bgColor;
-// 	removeClass(warningMessageContainer, "hide");
-// };
-
 /**
  * Retrieves an element from the document by matching its selector value.
  *
@@ -303,16 +274,18 @@ export const formValidation = () => {
 
 	const form = getElement(".needs-validation");
 
-	form.addEventListener(
-		"submit",
-		(event) => {
-			if (!form.checkValidity()) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
+	if (form) {
+		form.addEventListener(
+			"submit",
+			(event) => {
+				if (!form.checkValidity()) {
+					event.preventDefault();
+					event.stopPropagation();
+				}
 
-			addClass(form, "was-validated");
-		},
-		false
-	);
+				addClass(form, "was-validated");
+			},
+			false
+		);
+	}
 };

@@ -48,10 +48,10 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
-import { API_URL } from "@/assets/js";
+import { API_KEY, API_URL } from "@/assets/js";
 
 DataTable.use(DataTablesCore);
-import { formatDateTime, formatDetails } from "@/assets/js/util";
+import { formatDateTime, formatDetails } from "@/util/util";
 
 const totalEvents = defineModel("totalEvents");
 const refresh = defineModel("refresh");
@@ -67,14 +67,18 @@ const columns = [
 	{ data: "facilitator", title: "Facilitator" },
 	{ data: "type", title: "Type" },
 	{ data: "details", title: "Details" },
+	{ data: "created_at", title: "Created At" },
 ];
 
 const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}events`,
+		url: `${API_URL}/events`,
 		type: "GET",
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("Authorization", API_KEY);
+		},
 		data: (query) => {
 			const order =
 				query.columns[query.order[0].column].data === "date"
@@ -104,6 +108,9 @@ const options = {
 				event.details = formatDetails(event.details);
 				event.start_date = formatDateTime(event.start_date);
 				event.end_date = formatDateTime(event.end_date);
+				event.created_at = formatDateTime(event.created_at, {
+					date: true,
+				});
 			});
 
 			return events;
@@ -148,7 +155,7 @@ const options = {
 			</div>
 		`,
 	},
-	order: [[2, "desc"]],
+	order: [[7, "desc"]],
 	destroy: true,
 	createdRow: (row, data) => {
 		$(row).on("click", (event) => {

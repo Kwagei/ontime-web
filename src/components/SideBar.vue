@@ -14,7 +14,9 @@
 			<li class="nav-item" v-for="item in navItems" :key="item.name">
 				<router-link
 					class="nav-link text-white"
-					:to="{ name: item.name }"
+					:to="{
+						name: item.name === 'check in' ? 'visits' : item.name,
+					}"
 					:id="item.name"
 				>
 					<Icons style="margin-right: 0.5rem" :icon="item.svg" />
@@ -26,9 +28,12 @@
 
 		<div>
 			<ul class="nav nav-pills flex-column mb-auto">
-				<li class="nav-item">
+				<li class="nav-item" @click="signOut">
 					<a href="#" class="nav-link" aria-current="page">
-						<Icons style="margin-right: 0.5rem" :icon="logOut" />
+						<Icons
+							style="margin-right: 0.5rem"
+							:icon="logOutIcon"
+						/>
 						Log Out
 					</a>
 				</li>
@@ -38,15 +43,17 @@
 </template>
 
 <script setup>
-import { RouterLink, useRoute } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import Icons from "@/components/Icons.vue";
 
 import { ref, watch } from "vue";
+import { removeCookie } from "@/util/auth";
 
 const route = useRoute();
+const router = useRouter();
 const breadCrumbs = defineModel("breadCrumbs");
 const activeSection = defineModel("activeSection");
-const logOut = ref("session-leave");
+const logOutIcon = "session-leave";
 
 activeSection.value = route.path.split("/")[1];
 
@@ -69,7 +76,7 @@ const navItems = [
 		svg: "group",
 	},
 	{
-		name: "visits",
+		name: "check in",
 		svg: "house",
 	},
 	{
@@ -81,6 +88,11 @@ const navItems = [
 		svg: "avatar",
 	},
 ];
+
+const signOut = () => {
+	removeCookie("token");
+	router.push("/sign-in");
+};
 </script>
 
 <style scoped>

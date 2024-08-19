@@ -1,7 +1,7 @@
 <template>
 	<div class="">
 		<div class="container text-center">
-			<div class="row gap-4 mb-5">
+			<div class="row gap-4 my-4">
 				<div class="" id="stats">
 					<div class="row align-items-start gap-4">
 						<div
@@ -104,7 +104,7 @@ import { RouterLink } from "vue-router";
 import VisitList from "@/components/visits/VisitList.vue";
 import Icons from "@/components/Icons.vue";
 import { onMounted, ref, watch } from "vue";
-import { getElement } from "@/assets/js/util";
+import { getElement } from "@/util/util";
 
 const visitIcon = "house";
 const eventIcon = "calendar-event-agenda";
@@ -124,9 +124,10 @@ const dashboardTableData = defineModel("dtd");
 dashboardTableData.value = {
 	lengthMenu: [5],
 	bLengthChange: false,
-	searching: false,
 	recordsFiltered: 0,
 	bInfo: false,
+	paging: true,
+	searching: false,
 };
 
 watch(allEvents, (events) => {
@@ -151,7 +152,8 @@ const getTodaysEvents = (events) => {
 };
 
 onMounted(() => {
-	getElement(".dt-paging").style.display = "none";
+	// Hide DataTable pagination controls
+	// getElement(".dt-paging").style.display = "none";
 });
 </script>
 

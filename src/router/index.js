@@ -29,6 +29,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import AppView from "@/views/AppView.vue";
 import AddUsers from "@/components/users/AddUsers.vue";
 import UserDetail from "@/components/users/UserDetail.vue";
+import { isAuthenticated } from "@/util/auth.js";
 
 const routes = [
 	{
@@ -49,6 +50,9 @@ const routes = [
 				path: "/dashboard",
 				component: Dashboard,
 				name: "dashboard",
+				meta: {
+					requiresAuth: true,
+				},
 			},
 			{
 				path: "/visitors",
@@ -80,6 +84,9 @@ const routes = [
 						],
 					},
 				],
+				meta: {
+					requiresAuth: true,
+				},
 			},
 			{
 				path: "/visits",
@@ -110,6 +117,9 @@ const routes = [
 						name: "add-workspace",
 					},
 				],
+				meta: {
+					requiresAuth: true,
+				},
 			},
 			{
 				path: "/users",
@@ -123,7 +133,6 @@ const routes = [
 						path: "new-user",
 						component: AddUsers,
 						name: "add-user",
-						prop: true,
 					},
 					{
 						path: ":id",
@@ -141,6 +150,9 @@ const routes = [
 						],
 					},
 				],
+				meta: {
+					requiresAuth: true,
+				},
 			},
 			{
 				path: "/events",
@@ -182,6 +194,9 @@ const routes = [
 						name: "new-room",
 					},
 				],
+				meta: {
+					requiresAuth: true,
+				},
 			},
 		],
 	},
@@ -190,6 +205,16 @@ const routes = [
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes,
+});
+
+router.beforeEach((to, from) => {
+	// Check if the route requires authentication
+	if (to.matched.some((record) => record.meta.requiresAuth)) {
+		// If user is not authenticated, redirect to login
+		if (!isAuthenticated()) {
+			return { name: "sign-in" };
+		}
+	}
 });
 
 export default router;

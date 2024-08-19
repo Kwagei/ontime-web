@@ -90,7 +90,7 @@ import {
 	getElement,
 	removeClass,
 	showModal,
-} from "@/assets/js/util.js";
+} from "@/util/util.js";
 // Route and State
 const route = useRoute();
 const router = useRouter();

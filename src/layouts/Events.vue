@@ -67,7 +67,7 @@ import { ref } from "vue";
 import { csvExport, getEvents } from "../assets/js/index.js";
 import FilterModal from "@/components/modals/FilterModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
-import { formatDateTime, showModal } from "@/assets/js/util";
+import { formatDateTime, showModal } from "@/util/util";
 
 const exportTitle = defineModel("exportTitle");
 

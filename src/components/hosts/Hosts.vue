@@ -162,7 +162,7 @@ import {
 	msisdnValidation,
 	removeClass,
 	showModal,
-} from "@/assets/js/util.js";
+} from "@/util/util.js";
 import router from "@/router";
 
 // Route and State

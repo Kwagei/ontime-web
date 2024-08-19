@@ -91,7 +91,7 @@ import EditParticipantForm from "./EditParticipantForm.vue";
 import Alert from "../Alert.vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import BackArrow from "../BackArrow.vue";
-import { showModal } from "@/assets/js/util.js";
+import { showModal } from "@/util/util.js";
 
 const route = useRoute();
 const eventId = route.params.id;

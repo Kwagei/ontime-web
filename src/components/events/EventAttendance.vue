@@ -7,18 +7,9 @@
 			/>
 		</div>
 		<div class="d-flex" style="gap: 0.521rem">
-			<div class="dropdown d-none">
-				<Options />
-				<ul class="dropdown-menu boxShadow rounded">
-					<li
-						@click="exportEventsAttendance"
-						id="export"
-						class="dropdown-item"
-					>
-						Export
-					</li>
-				</ul>
-			</div>
+			<button class="btn btn-secondary" @click="displayExportModay">
+				Export
+			</button>
 
 			<router-link to="/visits/purpose-event">
 				<button class="btn btn-secondary">Check In</button>
@@ -49,24 +40,35 @@
 			</h3>
 		</div>
 	</div>
+
+	<ExportModal
+		:exportFields="exportFields"
+		v-model:exportTitle="exportTitle"
+		@export="exportEventsAttendance"
+	/>
 </template>
 
 <script setup>
-import BackArrow from "../BackArrow.vue";
-import BreadCrumbs from "../BreadCrumbs.vue";
-import { API_URL, csvExport } from "@/assets/js";
-
+// Modules
 import { ref } from "vue";
+import { RouterLink } from "vue-router";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
-import { formatDateTime, formatDepartureTime } from "@/assets/js/util";
-import { RouterLink } from "vue-router";
-import Options from "../Options.vue";
-import Icons from "../Icons.vue";
-const plusIcon = "add";
+DataTable.use(DataTablesCore);
 
+// Utility
+import { formatDateTime, formatDepartureTime, showModal } from "@/util/util";
+import { API_KEY, API_URL, csvExport } from "@/assets/js";
+
+// Components
+import Icons from "../Icons.vue";
+import BackArrow from "../BackArrow.vue";
+import BreadCrumbs from "../BreadCrumbs.vue";
+import ExportModal from "../modals/ExportModal.vue";
+
+const plusIcon = "add";
 const props = defineProps({
 	eventId: String,
 });
@@ -75,8 +77,18 @@ const eventId = ref(props.eventId);
 const refresh = defineModel("refresh");
 const showError = ref(false);
 const attendanceList = ref("");
+const exportFields = ref([
+	{ name: "First name", selected: false },
+	{ name: "Last name", selected: false },
+	{ name: "Phone number", selected: false },
+	{ name: "Address", selected: false },
+	{ name: "Time in", selected: false },
+	{ name: "Time out", selected: false },
+	{ name: "Items", selected: false },
+]);
 
-DataTable.use(DataTablesCore);
+const exportTitle = defineModel("exportTitle");
+exportTitle.value = "Event Attendance";
 
 const columns = [
 	{ data: "first_name", title: "First Name" },
@@ -93,8 +105,11 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}events/${eventId.value}/participants/`,
+		url: `${API_URL}/events/${eventId.value}/participants/`,
 		type: "GET",
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("Authorization", API_KEY);
+		},
 		data: (query) => {
 			const order =
 				query.columns[query.order[0].column].data === "date"
@@ -163,7 +178,7 @@ const options = {
 		},
 	},
 	responsive: true,
-	lengthMenu: [10, 25, 50, 100],
+	lengthMenu: [50, 100],
 	language: {
 		searchPlaceholder: "Search ...",
 		search: "",
@@ -201,25 +216,29 @@ const options = {
 	destroy: true,
 };
 
-const table = ref();
+const displayExportModay = () => {
+	showModal("#exportModal", "#modal-dialog");
+};
 
-const exportEventsAttendance = () => {
-	csvExport(
-		attendanceList.value.map((attendee) => {
-			const { visit_date_time: time_in, visit_departure_time: time_out } =
-				attendee;
+const exportEventsAttendance = async (fields) => {
+	const selectedAttendee = attendanceList.value.map((attendee) => {
+		const data = {};
+		for (const field of fields) {
+			if (field === "phone_number") {
+				data[field] = `0${attendee.msisdn.slice(3)}`;
+			} else if (field === "time_in") {
+				data[field] = attendee.visit_date_time;
+			} else if (field === "time_out") {
+				data[field] = attendee.visit_departure_time;
+			} else {
+				data[field] = attendee[field];
+			}
+		}
 
-			const date = formatDateTime(attendee.date_time, { date: true });
+		return data;
+	});
 
-			delete attendee.created_at;
-			delete attendee.participant_id;
-			delete attendee.event_id;
-			delete attendee.visit_date_time;
-			delete attendee.date_time;
-			delete attendee.visit_departure_time;
-			return { ...attendee, time_in, time_out, date };
-		})
-	);
+	csvExport(selectedAttendee);
 };
 </script>
 

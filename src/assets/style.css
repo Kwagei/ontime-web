@@ -133,3 +133,7 @@ a {
 	border-radius: 0 !important;
 	transition: border-color 0.2s ease-in-out !important;
 }
+
+.datatable td {
+	text-align: left !important;
+}

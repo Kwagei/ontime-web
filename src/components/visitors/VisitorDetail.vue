@@ -147,7 +147,7 @@
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Icons from "../Icons.vue";
-import { API_URL } from "@/assets/js";
+import { API_KEY, API_URL } from "@/assets/js";
 
 import { useRoute } from "vue-router";
 import { computed, ref } from "vue";
@@ -156,7 +156,7 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
-import { formatDateTime } from "@/assets/js/util";
+import { formatDateTime } from "@/util/util";
 
 DataTable.use(DataTablesCore);
 
@@ -194,8 +194,11 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}visitors/${id.value}/visits`,
+		url: `${API_URL}/visitors/${id.value}/visits`,
 		type: "GET",
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("Authorization", API_KEY);
+		},
 		data: (query) => {
 			const order =
 				query.columns[query.order[0].column].data === "date"

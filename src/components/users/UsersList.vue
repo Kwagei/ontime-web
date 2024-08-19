@@ -49,8 +49,8 @@ import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
 import { useRouter } from "vue-router";
 
-import { API_URL } from "@/assets/js/index.js";
-import { formatDateTime } from "@/assets/js/util.js";
+import { API_KEY, API_URL } from "@/assets/js/index.js";
+import { formatDateTime } from "@/util/util.js";
 
 DataTable.use(DataTablesCore);
 
@@ -71,8 +71,11 @@ const options = {
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}users`,
+		url: `${API_URL}/users`,
 		type: "GET",
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("Authorization", API_KEY);
+		},
 		data: (query) => {
 			return {
 				start: query.start,

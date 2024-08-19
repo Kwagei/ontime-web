@@ -194,7 +194,7 @@ import {
 	removeClass,
 	addClass,
 	formValidation,
-} from "@/assets/js/util.js";
+} from "@/util/util.js";
 
 import BreadCrumbs from "../BreadCrumbs.vue";
 

@@ -231,7 +231,7 @@ import {
 	getUsers,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
-import { addClass, formValidation, getElement } from "@/assets/js/util";
+import { addClass, formValidation, getElement } from "@/util/util";
 
 const msisdn = ref("");
 const visitor = ref("");

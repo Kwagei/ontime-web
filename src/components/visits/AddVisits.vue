@@ -168,7 +168,7 @@ import {
 	formValidation,
 	getElement,
 	toggleVisibility,
-} from "@/assets/js/util";
+} from "@/util/util";
 
 import { ref, onMounted } from "vue";
 

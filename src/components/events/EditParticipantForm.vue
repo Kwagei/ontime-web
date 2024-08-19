@@ -244,7 +244,7 @@ import {
 	getElement,
 	msisdnValidation,
 	removeClass,
-} from "@/assets/js/util";
+} from "@/util/util";
 
 const props = defineProps({
 	data: {

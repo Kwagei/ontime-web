@@ -93,7 +93,7 @@
 					<label for="email" class="form-label">Email</label>
 					<div class="input-group">
 						<input
-							type="email"
+							type="text"
 							:class="[validEmail && 'validated', 'form-control']"
 							v-model="email"
 							id="email"
@@ -217,7 +217,7 @@ import {
 	getElement,
 	removeClass,
 	formValidation,
-} from "@/assets/js/util.js";
+} from "@/util/util.js";
 
 // Route and State
 const route = useRoute();

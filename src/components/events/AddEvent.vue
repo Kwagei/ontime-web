@@ -280,7 +280,13 @@
 import { ref, onMounted, watch } from "vue";
 import $ from "jquery";
 
-import { API_URL, getHosts, getRooms } from "../../assets/js/index.js";
+import {
+	API_KEY,
+	API_URL,
+	getEvents,
+	getHosts,
+	getRooms,
+} from "../../assets/js/index.js";
 
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
@@ -291,7 +297,7 @@ import {
 	getElement,
 	removeClass,
 	showModal,
-} from "@/assets/js/util.js";
+} from "@/util/util.js";
 
 // Event Creation Data
 const title = ref("");
@@ -418,6 +424,9 @@ const onSubmit = async () => {
 		url: options.url,
 		type: options.type,
 		data: body,
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("Authorization", API_KEY);
+		},
 		success: (data) => {
 			showModal("#alertModal", "#alertModalBody");
 
@@ -427,7 +436,9 @@ const onSubmit = async () => {
 				data.data.length ? data.data[0].id : data.data.id
 			}`;
 
-			resetForm();
+			if (setMode() !== "edit") {
+				resetForm();
+			}
 		},
 		error: (error) => {
 			showModal("#alertModal", "#alertModalBody");
@@ -476,40 +487,26 @@ function setMode() {
 
 async function getEventToEdit() {
 	try {
-		$.get(API_URL + `/events/${eventId.value}/`, (data) => {
-			const retrievedEvent = data.data[0];
+		const [event] = await getEvents(eventId.value);
 
-			title.value = retrievedEvent.title;
-			type.value = retrievedEvent.type;
-			facilitator.value = retrievedEvent.facilitator;
-			details.value = retrievedEvent.details;
-			hostValue.value = retrievedEvent.host;
-			hostID.value = retrievedEvent.host_id;
-			roomValue.value = retrievedEvent.room;
-			roomID.value = retrievedEvent.room_id;
-
-			// format date before setting it as the value
-			// start date input field in the form
-			startDate.value = new Date(retrievedEvent.start_date)
-				.toISOString()
-				.split("T")[0];
-
-			// format date before setting it as the value
-			// end date input field in the form
-			endDate.value = new Date(retrievedEvent.end_date)
-				.toISOString()
-				.split("T")[0];
-
-			errorGettingEventToEdit.value = false;
-		}).fail((error) => {
-			console.log("Error getting event to edit: ", error.responseJSON);
-			errorGettingEventToEdit.value = true;
-		});
+		title.value = event.title;
+		type.value = event.type;
+		facilitator.value = event.facilitator;
+		details.value = event.details;
+		hostValue.value = event.host;
+		hostID.value = event.host_id;
+		roomValue.value = event.room;
+		roomID.value = event.room_id;
+		startDate.value = formatEventDates(event.start_date);
+		endDate.value = formatEventDates(event.end_date);
 	} catch (error) {
 		console.log("Error getting event to edit: ", error.responseJSON);
 		errorGettingEventToEdit.value = true;
 	}
 }
+
+// format date back to ISOString before setting it as the value in start and end date fields
+const formatEventDates = (date) => new Date(date).toISOString().split("T")[0];
 </script>
 
 <style scoped>

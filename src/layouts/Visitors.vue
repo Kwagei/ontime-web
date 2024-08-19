@@ -68,7 +68,7 @@ const add = "add";
 
 import { RouterLink, RouterView } from "vue-router";
 import { csvExport, getVisitors } from "../assets/js/index.js";
-import { showModal } from "@/assets/js/util";
+import { showModal } from "@/util/util";
 import FilterModal from "@/components/modals/FilterModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
 

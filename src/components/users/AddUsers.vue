@@ -230,7 +230,7 @@ import {
 	removeClass,
 	formValidation,
 	passwordValidation,
-} from "@/assets/js/util.js";
+} from "@/util/util.js";
 
 // Route and State
 const route = useRoute();

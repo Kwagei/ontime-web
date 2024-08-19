@@ -14,7 +14,7 @@
 			class="modal-dialog modal-lg modal-dialog-centered"
 			id="modal-dialog"
 		>
-			<div class="modal-content">
+			<div class="modal-content rounded">
 				<div class="modal-header">
 					<button
 						type="button"
@@ -27,7 +27,10 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					<form class="row g-3" @submit.prevent="checkParticipantIn">
+					<form
+						class="row g-3 needs-validation"
+						@submit.prevent="checkParticipantIn"
+					>
 						<div class="">
 							<label for="belongings" class="form-label"
 								>Belongings</label
@@ -175,6 +178,7 @@ import {
 	registerVisitor,
 	getEvents,
 	API_URL,
+	API_KEY,
 } from "@/assets/js/index.js";
 import $ from "jquery";
 
@@ -184,7 +188,7 @@ import {
 	getElement,
 	removeClass,
 	showModal,
-} from "@/assets/js/util";
+} from "@/util/util";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -245,8 +249,11 @@ const dataTableOptions = ref({
 	select: true,
 	serverSide: true,
 	ajax: {
-		url: `${API_URL}events/${eventID.value}/participants`,
+		url: `${API_URL}/events/${eventID.value}/participants`,
 		type: "GET",
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader("Authorization", API_KEY);
+		},
 		data: (query) => {
 			return {
 				start: query.start,
@@ -311,6 +318,8 @@ const dataTableOptions = ref({
 				alert.value.pageLink = `/visits`;
 			} else {
 				// otherwise check visitor in
+				showModal("#visitModal", "#modal-dialog");
+
 				participantDetail(data.id);
 
 				participant.value = row;
@@ -478,12 +487,10 @@ const deleteBelongings = (item) => {
 };
 
 const participantDetail = async (id) => {
-	showModal("#visitModal", "#modal-dialog");
 	const event = events.value.find((val) => val.id === eventID.value);
 
 	// Find the specific participant being checked in
 	const participant = participants.value.find((val) => val.id === id);
-	console.log({ participant });
 
 	// Assign participant id for visit checking in
 	participant_id.value = participant.id;
@@ -493,7 +500,7 @@ const participantDetail = async (id) => {
 
 	// Create visitor if this participant is not already a visitor.
 	if (!visitorData) {
-		const insertedVisitorData = await registerVisitor({
+		const response = await registerVisitor({
 			first_name: participant.first_name,
 			middle_name: participant.middle_name,
 			last_name: participant.last_name,
@@ -502,7 +509,7 @@ const participantDetail = async (id) => {
 			address: address.value,
 			gender: participant.gender,
 		});
-		visitorData = insertedVisitorData.result.data[0];
+		visitorData = response.ok ? response.result.data[0] : visitorData;
 	}
 
 	// Add first name, add middle name if the visitor has one, and add last name

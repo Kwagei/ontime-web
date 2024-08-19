@@ -249,7 +249,7 @@ import {
 	getHosts,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
-import { addClass, getElement, removeClass } from "@/assets/js/util";
+import { addClass, getElement, removeClass } from "@/util/util";
 
 const events = ref(null);
 const options = ref([]);

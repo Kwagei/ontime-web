@@ -84,7 +84,7 @@ const columns = [
 		className: "text-center",
 		render: (data) => {
 			return `<button type="button" class="btn btn-secondary"
-                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" ${
+                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 0.70rem;" ${
 								data.departure_time ? "disabled" : ""
 							}>
                          Check Out

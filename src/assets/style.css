@@ -137,3 +137,7 @@ a {
 .datatable td {
 	text-align: left !important;
 }
+
+#dashboardTable .dt-paging {
+	display: none !important;
+}

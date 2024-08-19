@@ -232,17 +232,21 @@ const columns = [
 		className: "text-center",
 		render: (data) => {
 			return `<button type="button" class="btn btn-secondary"
-                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; width: 5rem; --bs-btn-font-size: .75rem;" ${
-								!data.visit_departure_time &&
-								data.participant_id
-									? "disabled"
-									: ""
+                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; width: 5rem; --bs-btn-font-size: 0.70rem;" ${
+								alreadyCheckedIn(data) ? "disabled" : ""
 							}>
-                         Check In
+                            ${
+								alreadyCheckedIn(data)
+									? "Checked In"
+									: "Check In"
+							}
                       </button>`;
 		},
 	},
 ];
+
+const alreadyCheckedIn = (data) =>
+	!data.visit_departure_time && data.participant_id;
 
 // Options for Data Table
 const dataTableOptions = ref({

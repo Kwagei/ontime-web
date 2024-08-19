@@ -83,7 +83,7 @@
 
 			<h4>Last 5 Check In</h4>
 			<div class="row">
-				<div class="col p-0">
+				<div class="col p-0" id="dashboardTable">
 					<VisitList
 						v-model:totalVisits="totalVisits"
 						v-model:filterDates="filterDates"
@@ -150,11 +150,6 @@ const isEventHappeningToday = (event) => {
 const getTodaysEvents = (events) => {
 	return events.filter(isEventHappeningToday);
 };
-
-onMounted(() => {
-	// Hide DataTable pagination controls
-	// getElement(".dt-paging").style.display = "none";
-});
 </script>
 
 <style scoped>

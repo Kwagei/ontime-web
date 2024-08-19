@@ -93,12 +93,8 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed } from "vue";
 
-const from = ref("");
-const to = ref("");
-const fromError = ref(false);
-const toError = ref(false);
 const emit = defineEmits(["export"]);
 
 const exportFields = defineModel("exportFields");

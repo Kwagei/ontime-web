@@ -109,6 +109,7 @@
 											type="checkbox"
 											value=""
 											id="form1Example3"
+											@change="stayLoggedIn"
 										/>
 										<label
 											class="form-check-label"
@@ -146,7 +147,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 
 import Icons from "../components/Icons.vue";
@@ -163,6 +164,12 @@ const type = ref(true);
 const email = ref("");
 const password = ref("");
 const router = useRouter();
+
+const keepLoggedIn = ref(false);
+
+const stayLoggedIn = (event) => {
+	keepLoggedIn.value = event.target.checked;
+};
 
 const togglePassword = () => {
 	if (hidePassword.value) {
@@ -195,7 +202,7 @@ const signIn = async () => {
 		if (ok) {
 			resetForm();
 			const { token } = result.data;
-			setCookie("token", token, 1);
+			setCookie("token", token, keepLoggedIn.value ? 1 : 0.5);
 			router.push("/dashboard");
 		}
 	}, 2000);

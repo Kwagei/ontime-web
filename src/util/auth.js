@@ -4,9 +4,7 @@ export const isAuthenticated = () => getCookie("token");
 
 export const getCookie = (name) => Cookies.get(name);
 
-export const setCookie = (name, value) => {
-	var in30Minutes = 1 / 60;
-	Cookies.set(name, value, { expires: in30Minutes });
-};
+export const setCookie = (name, value, expires) =>
+	Cookies.set(name, value, { expires });
 
 export const removeCookie = (name) => Cookies.remove(name);

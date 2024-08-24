@@ -141,3 +141,7 @@ a {
 #dashboardTable .dt-paging {
 	display: none !important;
 }
+
+input[type="search"] {
+	width: 40% !important;
+}

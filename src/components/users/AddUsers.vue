@@ -287,8 +287,6 @@ const onSubmit = async () => {
 		? await registerUser(user)
 		: await editUser(userInfo.id, user);
 
-	console.log({ response });
-
 	showModal("#alertModal", "#alertModalBody");
 	alert.value.status = response.ok ? "success" : "danger";
 	alert.value.message = response.result.message;

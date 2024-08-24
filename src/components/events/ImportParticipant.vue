@@ -85,7 +85,7 @@ import { parse } from "papaparse"; // Import Papa Parse for CSV parsing
 import $ from "jquery";
 import { useRoute } from "vue-router";
 
-import { API_URL } from "../../assets/js/index.js";
+import { API_URL, registerEventParticipants } from "../../assets/js/index.js";
 import ImportedParticipantsGrid from "./ImportedParticipantsGrid.vue";
 import EditParticipantForm from "./EditParticipantForm.vue";
 import Alert from "../Alert.vue";
@@ -148,8 +148,6 @@ function handleFileImport(event) {
 }
 
 async function onParticipantUpdate(updatedParticipant) {
-	console.log(updatedParticipant);
-
 	participants.value[participantToEdit.value.idx] = updatedParticipant;
 
 	// only repost the participants if there was an error
@@ -163,31 +161,19 @@ async function onParticipantUpdate(updatedParticipant) {
 }
 
 async function postParticipants() {
-	// $("body").css("pointer-events", "none");
-
-	const data = {
+	const { ok, result } = await registerEventParticipants({
 		event_id: props.eventId,
 		event_participants: participants.value,
-	};
+	});
 
-	try {
-		await $.post(API_URL + "event_participants/", data, () => {
-			// clear participant to edit if all went well
-			participantToEdit.value = {};
-
-			$("body").css("pointer-events", "auto");
-			emit("participantsImported", {
-				status: "success",
-				message: "Participants Successfully Imported",
-				pageLink: `/events/${eventId}`,
-			});
+	if (ok) {
+		emit("participantsImported", {
+			status: "success",
+			message: "Participants Successfully Imported",
+			pageLink: `/events/${eventId}`,
 		});
-		// $("body").css("pointer-events", "auto");
-	} catch (error) {
-		// $("body").css("pointer-events", "auto");
-
-		// only show the modal if there was an actual error
-		if (error.responseJSON.status === 500) {
+	} else {
+		if (result.status === 500) {
 			emit("errorImportingParticipants", {
 				status: "danger",
 				message: "Unable to Import Participants, try again",
@@ -197,20 +183,12 @@ async function postParticipants() {
 
 		showModal("#editParticipantModal", "#editParticipantModalBody");
 
-		// otherwise show the form to edit the specific participant with
-		// issue if it's a conflict or invalid data issue
 		participantToEdit.value = {
-			errorMessage: error.responseJSON.message,
-			participant: error.responseJSON.data.participant,
-			idx: error.responseJSON.data.idx,
-			status: error.responseJSON.status,
+			errorMessage: result.message,
+			participant: result.data.participant,
+			idx: result.data.index,
+			status: result.status,
 		};
-
-		// stop user from clicking around until the participant has been edited
-		// $("body").css("pointer-events", "none");
-
-		// allow them to only click the form
-		// $("#editParticipantFormWrapper").css("pointer-events", "auto");
 	}
 }
 

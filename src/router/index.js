@@ -3,7 +3,13 @@ import AddEvent from "../components/events/AddEvent.vue";
 import Events from "../layouts/Events.vue";
 import Event from "../components/events/Event.vue";
 import AddParticipant from "@/components/events/AddParticipant.vue";
+
+// Authentications
 import SignIn from "../views/SignIn.vue";
+import ResetPassword from "../views/ResetPassword.vue";
+import ResetCode from "@/components/resetPassword/ResetCode.vue";
+import ResetMail from "@/components/resetPassword/ResetMail.vue";
+
 // Visitors Components
 import VisitorDetail from "../components/visitors/VisitorDetail.vue";
 import Visitors from "../layouts/Visitors.vue";
@@ -29,7 +35,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import AppView from "@/views/AppView.vue";
 import AddUsers from "@/components/users/AddUsers.vue";
 import UserDetail from "@/components/users/UserDetail.vue";
-import { isAuthenticated } from "@/util/auth.js";
+import NewPassword from "@/components/resetPassword/NewPassword.vue";
 
 const routes = [
 	{
@@ -40,6 +46,35 @@ const routes = [
 		path: "/sign-in",
 		component: SignIn,
 		name: "sign-in",
+	},
+	{
+		path: "/reset-password",
+		component: ResetPassword,
+		name: "reset-password",
+		children: [
+			{
+				path: "",
+				component: ResetMail,
+				name: "reset-mail",
+			},
+			{
+				path: "code",
+				component: ResetCode,
+				name: "reset-code",
+				props: true,
+				meta: {
+					requiresAuth: true,
+				},
+			},
+			{
+				path: "new-password",
+				component: NewPassword,
+				name: "new-password",
+				meta: {
+					requiresAuth: true,
+				},
+			},
+		],
 	},
 	{
 		path: "/app",
@@ -66,7 +101,7 @@ const routes = [
 						path: "new-visitor",
 						component: AddVisitors,
 						name: "add-visitor",
-						prop: true,
+						props: true,
 					},
 					{
 						path: ":id",
@@ -202,19 +237,9 @@ const routes = [
 	},
 ];
 
-const router = createRouter({
+export const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes,
-});
-
-router.beforeEach((to, from) => {
-	// Check if the route requires authentication
-	if (to.matched.some((record) => record.meta.requiresAuth)) {
-		// If user is not authenticated, redirect to login
-		if (!isAuthenticated()) {
-			return { name: "sign-in" };
-		}
-	}
 });
 
 export default router;

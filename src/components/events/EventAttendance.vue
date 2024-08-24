@@ -225,7 +225,9 @@ const exportEventsAttendance = async (fields) => {
 		const data = {};
 		for (const field of fields) {
 			if (field === "phone_number") {
-				data[field] = `0${attendee.msisdn.slice(3)}`;
+				data[field] = attendee.msisdn.startsWith("231")
+					? `0${attendee.msisdn.slice(3)}`
+					: attendee.msisdn;
 			} else if (field === "time_in") {
 				data[field] = attendee.visit_date_time;
 			} else if (field === "time_out") {

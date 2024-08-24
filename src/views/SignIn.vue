@@ -10,27 +10,34 @@
 						style="border-radius: 1rem"
 					>
 						<div class="card-body p-5">
-							<div class="d-flex justify-content-center mb-3">
+							<div class="d-flex justify-content-center mb-4">
 								<img
 									src="../assets/images/ontime_logo.jpg"
 									style="width: 9rem"
 									alt=""
 								/>
 							</div>
-							<div
-								class="py-2 mb-3 text-center rounded"
-								id="message"
-							></div>
 
 							<form
 								@submit.prevent="signIn"
 								class="needs-validation"
 								novalidate
 							>
+								<div
+									v-if="isWarning"
+									class="py-2 mb-3 text-center rounded"
+									:style="`background-color: ${warningBgColor};`"
+									id="message"
+								>
+									<span :class="warningStatus">{{
+										warningMessage
+									}}</span>
+								</div>
+
 								<!-- EMAIL -->
 								<div
 									data-mdb-input-init
-									class="form-outline mb-4"
+									class="form-outline mb-3"
 								>
 									<label
 										class="form-label is-required"
@@ -58,7 +65,7 @@
 								<!-- PASSWORD -->
 								<div
 									data-mdb-input-init
-									class="form-outline mb-4"
+									class="form-outline mb-3"
 								>
 									<label
 										class="form-label is-required"
@@ -85,10 +92,12 @@
 											class="position-absolute end-0 cursor-pointer h-100 px-2 d-flex justify-content-center align-items-center password-visibility"
 										>
 											<Icons
+												class="cursor-pointer"
 												v-if="showPassword"
 												v-model:icon="visionIcon"
 											/>
 											<Icons
+												class="cursor-pointer"
 												v-if="hidePassword"
 												v-model:icon="hideIcon"
 											/>
@@ -101,7 +110,7 @@
 
 								<!-- Checkbox -->
 								<div
-									class="form-check d-flex justify-content-between align-items-center gap-1 mb-4"
+									class="form-check d-flex justify-content-between align-items-center gap-1 mb-3"
 								>
 									<div>
 										<input
@@ -121,7 +130,9 @@
 									<div
 										class="d-flex justify-content-end form-check-label"
 									>
-										<a href="#">Forgot Password?</a>
+										<a @click="resetPasswordForm" href="#"
+											>Forgot Password?</a
+										>
 									</div>
 								</div>
 
@@ -147,13 +158,13 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import Icons from "../components/Icons.vue";
 import { formValidation, getElement, removeClass } from "@/util/util";
 import { login } from "@/assets/js";
-import { setCookie } from "@/util/auth";
+import { setCookie } from "@/middlewares/auth.cookie";
 
 const visionIcon = "accessibility-vision";
 const hideIcon = "hide";
@@ -166,6 +177,10 @@ const password = ref("");
 const router = useRouter();
 
 const keepLoggedIn = ref(false);
+const isWarning = ref(false);
+const warningMessage = ref("");
+const warningStatus = ref("");
+const warningBgColor = ref("");
 
 const stayLoggedIn = (event) => {
 	keepLoggedIn.value = event.target.checked;
@@ -183,31 +198,53 @@ const togglePassword = () => {
 	}
 };
 
+/**
+ * Handles the sign-in process by validating the user's email and password,
+ * making an API call to authenticate the user, and displaying appropriate messages.
+ *
+ * @function signIn
+ * @returns {void}
+ */
 const signIn = async () => {
+	// Check if email and password fields are not empty
 	if (!email.value || !password.value) {
 		return;
 	}
 
+	// Make an API call to authenticate the user
 	const { ok, result } = await login({
 		username: email.value,
 		password: password.value,
 	});
 
+	// Display a warning message based on the API response
 	warning(
 		result.message,
 		ok ? "success" : "danger",
 		ok ? "#83d61631" : "#ea060629"
 	);
+
+	// After 1 second, perform further actions based on the API response
 	setTimeout(() => {
 		if (ok) {
+			// Reset form fields and remove validation classes
 			resetForm();
+
+			// Set the user's authentication token in the cookie
 			const { token } = result.data;
 			setCookie("token", token, keepLoggedIn.value ? 1 : 0.5);
+
+			// Navigate to the dashboard page
 			router.push("/dashboard");
 		}
-	}, 2000);
+	}, 1000);
 };
 
+const resetPasswordForm = () => {
+	router.push("/reset-password");
+};
+
+// Reset form fields and remove validation classes on form submission
 const resetForm = () => {
 	email.value = "";
 	password.value = "";
@@ -226,11 +263,10 @@ const resetForm = () => {
  * @param {string} bgColor - The background color to apply to the warning message container.
  */
 const warning = (message, className, bgColor) => {
-	const warningMessageContainer = getElement("#message");
-
-	warningMessageContainer.innerHTML = `<span class="${className}">${message}</span>`;
-	warningMessageContainer.style.backgroundColor = bgColor;
-	removeClass(warningMessageContainer, "hide");
+	isWarning.value = true;
+	warningMessage.value = message;
+	warningStatus.value = className;
+	warningBgColor.value = bgColor;
 };
 
 onMounted(async () => {
@@ -240,7 +276,7 @@ onMounted(async () => {
 
 <style>
 .form-check-label {
-	font-size: 0.8rem;
+	font-size: 0.9rem;
 }
 
 .danger {

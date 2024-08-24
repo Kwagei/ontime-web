@@ -3,12 +3,12 @@
 		<div class="d-flex justify-content-end gap-3 mt-2">
 			<input
 				type="search"
-				class="input-group-text w-50 text-start"
+				class="form-control form-control-lg w-50"
 				placeholder="Search..."
 				v-model="query"
 				@input="search"
 			/>
-			<select class="form-select w-25" v-model="type">
+			<select class="form-select" style="width: 23%" v-model="type">
 				<option value="first_name">First Name</option>
 				<option value="middle_name">Middle Name</option>
 				<option value="last_name">Last Name</option>
@@ -92,7 +92,7 @@
 								margin-left: 0.3rem;
 							"
 						>
-							{{ participant.msisdn }}
+							{{ `0${participant.msisdn.slice(3)}` }}
 						</span>
 					</div>
 

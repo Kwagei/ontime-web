@@ -176,9 +176,7 @@ export const getVisitors = async (query = {}) => {
 			throw new Error("Network response was not ok");
 		}
 		const result = await response.json();
-		const { data, length } = result.data;
-
-		return { data, length };
+		return result.data;
 	} catch (error) {
 		throw error;
 	}
@@ -396,6 +394,32 @@ export const login = async (data) => {
 	}
 };
 
+export const resetPassword = async (data) => {
+	const { code } = data;
+
+	try {
+		const options = {
+			method: "POST",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		};
+
+		const response = await fetch(
+			`${API_URL}/reset-password${code ? "/code" : ""}`,
+			options
+		);
+
+		const result = await response.json();
+
+		return { ok: response.ok, result };
+	} catch (error) {
+		console.log({ error });
+	}
+};
+
 /**
  * Retrieves a single user by id or phone number.
  *
@@ -555,6 +579,27 @@ export const getParticipants = async (id, query = {}) => {
 		}
 		const { data } = await response.json();
 		return data;
+	} catch (error) {
+		console.log({ error });
+	}
+};
+
+export const registerEventParticipants = async (data) => {
+	try {
+		const options = {
+			method: "POST",
+			headers: {
+				Authorization: API_KEY,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		};
+
+		const response = await fetch(`${API_URL}/event_participants`, options);
+
+		const result = await response.json();
+
+		return { ok: response.ok, result };
 	} catch (error) {
 		console.log({ error });
 	}

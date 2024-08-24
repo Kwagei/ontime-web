@@ -47,7 +47,7 @@ import { RouterLink, useRoute, useRouter } from "vue-router";
 import Icons from "@/components/Icons.vue";
 
 import { ref, watch } from "vue";
-import { removeCookie } from "@/util/auth";
+import { removeCookie } from "@/middlewares/auth.cookie";
 
 const route = useRoute();
 const router = useRouter();

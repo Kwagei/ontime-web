@@ -6,10 +6,7 @@
 					<div class="row align-items-start gap-4">
 						<div
 							class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
-							style="
-								padding-left: 2.5rem !important;
-								flex: 0 0 30%;
-							"
+							style="padding-left: 2.5rem !important"
 						>
 							<div
 								id="visitIcon"
@@ -29,10 +26,7 @@
 						</div>
 						<div
 							class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
-							style="
-								padding-left: 2.5rem !important;
-								flex: 0 0 30%;
-							"
+							style="padding-left: 2.5rem !important"
 						>
 							<div
 								id="eventIcon"
@@ -49,7 +43,28 @@
 							</div>
 						</div>
 						<div
-							class="form-control col d-flex rounded align-items-center gap-4"
+							class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
+							style="padding-left: 2.5rem !important"
+						>
+							<div
+								id="visitorIcon"
+								class="icon-circle"
+								style="background-color: rgb(255 204 0 / 19%)"
+							>
+								<Icons
+									class="icons"
+									v-model:icon="visitorIcon"
+								/>
+							</div>
+							<div
+								class="cards d-flex flex-column align-items-end"
+							>
+								<span>Total Visitors</span>
+								<h2>{{ totalVisitors }}</h2>
+							</div>
+						</div>
+						<div
+							class="form-control col d-none rounded align-items-center gap-4"
 							style="
 								margin-top: auto;
 								padding: 0 !important;
@@ -104,17 +119,18 @@ import { RouterLink } from "vue-router";
 import VisitList from "@/components/visits/VisitList.vue";
 import Icons from "@/components/Icons.vue";
 import { onMounted, ref, watch } from "vue";
-import { getElement } from "@/util/util";
+import { getVisitors } from "@/assets/js";
 
 const visitIcon = "house";
 const eventIcon = "calendar-event-agenda";
+const visitorIcon = "collective-class-training";
 
 const totalVisits = defineModel("totalVisits");
+const totalVisitors = defineModel("totalVisitors");
 const todaysVisits = defineModel("todaysVisits");
 const todaysEvents = ref(0);
 const allEvents = defineModel("allEvents");
 allEvents.value = [];
-
 const filterDates = ref({
 	from: "",
 	to: "",
@@ -150,6 +166,15 @@ const isEventHappeningToday = (event) => {
 const getTodaysEvents = (events) => {
 	return events.filter(isEventHappeningToday);
 };
+
+const fetchVisitors = async () => {
+	const { totalLength } = await getVisitors();
+	totalVisitors.value = totalLength;
+};
+
+onMounted(async () => {
+	await fetchVisitors();
+});
 </script>
 
 <style scoped>
@@ -199,5 +224,9 @@ span {
 
 #eventIcon {
 	color: #1971c2;
+}
+
+#visitorIcon {
+	color: #fc0;
 }
 </style>

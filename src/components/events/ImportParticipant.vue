@@ -91,7 +91,7 @@ import EditParticipantForm from "./EditParticipantForm.vue";
 import Alert from "../Alert.vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import BackArrow from "../BackArrow.vue";
-import { showModal } from "@/util/util.js";
+import { formatDateTime, showModal } from "@/util/util.js";
 
 const route = useRoute();
 const eventId = route.params.id;
@@ -103,6 +103,10 @@ const props = defineProps({
 	},
 	eventTitle: {
 		type: String,
+		required: true,
+	},
+	event: {
+		type: Object,
 		required: true,
 	},
 });
@@ -147,7 +151,7 @@ function handleFileImport(event) {
 	} else errorAlertMessage.value = "CSV File only";
 }
 
-async function onParticipantUpdate(updatedParticipant) {
+const onParticipantUpdate = async (updatedParticipant) => {
 	participants.value[participantToEdit.value.idx] = updatedParticipant;
 
 	// only repost the participants if there was an error
@@ -158,19 +162,21 @@ async function onParticipantUpdate(updatedParticipant) {
 
 	// empty the value if it there wasn't any error
 	participantToEdit.value = {};
-}
+};
 
-async function postParticipants() {
+const postParticipants = async () => {
 	const { ok, result } = await registerEventParticipants({
-		event_id: props.eventId,
+		event: formatEvent(),
 		event_participants: participants.value,
 	});
+
+	console.log(result);
 
 	if (ok) {
 		emit("participantsImported", {
 			status: "success",
 			message: "Participants Successfully Imported",
-			pageLink: `/events/${eventId}`,
+			pageLink: `/events/${props.event.id}`,
 		});
 	} else {
 		if (result.status === 500) {
@@ -190,7 +196,7 @@ async function postParticipants() {
 			status: result.status,
 		};
 	}
-}
+};
 
 function removeEmptyRows(data) {
 	// only keep rows that have either of the values
@@ -270,6 +276,16 @@ function deleteParticipant(msisdn) {
 
 	participants.value.splice(idxToDelete, 1);
 }
+
+const formatEvent = () => {
+	return {
+		id: props.event.id,
+		title: props.event.title,
+		location: "Orange Digital Center, Oldest Congo Twon.",
+		date: formatDateTime(props.event.start_date, { date: true }),
+		time: formatDateTime(props.event.start_date, { time: true }),
+	};
+};
 </script>
 
 <style scoped>

@@ -42,6 +42,7 @@
 			/>
 			<ImportParticipant
 				v-if="state == 'importParticipants'"
+				:event="event"
 				:eventId="eventId"
 				:eventTitle="event.title"
 				@switch="switchState"

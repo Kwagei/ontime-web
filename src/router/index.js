@@ -70,9 +70,9 @@ const routes = [
 				path: "new-password",
 				component: NewPassword,
 				name: "new-password",
-				meta: {
-					requiresAuth: true,
-				},
+				// meta: {
+				// 	requiresAuth: true,
+				// },
 			},
 		],
 	},
@@ -85,9 +85,9 @@ const routes = [
 				path: "/dashboard",
 				component: Dashboard,
 				name: "dashboard",
-				meta: {
-					requiresAuth: true,
-				},
+				// meta: {
+				// 	requiresAuth: true,
+				// },
 			},
 			{
 				path: "/visitors",
@@ -119,9 +119,9 @@ const routes = [
 						],
 					},
 				],
-				meta: {
-					requiresAuth: true,
-				},
+				// meta: {
+				// 	requiresAuth: true,
+				// },
 			},
 			{
 				path: "/visits",
@@ -152,9 +152,9 @@ const routes = [
 						name: "add-workspace",
 					},
 				],
-				meta: {
-					requiresAuth: true,
-				},
+				// meta: {
+				// 	requiresAuth: true,
+				// },
 			},
 			{
 				path: "/users",
@@ -185,9 +185,9 @@ const routes = [
 						],
 					},
 				],
-				meta: {
-					requiresAuth: true,
-				},
+				// meta: {
+				// 	requiresAuth: true,
+				// },
 			},
 			{
 				path: "/events",
@@ -229,9 +229,9 @@ const routes = [
 						name: "new-room",
 					},
 				],
-				meta: {
-					requiresAuth: true,
-				},
+				// meta: {
+				// 	requiresAuth: true,
+				// },
 			},
 		],
 	},

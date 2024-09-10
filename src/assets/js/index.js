@@ -22,7 +22,7 @@ export const registerVisit = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -77,7 +77,7 @@ export const getVisits = async (queryParams = {}) => {
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 		});
@@ -101,7 +101,7 @@ export const updateDepartureTime = async (id, data) => {
 		const options = {
 			method: "PUT",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -128,7 +128,7 @@ export const registerVisitor = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -167,7 +167,7 @@ export const getVisitors = async (query = {}) => {
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 		});
@@ -199,7 +199,7 @@ export const getSingleVisitor = async ({ id, msisdn }) => {
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 		});
@@ -220,7 +220,7 @@ export const editVisitor = async (id, data) => {
 		const options = {
 			method: "PUT",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -272,7 +272,7 @@ export const getVisitorWithVisits = async (id, query) => {
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 		});
@@ -295,7 +295,7 @@ export const registerUser = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -316,7 +316,7 @@ export const editUser = async (id, data) => {
 		const options = {
 			method: "PUT",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -344,7 +344,7 @@ export const getUsers = async () => {
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 		});
@@ -378,7 +378,7 @@ export const login = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -401,7 +401,7 @@ export const resetPassword = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -443,7 +443,7 @@ export const getSingleUser = async (data) => {
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 		});
@@ -474,7 +474,7 @@ export const deleteUser = async (id) => {
 	const options = {
 		method: "DELETE",
 		headers: {
-			Authorization: API_KEY,
+			authorization: API_KEY,
 			"Content-Type": "application/json",
 		},
 	};
@@ -530,7 +530,7 @@ export const getEvents = async (id, query = {}) => {
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 		});
@@ -569,7 +569,7 @@ export const getParticipants = async (id, query = {}) => {
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 		});
@@ -589,7 +589,7 @@ export const registerEventParticipants = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -617,7 +617,7 @@ export const getHosts = async (id) => {
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 		});
@@ -637,7 +637,7 @@ export const registerHost = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -658,7 +658,7 @@ export const editHost = async (id, data) => {
 		const options = {
 			method: "PUT",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -686,7 +686,7 @@ export const getRooms = async (id) => {
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 		});
@@ -705,7 +705,7 @@ export const registerRoom = async (data) => {
 		const options = {
 			method: "POST",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),
@@ -726,7 +726,7 @@ export const editRoom = async (id, data) => {
 		const options = {
 			method: "PUT",
 			headers: {
-				Authorization: API_KEY,
+				authorization: API_KEY,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(data),

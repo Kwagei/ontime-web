@@ -74,7 +74,7 @@ const options = {
 		url: `${API_URL}/users`,
 		type: "GET",
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader("Authorization", API_KEY);
+			xhr.setRequestHeader("authorization", API_KEY);
 		},
 		data: (query) => {
 			return {
@@ -106,6 +106,7 @@ const options = {
 				user.roles = user.roles[0].toUpperCase();
 			});
 
+			console.log(users);
 			return users;
 		},
 		error: (error) => {
@@ -162,7 +163,7 @@ const options = {
 	destroy: true,
 	createdRow: (row, data) => {
 		$(row).on("click", (event) => {
-			// if (event.target.dataset.empty) addVisitor();
+			if (event.target.dataset.empty) addVisitor();
 
 			const visitorData = data;
 

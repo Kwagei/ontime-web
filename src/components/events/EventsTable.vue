@@ -77,7 +77,7 @@ const options = {
 		url: `${API_URL}/events`,
 		type: "GET",
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader("Authorization", API_KEY);
+			xhr.setRequestHeader("authorization", API_KEY);
 		},
 		data: (query) => {
 			const order =

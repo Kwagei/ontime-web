@@ -83,10 +83,10 @@ const navItems = [
 		name: "events",
 		svg: "calendar-event-agenda",
 	},
-	{
-		name: "users",
-		svg: "avatar",
-	},
+	// {
+	// 	name: "users",
+	// 	svg: "avatar",
+	// },
 ];
 
 const signOut = () => {

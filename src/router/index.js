@@ -40,7 +40,7 @@ import NewPassword from "@/components/resetPassword/NewPassword.vue";
 const routes = [
 	{
 		path: "",
-		redirect: "/sign-in",
+		redirect: "/dashboard",
 	},
 	{
 		path: "/sign-in",

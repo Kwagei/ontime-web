@@ -256,7 +256,7 @@ const dataTableOptions = ref({
 		url: `${API_URL}/events/${eventID.value}/participants`,
 		type: "GET",
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader("Authorization", API_KEY);
+			xhr.setRequestHeader("authorization", API_KEY);
 		},
 		data: (query) => {
 			return {

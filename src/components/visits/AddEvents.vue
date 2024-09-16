@@ -436,8 +436,10 @@ const checkParticipantIn = async () => {
 		room_id: room_id.value,
 		host_id: host_id.value,
 		purpose: purpose.value,
+		address: address.value,
 		participant_id: participant_id.value,
 	};
+	// console.log(visitData);
 
 	const response = await registerVisit(visitData);
 
@@ -501,6 +503,7 @@ const participantDetail = async (id) => {
 
 	// Check if the visitor exists
 	let visitorData = await getSingleVisitor({ msisdn: participant.msisdn });
+	// console.log(visitorData.address);
 
 	// Create visitor if this participant is not already a visitor.
 	if (!visitorData) {

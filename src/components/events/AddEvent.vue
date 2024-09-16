@@ -425,7 +425,7 @@ const onSubmit = async () => {
 		type: options.type,
 		data: body,
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader("Authorization", API_KEY);
+			xhr.setRequestHeader("authorization", API_KEY);
 		},
 		success: (data) => {
 			showModal("#alertModal", "#alertModalBody");

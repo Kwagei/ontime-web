@@ -1,101 +1,101 @@
 svg {
-	width: 30px;
-	height: 30px;
-	margin-right: 0.5rem;
+    width: 30px;
+    height: 30px;
+    margin-right: 0.5rem;
 }
 
 .nav-link {
-	padding: 0.5rem 2rem;
+    padding: 0.5rem 2rem;
 }
 
 #app-title {
-	padding: 0 !important;
+    padding: 0 !important;
 }
 
 a.router-link-active {
-	color: var(--bs-black) !important;
-	background-color: var(--bs-nav-pills-link-active-bg);
+    color: var(--bs-black) !important;
+    background-color: var(--bs-nav-pills-link-active-bg);
 }
 
 a.router-link-active path {
-	fill: var(--bs-black) !important;
+    fill: var(--bs-black) !important;
 }
 
 div.dt-container .dt-search input {
-	padding: calc(1rem - 1px) 1rem calc(0.5rem + 1px);
-	font-family: inherit;
-	font-size: 1rem;
-	font-weight: 700;
-	line-height: 1.25;
-	color: var(--bs-body-color);
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	background-color: var(--bs-body-bg);
-	background-clip: padding-box;
-	border: var(--bs-border-width) solid var(--bs-border-color-subtle);
-	border-radius: 0;
-	transition: border-color 0.2s ease-in-out;
+    padding: calc(1rem - 1px) 1rem calc(0.5rem + 1px);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--bs-body-color);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid var(--bs-border-color-subtle);
+    border-radius: 0;
+    transition: border-color 0.2s ease-in-out;
 }
 
 div.dt-container select.dt-input {
-	padding: 0.5rem 0.7rem;
-	font-size: 1rem;
-	font-weight: 700;
-	line-height: 1.25;
-	color: var(--bs-body-color);
-	background-color: var(--bs-body-bg);
-	background-clip: padding-box;
-	border-radius: 0;
-	border: 0.125rem solid black;
-	transition: border-color 0.2s ease-in-out;
+    padding: 0.5rem 0.7rem;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border-radius: 0;
+    border: 0.125rem solid black;
+    transition: border-color 0.2s ease-in-out;
 }
 
 div.dt-container .dt-paging .dt-paging-button.current {
-	background-color: black;
-	color: #fff !important;
+    background-color: black;
+    color: #fff !important;
 }
 
 div.dt-container .dt-paging .dt-paging-button:hover {
-	background-color: black !important;
-	color: #fff !important;
+    background-color: black !important;
+    color: #fff !important;
 }
 
 div.dt-container select.dt-input:hover {
-	background-color: #000;
-	color: #fff;
+    background-color: #000;
+    color: #fff;
 }
 
 div.dt-container select.dt-input + label {
-	display: none;
+    display: none;
 }
 
 table tr {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 @media (hover: hover) {
-	a:hover {
-		background-color: var(--bs-white) !important;
-		color: var(--bs-black) !important;
-	}
+    a:hover {
+        background-color: var(--bs-white) !important;
+        color: var(--bs-black) !important;
+    }
 
-	a:hover path {
-		fill: var(--bs-black) !important;
-	}
-	.hover-btn:hover {
-		background-color: var(--bs-black) !important;
-		color: white !important;
-	}
+    a:hover path {
+        fill: var(--bs-black) !important;
+    }
+    .hover-btn:hover {
+        background-color: var(--bs-black) !important;
+        color: white !important;
+    }
 
-	.hover-btn:hover path,
-	.hover-btn:hover g {
-		fill: var(--bs-white) !important;
-	}
+    .hover-btn:hover path,
+    .hover-btn:hover g {
+        fill: var(--bs-white) !important;
+    }
 }
 
 .dropdown-item {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .btn,
@@ -103,45 +103,70 @@ input,
 select,
 textarea,
 a {
-	border-radius: 0.3rem !important;
+    border-radius: 0.3rem !important;
 }
 
 .boxShadow {
-	box-shadow: 0 4px 4px rgba(0 0 0 / 6%), 0 1px 4px rgba(0 0 0 / 18%);
+    box-shadow: 0 4px 4px rgba(0 0 0 / 6%), 0 1px 4px rgba(0 0 0 / 18%);
 }
 
 .helpMessage {
-	font-weight: 400;
-	font-size: small;
+    font-weight: 400;
+    font-size: small;
 }
 
 .multiselect-form-control {
-	display: block !important;
-	width: 100% !important;
-	padding: calc(1rem - 1px) 1rem calc(0.5rem + 1px) !important;
-	font-family: inherit !important;
-	font-size: 1rem !important;
-	font-weight: 700 !important;
-	line-height: 1.25 !important;
-	color: var(--bs-body-color) !important;
-	-webkit-appearance: none !important;
-	-moz-appearance: none !important;
-	appearance: none !important;
-	background-color: var(--bs-body-bg) !important;
-	background-clip: padding-box !important;
-	border: var(--bs-border-width) solid var(--bs-border-color-subtle) !important;
-	border-radius: 0 !important;
-	transition: border-color 0.2s ease-in-out !important;
+    display: block !important;
+    width: 100% !important;
+    padding: calc(1rem - 1px) 1rem calc(0.5rem + 1px) !important;
+    font-family: inherit !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    color: var(--bs-body-color) !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-color: var(--bs-body-bg) !important;
+    background-clip: padding-box !important;
+    border: var(--bs-border-width) solid var(--bs-border-color-subtle) !important;
+    border-radius: 0 !important;
+    transition: border-color 0.2s ease-in-out !important;
 }
 
 .datatable td {
-	text-align: left !important;
+    text-align: left !important;
 }
 
 #dashboardTable .dt-paging {
-	display: none !important;
+    display: none !important;
+}
+
+@media (max-width: 1250px) {
+    .container {
+        padding: 0.5rem !important;
+        max-width: none;
+    }
+
+    #sideBar {
+        display: none;
+    }
+
+    main {
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 1251px) {
+    #sideBar {
+        display: flex !important;
+    }
+
+    main {
+        margin-left: 20rem !important;
+    }
 }
 
 input[type="search"] {
-	width: 40% !important;
+    width: 40% !important;
 }

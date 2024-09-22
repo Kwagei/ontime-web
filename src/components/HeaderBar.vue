@@ -1,43 +1,77 @@
 <template>
-	<header class="bg-white">
-		<nav class="navbar sticky-top container">
-			<div
-				class="d-flex align-items-center justify-content-between w-100 px-3"
-			>
-				<div class="navbar-brand">
-					<h3 class="m-0 active-section">{{ activeSection }}</h3>
-				</div>
-				<div
-					class="bg-dark rounded-circle p-1"
-					style="width: 40px; height: 40px"
-				>
-					<img
-						class="w-100 f-100"
-						src="../assets/images/user.png"
-						alt=""
-					/>
-				</div>
-			</div>
-		</nav>
-	</header>
+    <header class="bg-white">
+        <nav class="navbar sticky-top container">
+            <div
+                id="headWrapper"
+                class="d-flex align-items-center justify-content-between w-100 px-3 py-2"
+            >
+                <div
+                    id="displaySidebarHamburger"
+                    class="d-none p-2 border border-1"
+                    style="
+                        width: 45px;
+                        height: 45px;
+                        border-radius: 5px;
+                        order: -1 !important;
+                        cursor: pointer;
+                    "
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </div>
+                <div class="navbar-brand order-0">
+                    <h3 class="m-0 active-section">{{ activeSection }}</h3>
+                </div>
+                <div
+                    class="bg-dark rounded-circle p-1"
+                    style="width: 40px; height: 40px"
+                >
+                    <img
+                        class="w-100 f-100"
+                        src="../assets/images/user.png"
+                        alt=""
+                    />
+                </div>
+            </div>
+        </nav>
+    </header>
 </template>
 
 <script setup>
+import { onMounted } from "vue";
+
 const props = defineProps({
-	activeSection: {
-		type: String,
-		required: true,
-	},
+    activeSection: {
+        type: String,
+        required: true,
+    },
+});
+
+onMounted(() => {
+    $("#displaySidebarHamburger").on("click", () => {
+        $("#sideBar").css("display", "flex");
+        $("#sideBar").css("z-index", "10000");
+    });
 });
 </script>
 
 <style scoped>
 header {
-	position: sticky;
-	top: 0;
-	z-index: 2000;
+    position: sticky;
+    top: 0;
+    z-index: 2000;
 }
+
+@media (max-width: 1250px) {
+    #headWrapper {
+        padding: 1rem 0 !important;
+    }
+
+    #displaySidebarHamburger {
+        display: inline-flex !important;
+    }
+}
+
 .active-section {
-	text-transform: capitalize !important;
+    text-transform: capitalize !important;
 }
 </style>

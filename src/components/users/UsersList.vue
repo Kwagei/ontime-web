@@ -1,48 +1,48 @@
 <template>
-	<div
-		class="table-responsive container p-0 d-flex flex-column"
-		style="gap: 0.7rem"
-	>
-		<div
-			style="font-weight: 400; font-size: 1rem"
-			class="mb-0 d-flex align-items-center"
-			v-if="filterDates.from || filterDates.to"
-		>
-			{{ filterInfo }}
+    <div
+        class="table-responsive container p-0 d-flex flex-column"
+        style="gap: 0.7rem"
+    >
+        <div
+            style="font-weight: 400; font-size: 1rem"
+            class="mb-0 d-flex align-items-center"
+            v-if="filterDates.from || filterDates.to"
+        >
+            {{ filterInfo }}
 
-			<button
-				type="button"
-				class="btn btn-primary mx-2"
-				style="
-					--bs-btn-padding-y: 0.25rem;
-					--bs-btn-padding-x: 0.5rem;
-					--bs-btn-font-size: 0.75rem;
-				"
-				@click="clearFilter"
-			>
-				Clear
-			</button>
-		</div>
+            <button
+                type="button"
+                class="btn btn-primary mx-2"
+                style="
+                    --bs-btn-padding-y: 0.25rem;
+                    --bs-btn-padding-x: 0.5rem;
+                    --bs-btn-font-size: 0.75rem;
+                "
+                @click="clearFilter"
+            >
+                Clear
+            </button>
+        </div>
 
-		<div>
-			<DataTable
-				id="usersTable"
-				:key="tableKey"
-				class="display w-100 table"
-				:columns="columns"
-				:options="options"
-				ref="table"
-				v-show="!showError"
-			/>
-			<h3 class="mt-5 text-center fw-bold" v-if="showError">
-				Unable to load users, try again!
-			</h3>
-		</div>
-	</div>
+        <div>
+            <DataTable
+                id="usersTable"
+                :key="tableKey"
+                class="display w-100 table"
+                :columns="columns"
+                :options="options"
+                ref="table"
+                v-show="!showError"
+            />
+            <h3 class="mt-5 text-center fw-bold" v-if="showError">
+                Unable to load users, try again!
+            </h3>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -58,69 +58,69 @@ const filterDates = defineModel("filterDates");
 const totalUsers = defineModel("totalUsers");
 
 const columns = [
-	{ data: "username", title: "User name" },
-	{ data: "email", title: "Email" },
-	{ data: "msisdn", title: "Phone number" },
-	{ data: "address", title: "Address" },
-	{ data: "roles", title: "Role" },
-	{ data: "created_at", title: "Created At" },
+    { data: "username", title: "User name" },
+    { data: "email", title: "Email" },
+    { data: "msisdn", title: "Phone number" },
+    { data: "address", title: "Address" },
+    { data: "roles", title: "Role" },
+    { data: "created_at", title: "Creation Date" },
 ];
 
 const options = {
-	responsive: true,
-	select: true,
-	serverSide: true,
-	ajax: {
-		url: `${API_URL}/users`,
-		type: "GET",
-		beforeSend: function (xhr) {
-			xhr.setRequestHeader("authorization", API_KEY);
-		},
-		data: (query) => {
-			return {
-				start: query.start,
-				limit: query.length,
-				search: query.search.value,
-				from: filterDates.value.from || "",
-				to: filterDates.value.to || "",
-				sort: query.columns[query.order[0].column].data,
-				order: query.order[0].dir,
-			};
-		},
-		dataSrc: (json) => {
-			showError.value = false;
-			refresh.value = false;
+    responsive: true,
+    select: true,
+    serverSide: true,
+    ajax: {
+        url: `${API_URL}/users`,
+        type: "GET",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("authorization", API_KEY);
+        },
+        data: (query) => {
+            return {
+                start: query.start,
+                limit: query.length,
+                search: query.search.value,
+                from: filterDates.value.from || "",
+                to: filterDates.value.to || "",
+                sort: query.columns[query.order[0].column].data,
+                order: query.order[0].dir,
+            };
+        },
+        dataSrc: (json) => {
+            showError.value = false;
+            refresh.value = false;
 
-			const { users, totalLength } = json.data;
+            const { users, totalLength } = json.data;
 
-			json.recordsTotal = totalLength;
-			json.recordsFiltered = totalLength;
-			totalUsers.value = totalLength;
+            json.recordsTotal = totalLength;
+            json.recordsFiltered = totalLength;
+            totalUsers.value = totalLength;
 
-			users.forEach((user) => {
-				user.address = formatAddress(user.address);
-				user.msisdn = `0${user.msisdn[0].slice(3)}`;
-				user.created_at = formatDateTime(user.created_at, {
-					date: true,
-				});
-				user.roles = user.roles[0].toUpperCase();
-			});
+            users.forEach((user) => {
+                user.address = formatAddress(user.address);
+                user.msisdn = `0${user.msisdn[0].slice(3)}`;
+                user.created_at = formatDateTime(user.created_at, {
+                    date: true,
+                });
+                user.roles = user.roles[0].toUpperCase();
+            });
 
-			console.log(users);
-			return users;
-		},
-		error: (error) => {
-			console.log("Error fetching data:", error);
-			showError.value = true;
-			refresh.value = false;
-		},
-	},
-	responsive: true,
-	lengthMenu: [10, 25, 50, 100],
-	language: {
-		searchPlaceholder: "Search ...",
-		search: "",
-		emptyTable: `
+            console.log(users);
+            return users;
+        },
+        error: (error) => {
+            console.log("Error fetching data:", error);
+            showError.value = true;
+            refresh.value = false;
+        },
+    },
+    responsive: true,
+    lengthMenu: [10, 25, 50, 100],
+    language: {
+        searchPlaceholder: "Search ...",
+        search: "",
+        emptyTable: `
 			<div class="d-flex gap-3 my-3 flex-column align-items-center">
 				No Visitor to show!
 				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-group" viewBox="0 0 1000 1000">
@@ -135,7 +135,7 @@ const options = {
 				</button>
 			</div>
         `,
-		zeroRecords: `
+        zeroRecords: `
 			<div class="d-flex gap-3 my-3 flex-column align-items-center">
 				No match found!
 				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-group" viewBox="0 0 1000 1000">
@@ -151,25 +151,25 @@ const options = {
 				</button>
 			</div>
 		`,
-		loadingRecords: `
+        loadingRecords: `
 			<div class="d-flex justify-content-center p-4">
 				<div class="spinner-border" role="status">
 					<span class="visually-hidden">Loading...</span>
 				</div>
 			</div>
 		`,
-	},
-	order: [[5, "desc"]],
-	destroy: true,
-	createdRow: (row, data) => {
-		$(row).on("click", (event) => {
-			if (event.target.dataset.empty) addVisitor();
+    },
+    order: [[5, "desc"]],
+    destroy: true,
+    createdRow: (row, data) => {
+        $(row).on("click", (event) => {
+            if (event.target.dataset.empty) addVisitor();
 
-			const visitorData = data;
+            const visitorData = data;
 
-			if (visitorData) userDetail(visitorData.id);
-		});
-	},
+            if (visitorData) userDetail(visitorData.id);
+        });
+    },
 };
 
 const table = ref();
@@ -181,101 +181,101 @@ const router = useRouter();
 const refresh = defineModel("refresh");
 
 watch(
-	() => refresh.value,
-	() => {
-		// update table Key to force data table to re render
-		tableKey.value += 1;
-	}
+    () => refresh.value,
+    () => {
+        // update table Key to force data table to re render
+        tableKey.value += 1;
+    }
 );
 
 const userDetail = (id) => {
-	router.push({ name: "userDetail", params: { id } });
+    router.push({ name: "userDetail", params: { id } });
 };
 
 function formatAddress(address) {
-	if (!address) {
-		return "";
-	}
+    if (!address) {
+        return "";
+    }
 
-	const addressLen = address.length;
-	const newAddress =
-		addressLen >= MAX_DETAIL_LEN
-			? `${address.slice(0, MAX_DETAIL_LEN)}...`
-			: address;
+    const addressLen = address.length;
+    const newAddress =
+        addressLen >= MAX_DETAIL_LEN
+            ? `${address.slice(0, MAX_DETAIL_LEN)}...`
+            : address;
 
-	return newAddress;
+    return newAddress;
 }
 
 const filterInfo = computed(() => {
-	return `Showing users ${
-		filterDates.value.from
-			? "from " + formatDateTime(filterDates.value.from, { date: true })
-			: ""
-	} ${
-		filterDates.value.to
-			? "up to " + formatDateTime(filterDates.value.to, { date: true })
-			: ""
-	} `;
+    return `Showing users ${
+        filterDates.value.from
+            ? "from " + formatDateTime(filterDates.value.from, { date: true })
+            : ""
+    } ${
+        filterDates.value.to
+            ? "up to " + formatDateTime(filterDates.value.to, { date: true })
+            : ""
+    } `;
 });
 
 // retrieve events in date range
 watch(
-	// watch for change on the from or to dates
-	() => [filterDates.value.from, filterDates.value.to],
-	([newFrom, newTo]) => {
-		// update the date from and to dates for the request query
-		filterDates.value.from = newFrom;
-		filterDates.value.to = newTo;
+    // watch for change on the from or to dates
+    () => [filterDates.value.from, filterDates.value.to],
+    ([newFrom, newTo]) => {
+        // update the date from and to dates for the request query
+        filterDates.value.from = newFrom;
+        filterDates.value.to = newTo;
 
-		// update the table key and force the table to reload
-		tableKey.value += 1;
-	}
+        // update the table key and force the table to reload
+        tableKey.value += 1;
+    }
 );
 
 const clearFilter = () => {
-	filterDates.value.from = "";
-	filterDates.value.to = "";
-	tableKey.value++;
+    filterDates.value.from = "";
+    filterDates.value.to = "";
+    tableKey.value++;
 };
 </script>
 
 <style scoped>
 table {
-	margin: 0;
+    margin: 0;
 }
 
 table input {
-	background-color: red !important;
+    background-color: red !important;
 }
 
 tr {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 th,
 td {
-	padding: 0.9rem;
-	font-size: 0.9rem;
+    padding: 0.9rem;
+    font-size: 0.9rem;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {
-	th,
-	td {
-		padding: 0.7rem;
-	}
+    th,
+    td {
+        padding: 0.7rem;
+    }
 }
 
 svg.solaris-icon {
-	width: 1.2rem;
-	height: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
 }
 
 svg {
-	width: 1rem !important;
-	height: 2rem !important;
+    width: 1rem !important;
+    height: 2rem !important;
 }
 
 .empty-table:hover svg path {
-	fill: black !important;
+    fill: black !important;
 }
 </style>

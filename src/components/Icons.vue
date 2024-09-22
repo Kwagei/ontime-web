@@ -1,5 +1,10 @@
 <template>
-    <svg style="margin-right: 0" class="solaris-icon" aria-hidden="true" focusable="false">
+    <svg
+        style="margin-right: 0"
+        class="solaris-icon"
+        aria-hidden="true"
+        focusable="false"
+    >
         <use :href="`${path}#${icon}`" />
     </svg>
 </template>

@@ -1,52 +1,52 @@
 <template>
-	<div
-		class="table-responsive container p-0 d-flex flex-column"
-		style="gap: 0.7rem"
-	>
-		<div class="mb-0" v-show="filterDates.from || filterDates.to">
-			{{ filterInfo }}
+    <div
+        class="table-responsive container p-0 d-flex flex-column"
+        style="gap: 0.7rem"
+    >
+        <div class="mb-0" v-show="filterDates.from || filterDates.to">
+            {{ filterInfo }}
 
-			<button
-				type="button"
-				class="btn btn-primary mx-2"
-				style="
-					--bs-btn-padding-y: 0.25rem;
-					--bs-btn-padding-x: 0.5rem;
-					--bs-btn-font-size: 0.75rem;
-				"
-				@click="clearFilter"
-			>
-				Clear
-			</button>
-		</div>
+            <button
+                type="button"
+                class="btn btn-primary mx-2"
+                style="
+                    --bs-btn-padding-y: 0.25rem;
+                    --bs-btn-padding-x: 0.5rem;
+                    --bs-btn-font-size: 0.75rem;
+                "
+                @click="clearFilter"
+            >
+                Clear
+            </button>
+        </div>
 
-		<div>
-			<DataTable
-				v-show="!showError"
-				:key="tableKey"
-				id="visitsTable"
-				class="display w-100 table"
-				:columns="columns"
-				:options="options"
-				ref="table"
-			/>
+        <div>
+            <DataTable
+                v-show="!showError"
+                :key="tableKey"
+                id="visitsTable"
+                class="display w-100 table"
+                :columns="columns"
+                :options="options"
+                ref="table"
+            />
 
-			<h3 class="mt-5 text-center fw-bold" v-if="showError">
-				Unable to load visits, try again!
-			</h3>
-		</div>
-	</div>
+            <h3 class="mt-5 text-center fw-bold" v-if="showError">
+                Unable to load visits, try again!
+            </h3>
+        </div>
+    </div>
 </template>
 
 <script setup>
 import { API_KEY, API_URL, updateDepartureTime } from "@/assets/js/index.js";
 import {
-	formatDateTime,
-	formatDepartureTime,
-	formatVisitData,
+    formatDateTime,
+    formatDepartureTime,
+    formatVisitData,
 } from "@/util/util.js";
 
-import { onMounted, ref, watch, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -56,7 +56,6 @@ DataTable.use(DataTablesCore);
 
 const totalVisits = defineModel("totalVisits");
 const refresh = defineModel("refresh");
-const lengthMenu = defineModel("lengthMenu");
 const filterDates = defineModel("filterDates");
 const tableKey = ref(0);
 const showError = ref(false);
@@ -64,91 +63,91 @@ const dashboardTableData = defineModel("dtd");
 dashboardTableData.value = {};
 
 const columns = [
-	{ data: "date_time", title: "Date" },
-	{ data: "visitor", title: "Visitor" },
-	{ data: "departure_time", title: "Departure Time" },
-	{ data: "purpose", title: "Purpose" },
-	{ data: "items", title: "Items" },
-	{
-		data: null,
-		title: "Status",
-		render: (data) => {
-			return data.departure_time
-				? `<span class="text-default fw-bold">Checked Out</span>`
-				: `<span class="text-success fw-bold">Checked In</span>`;
-		},
-	},
-	{
-		data: null,
-		title: "Action",
-		className: "text-center",
-		render: (data) => {
-			return `<button type="button" class="btn btn-secondary"
+    { data: "date_time", title: "Date" },
+    { data: "visitor", title: "Visitor" },
+    { data: "departure_time", title: "Departure Time" },
+    { data: "purpose", title: "Purpose" },
+    { data: "items", title: "Items" },
+    {
+        data: null,
+        title: "Status",
+        render: (data) => {
+            return data.departure_time
+                ? `<span class="text-default fw-bold">Checked Out</span>`
+                : `<span class="text-success fw-bold">Checked In</span>`;
+        },
+    },
+    {
+        data: null,
+        title: "Action",
+        className: "text-center",
+        render: (data) => {
+            return `<button type="button" class="btn btn-secondary"
                             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: 0.70rem;" ${
-								data.departure_time ? "disabled" : ""
-							}>
+                                data.departure_time ? "disabled" : ""
+                            }>
                          Check Out
                       </button>`;
-		},
-	},
+        },
+    },
 ];
 
 const options = {
-	responsive: true,
-	select: true,
-	serverSide: true,
-	ajax: {
-		url: `${API_URL}/visits`,
-		type: "GET",
-		beforeSend: function (xhr) {
-			xhr.setRequestHeader("authorization", API_KEY);
-		},
-		data: (query) => {
-			const order =
-				query.columns[query.order[0].column].data === "date"
-					? "date_time"
-					: query.columns[query.order[0].column].data;
-			return {
-				start: query.start,
-				limit: query.length,
-				search: query.search.value,
-				sort: order,
-				from: filterDates.value.from || "",
-				to: filterDates.value.to || "",
-				order: query.order[0].dir,
-			};
-		},
-		dataSrc: (json) => {
-			showError.value = false;
-			refresh.value = false;
+    responsive: true,
+    select: true,
+    serverSide: true,
+    ajax: {
+        url: `${API_URL}/visits`,
+        type: "GET",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("authorization", API_KEY);
+        },
+        data: (query) => {
+            const order =
+                query.columns[query.order[0].column].data === "date"
+                    ? "date_time"
+                    : query.columns[query.order[0].column].data;
+            return {
+                start: query.start,
+                limit: query.length,
+                search: query.search.value,
+                sort: order,
+                from: filterDates.value.from || "",
+                to: filterDates.value.to || "",
+                order: query.order[0].dir,
+            };
+        },
+        dataSrc: (json) => {
+            showError.value = false;
+            refresh.value = false;
 
-			const { visits, totalLength } = json.data;
+            const { visits, totalLength } = json.data;
 
-			json.recordsTotal = totalLength;
-			json.recordsFiltered =
-				dashboardTableData.value.recordsFiltered === 0
-					? 0
-					: totalLength;
-			totalVisits.value = totalLength;
+            json.recordsTotal = totalLength;
+            json.recordsFiltered =
+                dashboardTableData.value.recordsFiltered === 0
+                    ? 0
+                    : totalLength;
+            totalVisits.value = totalLength;
 
-			return formatVisitData(visits);
-		},
-		error: (error) => {
-			console.log("Error fetching data:", error);
-			showError.value = true;
-			refresh.value = false;
-		},
-	},
-	lengthMenu: dashboardTableData.value.lengthMenu || [10, 25, 50, 100],
-	bLengthChange: dashboardTableData.value.bLengthChange,
-	bInfo: dashboardTableData.value.bInfo,
-	paging: dashboardTableData.value.paging,
-	searching: dashboardTableData.value.searching,
+            return formatVisitData(visits);
+        },
+        error: (error) => {
+            console.log("Error fetching data:", error);
+            showError.value = true;
+            refresh.value = false;
+        },
+    },
+    lengthMenu: dashboardTableData.value.lengthMenu || [10, 25, 50, 100],
+    bLengthChange: dashboardTableData.value.bLengthChange,
+    bInfo: dashboardTableData.value.bInfo,
+    paging: dashboardTableData.value.paging,
+    searching: dashboardTableData.value.searching,
 
-	language: {
-		searchPlaceholder: "Search ...",
-		search: "",
-		emptyTable: `
+    language: {
+        searchPlaceholder: "Search ...",
+        search: "",
+        emptyTable: `
 			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
 				No Visits to show!
 				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M82.5 37.5V35l-15-15H60v-3.75A1.25 1.25 0 0058.75 15h-2.5A1.25 1.25 0 0055 16.25V20H40v-3.75A1.25 1.25 0 0038.75 15h-2.5A1.25 1.25 0 0035 16.25V20h-7.5l-15 15v2.5h5V85H15v2.5h65V85h-2.5V37.5zM35 77.5H25V70a5 5 0 015-5 5 5 0 015 5zm0-25H25V45a5 5 0 015-5 5 5 0 015 5zM52.5 85h-10V70a5 5 0 015-5 5 5 0 015 5zm0-32.5h-10V45a5 5 0 015-5 5 5 0 015 5zm17.5 25H60V70a5 5 0 015-5 5 5 0 015 5zm0-25H60V45a5 5 0 015-5 5 5 0 015 5z"/></svg>
@@ -161,7 +160,7 @@ const options = {
                 </button>
 			</div>
 		`,
-		zeroRecords: `
+        zeroRecords: `
 			<div class="d-flex gap-3 my-3 flex-column align-items-center">
 				No match found!
 				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-house" viewBox="0 0 1000 1000">
@@ -169,125 +168,125 @@ const options = {
 				</svg>
 			</div>
 		`,
-		loadingRecords: `
+        loadingRecords: `
 		<div class="d-flex justify-content-center p-4">
 			<div class="spinner-border" role="status">
 				<span class="visually-hidden">Loading...</span>
 			</div>
 		</div>
 	`,
-	},
-	order: [[0, "desc"]],
-	createdRow: (row, data) => {
-		$(row).on("click", "button", () => {
-			const visitData = data;
+    },
+    order: [[0, "desc"]],
+    createdRow: (row, data) => {
+        $(row).on("click", "button", () => {
+            const visitData = data;
 
-			if (visitData) {
-				handleCheckout(visitData.id, row);
-			}
-		});
-	},
+            if (visitData) {
+                handleCheckout(visitData.id, row);
+            }
+        });
+    },
 };
 
 const filterInfo = computed(() => {
-	return `Showing Visits ${
-		filterDates.value.from
-			? "from " + formatDateTime(filterDates.value.from, { date: true })
-			: ""
-	} ${
-		filterDates.value.to
-			? "up to " + formatDateTime(filterDates.value.to, { date: true })
-			: ""
-	} `;
+    return `Showing Visits ${
+        filterDates.value.from
+            ? "from " + formatDateTime(filterDates.value.from, { date: true })
+            : ""
+    } ${
+        filterDates.value.to
+            ? "up to " + formatDateTime(filterDates.value.to, { date: true })
+            : ""
+    } `;
 });
 
 // function to update departure time
 const checkout = async (id) => {
-	try {
-		const visit_checkout = await updateDepartureTime(id);
-		if (visit_checkout.ok) {
-			return visit_checkout.result.data[0].departure_time;
-		}
-	} catch (error) {
-		console.error("Error updating departure time:", error);
-	}
+    try {
+        const visit_checkout = await updateDepartureTime(id);
+        if (visit_checkout.ok) {
+            return visit_checkout.result.data[0].departure_time;
+        }
+    } catch (error) {
+        console.error("Error updating departure time:", error);
+    }
 };
 
 const handleCheckout = async (id, tr) => {
-	try {
-		const time = await checkout(id);
-		const td = $(tr).children("td");
+    try {
+        const time = await checkout(id);
+        const td = $(tr).children("td");
 
-		const checkStatus = $(td[6]).children("button")[0];
-		checkStatus.setAttribute("disabled", "disabled");
+        const checkStatus = $(td[6]).children("button")[0];
+        checkStatus.setAttribute("disabled", "disabled");
 
-		const status = $(td[5]);
-		status.html(`<span class="text-default fw-bold">Checked Out</span>`);
+        const status = $(td[5]);
+        status.html(`<span class="text-default fw-bold">Checked Out</span>`);
 
-		const departure_time = $(td[2]);
-		departure_time.text(formatDepartureTime(time));
-	} catch (error) {
-		console.error("Error updating departure time:", error);
-	}
+        const departure_time = $(td[2]);
+        departure_time.text(formatDepartureTime(time));
+    } catch (error) {
+        console.error("Error updating departure time:", error);
+    }
 };
 
 watch(
-	() => refresh.value,
-	() => {
-		tableKey.value++;
-	}
+    () => refresh.value,
+    () => {
+        tableKey.value++;
+    }
 );
 
 // retrieve events in date range
 watch(
-	// watch for change on the from or to dates
-	() => [filterDates.value.from, filterDates.value.to],
-	([newFrom, newTo]) => {
-		// update the date from and to dates for the request query
-		filterDates.value.from = newFrom;
-		filterDates.value.to = newTo;
+    // watch for change on the from or to dates
+    () => [filterDates.value.from, filterDates.value.to],
+    ([newFrom, newTo]) => {
+        // update the date from and to dates for the request query
+        filterDates.value.from = newFrom;
+        filterDates.value.to = newTo;
 
-		// update the table key and force the table to reload
-		tableKey.value += 1;
-	}
+        // update the table key and force the table to reload
+        tableKey.value += 1;
+    }
 );
 
 const clearFilter = () => {
-	filterDates.value.from = "";
-	filterDates.value.to = "";
-	tableKey.value++;
+    filterDates.value.from = "";
+    filterDates.value.to = "";
+    tableKey.value++;
 };
 </script>
 
 <style scoped>
 .show-feedback {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-size: larger;
-	padding: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: larger;
+    padding: 4rem;
 }
 table {
-	margin: 0;
+    margin: 0;
 }
 th,
 td {
-	padding: 0.9rem;
-	font-size: 0.9rem;
+    padding: 0.9rem;
+    font-size: 0.9rem;
 }
 
 svg {
-	color: #228722;
+    color: #228722;
 }
 
 .fw-bold {
-	font-weight: 700;
+    font-weight: 700;
 }
 
 @media (min-width: 768px) and (max-width: 1440px) {
-	th,
-	td {
-		padding: 0.7rem;
-	}
+    th,
+    td {
+        padding: 0.7rem;
+    }
 }
 </style>

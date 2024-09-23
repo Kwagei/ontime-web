@@ -142,6 +142,7 @@ a {
     display: none !important;
 }
 
+/* tablet and mobile screen responsiveness */
 @media (max-width: 1250px) {
     .container {
         padding: 0.5rem !important;
@@ -155,8 +156,63 @@ a {
     main {
         margin-left: 0;
     }
+
+    #eventsWrapper,
+    #visit-view,
+    #visitor-view {
+        gap: 0 !important;
+    }
+
+    select.dt-input {
+        height: 48px;
+    }
+
+    .dt-search {
+        margin-top: 0 !important;
+        text-align: right !important;
+    }
+
+    .dt-length {
+        text-align: right !important;
+    }
+
+    /* style the search input and data range select */
+    .datatable > .dt-container .dt-layout-row:first-of-type {
+        display: flex !important;
+        justify-content: space-between !important;
+        gap: 0.4rem;
+    }
+
+    /* style the data range select */
+    .datatable > .dt-container .dt-layout-row:first-of-type .dt-start {
+        width: 80px !important;
+    }
+
+    /* style the search input container */
+    .datatable > .dt-container .dt-layout-row:first-of-type .dt-end {
+        flex: 1 !important;
+        text-align: right !important;
+    }
+
+    /* style the search input */
+    .datatable
+        > .dt-container
+        .dt-layout-row:first-of-type
+        .dt-end
+        .dt-search
+        .dt-input {
+        width: 100% !important;
+        max-width: 400px;
+        margin-left: auto;
+    }
+
+    /* style the pagination buttons container */
+    .datatable > .dt-container .dt-layout-row:last-of-type {
+        text-align: center !important;
+    }
 }
 
+/* desktop screen responsiveness */
 @media (min-width: 1251px) {
     #sideBar {
         display: flex !important;
@@ -165,8 +221,8 @@ a {
     main {
         margin-left: 20rem !important;
     }
-}
 
-input[type="search"] {
-    width: 40% !important;
+    input[type="search"] {
+        width: 40% !important;
+    }
 }

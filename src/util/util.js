@@ -289,3 +289,11 @@ export const formValidation = () => {
         );
     }
 };
+
+export function hideSidebarOnSmallScreen() {
+    // hide the side bar if were on a tablet or mobile phone
+    if (window.innerWidth <= 1250) {
+        $("#sideBar").css("display", "none");
+        $("main").css("margin-left", "0");
+    }
+}

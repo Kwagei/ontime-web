@@ -1,113 +1,113 @@
 <template>
-	<div class="">
-		<div class="container text-center">
-			<div class="row gap-4 my-4">
-				<div class="" id="stats">
-					<div class="row align-items-start gap-4">
-						<div
-							class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
-							style="padding-left: 2.5rem !important"
-						>
-							<div
-								id="visitIcon"
-								class="icon-circle"
-								style="background-color: #ff77002a"
-							>
-								<Icons class="icons" v-model:icon="visitIcon" />
-							</div>
-							<div
-								class="cards d-flex flex-column align-items-end"
-							>
-								<span>Today's Visits</span>
-								<h2>
-									{{ todaysVisits || 0 }}
-								</h2>
-							</div>
-						</div>
-						<div
-							class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
-							style="padding-left: 2.5rem !important"
-						>
-							<div
-								id="eventIcon"
-								class="icon-circle"
-								style="background-color: #1970c221"
-							>
-								<Icons class="icons" v-model:icon="eventIcon" />
-							</div>
-							<div
-								class="cards d-flex flex-column align-items-end"
-							>
-								<span>Today's Events</span>
-								<h2>{{ todaysEvents }}</h2>
-							</div>
-						</div>
-						<div
-							class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
-							style="padding-left: 2.5rem !important"
-						>
-							<div
-								id="visitorIcon"
-								class="icon-circle"
-								style="background-color: rgb(255 204 0 / 19%)"
-							>
-								<Icons
-									class="icons"
-									v-model:icon="visitorIcon"
-								/>
-							</div>
-							<div
-								class="cards d-flex flex-column align-items-end"
-							>
-								<span>Total Visitors</span>
-								<h2>{{ totalVisitors }}</h2>
-							</div>
-						</div>
-						<div
-							class="form-control col d-none rounded align-items-center gap-4"
-							style="
-								margin-top: auto;
-								padding: 0 !important;
-								background: transparent;
-								border: none;
-							"
-						>
-							<router-link to="/visits/purpose-event">
-								<button class="btn btn-primary px-4 py-2">
-									Check In
-								</button>
-							</router-link>
-						</div>
-					</div>
-				</div>
-				<div class="form-control rounded col">
-					<Line
-						v-model:totalVisits="totalVisits"
-						v-model:todaysVisits="todaysVisits"
-					/>
-				</div>
+    <div class="">
+        <div class="container text-center">
+            <div id="dashboardFirstChild" class="row gap-4 my-4">
+                <div class="" id="stats">
+                    <div class="row align-items-start gap-4">
+                        <div
+                            class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
+                            style="padding-left: 2.5rem !important"
+                        >
+                            <div
+                                id="visitIcon"
+                                class="icon-circle"
+                                style="background-color: #ff77002a"
+                            >
+                                <Icons class="icons" v-model:icon="visitIcon" />
+                            </div>
+                            <div
+                                class="cards d-flex flex-column align-items-end"
+                            >
+                                <span>Today's Visits</span>
+                                <h2>
+                                    {{ todaysVisits || 0 }}
+                                </h2>
+                            </div>
+                        </div>
+                        <div
+                            class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
+                            style="padding-left: 2.5rem !important"
+                        >
+                            <div
+                                id="eventIcon"
+                                class="icon-circle"
+                                style="background-color: #1970c221"
+                            >
+                                <Icons class="icons" v-model:icon="eventIcon" />
+                            </div>
+                            <div
+                                class="cards d-flex flex-column align-items-end"
+                            >
+                                <span>Today's Events</span>
+                                <h2>{{ todaysEvents }}</h2>
+                            </div>
+                        </div>
+                        <div
+                            class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
+                            style="padding-left: 2.5rem !important"
+                        >
+                            <div
+                                id="visitorIcon"
+                                class="icon-circle"
+                                style="background-color: rgb(255 204 0 / 19%)"
+                            >
+                                <Icons
+                                    class="icons"
+                                    v-model:icon="visitorIcon"
+                                />
+                            </div>
+                            <div
+                                class="cards d-flex flex-column align-items-end"
+                            >
+                                <span>Total Visitors</span>
+                                <h2>{{ totalVisitors }}</h2>
+                            </div>
+                        </div>
+                        <div
+                            class="form-control col d-none rounded align-items-center gap-4"
+                            style="
+                                margin-top: auto;
+                                padding: 0 !important;
+                                background: transparent;
+                                border: none;
+                            "
+                        >
+                            <router-link to="/visits/purpose-event">
+                                <button class="btn btn-primary px-4 py-2">
+                                    Check In
+                                </button>
+                            </router-link>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-control rounded col">
+                    <Line
+                        v-model:totalVisits="totalVisits"
+                        v-model:todaysVisits="todaysVisits"
+                    />
+                </div>
 
-				<div class="form-control rounded col">
-					<Bar v-model:totalVisits="totalVisits" />
-				</div>
+                <div class="form-control rounded col">
+                    <Bar v-model:totalVisits="totalVisits" />
+                </div>
 
-				<div class="form-control rounded col-12" style="padding: 3rem">
-					<Calender v-model:allEvents="allEvents" />
-				</div>
-			</div>
+                <div class="form-control rounded col-12" style="padding: 3rem">
+                    <Calender v-model:allEvents="allEvents" />
+                </div>
+            </div>
 
-			<h4>Last 5 Check In</h4>
-			<div class="row">
-				<div class="col p-0" id="dashboardTable">
-					<VisitList
-						v-model:totalVisits="totalVisits"
-						v-model:filterDates="filterDates"
-						v-model:dtd="dashboardTableData"
-					/>
-				</div>
-			</div>
-		</div>
-	</div>
+            <h4>Last 5 Check In</h4>
+            <div class="row">
+                <div class="col p-0" id="dashboardTable">
+                    <VisitList
+                        v-model:totalVisits="totalVisits"
+                        v-model:filterDates="filterDates"
+                        v-model:dtd="dashboardTableData"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -120,6 +120,7 @@ import VisitList from "@/components/visits/VisitList.vue";
 import Icons from "@/components/Icons.vue";
 import { onMounted, ref, watch } from "vue";
 import { getVisitors } from "@/assets/js";
+import { hideSidebarOnSmallScreen } from "@/util/util";
 
 const visitIcon = "house";
 const eventIcon = "calendar-event-agenda";
@@ -132,101 +133,108 @@ const todaysEvents = ref(0);
 const allEvents = defineModel("allEvents");
 allEvents.value = [];
 const filterDates = ref({
-	from: "",
-	to: "",
+    from: "",
+    to: "",
 });
 
 const dashboardTableData = defineModel("dtd");
 dashboardTableData.value = {
-	lengthMenu: [5],
-	bLengthChange: false,
-	recordsFiltered: 0,
-	bInfo: false,
-	paging: true,
-	searching: false,
+    lengthMenu: [5],
+    bLengthChange: false,
+    recordsFiltered: 0,
+    bInfo: false,
+    paging: true,
+    searching: false,
 };
 
 watch(allEvents, (events) => {
-	todaysEvents.value = getTodaysEvents(events).length;
+    todaysEvents.value = getTodaysEvents(events).length;
 });
 
 const isEventHappeningToday = (event) => {
-	const today = new Date();
+    const today = new Date();
 
-	// Normalize today's date to midnight
-	const startOfToday = new Date(today.setHours(0, 0, 0, 0)).toISOString();
-	const endOfToday = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+    // Normalize today's date to midnight
+    const startOfToday = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+    const endOfToday = new Date(today.setHours(23, 59, 59, 999)).toISOString();
 
-	return (
-		new Date(event.time.start) <= new Date(endOfToday) &&
-		new Date(event.time.end) >= new Date(startOfToday)
-	);
+    return (
+        new Date(event.time.start) <= new Date(endOfToday) &&
+        new Date(event.time.end) >= new Date(startOfToday)
+    );
 };
 
 const getTodaysEvents = (events) => {
-	return events.filter(isEventHappeningToday);
+    return events.filter(isEventHappeningToday);
 };
 
 const fetchVisitors = async () => {
-	const { totalLength } = await getVisitors();
-	totalVisitors.value = totalLength;
+    const { totalLength } = await getVisitors();
+    totalVisitors.value = totalLength;
 };
 
 onMounted(async () => {
-	await fetchVisitors();
+    await fetchVisitors();
+    hideSidebarOnSmallScreen();
 });
 </script>
 
 <style scoped>
 .col {
-	padding: 3rem;
+    padding: 3rem;
 }
 
 h4 {
-	text-align: left;
+    text-align: left;
 }
 
 span {
-	font-weight: 400;
+    font-weight: 400;
 }
 
 .icon-circle {
-	width: 5rem;
-	height: 5rem;
-	border-radius: 3rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .cards {
-	padding-left: 1rem;
+    padding-left: 1rem;
 }
 
 .cards span {
-	font-size: large;
-	font-weight: 400;
+    font-size: large;
+    font-weight: 400;
 }
 
 .cards h2 {
-	font-size: xx-large;
-	margin: 0;
+    font-size: xx-large;
+    margin: 0;
 }
 
 .icons {
-	width: 4rem !important;
-	height: 3rem !important;
+    width: 4rem !important;
+    height: 3rem !important;
 }
 
 #visitIcon {
-	color: #ff7900;
+    color: #ff7900;
 }
 
 #eventIcon {
-	color: #1971c2;
+    color: #1971c2;
 }
 
 #visitorIcon {
-	color: #fc0;
+    color: #fc0;
+}
+
+@media (max-width: 1250px) {
+    #dashboardFirstChild {
+        margin: 0 0.6rem;
+    }
 }
 </style>

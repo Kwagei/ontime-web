@@ -1,6 +1,7 @@
 <template>
     <div id="visitor-view" class="d-flex flex-column container">
         <div
+            id="breadCrumbsOptionsTopWrapper"
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
         >
             <BreadCrumbs :breadCrumbs="breadCrumbs" />

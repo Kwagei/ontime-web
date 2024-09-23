@@ -225,6 +225,10 @@ a {
     input[type="search"] {
         width: 40% !important;
     }
+
+    #breadCrumbsOptionsTopWrapper {
+        margin-top: 1.25rem;
+    }
 }
 
 @media (max-width: 650px) {

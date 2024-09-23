@@ -226,3 +226,15 @@ a {
         width: 40% !important;
     }
 }
+
+@media (max-width: 650px) {
+    #breadCrumbs {
+        display: none;
+    }
+}
+
+@media (max-width: 450px) {
+    #mobileFormWrapper {
+        padding: 20px !important;
+    }
+}

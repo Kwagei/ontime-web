@@ -1,56 +1,69 @@
 <template>
-	<div class="d-flex justify-content-between align-items-center gap-5 mt-3">
-		<div class="d-flex align-items-center gap-4">
-			<BackArrow @click="$emit('switch', 'details')" />
-			<BreadCrumbs
-				:breadCrumbs="['events', eventId, 'Today\'s Attendance']"
-			/>
-		</div>
-		<div class="d-flex" style="gap: 0.521rem">
-			<button class="btn btn-secondary" @click="displayExportModay">
-				Export
-			</button>
+    <div id="eventAttendanceContainer" class="container">
+        <div
+            id="eventAttendanceHeaderWrapper"
+            class="d-flex justify-content-between align-items-center gap-2 mt-3"
+        >
+            <div
+                id="backArrowBreadCrumbsWrapper"
+                class="d-flex align-items-center gap-4"
+            >
+                <BackArrow @click="$emit('switch', 'details')" />
+                <BreadCrumbs
+                    :breadCrumbs="['events', eventId, 'Today\'s Attendance']"
+                />
+            </div>
+            <div id="optionsButtonWrapper" class="d-flex" style="gap: 0.521rem">
+                <button
+                    class="btn btn-default border border-2"
+                    @click="displayExportModay"
+                >
+                    Export
+                </button>
 
-			<router-link to="/visits/purpose-event">
-				<button class="btn btn-secondary">Check In</button>
-			</router-link>
+                <router-link to="/visits/purpose-event">
+                    <button class="btn btn-secondary" style="min-width: 110px">
+                        Check In
+                    </button>
+                </router-link>
 
-			<button
-				class="btn btn-primary"
-				id="addParticipantBtn"
-				@click="$emit('switch', 'addParticipant')"
-			>
-				<Icons v-model:icon="plusIcon" />
-				New
-			</button>
-		</div>
-	</div>
+                <button
+                    class="btn btn-primary"
+                    id="addParticipantBtn"
+                    @click="$emit('switch', 'addParticipant')"
+                >
+                    <Icons v-model:icon="plusIcon" />
+                    New
+                </button>
+            </div>
+        </div>
 
-	<div class="d-flex justify-content-center gap-3 mt-2">
-		<div class="pt-2 w-100">
-			<DataTable
-				class="display w-100 table"
-				:columns="columns"
-				:options="options"
-				ref="table"
-				v-if="!showError"
-			/>
-			<h3 class="mt-5 text-center fw-bold" v-if="showError">
-				Unable to load event participants, try again!
-			</h3>
-		</div>
-	</div>
+        <div class="container d-flex justify-content-center gap-3 mt-2">
+            <div class="pt-2 w-100">
+                <DataTable
+                    class="display w-100 table"
+                    :columns="columns"
+                    :options="options"
+                    ref="table"
+                    v-if="!showError"
+                />
+                <h3 class="mt-5 text-center fw-bold" v-if="showError">
+                    Unable to load event participants, try again!
+                </h3>
+            </div>
+        </div>
+    </div>
 
-	<ExportModal
-		:exportFields="exportFields"
-		v-model:exportTitle="exportTitle"
-		@export="exportEventsAttendance"
-	/>
+    <ExportModal
+        :exportFields="exportFields"
+        v-model:exportTitle="exportTitle"
+        @export="exportEventsAttendance"
+    />
 </template>
 
 <script setup>
 // Modules
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -70,7 +83,7 @@ import ExportModal from "../modals/ExportModal.vue";
 
 const plusIcon = "add";
 const props = defineProps({
-	eventId: String,
+    eventId: String,
 });
 
 const eventId = ref(props.eventId);
@@ -78,111 +91,111 @@ const refresh = defineModel("refresh");
 const showError = ref(false);
 const attendanceList = ref("");
 const exportFields = ref([
-	{ name: "First name", selected: false },
-	{ name: "Last name", selected: false },
-	{ name: "Phone number", selected: false },
-	{ name: "Address", selected: false },
-	{ name: "Time in", selected: false },
-	{ name: "Time out", selected: false },
-	{ name: "Items", selected: false },
+    { name: "First name", selected: false },
+    { name: "Last name", selected: false },
+    { name: "Phone number", selected: false },
+    { name: "Address", selected: false },
+    { name: "Time in", selected: false },
+    { name: "Time out", selected: false },
+    { name: "Items", selected: false },
 ]);
 
 const exportTitle = defineModel("exportTitle");
 exportTitle.value = "Event Attendance";
 
 const columns = [
-	{ data: "first_name", title: "First Name" },
-	{ data: "last_name", title: "Last Name" },
-	{ data: "msisdn", title: "Contact" },
-	{ data: "address", title: "Address" },
-	{ data: "visit_date_time", title: "Time In" },
-	{ data: "visit_departure_time", title: "Time Out" },
-	{ data: "items", title: "Items" },
+    { data: "first_name", title: "First Name" },
+    { data: "last_name", title: "Last Name" },
+    { data: "msisdn", title: "Contact" },
+    { data: "address", title: "Address" },
+    { data: "visit_date_time", title: "Time In" },
+    { data: "visit_departure_time", title: "Time Out" },
+    { data: "items", title: "Items" },
 ];
 
 const options = {
-	responsive: true,
-	select: true,
-	serverSide: true,
-	ajax: {
-		url: `${API_URL}/events/${eventId.value}/participants/`,
-		type: "GET",
-		beforeSend: function (xhr) {
-			xhr.setRequestHeader("authorization", API_KEY);
-		},
-		data: (query) => {
-			const order =
-				query.columns[query.order[0].column].data === "date"
-					? "date_time"
-					: query.columns[query.order[0].column].data;
+    responsive: true,
+    select: true,
+    serverSide: true,
+    ajax: {
+        url: `${API_URL}/events/${eventId.value}/participants/`,
+        type: "GET",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("authorization", API_KEY);
+        },
+        data: (query) => {
+            const order =
+                query.columns[query.order[0].column].data === "date"
+                    ? "date_time"
+                    : query.columns[query.order[0].column].data;
 
-			return {
-				start: query.start,
-				limit: query.length,
-				search: query.search.value,
-				sort: order,
-				direction: query.order[0].dir,
-			};
-		},
-		dataSrc: (json) => {
-			showError.value = false;
-			refresh.value = false;
+            return {
+                start: query.start,
+                limit: query.length,
+                search: query.search.value,
+                sort: order,
+                direction: query.order[0].dir,
+            };
+        },
+        dataSrc: (json) => {
+            showError.value = false;
+            refresh.value = false;
 
-			const { participants } = json.data;
+            const { participants } = json.data;
 
-			// format each participant record
-			participants.forEach((participant) => {
-				participant.msisdn = participant.msisdn
-					? `0${participant.msisdn.slice(3)}`
-					: "";
+            // format each participant record
+            participants.forEach((participant) => {
+                participant.msisdn = participant.msisdn
+                    ? `0${participant.msisdn.slice(3)}`
+                    : "";
 
-				// format visit date time or arrival time if any
-				if (participant.visit_date_time) {
-					participant.visit_date_time = formatDateTime(
-						participant.visit_date_time,
-						{
-							time: true,
-						}
-					);
-				}
+                // format visit date time or arrival time if any
+                if (participant.visit_date_time) {
+                    participant.visit_date_time = formatDateTime(
+                        participant.visit_date_time,
+                        {
+                            time: true,
+                        }
+                    );
+                }
 
-				// format departure time if any
-				if (participant.visit_departure_time) {
-					const time = participant.visit_departure_time;
-					participant.visit_departure_time =
-						formatDepartureTime(time);
-				}
+                // format departure time if any
+                if (participant.visit_departure_time) {
+                    const time = participant.visit_departure_time;
+                    participant.visit_departure_time =
+                        formatDepartureTime(time);
+                }
 
-				// format items if any
-				participant.items = participant.items
-					? participant.items.join(", ")
-					: "";
-			});
+                // format items if any
+                participant.items = participant.items
+                    ? participant.items.join(", ")
+                    : "";
+            });
 
-			// filter by participant_id from visits table to only display
-			// participants who have visited today
-			const attendees = participants.filter(
-				(participant) => participant.participant_id
-			);
+            // filter by participant_id from visits table to only display
+            // participants who have visited today
+            const attendees = participants.filter(
+                (participant) => participant.participant_id
+            );
 
-			json.recordsTotal = attendees.length;
-			json.recordsFiltered = attendees.length;
+            json.recordsTotal = attendees.length;
+            json.recordsFiltered = attendees.length;
 
-			attendanceList.value = attendees;
-			return attendees;
-		},
-		error: (error) => {
-			console.log("Error fetching data:", error.responseJSON);
-			showError.value = true;
-			refresh.value = false;
-		},
-	},
-	responsive: true,
-	lengthMenu: [50, 100],
-	language: {
-		searchPlaceholder: "Search ...",
-		search: "",
-		emptyTable: `
+            attendanceList.value = attendees;
+            return attendees;
+        },
+        error: (error) => {
+            console.log("Error fetching data:", error.responseJSON);
+            showError.value = true;
+            refresh.value = false;
+        },
+    },
+    responsive: true,
+    lengthMenu: [50, 100],
+    language: {
+        searchPlaceholder: "Search ...",
+        search: "",
+        emptyTable: `
 			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
 				No Event Participants to show!
 				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-group" viewBox="0 0 1000 1000">
@@ -196,7 +209,7 @@ const options = {
 				</button>
 			</div>
         `,
-		zeroRecords: `
+        zeroRecords: `
 			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
 				No Attendees for Today!
 				<svg xmlns="http://www.w3.org/2000/svg" style="width: 80px; height: 80px" fill="currentColor" class="solaris-icon si-group" viewBox="0 0 1000 1000">
@@ -204,55 +217,100 @@ const options = {
 				</svg>
 			</div>
 		`,
-		loadingRecords: `
+        loadingRecords: `
 			<div class="d-flex justify-content-center p-4">
 				<div class="spinner-border" role="status">
 					<span class="visually-hidden">Loading...</span>
 				</div>
 			</div>
 		`,
-	},
-	order: [[2, "desc"]],
-	destroy: true,
+    },
+    order: [[2, "desc"]],
+    destroy: true,
 };
 
+onMounted(() => {
+    const breadCrumbsOl = $("#breadCrumbsOl")[0];
+
+    if (window.innerWidth <= 1070) {
+        breadCrumbsOl.innerHTML = `
+			<li>
+				<span class="text fw-bold">
+					Today's Attendance
+				</span>
+			</li>
+		`;
+    }
+});
+
 const displayExportModay = () => {
-	showModal("#exportModal", "#modal-dialog");
+    showModal("#exportModal", "#modal-dialog");
 };
 
 const exportEventsAttendance = async (fields) => {
-	const selectedAttendee = attendanceList.value.map((attendee) => {
-		const data = {};
-		for (const field of fields) {
-			if (field === "phone_number") {
-				data[field] = attendee.msisdn.startsWith("231")
-					? `0${attendee.msisdn.slice(3)}`
-					: attendee.msisdn;
-			} else if (field === "time_in") {
-				data[field] = attendee.visit_date_time;
-			} else if (field === "time_out") {
-				data[field] = attendee.visit_departure_time;
-			} else {
-				data[field] = attendee[field];
-			}
-		}
+    const selectedAttendee = attendanceList.value.map((attendee) => {
+        const data = {};
+        for (const field of fields) {
+            if (field === "phone_number") {
+                data[field] = attendee.msisdn.startsWith("231")
+                    ? `0${attendee.msisdn.slice(3)}`
+                    : attendee.msisdn;
+            } else if (field === "time_in") {
+                data[field] = attendee.visit_date_time;
+            } else if (field === "time_out") {
+                data[field] = attendee.visit_departure_time;
+            } else {
+                data[field] = attendee[field];
+            }
+        }
 
-		return data;
-	});
+        return data;
+    });
 
-	csvExport(selectedAttendee);
+    csvExport(selectedAttendee);
 };
 </script>
 
 <style scoped>
+@media (max-width: 1070px) {
+    #breadCrumbsOl > li:nth-of-type(2) {
+        display: none !important;
+    }
+}
+
+@media (max-width: 580px) {
+    #breadCrumbs {
+        display: none;
+    }
+}
+
+@media (max-width: 450px) {
+    #optionsButtonWrapper {
+        max-width: 17rem;
+        overflow-x: scroll;
+    }
+
+    #breadCrumbs {
+        display: inline-flex;
+    }
+
+    #backArrowBreadCrumbsWrapper {
+        align-self: flex-start;
+    }
+
+    #eventAttendanceHeaderWrapper {
+        flex-direction: column !important;
+    }
+}
+
 svg {
-	height: 20px !important;
-	margin: 0 !important;
+    height: 20px !important;
+    margin: 0 !important;
 }
 
 li {
-	font-size: 1rem;
-	font-weight: 600;
-	padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
 }
 </style>

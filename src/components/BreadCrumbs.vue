@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div id="breadCrumbs">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb m-0">
+            <ol id="breadCrumbsOl" class="breadcrumb m-0">
                 <li
                     class="breadcrumb-item"
                     v-for="(breadcrumb, index) in activeBreadCrumbs"

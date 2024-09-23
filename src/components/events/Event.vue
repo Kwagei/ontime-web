@@ -14,14 +14,10 @@
         </div>
     </div>
     <!-- Dont' change the margin on this div! -->
-    <div
-        v-else
-        class="d-flex flex-column align-items-center"
-        style="margin-top: -2rem; margin-left: -50rem; margin-right: -50rem"
-    >
+    <div v-else class="d-flex flex-column" id="eventContentDiv">
         <EventTitle :title="event.title" />
         <!-- don't change the width on this div -->
-        <div style="width: 45%">
+        <div id="eventSlotDiv">
             <EventDetails
                 :event="event"
                 v-if="state == 'details'"
@@ -107,4 +103,14 @@ function editEvent() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+#eventContentDiv {
+    width: 100%;
+}
+
+#eventSlotDiv {
+    width: 90%;
+    display: flex;
+    align-self: center;
+}
+</style>

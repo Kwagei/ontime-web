@@ -2,9 +2,7 @@
     <AlertModal :data="alert" />
     <div id="eventsWrapper" class="d-flex flex-column container">
         <div class="d-flex justify-content-between">
-            <div>
-                <BreadCrumbs v-model:breadCrumbs="activeBreadCrumbs" />
-            </div>
+            <BreadCrumbs v-model:breadCrumbs="activeBreadCrumbs" />
         </div>
 
         <h3
@@ -17,6 +15,7 @@
         </h3>
 
         <div
+            id="mobileFormWrapper"
             class="form-control input rounded"
             style="margin: auto; padding: 3rem"
         >
@@ -474,6 +473,18 @@ onMounted(async () => {
     if (mode == "edit") await getEventToEdit();
 
     formValidation();
+
+    $("#breadCrumbs").css({
+        display: "block",
+    });
+
+    $("#breadCrumbsOl")[0].innerHTML = `
+		<li style="margin: 10px">
+			<span class="text fw-bold">
+				Edit Event
+			</span>
+		</li>
+	`;
 });
 
 function setMode() {

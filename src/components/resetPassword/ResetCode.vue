@@ -1,127 +1,127 @@
 <template>
-	<div class="row d-flex justify-content-center align-items-center h-100">
-		<div class="col-12 col-md-8 col-lg-6 col-xl-5">
-			<div
-				class="card shadow-2-strong boxShadow"
-				style="border-radius: 1rem"
-			>
-				<div class="card-body p-5">
-					<div class="d-flex justify-content-center mb-4">
-						<img
-							src="@/assets/images/ontime_logo.jpg"
-							style="width: 9rem"
-							alt=""
-						/>
-					</div>
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div
+                class="card shadow-2-strong boxShadow"
+                style="border-radius: 1rem"
+            >
+                <div id="mobileFormWrapper" class="card-body p-5">
+                    <div class="d-flex justify-content-center mb-4">
+                        <img
+                            src="@/assets/images/ontime_logo.jpg"
+                            style="width: 9rem"
+                            alt=""
+                        />
+                    </div>
 
-					<!-- VERIFICATION FORM -->
-					<form
-						@submit.prevent="onSubmit"
-						class="row justify-content-center"
-						id="reset-form"
-					>
-						<div class="text-center">
-							<h5 class="m-0">Enter verification code</h5>
-							<p>
-								We've sent a code to
-								<b>{{ formattedEmail }}</b>
-							</p>
-						</div>
+                    <!-- VERIFICATION FORM -->
+                    <form
+                        @submit.prevent="onSubmit"
+                        class="row justify-content-center"
+                        id="reset-form"
+                    >
+                        <div class="text-center">
+                            <h5 class="m-0">Enter verification code</h5>
+                            <p>
+                                We've sent a code to
+                                <b>{{ formattedEmail }}</b>
+                            </p>
+                        </div>
 
-						<div
-							v-if="isWarning"
-							class="py-2 mb-3 text-center rounded"
-							:style="`background-color: ${warningBgColor};`"
-							id="message"
-						>
-							<span :class="warningStatus">{{
-								warningMessage
-							}}</span>
-						</div>
+                        <div
+                            v-if="isWarning"
+                            class="py-2 mb-3 text-center rounded"
+                            :style="`background-color: ${warningBgColor};`"
+                            id="message"
+                        >
+                            <span :class="warningStatus">{{
+                                warningMessage
+                            }}</span>
+                        </div>
 
-						<!-- CODE BOX -->
-						<div
-							class="row col-md-12 d-flex justify-content-between align-items-center mb-3"
-						>
-							<input
-								type="text"
-								v-model="codeOne"
-								:class="[
-									'form-control text-center code-input',
-									isCodeValue && 'code-value',
-								]"
-								maxlength="1"
-							/>
-							<input
-								type="text"
-								:class="[
-									'form-control text-center code-input',
-									isCodeValue && 'code-value',
-								]"
-								v-model="codeTwo"
-								maxlength="1"
-							/>
-							<input
-								type="text"
-								:class="[
-									'form-control text-center code-input',
-									isCodeValue && 'code-value',
-								]"
-								v-model="codeThree"
-								maxlength="1"
-							/>
-							<input
-								type="text"
-								:class="[
-									'form-control text-center code-input',
-									isCodeValue && 'code-value',
-								]"
-								v-model="codeFour"
-								maxlength="1"
-							/>
-						</div>
+                        <!-- CODE BOX -->
+                        <div
+                            class="row col-md-12 d-flex justify-content-between align-items-center mb-3"
+                        >
+                            <input
+                                type="text"
+                                v-model="codeOne"
+                                :class="[
+                                    'form-control text-center code-input',
+                                    isCodeValue && 'code-value',
+                                ]"
+                                maxlength="1"
+                            />
+                            <input
+                                type="text"
+                                :class="[
+                                    'form-control text-center code-input',
+                                    isCodeValue && 'code-value',
+                                ]"
+                                v-model="codeTwo"
+                                maxlength="1"
+                            />
+                            <input
+                                type="text"
+                                :class="[
+                                    'form-control text-center code-input',
+                                    isCodeValue && 'code-value',
+                                ]"
+                                v-model="codeThree"
+                                maxlength="1"
+                            />
+                            <input
+                                type="text"
+                                :class="[
+                                    'form-control text-center code-input',
+                                    isCodeValue && 'code-value',
+                                ]"
+                                v-model="codeFour"
+                                maxlength="1"
+                            />
+                        </div>
 
-						<div
-							class="col-md-12 d-flex gap-2 justify-content-center mb-3"
-						>
-							<button
-								type="submit"
-								class="btn btn-primary"
-								:disabled="!isCodeComplete"
-								style="flex: 0 0 49%"
-							>
-								Verify
-							</button>
-							<button
-								class="btn btn-outline-secondary"
-								type="button"
-								@click="cancelVerification"
-								style="flex: 0 0 49%"
-							>
-								Cancel
-							</button>
-						</div>
+                        <div
+                            class="col-md-12 d-flex gap-2 justify-content-center mb-3"
+                        >
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                                :disabled="!isCodeComplete"
+                                style="flex: 0 0 49%"
+                            >
+                                Verify
+                            </button>
+                            <button
+                                class="btn btn-outline-secondary"
+                                type="button"
+                                @click="cancelVerification"
+                                style="flex: 0 0 49%"
+                            >
+                                Cancel
+                            </button>
+                        </div>
 
-						<!-- Checkbox -->
-						<div
-							class="form-check d-flex justify-content-center align-items-center gap-1"
-						>
-							<div
-								class="d-flex justify-content-end form-check-label"
-							>
-								<p>
-									Already have an account?
-									<a @click="signIn" href="#"
-										><b>Sign in</b></a
-									>
-								</p>
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <!-- Checkbox -->
+                        <div
+                            class="form-check d-flex justify-content-center align-items-center gap-1"
+                        >
+                            <div
+                                class="d-flex justify-content-end form-check-label"
+                            >
+                                <p>
+                                    Already have an account?
+                                    <a @click="signIn" href="#"
+                                        ><b>Sign in</b></a
+                                    >
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -136,42 +136,42 @@ const router = useRouter();
 const email = ref(route.query.email);
 
 const formattedEmail = computed(() => {
-	const [local, domain] = email.value.split("@");
-	return `${local.split("").fill("*", 1).join("")}@${domain}`;
+    const [local, domain] = email.value.split("@");
+    return `${local.split("").fill("*", 1).join("")}@${domain}`;
 });
 
 const onSubmit = async () => {
-	// Check if code is not complete.
-	if (!isCodeComplete.value) {
-		return;
-	}
+    // Check if code is not complete.
+    if (!isCodeComplete.value) {
+        return;
+    }
 
-	// Make an API call to reset user password.
-	const { ok, result } = await resetPassword({
-		code: code.value,
-		email: email.value,
-		timestamp: generateSubmissionTimestamp(),
-	});
+    // Make an API call to reset user password.
+    const { ok, result } = await resetPassword({
+        code: code.value,
+        email: email.value,
+        timestamp: generateSubmissionTimestamp(),
+    });
 
-	console.log(result);
+    console.log(result);
 
-	// Display a warning message based on the API response
-	warning(
-		result.message,
-		ok ? "success" : "danger",
-		ok ? "#83d61631" : "#ea060629"
-	);
+    // Display a warning message based on the API response
+    warning(
+        result.message,
+        ok ? "success" : "danger",
+        ok ? "#83d61631" : "#ea060629"
+    );
 
-	if (ok) {
-		store.state.hasVisitedResetPassword = true;
-		store.state.resetPasswordUser = result.data.user_id;
+    if (ok) {
+        store.state.hasVisitedResetPassword = true;
+        store.state.resetPasswordUser = result.data.user_id;
 
-		setTimeout(() => {
-			router.push({
-				name: "new-password",
-			});
-		}, 1000);
-	}
+        setTimeout(() => {
+            router.push({
+                name: "new-password",
+            });
+        }, 1000);
+    }
 };
 
 const codeOne = ref("");
@@ -186,32 +186,32 @@ const warningStatus = ref("");
 const warningBgColor = ref("");
 
 const isCodeComplete = computed(() => {
-	return [
-		codeOne.value,
-		codeTwo.value,
-		codeThree.value,
-		codeFour.value,
-	].every((code) => code);
+    return [
+        codeOne.value,
+        codeTwo.value,
+        codeThree.value,
+        codeFour.value,
+    ].every((code) => code);
 });
 
 const code = computed(() => {
-	return `${codeOne.value}${codeTwo.value}${codeThree.value}${codeFour.value}`;
+    return `${codeOne.value}${codeTwo.value}${codeThree.value}${codeFour.value}`;
 });
 
 const generateSubmissionTimestamp = () => {
-	return new Date();
+    return new Date();
 };
 
 const signIn = () => {
-	router.push("/sign-in");
+    router.push("/sign-in");
 };
 
 const cancelVerification = () => {
-	router.back();
+    router.back();
 };
 
 onMounted(async () => {
-	formValidation();
+    formValidation();
 });
 
 /**
@@ -223,22 +223,22 @@ onMounted(async () => {
  * @param {string} bgColor - The background color to apply to the warning message container.
  */
 const warning = (message, className, bgColor) => {
-	isWarning.value = true;
-	warningMessage.value = message;
-	warningStatus.value = className;
-	warningBgColor.value = bgColor;
+    isWarning.value = true;
+    warningMessage.value = message;
+    warningStatus.value = className;
+    warningBgColor.value = bgColor;
 };
 </script>
 
 <style scoped>
 .code-input {
-	width: 5rem !important;
-	height: 4.5rem;
-	font-size: 3rem;
-	font-weight: 400;
+    width: 5rem !important;
+    height: 4.5rem;
+    font-size: 3rem;
+    font-weight: 400;
 }
 
 .code-value {
-	border-color: 1px solid #ff7900 !important;
+    border-color: 1px solid #ff7900 !important;
 }
 </style>

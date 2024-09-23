@@ -7,6 +7,7 @@
             <BreadCrumbs v-model:breadCrumbs="breadCrumbs" />
         </div>
         <div
+            id="visitorImageInfoWrapper"
             class="mt-4 form-control"
             style="
                 margin: auto;
@@ -326,5 +327,11 @@ const formatVisitorVisits = (visits) => {
 .icons {
     width: 1.3rem;
     height: 1rem !important;
+}
+
+@media (max-width: 1000px) {
+    #visitorImageInfoWrapper {
+        margin-top: 0 !important;
+    }
 }
 </style>

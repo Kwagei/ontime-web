@@ -1,160 +1,160 @@
 <template>
-	<section class="vh-100" style="background-color: #ececec">
-		<div class="container py-5 h-100">
-			<div
-				class="row d-flex justify-content-center align-items-center h-100"
-			>
-				<div class="col-12 col-md-8 col-lg-6 col-xl-5">
-					<div
-						class="card shadow-2-strong boxShadow"
-						style="border-radius: 1rem"
-					>
-						<div class="card-body p-5">
-							<div class="d-flex justify-content-center mb-4">
-								<img
-									src="../assets/images/ontime_logo.jpg"
-									style="width: 9rem"
-									alt=""
-								/>
-							</div>
+    <section class="vh-100" style="background-color: #ececec">
+        <div class="container py-5 h-100">
+            <div
+                class="row d-flex justify-content-center align-items-center h-100"
+            >
+                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                    <div
+                        class="card shadow-2-strong boxShadow"
+                        style="border-radius: 1rem"
+                    >
+                        <div id="mobileFormWrapper" class="card-body p-5">
+                            <div class="d-flex justify-content-center mb-4">
+                                <img
+                                    src="../assets/images/ontime_logo.jpg"
+                                    style="width: 9rem"
+                                    alt=""
+                                />
+                            </div>
 
-							<form
-								@submit.prevent="signIn"
-								class="needs-validation"
-								novalidate
-							>
-								<div
-									v-if="isWarning"
-									class="py-2 mb-3 text-center rounded"
-									:style="`background-color: ${warningBgColor};`"
-									id="message"
-								>
-									<span :class="warningStatus">{{
-										warningMessage
-									}}</span>
-								</div>
+                            <form
+                                @submit.prevent="signIn"
+                                class="needs-validation"
+                                novalidate
+                            >
+                                <div
+                                    v-if="isWarning"
+                                    class="py-2 mb-3 text-center rounded"
+                                    :style="`background-color: ${warningBgColor};`"
+                                    id="message"
+                                >
+                                    <span :class="warningStatus">{{
+                                        warningMessage
+                                    }}</span>
+                                </div>
 
-								<!-- EMAIL -->
-								<div
-									data-mdb-input-init
-									class="form-outline mb-3"
-								>
-									<label
-										class="form-label is-required"
-										for="email"
-										>Email<span class="visually-hidden">
-											(required)</span
-										></label
-									>
-									<div class="input-group has-validation">
-										<input
-											type="text"
-											id="email"
-											class="form-control form-control-lg"
-											aria-describedby="inputGroupPrepend"
-											v-model="email"
-											required
-										/>
+                                <!-- EMAIL -->
+                                <div
+                                    data-mdb-input-init
+                                    class="form-outline mb-3"
+                                >
+                                    <label
+                                        class="form-label is-required"
+                                        for="email"
+                                        >Email<span class="visually-hidden">
+                                            (required)</span
+                                        ></label
+                                    >
+                                    <div class="input-group has-validation">
+                                        <input
+                                            type="text"
+                                            id="email"
+                                            class="form-control form-control-lg"
+                                            aria-describedby="inputGroupPrepend"
+                                            v-model="email"
+                                            required
+                                        />
 
-										<div class="invalid-feedback">
-											Please provide an email or username.
-										</div>
-									</div>
-								</div>
+                                        <div class="invalid-feedback">
+                                            Please provide an email or username.
+                                        </div>
+                                    </div>
+                                </div>
 
-								<!-- PASSWORD -->
-								<div
-									data-mdb-input-init
-									class="form-outline mb-3"
-								>
-									<label
-										class="form-label is-required"
-										for="password"
-										>Password<span class="visually-hidden">
-											(required)</span
-										></label
-									>
+                                <!-- PASSWORD -->
+                                <div
+                                    data-mdb-input-init
+                                    class="form-outline mb-3"
+                                >
+                                    <label
+                                        class="form-label is-required"
+                                        for="password"
+                                        >Password<span class="visually-hidden">
+                                            (required)</span
+                                        ></label
+                                    >
 
-									<div
-										class="input-group has-validation position-relative"
-									>
-										<input
-											:type="type ? 'password' : 'text'"
-											id="password"
-											class="form-control form-control-lg"
-											aria-describedby="inputGroupPrepend"
-											v-model="password"
-											required
-											autocomplete="true"
-										/>
-										<div
-											@click="togglePassword"
-											class="position-absolute end-0 cursor-pointer h-100 px-2 d-flex justify-content-center align-items-center password-visibility"
-										>
-											<Icons
-												class="cursor-pointer"
-												v-if="showPassword"
-												v-model:icon="visionIcon"
-											/>
-											<Icons
-												class="cursor-pointer"
-												v-if="hidePassword"
-												v-model:icon="hideIcon"
-											/>
-										</div>
-										<div class="invalid-feedback">
-											Please provide an email or username.
-										</div>
-									</div>
-								</div>
+                                    <div
+                                        class="input-group has-validation position-relative"
+                                    >
+                                        <input
+                                            :type="type ? 'password' : 'text'"
+                                            id="password"
+                                            class="form-control form-control-lg"
+                                            aria-describedby="inputGroupPrepend"
+                                            v-model="password"
+                                            required
+                                            autocomplete="true"
+                                        />
+                                        <div
+                                            @click="togglePassword"
+                                            class="position-absolute end-0 cursor-pointer h-100 px-2 d-flex justify-content-center align-items-center password-visibility"
+                                        >
+                                            <Icons
+                                                class="cursor-pointer"
+                                                v-if="showPassword"
+                                                v-model:icon="visionIcon"
+                                            />
+                                            <Icons
+                                                class="cursor-pointer"
+                                                v-if="hidePassword"
+                                                v-model:icon="hideIcon"
+                                            />
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            Please provide an email or username.
+                                        </div>
+                                    </div>
+                                </div>
 
-								<!-- Checkbox -->
-								<div
-									class="form-check d-flex justify-content-between align-items-center gap-1 mb-3"
-								>
-									<div>
-										<input
-											class="form-check-input"
-											type="checkbox"
-											value=""
-											id="form1Example3"
-											@change="stayLoggedIn"
-										/>
-										<label
-											class="form-check-label"
-											for="form1Example3"
-										>
-											Keep me logged in
-										</label>
-									</div>
-									<div
-										class="d-flex justify-content-end form-check-label"
-									>
-										<a @click="resetPasswordForm" href="#"
-											>Forgot Password?</a
-										>
-									</div>
-								</div>
+                                <!-- Checkbox -->
+                                <div
+                                    class="form-check d-flex justify-content-between align-items-center gap-1 mb-3"
+                                >
+                                    <div>
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            value=""
+                                            id="form1Example3"
+                                            @change="stayLoggedIn"
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="form1Example3"
+                                        >
+                                            Keep me logged in
+                                        </label>
+                                    </div>
+                                    <div
+                                        class="d-flex justify-content-end form-check-label"
+                                    >
+                                        <a @click="resetPasswordForm" href="#"
+                                            >Forgot Password?</a
+                                        >
+                                    </div>
+                                </div>
 
-								<div
-									class="col-md-12 d-flex gap-3 justify-content-end"
-								>
-									<button
-										type="submit"
-										class="btn btn-primary w-100"
-										style="padding: 0.4rem"
-									>
-										<Icons v-model:icon="signInIcon" />
-										Sign In
-									</button>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+                                <div
+                                    class="col-md-12 d-flex gap-3 justify-content-end"
+                                >
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary w-100"
+                                        style="padding: 0.4rem"
+                                    >
+                                        <Icons v-model:icon="signInIcon" />
+                                        Sign In
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </template>
 
 <script setup>
@@ -183,19 +183,19 @@ const warningStatus = ref("");
 const warningBgColor = ref("");
 
 const stayLoggedIn = (event) => {
-	keepLoggedIn.value = event.target.checked;
+    keepLoggedIn.value = event.target.checked;
 };
 
 const togglePassword = () => {
-	if (hidePassword.value) {
-		hidePassword.value = false;
-		showPassword.value = true;
-		type.value = false;
-	} else {
-		showPassword.value = false;
-		hidePassword.value = true;
-		type.value = true;
-	}
+    if (hidePassword.value) {
+        hidePassword.value = false;
+        showPassword.value = true;
+        type.value = false;
+    } else {
+        showPassword.value = false;
+        hidePassword.value = true;
+        type.value = true;
+    }
 };
 
 /**
@@ -206,52 +206,52 @@ const togglePassword = () => {
  * @returns {void}
  */
 const signIn = async () => {
-	// Check if email and password fields are not empty
-	if (!email.value || !password.value) {
-		return;
-	}
+    // Check if email and password fields are not empty
+    if (!email.value || !password.value) {
+        return;
+    }
 
-	// Make an API call to authenticate the user
-	const { ok, result } = await login({
-		username: email.value,
-		password: password.value,
-	});
+    // Make an API call to authenticate the user
+    const { ok, result } = await login({
+        username: email.value,
+        password: password.value,
+    });
 
-	// Display a warning message based on the API response
-	warning(
-		result.message,
-		ok ? "success" : "danger",
-		ok ? "#83d61631" : "#ea060629"
-	);
+    // Display a warning message based on the API response
+    warning(
+        result.message,
+        ok ? "success" : "danger",
+        ok ? "#83d61631" : "#ea060629"
+    );
 
-	// After 1 second, perform further actions based on the API response
-	setTimeout(() => {
-		if (ok) {
-			// Reset form fields and remove validation classes
-			resetForm();
+    // After 1 second, perform further actions based on the API response
+    setTimeout(() => {
+        if (ok) {
+            // Reset form fields and remove validation classes
+            resetForm();
 
-			// Set the user's authentication token in the cookie
-			const { token } = result.data;
-			setCookie("token", token, keepLoggedIn.value ? 1 : 0.5);
+            // Set the user's authentication token in the cookie
+            const { token } = result.data;
+            setCookie("token", token, keepLoggedIn.value ? 1 : 0.5);
 
-			// Navigate to the dashboard page
-			router.push("/dashboard");
-		}
-	}, 1000);
+            // Navigate to the dashboard page
+            router.push("/dashboard");
+        }
+    }, 1000);
 };
 
 const resetPasswordForm = () => {
-	router.push("/reset-password");
+    router.push("/reset-password");
 };
 
 // Reset form fields and remove validation classes on form submission
 const resetForm = () => {
-	email.value = "";
-	password.value = "";
+    email.value = "";
+    password.value = "";
 
-	// Remove validation classes
-	const form = getElement(".needs-validation");
-	removeClass(form, "was-validated");
+    // Remove validation classes
+    const form = getElement(".needs-validation");
+    removeClass(form, "was-validated");
 };
 
 /**
@@ -263,26 +263,26 @@ const resetForm = () => {
  * @param {string} bgColor - The background color to apply to the warning message container.
  */
 const warning = (message, className, bgColor) => {
-	isWarning.value = true;
-	warningMessage.value = message;
-	warningStatus.value = className;
-	warningBgColor.value = bgColor;
+    isWarning.value = true;
+    warningMessage.value = message;
+    warningStatus.value = className;
+    warningBgColor.value = bgColor;
 };
 
 onMounted(async () => {
-	formValidation();
+    formValidation();
 });
 </script>
 
 <style>
 .form-check-label {
-	font-size: 0.9rem;
+    font-size: 0.9rem;
 }
 
 .danger {
-	color: #cd3c14 !important;
+    color: #cd3c14 !important;
 }
 .success {
-	color: #228722 !important;
+    color: #228722 !important;
 }
 </style>

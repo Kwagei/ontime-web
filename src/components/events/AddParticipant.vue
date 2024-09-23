@@ -7,13 +7,14 @@
             title: title,
         }"
     />
-    <div id="visitor-view" class="d-flex flex-column container">
+    <div id="addParticipantFormContainer" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
         >
             <BreadCrumbs class="mb-0 mt-4" :breadCrumbs="breadCrumbs" />
         </div>
         <div
+            id="mobileFormWrapper"
             class="form-control input rounded"
             style="margin: auto; padding: 3rem"
         >
@@ -400,6 +401,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@media (max-width: 450px) {
+    #addParticipantFormContainer {
+        padding: 0 !important;
+        gap: 0 !important;
+    }
+}
+
 .show-feedback {
     display: flex;
 }
@@ -419,7 +427,7 @@ svg {
     margin: 0 !important;
 }
 
-#visitor-view {
+#addParticipantFormContainer {
     gap: 1.5rem;
 }
 </style>

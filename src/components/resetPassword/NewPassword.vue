@@ -1,118 +1,118 @@
 <template>
-	<div class="row d-flex justify-content-center align-items-center h-100">
-		<div class="col-12 col-md-8 col-lg-6 col-xl-5">
-			<div
-				class="card shadow-2-strong boxShadow"
-				style="border-radius: 1rem"
-			>
-				<div class="card-body p-5">
-					<div class="d-flex justify-content-center mb-4">
-						<img
-							src="@/assets/images/ontime_logo.jpg"
-							style="width: 9rem"
-							alt=""
-						/>
-					</div>
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div
+                class="card shadow-2-strong boxShadow"
+                style="border-radius: 1rem"
+            >
+                <div id="mobileFormWrapper" class="card-body p-5">
+                    <div class="d-flex justify-content-center mb-4">
+                        <img
+                            src="@/assets/images/ontime_logo.jpg"
+                            style="width: 9rem"
+                            alt=""
+                        />
+                    </div>
 
-					<!-- NEW PASSWORD FORM -->
-					<form
-						@submit.prevent="onSubmit"
-						class="row justify-content-center needs-validation"
-						id="reset-form"
-						novalidate
-					>
-						<div class="text-center mb-3">
-							<h5 class="m-0">Set new Password</h5>
-						</div>
+                    <!-- NEW PASSWORD FORM -->
+                    <form
+                        @submit.prevent="onSubmit"
+                        class="row justify-content-center needs-validation"
+                        id="reset-form"
+                        novalidate
+                    >
+                        <div class="text-center mb-3">
+                            <h5 class="m-0">Set new Password</h5>
+                        </div>
 
-						<div
-							v-if="isWarning"
-							class="py-2 mb-3 text-center rounded"
-							:style="`background-color: ${warningBgColor};`"
-							id="message"
-						>
-							<span :class="warningStatus">{{
-								warningMessage
-							}}</span>
-						</div>
+                        <div
+                            v-if="isWarning"
+                            class="py-2 mb-3 text-center rounded"
+                            :style="`background-color: ${warningBgColor};`"
+                            id="message"
+                        >
+                            <span :class="warningStatus">{{
+                                warningMessage
+                            }}</span>
+                        </div>
 
-						<!-- NEW PASSWORD -->
-						<div class="form-outline mb-3">
-							<label
-								for="new-password"
-								class="form-label is-required"
-								>Password<span class="visually-hidden">
-									(required)</span
-								></label
-							>
+                        <!-- NEW PASSWORD -->
+                        <div class="form-outline mb-3">
+                            <label
+                                for="new-password"
+                                class="form-label is-required"
+                                >Password<span class="visually-hidden">
+                                    (required)</span
+                                ></label
+                            >
 
-							<div class="input-group has-validation">
-								<div class="input-group">
-									<input
-										type="password"
-										:class="[
-											validPassword && 'validated',
-											'form-control form-control-lg',
-										]"
-										v-model="newPassword"
-										id="new-password"
-										aria-describedby="inputGroupPrepend"
-										required
-										autocomplete="on"
-									/>
+                            <div class="input-group has-validation">
+                                <div class="input-group">
+                                    <input
+                                        type="password"
+                                        :class="[
+                                            validPassword && 'validated',
+                                            'form-control form-control-lg',
+                                        ]"
+                                        v-model="newPassword"
+                                        id="new-password"
+                                        aria-describedby="inputGroupPrepend"
+                                        required
+                                        autocomplete="on"
+                                    />
 
-									<div
-										:class="[
-											'invalid-feedback',
-											validPassword && 'show-feedback',
-										]"
-									>
-										{{ validPasswordMessage }}
-									</div>
-								</div>
-								<div class="invalid-feedback">
-									Please provide a new password.
-								</div>
-								<div class="helpMessage form-text">
-									Password should be min 6 characters with at
-									least one upper, lower case, digit and
-									symbol.
-								</div>
-							</div>
-						</div>
+                                    <div
+                                        :class="[
+                                            'invalid-feedback',
+                                            validPassword && 'show-feedback',
+                                        ]"
+                                    >
+                                        {{ validPasswordMessage }}
+                                    </div>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Please provide a new password.
+                                </div>
+                                <div class="helpMessage form-text">
+                                    Password should be min 6 characters with at
+                                    least one upper, lower case, digit and
+                                    symbol.
+                                </div>
+                            </div>
+                        </div>
 
-						<div
-							class="col-md-12 d-flex gap-3 justify-content-center mb-3"
-						>
-							<button
-								type="submit"
-								class="btn btn-primary w-100"
-								style="padding: 0.7rem 0.5rem"
-							>
-								Reset Password
-							</button>
-						</div>
+                        <div
+                            class="col-md-12 d-flex gap-3 justify-content-center mb-3"
+                        >
+                            <button
+                                type="submit"
+                                class="btn btn-primary w-100"
+                                style="padding: 0.7rem 0.5rem"
+                            >
+                                Reset Password
+                            </button>
+                        </div>
 
-						<!-- Checkbox -->
-						<div
-							class="form-check d-flex justify-content-center align-items-center gap-1"
-						>
-							<div
-								class="d-flex justify-content-end form-check-label"
-							>
-								<p>
-									Already have an account?
-									<a @click="signIn" href="#"
-										><b>Sign in</b></a
-									>
-								</p>
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+                        <!-- Checkbox -->
+                        <div
+                            class="form-check d-flex justify-content-center align-items-center gap-1"
+                        >
+                            <div
+                                class="d-flex justify-content-end form-check-label"
+                            >
+                                <p>
+                                    Already have an account?
+                                    <a @click="signIn" href="#"
+                                        ><b>Sign in</b></a
+                                    >
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -135,69 +135,69 @@ const warningBgColor = ref("");
 const newPassword = ref("");
 const validPassword = ref(false);
 const validPasswordMessage = ref(
-	"Password should be min 6 characters with at least one upper, lower case, digit and symbol"
+    "Password should be min 6 characters with at least one upper, lower case, digit and symbol"
 );
 
 const validatePassword = (pwd) => {
-	if (!pwd) {
-		validPassword.value = false;
-		validPasswordMessage.value =
-			"Password should be min 6 characters with at least one upper, lower case, digit and symbol";
-		return;
-	}
+    if (!pwd) {
+        validPassword.value = false;
+        validPasswordMessage.value =
+            "Password should be min 6 characters with at least one upper, lower case, digit and symbol";
+        return;
+    }
 
-	const { valid, message } = passwordValidation(pwd);
+    const { valid, message } = passwordValidation(pwd);
 
-	if (!valid) {
-		validPassword.value = true;
-		validPasswordMessage.value = message;
-	} else {
-		validPassword.value = false;
-	}
+    if (!valid) {
+        validPassword.value = true;
+        validPasswordMessage.value = message;
+    } else {
+        validPassword.value = false;
+    }
 };
 
 watch(
-	() => newPassword.value,
-	(n) => {
-		validatePassword(n);
-	}
+    () => newPassword.value,
+    (n) => {
+        validatePassword(n);
+    }
 );
 
 const onSubmit = async () => {
-	// Check if code is not complete.
-	if (!newPassword.value) {
-		return;
-	}
+    // Check if code is not complete.
+    if (!newPassword.value) {
+        return;
+    }
 
-	const user_id = store.state.resetPasswordUser;
+    const user_id = store.state.resetPasswordUser;
 
-	console.log(user_id);
+    console.log(user_id);
 
-	// Make an API call to reset user password.
-	const { ok, result } = await editUser(user_id, {
-		password: newPassword.value,
-	});
+    // Make an API call to reset user password.
+    const { ok, result } = await editUser(user_id, {
+        password: newPassword.value,
+    });
 
-	// // Display a warning message based on the API response
-	warning(
-		result.message,
-		ok ? "success" : "danger",
-		ok ? "#83d61631" : "#ea060629"
-	);
+    // // Display a warning message based on the API response
+    warning(
+        result.message,
+        ok ? "success" : "danger",
+        ok ? "#83d61631" : "#ea060629"
+    );
 
-	if (ok) {
-		setTimeout(() => {
-			router.push("/sign-in");
-		}, 1000);
-	}
+    if (ok) {
+        setTimeout(() => {
+            router.push("/sign-in");
+        }, 1000);
+    }
 };
 
 const signIn = () => {
-	router.push("/sign-in");
+    router.push("/sign-in");
 };
 
 onMounted(async () => {
-	formValidation();
+    formValidation();
 });
 
 /**
@@ -209,24 +209,24 @@ onMounted(async () => {
  * @param {string} bgColor - The background color to apply to the warning message container.
  */
 const warning = (message, className, bgColor) => {
-	isWarning.value = true;
-	warningMessage.value = message;
-	warningStatus.value = className;
-	warningBgColor.value = bgColor;
+    isWarning.value = true;
+    warningMessage.value = message;
+    warningStatus.value = className;
+    warningBgColor.value = bgColor;
 };
 </script>
 
 <style>
 .code-input {
-	width: 4rem !important;
-	height: 3.5rem;
+    width: 4rem !important;
+    height: 3.5rem;
 }
 
 .show-feedback {
-	display: flex;
+    display: flex;
 }
 
 .validated {
-	border-color: var(--bs-form-invalid-border-color) !important;
+    border-color: var(--bs-form-invalid-border-color) !important;
 }
 </style>

@@ -6,7 +6,7 @@
         >
             <BreadCrumbs :breadCrumbs="breadCrumbs" />
 
-            <div class="d-flex" style="gap: 0.521rem">
+            <div class="d-flex" style="gap: 0.521rem; margin-left: auto">
                 <RefreshList @click="refresh = true" />
 
                 <div class="dropdown">

@@ -62,12 +62,14 @@ header {
 }
 
 @media (max-width: 1250px) {
-    #headWrapper {
-        padding: 1rem 0 !important;
-    }
-
     #displaySidebarHamburger {
         display: inline-flex !important;
+    }
+}
+
+@media (max-width: 770px) {
+    #headWrapper {
+        padding: 0.6rem 0 !important;
     }
 }
 

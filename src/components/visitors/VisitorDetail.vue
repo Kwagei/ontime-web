@@ -1,8 +1,7 @@
 <template>
     <div id="visitor-view" class="d-flex flex-column container">
         <div
-            class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-            style="margin-top: 0.3rem"
+            class="d-flex justify-content-between align-items-center container p-0 mx-auto mt-4"
         >
             <BreadCrumbs v-model:breadCrumbs="breadCrumbs" />
         </div>
@@ -157,7 +156,7 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
-import { formatDateTime } from "@/util/util";
+import { formatDateTime, formatDepartureTime } from "@/util/util";
 
 DataTable.use(DataTablesCore);
 
@@ -260,19 +259,16 @@ const options = {
     destroy: true,
 };
 
-const formatVisitorInfo = (key) => {
-    if (!key) return "";
-
-    const v = key.split("_").join(" ");
-    const formattedString = v.charAt(0).toUpperCase() + v.slice(1);
-
-    return formattedString;
-};
-
 const formatVisitorVisits = (visits) => {
     for (const visit of visits) {
         if (visit.date_time) {
             visit.date_time = formatDateTime(visit.date_time);
+        }
+
+        if (visit.departure_time) {
+            visit.departure_time = formatDepartureTime(visit.departure_time, {
+                time: true,
+            });
         }
 
         visit.items = visit.items ? visit.items.join(", ") : "";

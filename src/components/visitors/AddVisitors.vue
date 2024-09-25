@@ -2,13 +2,14 @@
     <AlertModal :data="alert" />
     <div id="visitor-view" class="d-flex flex-column container">
         <div
-            class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-            style="margin-top: 0.3rem"
+            id="entitiesBreadCrumbsWrapper"
+            class="d-flex justify-content-between align-items-center container p-0 mx-auto mt-4"
         >
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
         <div
+            id="mobileFormWrapper"
             class="mt-1 form-control input rounded"
             style="margin: auto; padding: 3rem"
         >
@@ -378,6 +379,19 @@ const resetForm = () => {
 onMounted(async () => {
     await fetchVisitor();
     formValidation();
+
+    $("#breadCrumbs").css("display", "block");
+    const breadCrumbsOl = $("#breadCrumbsOl")[0];
+
+    if (window.innerWidth <= 1070) {
+        breadCrumbsOl.innerHTML = `
+			<li>
+				<span class="text fw-bold">
+					Add Visitor
+				</span>
+			</li>
+		`;
+    }
 });
 </script>
 

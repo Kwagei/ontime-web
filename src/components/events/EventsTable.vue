@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";

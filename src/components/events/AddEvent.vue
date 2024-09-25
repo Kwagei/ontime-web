@@ -1,7 +1,10 @@
 <template>
     <AlertModal :data="alert" />
     <div id="eventsWrapper" class="d-flex flex-column container">
-        <div class="d-flex justify-content-between">
+        <div
+            id="entitiesBreadCrumbsWrapper"
+            class="d-flex justify-content-between mt-4"
+        >
             <BreadCrumbs v-model:breadCrumbs="activeBreadCrumbs" />
         </div>
 
@@ -343,8 +346,8 @@ const errorGettingEventToEdit = ref("");
 // Set breadcrumbs for editing of adding new event
 const activeBreadCrumbs = ref(
     eventId.value
-        ? [...props.breadCrumbs, eventId.value, "edit-event"]
-        : [...props.breadCrumbs, "add-event"]
+        ? ["events", eventId.value, "edit-event"]
+        : ["events", "add-event"]
 );
 
 const updateHostTerm = (host) => {
@@ -478,13 +481,15 @@ onMounted(async () => {
         display: "block",
     });
 
-    $("#breadCrumbsOl")[0].innerHTML = `
-		<li style="margin: 10px">
-			<span class="text fw-bold">
-				Edit Event
-			</span>
-		</li>
-	`;
+    if (window.innerWidth <= 1070) {
+        $("#breadCrumbsOl")[0].innerHTML = `
+			<li style="margin: 10px">
+				<span class="text fw-bold">
+					Edit Event
+				</span>
+			</li>
+		`;
+    }
 });
 
 function setMode() {

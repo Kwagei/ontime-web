@@ -31,7 +31,6 @@ export const registerVisit = async (data) => {
         const response = await fetch(`${API_URL}/visits`, options);
 
         const result = await response.json();
-        console.log(result);
 
         return { ok: response.ok, result };
     } catch (error) {

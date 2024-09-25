@@ -49,7 +49,7 @@
                         @click="emit('switch', 'addParticipant')"
                     >
                         <Icons v-model:icon="add" />
-                        New
+                        Participant
                     </button>
                 </div>
             </div>
@@ -59,7 +59,8 @@
             >
                 <div
                     id="eventInfo"
-                    class="d-flex justify-content-between mt-3 gap-4 mx-auto w-50"
+                    class="d-flex justify-content-between mt-3 gap-4 mx-auto"
+                    style="width: 60%"
                 >
                     <div class="d-flex flex-column align-items-start">
                         <span class="fs-6">Facilitator</span>
@@ -92,11 +93,11 @@
                         </h6>
                     </div>
                 </div>
-                <div v-show="event.details" class="border border-1"></div>
+                <div class="border border-1"></div>
                 <div
                     id="eventDetailsDiv"
-                    v-show="event.details"
-                    class="w-50 pt-2 text-left flex-grow-1"
+                    class="pt-2 text-left flex-grow-1"
+                    style="width: 40%"
                 >
                     <span class="fs-6">Details</span>
                     <h6 class="mt-2 mb-0">{{ event.details }}</h6>

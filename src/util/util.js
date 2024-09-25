@@ -193,7 +193,7 @@ export const formatVisitData = (visits) => {
 
         if (visit.items.length) {
             visit.items = formatItems(visit.items);
-        }
+        } else visit.items = "";
 
         if (visit.purpose) {
             const purpose = visit.purpose.split(" ");
@@ -216,6 +216,7 @@ export const formatVisitData = (visits) => {
 
 export const formatItems = (belonging) => {
     const items = belonging.join(", ");
+
     return items.length > MAX_ITEMS_LEN
         ? `${items.slice(0, MAX_ITEMS_LEN)}...`
         : items;

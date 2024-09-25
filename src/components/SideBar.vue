@@ -7,9 +7,10 @@
         <div class="d-flex justify-content-between">
             <a
                 href="/"
+                id="logoLink"
                 class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
             >
-                <h2 class="m-0 px-4">OnTime</h2>
+                <h1 class="m-0 px-4">OnTime</h1>
             </a>
             <img
                 src="../assets/images/delete.png"
@@ -132,5 +133,9 @@ function hideSidebar() {
 
 .nav-item {
     margin: 0 !important;
+}
+
+#logoLink {
+    margin-bottom: 0 !important;
 }
 </style>

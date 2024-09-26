@@ -60,10 +60,10 @@ export const getVisits = async (queryParams = {}) => {
             start = 0,
             limit = 20,
             sort = "",
-            order = "",
+            order = "desc",
         } = queryParams;
 
-        const apiUrl = `${API_URL}/visits`;
+        const apiUrl = `${API_URL}visits`;
         let url = `${apiUrl}?start=${start}&limit=${limit}`;
 
         if (search) {

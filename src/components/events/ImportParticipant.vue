@@ -6,9 +6,7 @@
     />
 
     <div class="container">
-        <div
-            class="d-flex justify-content-between align-items-center gap-5 mt-3"
-        >
+        <div class="d-flex justify-content-between align-items-center mt-3">
             <div class="d-flex align-items-center gap-4">
                 <BackArrow
                     v-show="!participants.length"
@@ -24,13 +22,16 @@
                     href="/docs/participants_template.csv"
                     download="participants_template.csv"
                 >
-                    <button class="btn btn-primary">
+                    <button class="btn btn-primary" style="min-width: 235px">
                         Download CSV Template
                     </button>
                 </a>
             </div>
         </div>
-        <div class="d-flex justify-content-center gap-3 mt-2">
+        <div
+            id="fileSelectorAndGridWrapper"
+            class="d-flex justify-content-center gap-3 mt-2"
+        >
             <div class="pt-2">
                 <h2 class="pb-2 text">Import Participants</h2>
                 <div>
@@ -82,10 +83,9 @@
 <script setup>
 import { ref } from "vue";
 import { parse } from "papaparse"; // Import Papa Parse for CSV parsing
-import $ from "jquery";
 import { useRoute } from "vue-router";
 
-import { API_URL, registerEventParticipants } from "../../assets/js/index.js";
+import { registerEventParticipants } from "../../assets/js/index.js";
 import ImportedParticipantsGrid from "./ImportedParticipantsGrid.vue";
 import EditParticipantForm from "./EditParticipantForm.vue";
 import Alert from "../Alert.vue";
@@ -162,7 +162,9 @@ async function onParticipantUpdate(updatedParticipant) {
 
 async function postParticipants() {
     const { ok, result } = await registerEventParticipants({
-        event_id: props.eventId,
+        event: {
+            id: props.eventId,
+        },
         event_participants: participants.value,
     });
 
@@ -273,5 +275,9 @@ function deleteParticipant(msisdn) {
 </script>
 
 <style scoped>
-/* code */
+@media (max-width: 1450px) {
+    #fileSelectorAndGridWrapper {
+        flex-direction: column !important;
+    }
+}
 </style>

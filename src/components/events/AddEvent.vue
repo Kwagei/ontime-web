@@ -485,7 +485,7 @@ onMounted(async () => {
         $("#breadCrumbsOl")[0].innerHTML = `
 			<li style="margin: 10px">
 				<span class="text fw-bold">
-					Edit Event
+					${mode.charAt(0).toUpperCase() + mode.slice(1)} Event
 				</span>
 			</li>
 		`;

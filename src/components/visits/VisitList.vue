@@ -278,7 +278,7 @@ watch(
 const clearFilter = () => {
     filterDates.value.from = "";
     filterDates.value.to = "";
-    tableKey.value++;
+    tableKey.value += 1;
 };
 </script>
 

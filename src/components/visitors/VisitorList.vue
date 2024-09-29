@@ -61,6 +61,7 @@ const columns = [
     { data: "first_name", title: "First name" },
     { data: "middle_name", title: "Middle name" },
     { data: "last_name", title: "Last name" },
+    { data: "gender", title: "Gender" },
     { data: "msisdn", title: "Phone number" },
     { data: "email", title: "Email" },
     { data: "address", title: "Address" },
@@ -99,6 +100,9 @@ const options = {
             totalVisitors.value = totalLength;
 
             data.forEach((visitor) => {
+                visitor.gender =
+                    visitor.gender.charAt(0).toUpperCase() +
+                    visitor.gender.slice(1);
                 visitor.address = formatAddress(visitor.address);
                 visitor.msisdn = `0${visitor.msisdn.slice(3)}`;
                 visitor.created_at = formatDateTime(visitor.created_at, {
@@ -161,9 +165,7 @@ const options = {
     order: [[6, "desc"]],
     destroy: true,
     createdRow: (row, data) => {
-        $(row).on("click", (event) => {
-            // if (event.target.dataset.empty) addVisitor();
-
+        $(row).on("click", () => {
             const visitorData = data;
 
             if (visitorData) visitorDetail(visitorData.id);
@@ -190,21 +192,6 @@ watch(
 
 const visitorDetail = (id) => {
     router.push({ name: "visitorDetail", params: { id } });
-};
-
-const handleVisitorDetail = () => {
-    const dt = table.value.dt;
-    dt.on("click", "tr", function (event) {
-        if (event.target.dataset.empty) addVisitor();
-
-        console.log(event);
-
-        const visitorData = dt.row(this).data();
-
-        if (visitorData) {
-            visitorDetail(visitorData.id);
-        }
-    });
 };
 
 function formatAddress(address) {

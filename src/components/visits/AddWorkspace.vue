@@ -1,365 +1,605 @@
 <template>
-	<Modal :data="{ title, message, status }" />
-	<div id="visit-view" class="d-flex flex-column container">
-		<div
-			class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-			style="margin-top: 0.3rem"
-		>
-			<BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
-		</div>
+    <AlertModal :data="alert" />
 
-		<div
-			class="mt-4 form-control input"
-			style="margin: auto; padding: 3rem"
-		>
-			<form
-				class="row g-3 needs-validation"
-				novalidate
-				@submit.prevent="onSubmit"
-			>
-				<!-- PHONE NUMBER -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomVisitorNumber"
-						class="form-label is-required"
-					>
-						Phone number<span class="visually-hidden"
-							>(required)</span
-						>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							@blur="getVisitor"
-							type="text"
-							class="form-control"
-							v-model="msisdn"
-							id="validationCustomVisitorNumber"
-							aria-describedby="inputGroupPrepend"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a valid phone number.
-						</div>
-					</div>
-				</div>
+    <!-- BELONGING MODAL -->
+    <div
+        class="modal fade"
+        id="visitModal"
+        tabindex="-1"
+        aria-hidden="true"
+        aria-labelledby="visitModalLabel"
+        style="z-index: 2000"
+    >
+        <div
+            class="modal-dialog modal-lg modal-dialog-centered"
+            id="modal-dialog"
+        >
+            <div class="modal-content rounded">
+                <div class="modal-header">
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        data-bs-placement="bottom"
+                        data-bs-title="Close"
+                    >
+                        <span class="visually-hidden">Close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="belongings" class="form-label"
+                            >Belongings</label
+                        >
+                        <div class="input-group has-validation">
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="belongings"
+                                aria-describedby="inputGroupPrepend"
+                                v-model="temBelonging"
+                                @keyup.prevent="addBelongings"
+                            />
+                        </div>
+                        <div
+                            v-for="belonging in belongings"
+                            :key="belonging"
+                            @click="deleteBelongings(belonging)"
+                            class="belonging"
+                        >
+                            {{ belonging }}
+                        </div>
+                    </div>
+                    <div>
+                        <label for="institution" class="form-label"
+                            >Institution</label
+                        >
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="institution"
+                                aria-describedby="inputGroupPrepend"
+                                v-model="institution"
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button @click="checkParticipantIn" class="btn btn-primary">
+                        Check In
+                    </button>
 
-				<!-- NEW VISITOR -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomNewVisitor"
-						class="form-label is-required"
-					>
-						Visitor<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomNewVisitor"
-							aria-describedby="inputGroupPrepend"
-							v-model="visitor"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a visitor name.
-						</div>
-					</div>
-				</div>
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal"
+                        @click="resetForm"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-				<!-- Host -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomHost"
-						class="form-label is-required"
-					>
-						Host<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<select
-							v-model="host_name"
-							class="form-select"
-							id="validationCustomHost"
-							required
-						>
-							<option value="" disabled>Select a host</option>
-							<option
-								v-for="option in options"
-								:key="option.value"
-								:value="option.value"
-							>
-								{{ option.text }}
-							</option>
-						</select>
-						<div class="invalid-feedback">
-							Please provide a host name.
-						</div>
-					</div>
-				</div>
+    <div
+        class="d-flex flex-column container gap-3"
+        style="padding: 0 !important"
+    >
+        <div id="workspaceBreadcrumbsWrapper" class="mt-4 mb-2">
+            <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
+        </div>
 
-				<!-- Belonging -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomBelonging"
-						class="form-label is-required"
-					>
-						Belonging<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomBelonging"
-							v-model="belonging"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a belonging name.
-						</div>
-					</div>
-				</div>
+        <form @submit.prevent v-show="stage == 0" class="row g-3">
+            <div class="dropdown mt-2" id="selectEventWrapper">
+                <label for="selectEventInput" class="form-label is-required">
+                    Find Visitor by Contact
+                </label>
 
-				<!-- Institution -->
-				<div class="col-md-6">
-					<label for="validationCustomInstitution" class="form-label">
-						Institution<span class="visually-hidden"
-							>(required)</span
-						>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomInstitution"
-							v-model="institution"
-						/>
-					</div>
-				</div>
+                <div>
+                    <input
+                        @input="getVisitor"
+                        type="text"
+                        class="form-control form-select"
+                        v-model="msisdn"
+                        id="validationCustomVisitorNumber"
+                        aria-describedby="inputGroupPrepend"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        autocomplete="off"
+                        required
+                        placeholder="Visitor's Phone Number"
+                    />
+                    <ul class="dropdown-menu w-100">
+                        <li
+                            class="dropdown-item"
+                            v-if="msisdn && !visitors.length"
+                        >
+                            No Match
+                        </li>
+                        <template v-for="visitor in visitors">
+                            <li
+                                @click="visitorSelected(visitor)"
+                                class="dropdown-item"
+                                :value="visitor.id"
+                            >
+                                {{ visitor.name }}
+                            </li>
+                        </template>
+                        <router-link
+                            :to="{ name: 'add-visitor' }"
+                            class="text-primary"
+                        >
+                            <li class="dropdown-item text-decoration-none">
+                                Create new visitor
+                            </li>
+                        </router-link>
+                    </ul>
+                </div>
+            </div>
+        </form>
 
-				<!-- Room -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomRoom"
-						class="form-label is-required"
-					>
-						Room<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomRoom"
-							v-model="room"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a room name.
-						</div>
-					</div>
-				</div>
+        <div
+            class="form-control input"
+            id="mobileFormWrapper"
+            style="padding: 3rem"
+            v-if="stage == 1"
+        >
+            <form
+                class="row g-3 needs-validation"
+                novalidate
+                @submit.prevent="getInstitutionAndBelongings"
+            >
+                <!-- PHONE NUMBER -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustomVisitorNumber"
+                        class="form-label is-required"
+                    >
+                        Phone number<span class="visually-hidden"
+                            >(required)</span
+                        >
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            @input="getVisitor"
+                            type="text"
+                            class="form-control form-select"
+                            v-model="msisdn"
+                            id="validationCustomVisitorNumber"
+                            aria-describedby="inputGroupPrepend"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            autocomplete="off"
+                            required
+                            placeholder="Visitor Phone Number"
+                        />
+                        <ul class="dropdown-menu w-100">
+                            <li
+                                class="dropdown-item"
+                                v-if="msisdn && !visitors.length"
+                            >
+                                No Match
+                            </li>
+                            <template v-for="visitor in visitors">
+                                <li
+                                    @click="visitorSelected(visitor)"
+                                    class="dropdown-item"
+                                    :value="visitor.id"
+                                >
+                                    {{ visitor.name }}
+                                </li>
+                            </template>
+                            <router-link
+                                :to="{ name: 'add-visitor' }"
+                                class="text-primary"
+                            >
+                                <li class="dropdown-item text-decoration-none">
+                                    Create new visitor
+                                </li>
+                            </router-link>
+                        </ul>
+                        <div class="invalid-feedback">
+                            Please provide a valid phone number.
+                        </div>
+                    </div>
+                </div>
 
-				<!-- Purpose -->
-				<div class="col-6">
-					<label
-						for="validationCustomPurpose"
-						class="form-label is-required"
-					>
-						Purpose<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<textarea
-							class="form-control"
-							id="validationCustomPurpose"
-							required
-							v-model="purpose"
-						></textarea>
-						<div class="invalid-feedback">
-							Please provide a purpose.
-						</div>
-					</div>
-				</div>
+                <!-- NEW VISITOR -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustomNewVisitor"
+                        class="form-label is-required"
+                    >
+                        Visitor<span class="visually-hidden">(required)</span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="validationCustomNewVisitor"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="visitor"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Please provide a visitor name.
+                        </div>
+                    </div>
+                </div>
 
-				<!-- Address -->
-				<div class="col-md-6">
-					<label
-						for="validationCustomAddress"
-						class="form-label is-required"
-					>
-						Address<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomAddress"
-							v-model="visit_address"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide an address.
-						</div>
-					</div>
-				</div>
+                <!-- Room -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustomRoom"
+                        class="form-label is-required"
+                    >
+                        Room<span class="visually-hidden">(required)</span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control form-select"
+                            id="validationCustomRoom"
+                            v-model="room.name"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            autocomplete="off"
+                            required
+                        />
+                        <ul class="dropdown-menu w-100">
+                            <template v-for="room in rooms">
+                                <li
+                                    class="dropdown-item"
+                                    :value="room.id"
+                                    @click="updateRoom(room)"
+                                >
+                                    {{ room.name }}
+                                </li>
+                            </template>
+                            <router-link
+                                :to="{ name: 'new-room' }"
+                                class="text-primary"
+                            >
+                                <li class="dropdown-item">Create new room</li>
+                            </router-link>
+                        </ul>
+                        <div class="invalid-feedback">
+                            Please provide a room name.
+                        </div>
+                    </div>
+                </div>
 
-				<!-- Submit Button -->
-				<div class="col-12 d-flex gap-2">
-					<button
-						class="btn btn-primary px-5"
-						style="margin-left: auto"
-						type="submit"
-					>
-						Save
-					</button>
-					<button
-						class="btn btn-secondary px-5"
-						@click="router.back()"
-					>
-						Cancel
-					</button>
-				</div>
-			</form>
-		</div>
-	</div>
+                <!-- Address -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustomAddress"
+                        class="form-label is-required"
+                    >
+                        Address<span class="visually-hidden">(required)</span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="validationCustomAddress"
+                            v-model="visit_address"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Please provide an address.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purpose -->
+                <div class="col-6">
+                    <label
+                        for="validationCustomPurpose"
+                        class="form-label is-required"
+                    >
+                        Purpose<span class="visually-hidden">(required)</span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <textarea
+                            class="form-control w-auto"
+                            id="validationCustomPurpose"
+                            required
+                            v-model="purpose"
+                        ></textarea>
+                        <div class="invalid-feedback">
+                            Please provide a purpose.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="col-12 d-flex gap-2">
+                    <button
+                        class="btn btn-primary"
+                        style="margin-left: auto"
+                        type="submit"
+                    >
+                        Save
+                    </button>
+                    <button class="btn btn-secondary" @click="router.back()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
-import Modal from "../modals/AlertModal.vue";
+import AlertModal from "../modals/AlertModal.vue";
 import {
-	registerVisit,
-	getSingleVisitor,
-	getUsers,
+    registerVisit,
+    API_URL,
+    API_KEY,
+    visitorCheckInStatus,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
-import { addClass, formValidation, getElement } from "@/util/util";
+import { formValidation, showModal } from "@/util/util";
 
 const msisdn = ref("");
 const visitor = ref("");
 const visitorId = ref("");
-const host_name = ref("");
-const belonging = ref("");
-const options = ref([]);
-const host_id = ref("");
-const institution = ref("");
-const room = ref("");
 const visit_address = ref("");
 const purpose = ref("");
-const status = ref("");
-const message = ref("");
-const title = ref("");
+
+const temBelonging = ref("");
+const belongings = ref([]);
+const institution = ref("");
 
 const activeBreadCrumbs = ref([]);
 
 const router = useRouter();
 
+const alert = ref({
+    message: "",
+    status: "success",
+    pageLink: "",
+});
+
+/*
+ * Stage of Workspace Check In
+ * 0 => Enter Contact to Search for Visitor
+ * 1 => Enter Check In Details
+ * 2 => Check In
+ */
+const stage = ref(0);
+
+const visitors = ref([]);
+const rooms = ref([]);
+const room = ref({
+    id: "",
+    name: "",
+});
+
 const props = defineProps({
-	breadCrumbs: {
-		type: Array,
-		required: true,
-	},
+    breadCrumbs: {
+        type: Array,
+        required: true,
+    },
 });
 
 activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
 
 onMounted(async () => {
-	formValidation();
+    formValidation();
 
-	await getUserOptions();
+    fetchRooms();
 });
-
-// function for inserting each username in the select element
-const getUserOptions = async () => {
-	try {
-		const users = await getUsers();
-		options.value = users.map((user) => ({
-			value: user.id,
-			text: user.username,
-		}));
-		// console.log(options.value);
-	} catch (error) {
-		console.error("Error retrieving users:", error);
-	}
-};
 
 // function to get visitor bt MSISDN
 const getVisitor = async () => {
-	try {
-		const visitorData = await getSingleVisitor({ msisdn: msisdn.value });
-		if (!visitorData) {
-			visitor.value = "";
-			return;
-		}
-		visitor.value = `${visitorData.first_name} ${visitorData.last_name}`;
-		visitorId.value = visitorData.id;
-	} catch (error) {
-		console.error("Error retrieving visitor:", error);
-	}
+    try {
+        const visitorData = await searchVisitors();
+        visitors.value = visitorData.data.data;
+
+        for (const visitor of visitors.value) {
+            visitor.name = `${visitor.first_name} ${
+                visitor.middle_name || ""
+            } ${visitor.last_name}`;
+        }
+    } catch (error) {
+        console.error("Error retrieving visitor:", error);
+    }
 };
 
-// watching selected host name to update host ID
-watch(host_name, (newValue) => {
-	const selectedUser = options.value.find(
-		(option) => option.value === newValue
-	);
-	if (selectedUser) {
-		console.log(`Selected username: ${selectedUser.text}`);
-		host_id.value = selectedUser.value;
-		// console.log(host_id.value);
-	}
-});
+async function searchVisitors() {
+    let url = `${API_URL}visitors?search=${
+        msisdn.value.startsWith("0")
+            ? "231" + msisdn.value.slice(1)
+            : msisdn.value
+    }&limit=12`;
 
-const room_id = "01d95aba-31c4-48d3-8b03-2587d8bb5730";
+    let searchedVisitor = await fetch(url, {
+        headers: {
+            authorization: API_KEY,
+        },
+    });
+
+    if (!searchedVisitor.ok) {
+        alert.value.message = "Unable to search visitors, try again";
+        alert.value.status = "danger";
+
+        showModal();
+        return [];
+    }
+
+    return await searchedVisitor.json();
+}
+
+function visitorSelected(selectedVisitor) {
+    msisdn.value = selectedVisitor.msisdn;
+    visitor.value = selectedVisitor.name;
+    visitorId.value = selectedVisitor.id;
+
+    stage.value = 1;
+}
+
+async function fetchRooms() {
+    let fetchedRooms = await fetch(`${API_URL}rooms`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+    });
+
+    if (!fetchedRooms.ok) {
+        alert.value.message = "Unable to fetch rooms, try again";
+        alert.value.status = "danger";
+
+        showModal();
+        return [];
+    }
+
+    fetchedRooms = await fetchedRooms.json();
+    rooms.value = fetchedRooms.data.rooms;
+}
+
+function updateRoom(selectedRoom) {
+    room.value.name = selectedRoom.name;
+    room.value.id = selectedRoom.id;
+}
 
 // function to validate form before it submit the form
-const onSubmit = async () => {
-	if (
-		!msisdn.value ||
-		!visitor.value ||
-		!host_name.value ||
-		!belonging.value ||
-		!room.value ||
-		!visit_address.value ||
-		!purpose.value
-	) {
-		return;
-	}
+const checkParticipantIn = async () => {
+    const checkInStatus = await visitorCheckInStatus(visitorId.value);
 
-	// plitting text into array by using command as the deleminator
-	const formatedItems = belonging.value.split(",").map((item) => item.trim());
+    // handle error getting check in status
+    if (!checkInStatus.ok) {
+        alert.value.message = "Unable to get check in status";
+        alert.value.status = "danger";
 
-	// require values for the submittion of the form
-	const visitData = {
-		visitor_id: visitorId.value,
-		institution: institution.value,
-		address: visit_address.value,
-		items: formatedItems,
-		room_id: room_id,
-		host_id: host_id.value,
-		purpose: purpose.value,
-	};
-	// console.log(visitData);
-	const response = await registerVisit(visitData);
+        showModal();
+        return;
+    }
+    // indicate visitor is still checked in
+    else if (checkInStatus.result.data.stillCheckedIn) {
+        alert.value.message = "Visitor is Still Checked In";
+        alert.value.status = "warning";
 
-	// console.log(response);
+        showModal();
+        return;
+    }
 
-	const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-	if (!response.ok) {
-		myModal.show(getElement("#toggleMyModal"));
-		status.value = "danger";
-		message.value = response.result.message;
-		title.value = "Error";
-	} else {
-		myModal.show(getElement("#toggleMyModal"));
-		status.value = "success";
-		message.value = response.result.message;
-		title.value = "Success";
-	}
+    // require values for the submittion of the form
+    const visitData = {
+        visitor_id: visitorId.value,
+        institution: institution.value,
+        address: visit_address.value,
+        items: belongings.value,
+        room_id: room.value.id,
+        purpose: `Just Using Workspace${
+            purpose.value ? " - " + purpose.value : ""
+        }`,
+    };
+
+    const response = await registerVisit(visitData);
+
+    // successful check in
+    if (response.result.status == 201) {
+        alert.value.message = "Visitor Checked In";
+        alert.value.status = "success";
+        alert.value.pageLink = "/visits";
+    } else {
+        alert.value.message = response.result.message;
+        alert.value.status = "danger";
+    }
+
+    showModal();
+};
+
+// complete check in with institution and belongings
+function getInstitutionAndBelongings() {
+    // ensure room was selected
+    if (!room.value.id) {
+        alert.value.message = "Room is required";
+        alert.value.status = "danger";
+
+        showModal();
+        return;
+    }
+
+    // ensure address was entered
+    if (!visit_address.value) {
+        alert.value.message = "Address is required";
+        alert.value.status = "danger";
+
+        showModal();
+        return;
+    }
+
+    showModal("#visitModal", "#modal-dialog");
+}
+
+const addBelongings = (event) => {
+    const { key } = event;
+
+    if (key === "Enter" && temBelonging.value) {
+        if (!belongings.value.includes(temBelonging.value)) {
+            belongings.value.push(temBelonging.value);
+        }
+        temBelonging.value = "";
+    }
+};
+
+const deleteBelongings = (item) => {
+    belongings.value = belongings.value.filter((val) => val !== item);
 };
 </script>
 
 <style scoped>
 .input {
-	border: 0.0125rem solid #ccc;
-	border-radius: 0.25rem !important;
+    border: 0.0125rem solid #ccc;
+    border-radius: 0.25rem !important;
+}
+
+.belonging {
+    text-transform: capitalize;
+    display: inline-block;
+    margin: 20px 10px 0 0;
+    padding: 6px 12px;
+    background-color: #eee;
+    border-radius: 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: #777;
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+}
+
+@media (max-width: 1250px) {
+    #eventCheckInWrapper {
+        gap: 0.75rem !important;
+    }
+
+    #selectEventWrapper {
+        margin-top: 0 !important;
+        max-width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #workspaceBreadcrumbsWrapper {
+        margin-left: 2.6%;
+        margin-top: 0.7rem;
+        margin-bottom: 0.7rem;
+    }
+
+    #mobileFormWrapper {
+        margin: 0 auto;
+        max-width: 95%;
+    }
 }
 </style>

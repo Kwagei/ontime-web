@@ -1,8 +1,78 @@
 <template>
-    <div class="">
+    <div>
+        <div
+            class="offcanvas offcanvas-start"
+            tabindex="-1"
+            id="offcanvasExample"
+            aria-labelledby="offcanvasExampleLabel"
+        >
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasExampleLabel">
+                    Purpose
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    data-bs-title="Close"
+                >
+                    <span class="visually-hidden">Close</span>
+                </button>
+            </div>
+            <div class="m-3">
+                <router-link :to="{ name: 'visit-event' }">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id=""
+                        style="padding: 0.5rem 1.5rem; font-weight: 600"
+                    >
+                        Events
+                    </button>
+                </router-link>
+
+                <router-link :to="''">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id=""
+                        style="padding: 0.5rem 1.5rem; font-weight: 600"
+                        disabled
+                    >
+                        Meeting
+                    </button>
+                </router-link>
+
+                <router-link :to="{ name: 'visit-workspace' }">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id=""
+                        style="padding: 0.5rem 1.5rem; font-weight: 600"
+                    >
+                        Workspace
+                    </button>
+                </router-link>
+            </div>
+        </div>
+
         <div class="container text-center">
-            <div id="dashboardFirstChild" class="row gap-4 my-4">
+            <div id="dashboardFirstChild" class="row gap-4 my-3">
                 <div class="" id="stats">
+                    <div
+                        class="d-flex justify-content-end align-items-end w-100 pb-3"
+                    >
+                        <button
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasExample"
+                            aria-controls="offcanvasExample"
+                            class="btn btn-primary"
+                        >
+                            Check In
+                        </button>
+                    </div>
                     <div class="row align-items-start gap-4">
                         <div
                             class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
@@ -16,7 +86,7 @@
                                 <Icons class="icons" v-model:icon="visitIcon" />
                             </div>
                             <div
-                                class="cards d-flex flex-column align-items-end"
+                                class="cards d-flex flex-column align-items-center"
                             >
                                 <span>Today's Visits</span>
                                 <h2>
@@ -36,7 +106,7 @@
                                 <Icons class="icons" v-model:icon="eventIcon" />
                             </div>
                             <div
-                                class="cards d-flex flex-column align-items-end"
+                                class="cards d-flex flex-column align-items-center"
                             >
                                 <span>Today's Events</span>
                                 <h2>{{ todaysEvents }}</h2>
@@ -57,7 +127,7 @@
                                 />
                             </div>
                             <div
-                                class="cards d-flex flex-column align-items-end"
+                                class="cards d-flex flex-column align-items-center"
                             >
                                 <span>Total Visitors</span>
                                 <h2>{{ totalVisitors }}</h2>
@@ -232,9 +302,29 @@ span {
     color: #fc0;
 }
 
+.m-3 {
+    display: flex;
+    height: 300px;
+    align-items: center;
+    flex-direction: column;
+    /* background-color: aquamarine; */
+    padding: 0.5rem;
+    justify-content: space-between;
+}
+
+.m-3 button {
+    width: 250px;
+    padding: 0.5rem;
+}
+
+.offcanvas {
+    position: fixed;
+    z-index: 9999;
+}
+
 @media (max-width: 1250px) {
     #dashboardFirstChild {
-        margin: 0 0.6rem;
+        margin: 0.6rem !important;
     }
 }
 </style>

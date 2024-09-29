@@ -45,41 +45,6 @@
                     </div>
                 </div>
 
-                <!-- PHONE NUMBER -->
-                <div class="col-md-6">
-                    <label for="phone_number" class="form-label is-required"
-                        >Phone number<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="tel"
-                            :class="[
-                                validMsisdn && 'validated',
-                                'form-control',
-                            ]"
-                            v-model="msisdn"
-                            id="phone_number"
-                            aria-describedby="inputGroupPrepend"
-                            required
-                            autocomplete="off"
-                        />
-                        <div
-                            :class="[
-                                'invalid-feedback',
-                                validMsisdn && 'show-feedback',
-                            ]"
-                        >
-                            {{ validMsisdnMessage }}
-                        </div>
-                    </div>
-                    <div class="helpMessage form-text">
-                        Phone number should start with 0. For example:
-                        0778675908
-                    </div>
-                </div>
-
                 <!-- MIDDLE NAME -->
                 <div class="col-md-6">
                     <label for="middle_name" class="form-label"
@@ -92,38 +57,6 @@
                         v-model="middle_name"
                         aria-describedby="inputGroupPrepend"
                     />
-                </div>
-
-                <!-- EMAIL -->
-                <div class="col-md-6">
-                    <label for="email" class="form-label is-required"
-                        >Email<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="email"
-                            :class="[validEmail && 'validated', 'form-control']"
-                            v-model="email"
-                            id="email"
-                            aria-describedby="inputGroupPrepend"
-                            autocomplete="off"
-                            required
-                        />
-                        <div
-                            :class="[
-                                'invalid-feedback',
-                                validEmail && 'show-feedback',
-                            ]"
-                        >
-                            {{ validEmailMessage }}
-                        </div>
-                    </div>
-                    <div class="helpMessage form-text">
-                        Enter a valid email address. For example:
-                        john12@gmail.com
-                    </div>
                 </div>
 
                 <!-- LAST NAME -->
@@ -171,6 +104,73 @@
                     </div>
                 </div>
 
+                <!-- PHONE NUMBER -->
+                <div class="col-md-6">
+                    <label for="phone_number" class="form-label is-required"
+                        >Phone number<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="tel"
+                            :class="[
+                                validMsisdn && 'validated',
+                                'form-control',
+                            ]"
+                            v-model="msisdn"
+                            id="phone_number"
+                            aria-describedby="inputGroupPrepend"
+                            required
+                            autocomplete="off"
+                        />
+                        <div
+                            :class="[
+                                'invalid-feedback',
+                                validMsisdn && 'show-feedback',
+                            ]"
+                        >
+                            {{ validMsisdnMessage }}
+                        </div>
+                    </div>
+                    <div class="helpMessage form-text">
+                        Phone number should start with 0. For example:
+                        0778675908
+                    </div>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="col-md-6">
+                    <label for="email" class="form-label is-required"
+                        >Email<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="email"
+                            :class="[validEmail && 'validated', 'form-control']"
+                            v-model="email"
+                            id="email"
+                            aria-describedby="inputGroupPrepend"
+                            autocomplete="off"
+                            required
+                        />
+                        <div
+                            :class="[
+                                'invalid-feedback',
+                                validEmail && 'show-feedback',
+                            ]"
+                        >
+                            {{ validEmailMessage }}
+                        </div>
+                    </div>
+                    <div class="helpMessage form-text">
+                        Enter a valid email address. For example:
+                        john12@gmail.com
+                    </div>
+                </div>
+
                 <!-- ADDRESS -->
                 <div class="col-md-6">
                     <label for="address" class="form-label is-required"
@@ -194,6 +194,20 @@
                         Enter descriptive address. For example: Congo Town,
                         Adjacent Satcom, Monrovia, Liberia
                     </div>
+                </div>
+
+                <!-- OCCUPATION -->
+                <div class="col-md-6">
+                    <label for="occupation" class="form-label">
+                        Occupation
+                    </label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="occupation"
+                        v-model="occupation"
+                        aria-describedby="inputGroupPrepend"
+                    />
                 </div>
 
                 <div class="col-md-12 d-flex justify-content-end gap-2">
@@ -246,6 +260,7 @@ const msisdn = ref("");
 const email = ref("");
 const address = ref("");
 const gender = ref("");
+const occupation = ref("");
 
 const status = ref("");
 const title = ref("");
@@ -277,6 +292,7 @@ const onSubmit = async () => {
         email: email.value,
         address: address.value,
         gender: gender.value,
+        occupation: occupation.value,
     };
 
     const body = {

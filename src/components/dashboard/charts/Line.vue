@@ -19,7 +19,7 @@
     <Line :data="chartData" :options="options" />
 </template>
 <script setup>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { Line } from "vue-chartjs";
 import {
     Chart as ChartJS,
@@ -30,7 +30,6 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
-import { getVisits } from "@/assets/js";
 
 // Register the Chart.js components
 ChartJS.register(
@@ -83,6 +82,9 @@ const options = ref({
     },
 });
 
+import { getVisits } from "@/assets/js";
+import { getTodaysVisits } from "@/util/util";
+
 const totalVisits = defineModel("totalVisits");
 
 const date = new Date();
@@ -90,18 +92,26 @@ const currentYear = date.getFullYear();
 const currentMonth = date.getMonth();
 const todaysVisits = defineModel("todaysVisits");
 
+onMounted(() => {
+    initializeTodaysVisits();
+});
+
+async function initializeTodaysVisits() {
+    let tmpTotalVisits = await getTodaysVisits();
+    todaysVisits.value = tmpTotalVisits.totalLength;
+}
+
 watch(totalVisits, async (n) => {
     await fetchVisits(n);
 });
 
 const fetchVisits = async (total) => {
-    // fetch all the visits in the DB from the beginning of time
     const { visits } = await getVisits({ limit: total });
 
     updateWeeklyVisitData(visits);
 };
 
-const updateWeeklyVisitData = (visits) => {
+const updateWeeklyVisitData = async (visits) => {
     const { daysOfWeek, datesOfWeek, currentWeekVisits } =
         getCurrentWeekData(visits);
 
@@ -113,20 +123,14 @@ const updateWeeklyVisitData = (visits) => {
             new Date(visit.date_time).getDate()
         );
 
-        if (visit.gender.toLowerCase() === "male") {
+        if (visit.gender === "male") {
             maleVisits[dayIndex]++;
             gender.value.male++;
-        } else if (visit.gender.toLowerCase() == "female") {
+        } else {
             femaleVisits[dayIndex]++;
             gender.value.female++;
         }
     }
-
-    const currentDay = date.getDate();
-    const currentDayIndex = datesOfWeek.indexOf(currentDay);
-
-    todaysVisits.value =
-        maleVisits[currentDayIndex] + femaleVisits[currentDayIndex];
 
     chartData.value = {
         labels: daysOfWeek,

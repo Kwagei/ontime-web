@@ -9,6 +9,10 @@ import SignIn from "../views/SignIn.vue";
 import ResetPassword from "../views/ResetPassword.vue";
 import ResetCode from "@/components/resetPassword/ResetCode.vue";
 import ResetMail from "@/components/resetPassword/ResetMail.vue";
+import AppView from "@/views/AppView.vue";
+import AddUsers from "@/components/users/AddUsers.vue";
+import UserDetail from "@/components/users/UserDetail.vue";
+import NewPassword from "@/components/resetPassword/NewPassword.vue";
 
 // Visitors Components
 import VisitorDetail from "../components/visitors/VisitorDetail.vue";
@@ -32,10 +36,6 @@ import Rooms from "@/components/Room.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
-import AppView from "@/views/AppView.vue";
-import AddUsers from "@/components/users/AddUsers.vue";
-import UserDetail from "@/components/users/UserDetail.vue";
-import NewPassword from "@/components/resetPassword/NewPassword.vue";
 
 const routes = [
     {
@@ -139,17 +139,17 @@ const routes = [
                     {
                         path: "purpose-meeting",
                         component: AddMeeting,
-                        name: "add-meeting",
+                        name: "visit-meeting",
                     },
                     {
                         path: "purpose-event",
                         component: AddEvents,
-                        name: "visits-event",
+                        name: "visit-event",
                     },
                     {
                         path: "purpose-workspace",
                         component: AddWorkspace,
-                        name: "add-workspace",
+                        name: "visit-workspace",
                     },
                 ],
                 // meta: {
@@ -240,6 +240,10 @@ const routes = [
 export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes,
+});
+
+router.beforeEach((from, to) => {
+    console.log(from, " | ", to);
 });
 
 export default router;

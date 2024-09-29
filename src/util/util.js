@@ -1,3 +1,4 @@
+import { API_KEY, API_URL } from "@/assets/js";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
@@ -297,4 +298,42 @@ export function hideSidebarOnSmallScreen() {
         $("#sideBar").css("display", "none");
         $("main").css("margin-left", "0");
     }
+}
+
+export async function getTodaysVisits() {
+    let todaysVisits;
+
+    await $.ajax(`${API_URL}visits?today=1`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+        success: (res) => {
+            todaysVisits = res.data;
+        },
+        error: (err) => {
+            console.error("error fetching today's visits: ", err);
+        },
+    });
+
+    return todaysVisits;
+}
+
+export async function getCurrentWeekData() {
+    let currentWeekVisits;
+
+    await $.ajax(`${API_URL}visits?currentWeek=1`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+        success: (res) => {
+            currentWeekVisits = res.data;
+        },
+        error: (err) => {
+            console.error("error fetching today's visits: ", err);
+        },
+    });
+
+    return currentWeekVisits;
 }

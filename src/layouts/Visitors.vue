@@ -83,6 +83,7 @@ const exportFields = ref([
     { name: "Phone number", selected: false },
     { name: "Email", selected: false },
     { name: "Address", selected: false },
+    { name: "Occupation", selected: false },
 ]);
 const exportTitle = defineModel("exportTitle");
 exportTitle.value = "Visitors";

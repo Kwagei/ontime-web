@@ -47,7 +47,9 @@ const props = defineProps({
 });
 
 onMounted(() => {
-    $("#displaySidebarHamburger").on("click", () => {
+    $("#displaySidebarHamburger").on("click", (event) => {
+        event.stopPropagation();
+
         $("#sideBar").css("display", "flex");
         $("#sideBar").css("z-index", "10000");
     });

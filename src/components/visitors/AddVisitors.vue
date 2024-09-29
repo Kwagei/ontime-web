@@ -40,6 +40,66 @@
                     </div>
                 </div>
 
+                <!-- MIDDLE NAME -->
+                <div class="col-md-6">
+                    <label for="middle_name" class="form-label"
+                        >Middle name</label
+                    >
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="middle_name"
+                        v-model="middle_name"
+                        aria-describedby="inputGroupPrepend"
+                    />
+                </div>
+
+                <!-- LAST NAME -->
+                <div class="col-md-6">
+                    <label for="last_name" class="form-label is-required"
+                        >Last name<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="last_name"
+                            v-model="last_name"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            Please provide a last name.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GENDER -->
+                <div class="col-md-6">
+                    <label for="gender" class="form-label is-required"
+                        >Gender<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            required
+                            id="gender"
+                            v-model="gender"
+                        >
+                            <option selected></option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a gender.
+                        </div>
+                    </div>
+                </div>
+
                 <!-- PHONE NUMBER -->
                 <div class="col-md-6">
                     <label for="phone_number" class="form-label is-required"
@@ -75,20 +135,6 @@
                     </div>
                 </div>
 
-                <!-- MIDDLE NAME -->
-                <div class="col-md-6">
-                    <label for="middle_name" class="form-label"
-                        >Middle name</label
-                    >
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="middle_name"
-                        v-model="middle_name"
-                        aria-describedby="inputGroupPrepend"
-                    />
-                </div>
-
                 <!-- EMAIL -->
                 <div class="col-md-6">
                     <label for="email" class="form-label">Email</label>
@@ -113,27 +159,6 @@
                     <div class="helpMessage form-text">
                         Enter a valid email address. For example:
                         john12@gmail.com
-                    </div>
-                </div>
-
-                <!-- LAST NAME -->
-                <div class="col-md-6">
-                    <label for="last_name" class="form-label is-required"
-                        >Last name<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="last_name"
-                            v-model="last_name"
-                            required
-                        />
-                        <div class="invalid-feedback">
-                            Please provide a last name.
-                        </div>
                     </div>
                 </div>
 
@@ -162,29 +187,18 @@
                     </div>
                 </div>
 
-                <!-- GENDER -->
+                <!-- OCCUPATION -->
                 <div class="col-md-6">
-                    <label for="gender" class="form-label is-required"
-                        >Gender<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <select
-                            class="form-select"
-                            aria-label="Default select example"
-                            required
-                            id="gender"
-                            v-model="gender"
-                        >
-                            <option selected></option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a gender.
-                        </div>
-                    </div>
+                    <label for="occupation" class="form-label">
+                        Occupation
+                    </label>
+                    <input
+                        class="form-control"
+                        required
+                        id="occupation"
+                        v-model="occupation"
+                        aria-describedby="inputGroupPrepend"
+                    />
                 </div>
 
                 <div class="col-md-12 d-flex gap-2 justify-content-end">
@@ -233,6 +247,7 @@ const msisdn = ref("");
 const email = ref("");
 const address = ref("");
 const gender = ref("");
+const occupation = ref("");
 
 const alert = ref({
     status: "",
@@ -276,6 +291,7 @@ const onSubmit = async () => {
         email: email.value,
         address: address.value,
         gender: gender.value,
+        occupation: occupation.value,
     };
 
     const response = formStatus.startsWith("new")
@@ -306,6 +322,7 @@ const fetchVisitor = async () => {
         email.value = visitorInfo.email;
         address.value = visitorInfo.address;
         gender.value = visitorInfo.gender;
+        occupation.value = visitorInfo.occupation;
     }
 };
 

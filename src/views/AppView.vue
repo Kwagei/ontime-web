@@ -7,7 +7,11 @@
                     v-model:breadCrumbs="breadCrumbs"
                 />
             </aside>
-            <main class="flex-grow-1" style="background-color: #ececec">
+            <main
+                @click="hideSidebarOnSmallScreen"
+                class="flex-grow-1"
+                style="background-color: #ececec"
+            >
                 <HeaderBar :activeSection="activeSection" />
 
                 <section>
@@ -24,6 +28,7 @@ import HeaderBar from "../components/HeaderBar.vue";
 
 import { ref } from "vue";
 import { RouterView } from "vue-router";
+import { hideSidebarOnSmallScreen } from "@/util/util";
 
 const activeSection = ref("");
 const breadCrumbs = ref([]);

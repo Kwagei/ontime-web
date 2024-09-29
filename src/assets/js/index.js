@@ -1,6 +1,9 @@
 import $ from "jquery";
 import { mkConfig, generateCsv, download } from "export-to-csv";
 
+export const API_URL = import.meta.env.VITE_API_URL;
+export const API_KEY = import.meta.env.VITE_API_KEY;
+
 // mkConfig merges your options with the defaults
 // and returns WithDefaults<ConfigOptions>
 const csvConfig = mkConfig({ useKeysAsHeaders: true });
@@ -12,9 +15,6 @@ export const csvExport = (data) => {
     // `download` takes `csvConfig` and the generated `CsvOutput`
     download(csvConfig)(csv);
 };
-
-export const API_URL = import.meta.env.VITE_API_URL;
-export const API_KEY = import.meta.env.VITE_API_KEY;
 
 // Visits functions
 export const registerVisit = async (data) => {
@@ -28,7 +28,7 @@ export const registerVisit = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/visits`, options);
+        const response = await fetch(`${API_URL}visits`, options);
 
         const result = await response.json();
 
@@ -37,6 +37,24 @@ export const registerVisit = async (data) => {
         console.error("Error: ", error);
     }
 };
+
+// Check whether a visitor is checked in or not
+export async function visitorCheckInStatus(id) {
+    let visitorStatus = await fetch(
+        `${API_URL}/visitors/${id}/check-in-status`,
+        {
+            method: "GET",
+            headers: {
+                authorization: API_KEY,
+            },
+        }
+    );
+
+    return {
+        ok: visitorStatus.ok,
+        result: await visitorStatus.json(),
+    };
+}
 
 /**
  * @typedef {Object} GetVisitsQueryParams
@@ -340,7 +358,7 @@ export const editUser = async (id, data) => {
  */
 export const getUsers = async () => {
     try {
-        const url = `${API_URL}/users/`;
+        const url = `${API_URL}users`;
         const response = await fetch(url, {
             method: "GET",
             headers: {
@@ -348,6 +366,8 @@ export const getUsers = async () => {
                 "Content-Type": "application/json",
             },
         });
+        console.log("user error: ", response);
+
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
@@ -355,7 +375,7 @@ export const getUsers = async () => {
         const { data } = await response.json();
         return data;
     } catch (error) {
-        console.log({ error });
+        console.log("Error fetching users: ", error);
     }
 };
 
@@ -595,7 +615,7 @@ export const registerEventParticipants = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/event_participants`, options);
+        const response = await fetch(`${API_URL}event_participants`, options);
 
         const result = await response.json();
 

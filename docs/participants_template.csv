@@ -1,13 +1,16 @@
-﻿first_name,middle_name,last_name,address,msisdn,email
-Isabella,Sarah,Williams,20 Sunset Ave,231775998321,isawill2@gmail.com
-Eve,,Wilson,789 Oak Street,231887224104,eve.wilson0@example.com
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
-,,,,,
+﻿first_name,middle_name,last_name,gender,address,msisdn,email,occupation
+Adam,Nigga,Godson,male,20 Sunset Ave,231778092342,isawill2@gmail.com,Software Engineer
+Eve,,Goddaughter,female,789 Oak Street,231880272019,eve.wilson0@example.com,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
 

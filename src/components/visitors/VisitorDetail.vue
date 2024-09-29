@@ -53,7 +53,7 @@
                                     </div>
                                     <div
                                         v-if="visitorInfo.email"
-                                        class="d-flex gap-3"
+                                        class="d-flex gap-2"
                                     >
                                         <div>
                                             <span>
@@ -79,22 +79,51 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div>
-                                        <span>
-                                            <Icons
-                                                class="icons"
-                                                v-model:icon="genderIcon"
-                                            />
-                                        </span>
-                                        <span
-                                            style="text-transform: capitalize"
-                                            class="visitor-item"
-                                        >
-                                            {{ visitorInfo.gender }}
-                                        </span>
+                                    <div class="d-flex gap-2">
+                                        <div>
+                                            <span>
+                                                <Icons
+                                                    class="icons"
+                                                    v-model:icon="genderIcon"
+                                                />
+                                            </span>
+                                            <span
+                                                style="
+                                                    text-transform: capitalize;
+                                                "
+                                                class="visitor-item"
+                                            >
+                                                {{ visitorInfo.gender }}
+                                            </span>
+                                        </div>
+                                        <div v-if="visitorInfo.occupation">
+                                            <span>
+                                                <Icons
+                                                    class="icons"
+                                                    v-model:icon="
+                                                        occupationIcon
+                                                    "
+                                                />
+                                            </span>
+                                            <span
+                                                style="
+                                                    text-transform: capitalize;
+                                                "
+                                                class="visitor-item"
+                                            >
+                                                {{ visitorInfo.occupation }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div style="margin-left: auto">
+                                <div
+                                    style="
+                                        position: absolute;
+                                        top: 3rem;
+                                        right: 2rem;
+                                        float: right;
+                                    "
+                                >
                                     <router-link
                                         :to="{
                                             name: 'edit-visitor',
@@ -178,6 +207,7 @@ const locationIcon = "mahali";
 const emailIcon = "email";
 const genderIcon = "adult";
 const phoneIcon = "device-smartphone";
+const occupationIcon = "briefcase";
 
 const columns = [
     { data: "date_time", title: "Date" },

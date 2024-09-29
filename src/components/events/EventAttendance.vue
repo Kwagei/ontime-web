@@ -250,6 +250,7 @@ const displayExportModay = () => {
 const exportEventsAttendance = async (fields) => {
     const selectedAttendee = attendanceList.value.map((attendee) => {
         const data = {};
+
         for (const field of fields) {
             if (field === "phone_number") {
                 data[field] = attendee.msisdn.startsWith("231")

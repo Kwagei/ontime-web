@@ -1,8 +1,8 @@
 <template>
     <EditParticipantForm
+        v-if="Object.keys(participantToEdit).length"
         :data="participantToEdit"
         @updated="onParticipantUpdate"
-        v-model:participantIndex="participantIndex"
     />
 
     <div class="container">
@@ -150,14 +150,12 @@ function handleFileImport(event) {
 async function onParticipantUpdate(updatedParticipant) {
     participants.value[participantToEdit.value.idx] = updatedParticipant;
 
-    // only repost the participants if there was an error
-    if (participantToEdit.value.errorMessage) {
-        await postParticipants();
-        return;
-    }
-
-    // empty the value if it there wasn't any error
+    // temporarily copy error message before clearing the entire participant to edit
+    let errorMessage = participantToEdit.value.errorMessage;
     participantToEdit.value = {};
+
+    // only repost the participants if there was an error
+    if (errorMessage) await postParticipants();
 }
 
 async function postParticipants() {
@@ -169,6 +167,8 @@ async function postParticipants() {
     });
 
     if (ok) {
+        participants.value = [];
+
         emit("participantsImported", {
             status: "success",
             message: "Participants Successfully Imported",
@@ -183,14 +183,18 @@ async function postParticipants() {
             return;
         }
 
-        showModal("#editParticipantModal", "#editParticipantModalBody");
-
         participantToEdit.value = {
             errorMessage: result.message,
             participant: result.data.participant,
-            idx: result.data.index,
+            idx: result.data.idx,
             status: result.status,
         };
+
+        setTimeout(
+            () =>
+                showModal("#editParticipantModal", "#editParticipantModalBody"),
+            150
+        );
     }
 }
 
@@ -219,6 +223,12 @@ function validateParticipantsCsvFile(result) {
         return false;
     }
 
+    // ensure middle_name column exists
+    if (!fields.includes("middle_name")) {
+        errorAlertMessage.value = "`middle_name` column required but not found";
+        return false;
+    }
+
     // ensure last_name column exists
     if (!fields.includes("last_name")) {
         errorAlertMessage.value = "`last_name` column required but not found";
@@ -243,6 +253,18 @@ function validateParticipantsCsvFile(result) {
         return false;
     }
 
+    // ensure gender column exists
+    if (!fields.includes("gender")) {
+        errorAlertMessage.value = "`gender` column required but not found";
+        return false;
+    }
+
+    // ensure occupation column exists
+    if (!fields.includes("occupation")) {
+        errorAlertMessage.value = "`occupation` column required but not found";
+        return false;
+    }
+
     // clear errorMessage
     errorAlertMessage.value = "";
 
@@ -254,15 +276,18 @@ function editParticipant(msisdn) {
         (participant) => participant.msisdn === msisdn
     );
 
-    participantIndex.value = idxToEdit + 1;
-    showModal("#editParticipantModal", "#editParticipantModalBody");
-
     // set a participant to edit
     participantToEdit.value = {
         participant: participants.value[idxToEdit],
         idx: idxToEdit,
         errorMessage: "",
     };
+
+    participantIndex.value = idxToEdit + 1;
+    setTimeout(
+        () => showModal("#editParticipantModal", "#editParticipantModalBody"),
+        150
+    );
 }
 
 function deleteParticipant(msisdn) {

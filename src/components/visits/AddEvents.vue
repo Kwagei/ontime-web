@@ -27,48 +27,43 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form
-                        class="row g-3 needs-validation"
-                        @submit.prevent="checkParticipantIn"
-                    >
-                        <div class="">
-                            <label for="belongings" class="form-label"
-                                >Belongings</label
-                            >
-                            <div class="input-group has-validation">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="belongings"
-                                    aria-describedby="inputGroupPrepend"
-                                    v-model="temBelonging"
-                                    @keyup.prevent="addBelongings"
-                                />
-                            </div>
-                            <div
-                                v-for="belonging in belongings"
-                                :key="belonging"
-                                @click="deleteBelongings(belonging)"
-                                class="belonging"
-                            >
-                                {{ belonging }}
-                            </div>
+                    <div class="mb-3">
+                        <label for="belongings" class="form-label"
+                            >Belongings</label
+                        >
+                        <div class="input-group has-validation">
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="belongings"
+                                aria-describedby="inputGroupPrepend"
+                                v-model="temBelonging"
+                                @keyup.prevent="addBelongings"
+                            />
                         </div>
-                        <div class="">
-                            <label for="institution" class="form-label"
-                                >Institution</label
-                            >
-                            <div class="input-group">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="institution"
-                                    aria-describedby="inputGroupPrepend"
-                                    v-model="institution"
-                                />
-                            </div>
+                        <div
+                            v-for="belonging in belongings"
+                            :key="belonging"
+                            @click="deleteBelongings(belonging)"
+                            class="belonging"
+                        >
+                            {{ belonging }}
                         </div>
-                    </form>
+                    </div>
+                    <div class="">
+                        <label for="institution" class="form-label"
+                            >Institution</label
+                        >
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="institution"
+                                aria-describedby="inputGroupPrepend"
+                                v-model="institution"
+                            />
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button @click="checkParticipantIn" class="btn btn-primary">
@@ -103,7 +98,7 @@
             style="border: none; background-color: transparent; gap: 3rem"
         >
             <form class="row g-3">
-                <div class="dropdown col-md-4" id="selectEventWrapper">
+                <div class="dropdown" id="selectEventWrapper">
                     <label
                         for="selectEventInput"
                         class="form-label is-required"
@@ -500,10 +495,6 @@ const resetForm = () => {
     belongings.value = [];
     temBelonging.value = "";
     institution.value = "";
-
-    // Remove validation classes
-    const form = getElement(".needs-validation");
-    removeClass(form, "was-validated");
 };
 
 const addBelongings = (event) => {

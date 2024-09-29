@@ -63,7 +63,7 @@
                         </button>
                     </div>
                     <div class="m-3">
-                        <router-link :to="{ name: 'visits-event' }">
+                        <router-link :to="{ name: 'visit-event' }">
                             <button
                                 type="button"
                                 class="btn btn-primary"
@@ -74,24 +74,24 @@
                             </button>
                         </router-link>
 
-                        <router-link>
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id=""
-                                style="padding: 0.5rem 1.5rem; font-weight: 600"
-                            >
-                                Meeting
-                            </button>
-                        </router-link>
-
-                        <router-link>
+                        <router-link :to="''">
                             <button
                                 type="button"
                                 class="btn btn-primary"
                                 id=""
                                 style="padding: 0.5rem 1.5rem; font-weight: 600"
                                 disabled
+                            >
+                                Meeting
+                            </button>
+                        </router-link>
+
+                        <router-link :to="{ name: 'visit-workspace' }">
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                id=""
+                                style="padding: 0.5rem 1.5rem; font-weight: 600"
                             >
                                 Workspace
                             </button>
@@ -152,6 +152,7 @@ const exportFields = ref([
     { name: "Host name", selected: false },
     { name: "Phone number", selected: false },
     { name: "Departure time", selected: false },
+    { name: "Occupation", selected: false },
 ]);
 
 exportTitle.value = "Visits";
@@ -242,9 +243,10 @@ svg {
     width: 250px;
     padding: 0.5rem;
 }
-.offcanvas {
+
+#offcanvasExample {
     position: fixed;
-    z-index: 9999;
+    z-index: 999999;
 }
 
 li {

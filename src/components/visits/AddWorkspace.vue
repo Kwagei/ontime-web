@@ -271,28 +271,6 @@
                     </div>
                 </div>
 
-                <!-- Address -->
-                <div class="col-md-6">
-                    <label
-                        for="validationCustomAddress"
-                        class="form-label is-required"
-                    >
-                        Address<span class="visually-hidden">(required)</span>
-                    </label>
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="validationCustomAddress"
-                            v-model="visit_address"
-                            required
-                        />
-                        <div class="invalid-feedback">
-                            Please provide an address.
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Purpose -->
                 <div class="col-md-6">
                     <label
@@ -348,7 +326,6 @@ import { formValidation, showModal } from "@/util/util";
 const msisdn = ref("");
 const visitor = ref("");
 const visitorId = ref("");
-const visit_address = ref("");
 const purpose = ref("");
 
 const temBelonging = ref("");
@@ -493,7 +470,6 @@ const checkParticipantIn = async () => {
     const visitData = {
         visitor_id: visitorId.value,
         institution: institution.value,
-        address: visit_address.value,
         items: belongings.value,
         room_id: room.value.id,
         purpose: `Just Using Workspace${
@@ -521,15 +497,6 @@ function getInstitutionAndBelongings() {
     // ensure room was selected
     if (!room.value.id) {
         alert.value.message = "Room is required";
-        alert.value.status = "danger";
-
-        showModal();
-        return;
-    }
-
-    // ensure address was entered
-    if (!visit_address.value) {
-        alert.value.message = "Address is required";
         alert.value.status = "danger";
 
         showModal();

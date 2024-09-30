@@ -32,7 +32,7 @@
             id="fileSelectorAndGridWrapper"
             class="d-flex justify-content-center gap-3 mt-2"
         >
-            <div class="pt-2" style="min-width: 300px">
+            <div class="pt-2" id="importParticipantsFileSelectorWrapper">
                 <h2 class="pb-2 text">Import Participants</h2>
                 <div>
                     <label
@@ -91,7 +91,7 @@ import EditParticipantForm from "./EditParticipantForm.vue";
 import Alert from "../Alert.vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import BackArrow from "../BackArrow.vue";
-import { showModal } from "@/util/util.js";
+import { showModal, removeQuotes } from "@/util/util.js";
 
 const route = useRoute();
 const eventId = route.params.id;
@@ -139,6 +139,8 @@ function handleFileImport(event) {
 
                     // Clear file input after import
                     participantsFile.value.value = "";
+
+                    formatParticipants();
                 },
             });
         };
@@ -303,12 +305,54 @@ function deleteParticipant(msisdn) {
 
     participants.value.splice(idxToDelete, 1);
 }
+
+function formatParticipants() {
+    for (const participant of participants.value) {
+        participant.first_name = removeQuotes(
+            participant.first_name.trim(),
+            true
+        );
+        participant.middle_name = removeQuotes(
+            participant.middle_name.trim(),
+            true
+        );
+        participant.last_name = removeQuotes(
+            participant.last_name.trim(),
+            true
+        );
+        participant.gender = removeQuotes(
+            participant.gender.toLowerCase().trim(),
+            true
+        );
+        participant.address = removeQuotes(participant.address.trim(), true);
+        participant.occupation = removeQuotes(
+            participant.occupation.trim(),
+            true
+        );
+
+        if (
+            !participant.msisdn.startsWith("0") &&
+            !participant.msisdn.startsWith("231")
+        ) {
+            participant.msisdn =
+                "231" + removeQuotes(participant.msisdn.trim(), true);
+        }
+
+        console.log("formatted participant: ", participant);
+    }
+}
 </script>
 
 <style scoped>
 @media (max-width: 1450px) {
     #fileSelectorAndGridWrapper {
         flex-direction: column !important;
+    }
+}
+
+@media (min-width: 1100px) {
+    #importParticipantsFileSelectorWrapper {
+        min-width: 300px;
     }
 }
 </style>

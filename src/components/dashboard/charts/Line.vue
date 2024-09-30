@@ -86,11 +86,10 @@ import { API_KEY, API_URL, getVisits } from "@/assets/js";
 import { getTodaysVisits } from "@/util/util";
 
 const totalVisits = defineModel("totalVisits");
-
 const todaysVisits = defineModel("todaysVisits");
 
 onMounted(() => {
-    initializeTodaysVisits();
+    setTimeout(() => initializeTodaysVisits(), 2000);
 });
 
 async function initializeTodaysVisits() {

@@ -94,8 +94,8 @@
                             required
                         >
                             <option selected></option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
                         </select>
 
                         <div class="invalid-feedback">
@@ -210,6 +210,30 @@
                     />
                 </div>
 
+                <!-- SESSION -->
+                <div class="col-md-6">
+                    <label for="session" class="form-label is-required">
+                        Session
+                        <span class="visually-hidden"> (required) </span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <select
+                            v-model="session"
+                            class="form-select"
+                            id="session"
+                            required
+                        >
+                            <option selected></option>
+                            <option value="morning">Morning</option>
+                            <option value="afternoon">Afternoon</option>
+                        </select>
+
+                        <div class="invalid-feedback">
+                            Please select Morning or Afternoon.
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-12 d-flex justify-content-end gap-2">
                     <button type="submit" class="btn btn-primary">Save</button>
                     <button
@@ -261,6 +285,7 @@ const email = ref("");
 const address = ref("");
 const gender = ref("");
 const occupation = ref("");
+const session = ref("");
 
 const status = ref("");
 const title = ref("");
@@ -274,6 +299,7 @@ const onSubmit = async () => {
         !last_name.value ||
         !msisdn.value ||
         !email.value ||
+        !session.value ||
         !address.value
     ) {
         return;
@@ -293,6 +319,7 @@ const onSubmit = async () => {
         address: address.value,
         gender: gender.value,
         occupation: occupation.value,
+        session: session.value,
     };
 
     const body = {

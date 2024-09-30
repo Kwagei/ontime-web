@@ -404,7 +404,7 @@ export const login = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/login`, options);
+        const response = await fetch(`${API_URL}login`, options);
 
         const result = await response.json();
 

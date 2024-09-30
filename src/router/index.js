@@ -13,6 +13,7 @@ import AppView from "@/views/AppView.vue";
 import AddUsers from "@/components/users/AddUsers.vue";
 import UserDetail from "@/components/users/UserDetail.vue";
 import NewPassword from "@/components/resetPassword/NewPassword.vue";
+import LandingPage from "@/components/LandingPage.vue";
 
 // Visitors Components
 import VisitorDetail from "../components/visitors/VisitorDetail.vue";
@@ -40,17 +41,23 @@ import { createRouter, createWebHistory } from "vue-router";
 const routes = [
     {
         path: "",
-        redirect: "/dashboard",
+        component: LandingPage,
     },
     {
         path: "/sign-in",
         component: SignIn,
         name: "sign-in",
+        meta: {
+            logOutRequired: true,
+        },
     },
     {
         path: "/reset-password",
         component: ResetPassword,
         name: "reset-password",
+        meta: {
+            logOutRequired: true,
+        },
         children: [
             {
                 path: "",
@@ -62,17 +69,11 @@ const routes = [
                 component: ResetCode,
                 name: "reset-code",
                 props: true,
-                meta: {
-                    requiresAuth: true,
-                },
             },
             {
                 path: "new-password",
                 component: NewPassword,
                 name: "new-password",
-                // meta: {
-                // 	requiresAuth: true,
-                // },
             },
         ],
     },
@@ -80,14 +81,19 @@ const routes = [
         path: "/app",
         component: AppView,
         name: "app",
+        meta: {
+            requiresAuth: true,
+        },
         children: [
+            {
+                path: "",
+                component: LandingPage,
+                name: "landing-page",
+            },
             {
                 path: "/dashboard",
                 component: Dashboard,
                 name: "dashboard",
-                // meta: {
-                // 	requiresAuth: true,
-                // },
             },
             {
                 path: "/visitors",
@@ -119,9 +125,6 @@ const routes = [
                         ],
                     },
                 ],
-                // meta: {
-                // 	requiresAuth: true,
-                // },
             },
             {
                 path: "/visits",
@@ -152,9 +155,6 @@ const routes = [
                         name: "visit-workspace",
                     },
                 ],
-                // meta: {
-                // 	requiresAuth: true,
-                // },
             },
             {
                 path: "/users",
@@ -185,9 +185,6 @@ const routes = [
                         ],
                     },
                 ],
-                // meta: {
-                // 	requiresAuth: true,
-                // },
             },
             {
                 path: "/events",
@@ -229,9 +226,6 @@ const routes = [
                         name: "new-room",
                     },
                 ],
-                // meta: {
-                // 	requiresAuth: true,
-                // },
             },
         ],
     },
@@ -240,10 +234,6 @@ const routes = [
 export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes,
-});
-
-router.beforeEach((from, to) => {
-    console.log(from, " | ", to);
 });
 
 export default router;

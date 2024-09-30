@@ -337,3 +337,22 @@ export async function getCurrentWeekData() {
 
     return currentWeekVisits;
 }
+
+// ensure there are no quotes in values about to be inserted into the database
+export const removeQuotes = (data, isString = false) => {
+    if (!data) return;
+
+    // remove quotes from a single string
+    if (isString) return data.replace(/['"]/g, "");
+
+    // Map over each element of the array
+    return data.map((item) => {
+        // Check if the element is a string
+        if (typeof item === "string") {
+            // Remove single and double quotes from the string and return the modified string
+            return item.replace(/['"]/g, "");
+        }
+        // Return non-string elements as they are
+        return item;
+    });
+};

@@ -294,7 +294,7 @@
                 </div>
 
                 <!-- Purpose -->
-                <div class="col-6">
+                <div class="col-md-6">
                     <label
                         for="validationCustomPurpose"
                         class="form-label is-required"

@@ -127,11 +127,11 @@ export const updateDepartureTime = async (id, data) => {
 
         const response = await fetch(`${API_URL}/visits/${id}`, options);
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(`Error checking out: ${result}`);
+        }
 
         return { ok: response.ok, result };
     } catch (error) {

@@ -82,14 +82,11 @@ const options = ref({
     },
 });
 
-import { getVisits } from "@/assets/js";
+import { API_KEY, API_URL, getVisits } from "@/assets/js";
 import { getTodaysVisits } from "@/util/util";
 
 const totalVisits = defineModel("totalVisits");
 
-const date = new Date();
-const currentYear = date.getFullYear();
-const currentMonth = date.getMonth();
 const todaysVisits = defineModel("todaysVisits");
 
 onMounted(() => {
@@ -111,29 +108,37 @@ const fetchVisits = async (total) => {
     updateWeeklyVisitData(visits);
 };
 
-const updateWeeklyVisitData = async (visits) => {
-    const { daysOfWeek, datesOfWeek, currentWeekVisits } =
-        getCurrentWeekData(visits);
+const updateWeeklyVisitData = async () => {
+    const currentWeekVisits = await getCurrentWeekData();
+    const datesOfWeek = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ];
 
     const maleVisits = new Array(6).fill(0);
     const femaleVisits = new Array(6).fill(0);
 
-    for (const visit of currentWeekVisits) {
-        const dayIndex = datesOfWeek.indexOf(
-            new Date(visit.date_time).getDate()
-        );
-
-        if (visit.gender === "male") {
-            maleVisits[dayIndex]++;
-            gender.value.male++;
-        } else {
-            femaleVisits[dayIndex]++;
-            gender.value.female++;
+    // loop through each day of the week
+    for (const [dayIndex, eachDayVisits] of currentWeekVisits.entries()) {
+        // loop through each visit for the day
+        for (const visit of eachDayVisits) {
+            // update gender accordingly
+            if (visit.gender.toLowerCase() == "male") {
+                maleVisits[dayIndex]++;
+                gender.value.male++;
+            } else {
+                femaleVisits[dayIndex]++;
+                gender.value.female++;
+            }
         }
     }
 
     chartData.value = {
-        labels: daysOfWeek,
+        labels: datesOfWeek,
         datasets: [
             {
                 label: "Male",
@@ -153,51 +158,23 @@ const updateWeeklyVisitData = async (visits) => {
     };
 };
 
-const getCurrentWeekVisits = (visits, datesOfWeek) => {
-    const currentYearVisits = getCurrentYearVisits(visits);
-    const currentMonthVisits = getCurrentMonthVisits(currentYearVisits);
+const getCurrentWeekData = async () => {
+    let currentWeekVisits = Array(6).fill(new Array());
 
-    return currentMonthVisits.filter((visit) =>
-        datesOfWeek.some(
-            (date) =>
-                date === +visit.date_time.split("T")[0].split("-").reverse()[0]
-        )
-    );
-};
+    await $.ajax(`${API_URL}visits/current-week-visits`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+        success: (res) => {
+            currentWeekVisits = res.data.visits;
+        },
+        error: (error) => {
+            console.error("error fetching current week's visits: ", error);
+        },
+    });
 
-const getCurrentYearVisits = (visits) =>
-    visits.filter((visit) => visit.date_time.startsWith(currentYear));
-
-const getCurrentMonthVisits = (visits) =>
-    visits.filter(
-        (visit) => +visit.date_time.split("-")[1] === currentMonth + 1
-    );
-
-const getCurrentWeekData = (visits) => {
-    const startOfWeek = date.getDate() - date.getDay();
-    const daysOfWeek = [],
-        datesOfWeek = [];
-
-    for (let i = 0; i < 7; i++) {
-        const currentDay = new Date(date);
-        currentDay.setDate(startOfWeek + i);
-
-        datesOfWeek.push(currentDay.getDate());
-
-        const options = { weekday: "short" };
-        daysOfWeek.push(currentDay.toLocaleDateString("en-US", options));
-    }
-
-    const currentWeekVisits = getCurrentWeekVisits(
-        visits,
-        datesOfWeek.slice(1)
-    );
-
-    return {
-        daysOfWeek: daysOfWeek.slice(1),
-        datesOfWeek: datesOfWeek.slice(1),
-        currentWeekVisits,
-    };
+    return currentWeekVisits;
 };
 </script>
 <style scoped>

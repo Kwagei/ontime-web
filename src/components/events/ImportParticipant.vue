@@ -32,7 +32,7 @@
             id="fileSelectorAndGridWrapper"
             class="d-flex justify-content-center gap-3 mt-2"
         >
-            <div class="pt-2">
+            <div class="pt-2" style="min-width: 300px">
                 <h2 class="pb-2 text">Import Participants</h2>
                 <div>
                     <label
@@ -262,6 +262,12 @@ function validateParticipantsCsvFile(result) {
     // ensure occupation column exists
     if (!fields.includes("occupation")) {
         errorAlertMessage.value = "`occupation` column required but not found";
+        return false;
+    }
+
+    // ensure session column exists
+    if (!fields.includes("session")) {
+        errorAlertMessage.value = "`session` column required but not found";
         return false;
     }
 

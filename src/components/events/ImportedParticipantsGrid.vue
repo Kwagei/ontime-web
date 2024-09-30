@@ -22,6 +22,7 @@
                 <option value="address">Address</option>
                 <option value="msisdn">Contact</option>
                 <option value="occupation">Occupation</option>
+                <option value="session">Session</option>
             </select>
         </div>
         <div id="importedParticipantsGridContainer">
@@ -140,6 +141,25 @@
                             {{ participant.occupation }}
                         </span>
                     </div>
+
+                    <div>
+                        <span>
+                            <Icons
+                                style="width: 1.2rem"
+                                v-model:icon="sessionIcon"
+                            />
+                        </span>
+                        <span
+                            style="
+                                font-weight: 400;
+                                font-size: small;
+                                margin-left: 0.3rem;
+                                text-transform: capitalize;
+                            "
+                        >
+                            {{ participant.session }}
+                        </span>
+                    </div>
                 </div>
             </div>
             <h3 v-else>No match found!</h3>
@@ -155,6 +175,7 @@ const emailIcon = "email";
 const genderIcon = "adult";
 const phoneIcon = "device-smartphone";
 const occupationIcon = "briefcase";
+const sessionIcon = "clock";
 
 import { computed, ref } from "vue";
 import Icons from "../Icons.vue";
@@ -211,26 +232,26 @@ function search() {
 
 <style scoped>
 #importedParticipantsGridWrapper {
-    min-width: 75%;
+    min-width: 70%;
 }
 
 #importedParticipantsGridContainer {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: top;
     gap: 25px;
     flex-wrap: wrap;
     overflow-x: scroll;
     max-height: 70vh;
     min-width: 73%;
-    padding: 10px 5px;
+    padding: 10px;
     margin-top: 15px;
 }
 
 .participantGridItem {
     max-width: 300px;
     min-width: 300px;
-    min-height: 250px;
+    min-height: 280px;
 }
 
 .boxShadow {

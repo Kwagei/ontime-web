@@ -225,6 +225,31 @@
                             />
                         </div>
 
+                        <!-- SESSION -->
+                        <div class="col-md-6">
+                            <label for="session" class="form-label is-required">
+                                Session
+                                <span class="visually-hidden">
+                                    (required)
+                                </span>
+                            </label>
+                            <div class="input-group has-validation">
+                                <select
+                                    class="form-select"
+                                    aria-label="Default select example"
+                                    required
+                                    v-model="session"
+                                >
+                                    <option selected></option>
+                                    <option value="morning">Morning</option>
+                                    <option value="afternoon">Afternoon</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select a session.
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-md-12 d-flex gap-2 justify-content-end">
                             <button type="submit" class="btn btn-primary">
                                 Update
@@ -265,6 +290,7 @@ const email = ref("");
 const address = ref("");
 const gender = ref("");
 const occupation = ref("");
+const session = ref("");
 
 const emit = defineEmits(["updated", "cancel"]);
 
@@ -282,6 +308,7 @@ function update() {
         !last_name.value ||
         !msisdn.value ||
         !address.value ||
+        !session.value ||
         !gender.value
     ) {
         return;
@@ -296,6 +323,7 @@ function update() {
         msisdn: msisdn.value,
         gender: gender.value,
         occupation: occupation.value,
+        session: session.value,
     };
 
     emit("updated", updatedParticipant);
@@ -366,6 +394,7 @@ function initializeFormData() {
     address.value = props.data.participant?.address;
     gender.value = props.data.participant?.gender;
     occupation.value = props.data.participant?.occupation;
+    session.value = props.data.participant?.session;
 }
 
 // Lifecycle Hooks

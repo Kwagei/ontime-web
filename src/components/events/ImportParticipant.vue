@@ -210,6 +210,13 @@ async function postParticipants() {
                 message: "Unable to Import Participants, try again",
             });
             return;
+        } else if (result.type == "entity.too.large") {
+            emit("errorImportingParticipants", {
+                status: "danger",
+                message:
+                    "Participants too many, please import participants in smaller partitions (100 each)",
+            });
+            return;
         }
 
         participantToEdit.value = {
@@ -233,18 +240,20 @@ function removeEmptyRows(data) {
     return data.filter(
         (participant) =>
             participant.first_name ||
-            participant.middle_name ||
             participant.last_name ||
             participant.msisdn ||
-            // participant.address ||
-            participant.email
+            participant.email ||
+            participant.session
     );
 }
 
 function validateParticipantsCsvFile(result) {
     const fields = result.meta.fields;
 
-    if (result.errors.length) return true;
+    if (result.errors.length) {
+        errorAlertMessage.value = "Unable to load participants from CSV file!";
+        return true;
+    }
 
     // ensure first_name column exists
     if (!fields.includes("first_name")) {
@@ -252,21 +261,9 @@ function validateParticipantsCsvFile(result) {
         return false;
     }
 
-    // ensure middle_name column exists
-    if (!fields.includes("middle_name")) {
-        errorAlertMessage.value = "`middle_name` column required but not found";
-        return false;
-    }
-
     // ensure last_name column exists
     if (!fields.includes("last_name")) {
         errorAlertMessage.value = "`last_name` column required but not found";
-        return false;
-    }
-
-    // ensure email column exists
-    if (!fields.includes("email")) {
-        errorAlertMessage.value = "`email` column required but not found";
         return false;
     }
 
@@ -285,12 +282,6 @@ function validateParticipantsCsvFile(result) {
     // ensure gender column exists
     if (!fields.includes("gender")) {
         errorAlertMessage.value = "`gender` column required but not found";
-        return false;
-    }
-
-    // ensure occupation column exists
-    if (!fields.includes("occupation")) {
-        errorAlertMessage.value = "`occupation` column required but not found";
         return false;
     }
 
@@ -343,10 +334,15 @@ function formatParticipants() {
             participant.first_name.trim(),
             true
         );
-        participant.middle_name = removeQuotes(
-            participant.middle_name.trim(),
-            true
-        );
+
+        // format middle_name if any
+        if (participant.middle_name) {
+            participant.middle_name = removeQuotes(
+                participant.middle_name.trim(),
+                true
+            );
+        }
+
         participant.last_name = removeQuotes(
             participant.last_name.trim(),
             true
@@ -355,11 +351,17 @@ function formatParticipants() {
             participant.gender.toLowerCase().trim(),
             true
         );
-        // participant.address = removeQuotes(participant.address.trim(), true);
-        participant.occupation = removeQuotes(
-            participant.occupation.trim(),
-            true
-        );
+
+        participant.session = removeQuotes(participant.session.trim(), true);
+
+        // format occupation if any
+        if (participant.occupation) {
+            // participant.address = removeQuotes(participant.address.trim(), true);
+            participant.occupation = removeQuotes(
+                participant.occupation.trim(),
+                true
+            );
+        }
 
         if (
             !participant.msisdn.startsWith("0") &&

@@ -16,7 +16,11 @@
 
                 <section>
                     <div v-if="$sectionIsLoading" id="sectionLoader">
-                        <div class="spinner-grow spinner-grow-lg" role="status">
+                        <div
+                            id="sectionSpinner"
+                            class="spinner-grow spinner-grow-lg"
+                            role="status"
+                        >
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
@@ -53,6 +57,11 @@ const $sectionIsLoading =
     right: 0;
     bottom: 0;
     z-index: 9999999999999;
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+#sectionSpinner {
+    background-color: black;
 }
 
 #wrapper {

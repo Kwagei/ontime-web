@@ -122,7 +122,6 @@ const participants = ref([]);
 const participantsFile = ref(null);
 const errorAlertMessage = ref("");
 const participantToEdit = ref({});
-const participantIndex = defineModel("participantIndex");
 
 function handleFileImport(event) {
     const file = event.target.files[0];
@@ -130,6 +129,8 @@ function handleFileImport(event) {
         const reader = new FileReader();
         reader.onload = (e) => {
             $sectionIsLoading.value = true;
+            errorAlertMessage.value = "";
+            participants.value = [];
 
             // wait a bit for section loader to appear
             setTimeout(() => {
@@ -148,9 +149,6 @@ function handleFileImport(event) {
 
                         participants.value = [];
                         participants.value.push(...results.data);
-
-                        // Clear file input after import
-                        participantsFile.value.value = "";
 
                         formatParticipants();
 
@@ -250,11 +248,6 @@ function removeEmptyRows(data) {
 function validateParticipantsCsvFile(result) {
     const fields = result.meta.fields;
 
-    if (result.errors.length) {
-        errorAlertMessage.value = "Unable to load participants from CSV file!";
-        return true;
-    }
-
     // ensure first_name column exists
     if (!fields.includes("first_name")) {
         errorAlertMessage.value = "`first_name` column required but not found";
@@ -309,7 +302,6 @@ function editParticipant(msisdn) {
         errorMessage: "",
     };
 
-    participantIndex.value = idxToEdit + 1;
     setTimeout(
         () => showModal("#editParticipantModal", "#editParticipantModalBody"),
         150

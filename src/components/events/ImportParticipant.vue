@@ -209,7 +209,7 @@ function removeEmptyRows(data) {
             participant.middle_name ||
             participant.last_name ||
             participant.msisdn ||
-            participant.address ||
+            // participant.address ||
             participant.email
     );
 }
@@ -243,11 +243,11 @@ function validateParticipantsCsvFile(result) {
         return false;
     }
 
-    // ensure address column exists
-    if (!fields.includes("address")) {
-        errorAlertMessage.value = "`address` column required but not found";
-        return false;
-    }
+    // // ensure address column exists
+    // if (!fields.includes("address")) {
+    //     errorAlertMessage.value = "`address` column required but not found";
+    //     return false;
+    // }
 
     // ensure msisdn column exists
     if (!fields.includes("msisdn")) {
@@ -325,7 +325,7 @@ function formatParticipants() {
             participant.gender.toLowerCase().trim(),
             true
         );
-        participant.address = removeQuotes(participant.address.trim(), true);
+        // participant.address = removeQuotes(participant.address.trim(), true);
         participant.occupation = removeQuotes(
             participant.occupation.trim(),
             true

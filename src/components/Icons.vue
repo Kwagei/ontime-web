@@ -21,8 +21,8 @@ const props = defineProps({
 
 onMounted(() => {
     $("svg.solaris-icon").css({
-        height: props.height || "1.875rem",
-        width: props.width || "1.875rem",
+        height: props.height || "20px",
+        width: props.width || "20px",
     });
 });
 </script>

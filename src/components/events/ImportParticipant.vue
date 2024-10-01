@@ -168,6 +168,8 @@ async function postParticipants() {
         event_participants: participants.value,
     });
 
+    console.log("result: ", result);
+
     if (ok) {
         participants.value = [];
 
@@ -299,7 +301,6 @@ function editParticipant(msisdn) {
 }
 
 function deleteParticipant(msisdn) {
-    console.log("msisdn: ", msisdn);
     const idxToDelete = participants.value.findIndex(
         (participant) => participant.msisdn === msisdn
     );
@@ -338,8 +339,6 @@ function formatParticipants() {
             participant.msisdn =
                 "231" + removeQuotes(participant.msisdn.trim(), true);
         }
-
-        console.log("formatted participant: ", participant);
     }
 }
 </script>

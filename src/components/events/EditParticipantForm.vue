@@ -97,7 +97,7 @@
 
                         <!-- GENDER -->
                         <div class="col-md-6">
-                            <label for="address" class="form-label is-required"
+                            <label for="gender" class="form-label is-required"
                                 >Gender<span class="visually-hidden">
                                     (required)</span
                                 ></label
@@ -107,6 +107,7 @@
                                     class="form-select"
                                     aria-label="Default select example"
                                     required
+                                    id="gender"
                                     v-model="gender"
                                 >
                                     <option selected></option>
@@ -188,22 +189,16 @@
 
                         <!-- ADDRESS -->
                         <div class="col-md-6">
-                            <label for="address" class="form-label is-required"
-                                >Address<span class="visually-hidden">
-                                    (required)</span
-                                ></label
-                            >
-                            <div class="input-group has-validation">
+                            <label for="address" class="form-label">
+                                Address
+                            </label>
+                            <div class="input-group">
                                 <input
                                     type="text"
                                     class="form-control"
                                     id="address"
                                     v-model="address"
-                                    required
                                 />
-                                <div class="invalid-feedback">
-                                    Please provide an address.
-                                </div>
                             </div>
                             <div class="helpMessage form-text">
                                 Enter descriptive address. For example: Congo
@@ -227,26 +222,18 @@
 
                         <!-- SESSION -->
                         <div class="col-md-6">
-                            <label for="session" class="form-label is-required">
+                            <label for="session" class="form-label">
                                 Session
-                                <span class="visually-hidden">
-                                    (required)
-                                </span>
                             </label>
-                            <div class="input-group has-validation">
-                                <select
-                                    class="form-select"
-                                    aria-label="Default select example"
-                                    required
-                                    v-model="session"
-                                >
-                                    <option selected></option>
-                                    <option value="morning">Morning</option>
-                                    <option value="afternoon">Afternoon</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please select a session.
-                                </div>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="session"
+                                v-model="session"
+                                aria-describedby="inputGroupPrepend"
+                            />
+                            <div class="invalid-feedback">
+                                Please select a session.
                             </div>
                         </div>
 

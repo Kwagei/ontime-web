@@ -248,6 +248,12 @@ function search() {
     margin-top: 15px;
 }
 
+.visitor-info {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
 .participantGridItem {
     max-width: 300px;
     min-width: 300px;

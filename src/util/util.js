@@ -1,4 +1,5 @@
 import { API_KEY, API_URL } from "@/assets/js";
+import validator from "validator";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
@@ -74,10 +75,7 @@ export const msisdnValidation = (msisdns) => {
  * @returns {boolean} - true / false
  */
 export const emailValidation = (mail) => {
-    const validEmail =
-        /^[a-zA-Z0-9.!#$%&'*+/=?^/_`{|}~-]+@[a-z]+(?:\.[a-zA-Z0-9]+)*$/;
-
-    const isValid = mail.match(validEmail);
+    const isValid = validator.isEmail(mail.trim());
 
     if (!isValid) {
         return { valid: false, message: "Invalid email address!" };

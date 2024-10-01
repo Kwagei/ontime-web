@@ -51,11 +51,8 @@
                                             {{ visitorInfo.address }}
                                         </span>
                                     </div>
-                                    <div
-                                        v-if="visitorInfo.email"
-                                        class="d-flex gap-2"
-                                    >
-                                        <div>
+                                    <div class="d-flex gap-2">
+                                        <div v-if="visitorInfo.email">
                                             <span>
                                                 <Icons
                                                     class="icons"

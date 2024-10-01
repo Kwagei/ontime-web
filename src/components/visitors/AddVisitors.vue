@@ -164,10 +164,8 @@
 
                 <!-- ADDRESS -->
                 <div class="col-md-6">
-                    <label for="address" class="form-label is-required">
-                        Address
-                    </label>
-                    <div class="input-group has-validation">
+                    <label for="address" class="form-label"> Address </label>
+                    <div class="input-group">
                         <input
                             type="text"
                             class="form-control"

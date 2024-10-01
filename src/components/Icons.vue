@@ -11,12 +11,20 @@
 
 <script setup>
 import path from "@/assets/svg/solaris-icons-sprite.svg";
+import { onMounted } from "vue";
 const icon = defineModel("icon");
+
+const props = defineProps({
+    width: String,
+    height: String,
+});
+
+onMounted(() => {
+    $("svg.solaris-icon").css({
+        height: props.height || "1.875rem",
+        width: props.width || "1.875rem",
+    });
+});
 </script>
 
-<style>
-svg.solaris-icon {
-    width: 1.875rem;
-    height: 1.875rem;
-}
-</style>
+<style scoped></style>

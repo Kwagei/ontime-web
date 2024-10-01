@@ -29,75 +29,16 @@
                     </ul>
                 </div>
 
-                <button
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasExample"
-                    aria-controls="offcanvasExample"
-                    type="button"
-                    id="addVisitBtn"
-                    class="btn btn-primary"
-                >
-                    <Icons v-model:icon="add" />
-                    New
-                </button>
-
-                <div
-                    class="offcanvas offcanvas-start"
-                    tabindex="-1"
-                    id="offcanvasExample"
-                    aria-labelledby="offcanvasExampleLabel"
-                >
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasExampleLabel">
-                            Purpose
-                        </h5>
-                        <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="offcanvas"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="bottom"
-                            data-bs-title="Close"
-                        >
-                            <span class="visually-hidden">Close</span>
-                        </button>
-                    </div>
-                    <div class="m-3">
-                        <router-link :to="{ name: 'visit-event' }">
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id=""
-                                style="padding: 0.5rem 1.5rem; font-weight: 600"
-                            >
-                                Events
-                            </button>
-                        </router-link>
-
-                        <router-link :to="''">
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id=""
-                                style="padding: 0.5rem 1.5rem; font-weight: 600"
-                                disabled
-                            >
-                                Meeting
-                            </button>
-                        </router-link>
-
-                        <router-link :to="{ name: 'visit-workspace' }">
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id=""
-                                style="padding: 0.5rem 1.5rem; font-weight: 600"
-                            >
-                                Workspace
-                            </button>
-                        </router-link>
-                    </div>
-                </div>
+                <router-link :to="{ name: 'check-in' }">
+                    <button
+                        type="button"
+                        id="addVisitBtn"
+                        class="btn btn-primary"
+                    >
+                        <Icons v-model:icon="add" />
+                        New
+                    </button>
+                </router-link>
             </div>
         </div>
 

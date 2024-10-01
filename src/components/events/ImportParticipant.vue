@@ -299,6 +299,7 @@ function editParticipant(msisdn) {
 }
 
 function deleteParticipant(msisdn) {
+    console.log("msisdn: ", msisdn);
     const idxToDelete = participants.value.findIndex(
         (participant) => participant.msisdn === msisdn
     );

@@ -2,86 +2,7 @@
     <AlertModal :data="alert" />
 
     <!-- BELONGING MODAL -->
-    <div
-        class="modal fade"
-        id="visitModal"
-        tabindex="-1"
-        aria-hidden="true"
-        aria-labelledby="visitModalLabel"
-        style="z-index: 2000"
-    >
-        <div
-            class="modal-dialog modal-lg modal-dialog-centered"
-            id="modal-dialog"
-        >
-            <div class="modal-content rounded">
-                <div class="modal-header">
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        data-bs-placement="bottom"
-                        data-bs-title="Close"
-                    >
-                        <span class="visually-hidden">Close</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="belongings" class="form-label"
-                            >Belongings</label
-                        >
-                        <div class="input-group has-validation">
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="belongings"
-                                aria-describedby="inputGroupPrepend"
-                                v-model="temBelonging"
-                                @keyup.prevent="addBelongings"
-                            />
-                        </div>
-                        <div
-                            v-for="belonging in belongings"
-                            :key="belonging"
-                            @click="deleteBelongings(belonging)"
-                            class="belonging"
-                        >
-                            {{ belonging }}
-                        </div>
-                    </div>
-                    <div>
-                        <label for="institution" class="form-label"
-                            >Institution</label
-                        >
-                        <div class="input-group">
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="institution"
-                                aria-describedby="inputGroupPrepend"
-                                v-model="institution"
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button @click="checkParticipantIn" class="btn btn-primary">
-                        Check In
-                    </button>
-
-                    <button
-                        type="button"
-                        class="btn btn-outline-secondary"
-                        data-bs-dismiss="modal"
-                        @click="resetForm"
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <BelongingModal @done="checkParticipantIn" @cancel="resetForm" />
 
     <div
         class="d-flex flex-column container gap-3"
@@ -271,27 +192,6 @@
                     </div>
                 </div>
 
-                <!-- Purpose -->
-                <div class="col-md-6">
-                    <label
-                        for="validationCustomPurpose"
-                        class="form-label is-required"
-                    >
-                        Purpose<span class="visually-hidden">(required)</span>
-                    </label>
-                    <div class="input-group has-validation">
-                        <textarea
-                            class="form-control w-auto"
-                            id="validationCustomPurpose"
-                            required
-                            v-model="purpose"
-                        ></textarea>
-                        <div class="invalid-feedback">
-                            Please provide a purpose.
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Submit Button -->
                 <div class="col-12 d-flex gap-2">
                     <button
@@ -314,6 +214,7 @@
 import { ref, onMounted } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
+import BelongingModal from "../checkIn/BelongingModal.vue";
 import {
     registerVisit,
     API_URL,
@@ -326,11 +227,6 @@ import { formValidation, showModal } from "@/util/util";
 const msisdn = ref("");
 const visitor = ref("");
 const visitorId = ref("");
-const purpose = ref("");
-
-const temBelonging = ref("");
-const belongings = ref([]);
-const institution = ref("");
 
 const activeBreadCrumbs = ref([]);
 
@@ -446,7 +342,7 @@ function updateRoom(selectedRoom) {
 }
 
 // function to validate form before it submit the form
-const checkParticipantIn = async () => {
+const checkParticipantIn = async (belongingsAndInstitution) => {
     const checkInStatus = await visitorCheckInStatus(visitorId.value);
 
     // handle error getting check in status
@@ -469,12 +365,10 @@ const checkParticipantIn = async () => {
     // require values for the submittion of the form
     const visitData = {
         visitor_id: visitorId.value,
-        institution: institution.value,
-        items: belongings.value,
+        institution: belongingsAndInstitution.institution.value,
+        items: belongingsAndInstitution.belongings.value,
         room_id: room.value.id,
-        purpose: `Just Using Workspace${
-            purpose.value ? " - " + purpose.value : ""
-        }`,
+        purpose: "Just Using Workspace",
     };
 
     const response = await registerVisit(visitData);
@@ -503,23 +397,8 @@ function getInstitutionAndBelongings() {
         return;
     }
 
-    showModal("#visitModal", "#modal-dialog");
+    setTimeout(() => showModal("#visitModal", "#modal-dialog"), 500);
 }
-
-const addBelongings = (event) => {
-    const { key } = event;
-
-    if (key === "Enter" && temBelonging.value) {
-        if (!belongings.value.includes(temBelonging.value)) {
-            belongings.value.push(temBelonging.value);
-        }
-        temBelonging.value = "";
-    }
-};
-
-const deleteBelongings = (item) => {
-    belongings.value = belongings.value.filter((val) => val !== item);
-};
 </script>
 
 <style scoped>

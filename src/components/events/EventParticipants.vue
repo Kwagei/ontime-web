@@ -46,19 +46,11 @@ const columns = [
     { data: "first_name", title: "First Name" },
     { data: "middle_name", title: "Middle Name" },
     { data: "last_name", title: "Last Name" },
+    { data: "gender", title: "Gender" },
     { data: "email", title: "Email" },
     { data: "msisdn", title: "Contact" },
     { data: "address", title: "Address" },
     { data: "occupation", title: "Occupation" },
-    {
-        data: null,
-        title: "Today's Attendance",
-        render: (data) => {
-            return data.participant_id
-                ? `<span class="text-success fw-bold">Attended</span>`
-                : `<span class="text-danger fw-bold">Not Attended</span>`;
-        },
-    },
 ];
 
 const options = {
@@ -99,6 +91,10 @@ const options = {
                 participant.msisdn = participant.msisdn
                     ? `0${participant.msisdn.slice(3)}`
                     : "";
+
+                participant.gender =
+                    participant.gender.charAt(0).toUpperCase() +
+                    participant.gender.slice(1);
             });
 
             allParticipants = participants;

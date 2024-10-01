@@ -1,77 +1,14 @@
 <template>
     <div>
-        <div
-            class="offcanvas offcanvas-start"
-            tabindex="-1"
-            id="offcanvasExample"
-            aria-labelledby="offcanvasExampleLabel"
-        >
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasExampleLabel">
-                    Purpose
-                </h5>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="offcanvas"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="bottom"
-                    data-bs-title="Close"
-                >
-                    <span class="visually-hidden">Close</span>
-                </button>
-            </div>
-            <div class="m-3">
-                <router-link :to="{ name: 'visit-event' }">
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id=""
-                        style="padding: 0.5rem 1.5rem; font-weight: 600"
-                    >
-                        Events
-                    </button>
-                </router-link>
-
-                <router-link :to="''">
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id=""
-                        style="padding: 0.5rem 1.5rem; font-weight: 600"
-                        disabled
-                    >
-                        Meeting
-                    </button>
-                </router-link>
-
-                <router-link :to="{ name: 'visit-workspace' }">
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id=""
-                        style="padding: 0.5rem 1.5rem; font-weight: 600"
-                    >
-                        Workspace
-                    </button>
-                </router-link>
-            </div>
-        </div>
-
         <div class="container text-center">
             <div id="dashboardFirstChild" class="row gap-4 my-3">
-                <div class="" id="stats">
+                <div id="stats">
                     <div
                         class="d-flex justify-content-end align-items-end w-100 pb-3"
                     >
-                        <button
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#offcanvasExample"
-                            aria-controls="offcanvasExample"
-                            class="btn btn-primary"
-                        >
-                            Check In
-                        </button>
+                        <router-link :to="{ name: 'check-in' }">
+                            <button class="btn btn-primary">Check In</button>
+                        </router-link>
                     </div>
                     <div class="row align-items-start gap-4">
                         <div

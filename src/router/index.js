@@ -37,11 +37,12 @@ import Rooms from "@/components/Room.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
+import CheckIn from "@/layouts/CheckIn.vue";
 
 const routes = [
     {
         path: "",
-        component: LandingPage,
+        redirect: "/check-in",
     },
     {
         path: "/sign-in",
@@ -128,16 +129,16 @@ const routes = [
             },
             {
                 path: "/visits",
+                component: Visits,
+                name: "visits",
+            },
+            {
+                path: "/check-in",
                 children: [
                     {
                         path: "",
-                        component: Visits,
-                        name: "visits",
-                    },
-                    {
-                        path: "new-visit",
-                        component: AddVisits,
-                        name: "add-visit",
+                        component: CheckIn,
+                        name: "check-in",
                     },
                     {
                         path: "purpose-meeting",
@@ -232,7 +233,7 @@ const routes = [
 ];
 
 export const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHistory(import.meta.env.VITE_BASE_URL),
     routes,
 });
 

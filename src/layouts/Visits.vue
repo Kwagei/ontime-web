@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { getCurrentInstance, ref, onMounted } from "vue";
 
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import VisitList from "../components/visits/VisitList.vue";
@@ -132,6 +132,10 @@ function displayFilterModal() {
     showModal("#filterModal", "#modal-dialog");
 }
 
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
 const displayExportModay = () => {
     showModal("#exportModal", "#modal-dialog");
 };
@@ -143,6 +147,9 @@ function filterCompleted(newDates) {
 
 onMounted(() => {
     hideSidebarOnSmallScreen();
+
+    // ensure loader is not visible
+    $sectionIsLoading.value = false;
 });
 </script>
 

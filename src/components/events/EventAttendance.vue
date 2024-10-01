@@ -21,7 +21,7 @@
                     Export
                 </button>
 
-                <router-link to="/visits/purpose-event">
+                <router-link to="/check-in/purpose-event">
                     <button class="btn btn-secondary" style="min-width: 110px">
                         Check In
                     </button>

@@ -14,30 +14,31 @@
 
         <form @submit.prevent v-show="stage == 0" class="row g-3">
             <div class="dropdown mt-2" id="selectEventWrapper">
-                <label for="selectEventInput" class="form-label is-required">
-                    Find Visitor by Contact
+                <label for="selectVisitorInput" class="form-label is-required">
+                    Find Visitor by Contact or Name
                 </label>
 
                 <div>
                     <input
-                        @input="getVisitor"
+                        @input="searchVisitors"
                         type="text"
-                        class="form-control form-select"
+                        class="form-select dropdown-toggle dropdown-toggle-split"
                         v-model="msisdn"
-                        id="validationCustomVisitorNumber"
+                        id="selectVisitorInput"
                         aria-describedby="inputGroupPrepend"
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                         autocomplete="off"
                         required
-                        placeholder="Visitor's Phone Number"
+                        placeholder="Enter Phone Number or Name"
                     />
-                    <ul class="dropdown-menu w-100">
-                        <li
-                            class="dropdown-item"
-                            v-if="msisdn && !visitors.length"
-                        >
-                            No Match
+                    <ul class="dropdown-menu w-100" style="max-width: 98.5%">
+                        <li class="dropdown-item" v-if="noMatch">No Match</li>
+                        <li v-if="loading" class="dropdown-item">Loading...</li>
+                        <li v-if="errorSearchingVisitors" class="dropdown-item">
+                            <span class="text-danger">
+                                Unable to search visitors, try again!
+                            </span>
                         </li>
                         <template v-for="visitor in visitors">
                             <li
@@ -82,49 +83,45 @@
                             >(required)</span
                         >
                     </label>
-                    <div class="input-group has-validation">
-                        <input
-                            @input="getVisitor"
-                            type="text"
-                            class="form-control form-select"
-                            v-model="msisdn"
-                            id="validationCustomVisitorNumber"
-                            aria-describedby="inputGroupPrepend"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            autocomplete="off"
-                            required
-                            placeholder="Visitor Phone Number"
-                        />
-                        <ul class="dropdown-menu w-100">
+                    <input
+                        @input="searchVisitors"
+                        type="text"
+                        class="form-select dropdown-toggle dropdown-toggle-split"
+                        v-model="msisdn"
+                        id="selectVisitorInput"
+                        aria-describedby="inputGroupPrepend"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        autocomplete="off"
+                        required
+                        placeholder="Enter Phone Number or Name"
+                    />
+                    <ul class="dropdown-menu w-100" style="max-width: 98.5%">
+                        <li class="dropdown-item" v-if="noMatch">No Match</li>
+                        <li v-if="loading" class="dropdown-item">Loading...</li>
+                        <li v-if="errorSearchingVisitors" class="dropdown-item">
+                            <span class="text-danger">
+                                Unable to search visitors, try again!
+                            </span>
+                        </li>
+                        <template v-for="visitor in visitors">
                             <li
+                                @click="visitorSelected(visitor)"
                                 class="dropdown-item"
-                                v-if="msisdn && !visitors.length"
+                                :value="visitor.id"
                             >
-                                No Match
+                                {{ visitor.name }}
                             </li>
-                            <template v-for="visitor in visitors">
-                                <li
-                                    @click="visitorSelected(visitor)"
-                                    class="dropdown-item"
-                                    :value="visitor.id"
-                                >
-                                    {{ visitor.name }}
-                                </li>
-                            </template>
-                            <router-link
-                                :to="{ name: 'add-visitor' }"
-                                class="text-primary"
-                            >
-                                <li class="dropdown-item text-decoration-none">
-                                    Create new visitor
-                                </li>
-                            </router-link>
-                        </ul>
-                        <div class="invalid-feedback">
-                            Please provide a valid phone number.
-                        </div>
-                    </div>
+                        </template>
+                        <router-link
+                            :to="{ name: 'add-visitor' }"
+                            class="text-primary"
+                        >
+                            <li class="dropdown-item text-decoration-none">
+                                Create new visitor
+                            </li>
+                        </router-link>
+                    </ul>
                 </div>
 
                 <!-- NEW VISITOR -->
@@ -211,7 +208,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, getCurrentInstance } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
 import BelongingModal from "../modals/BelongingModal.vue";
@@ -229,6 +226,15 @@ const visitor = ref("");
 const visitorId = ref("");
 
 const activeBreadCrumbs = ref([]);
+
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
+// visitors searching flags
+const loading = ref(false);
+const noMatch = ref(false);
+const errorSearchingVisitors = ref(false);
 
 const router = useRouter();
 
@@ -268,44 +274,57 @@ onMounted(async () => {
     fetchRooms();
 });
 
-// function to get visitor bt MSISDN
-const getVisitor = async () => {
+// function to get visitor by NAME or MSISDN
+async function searchVisitors() {
     try {
-        const visitorData = await searchVisitors();
-        visitors.value = visitorData.data.data;
+        let url = `${API_URL}visitors?search=${
+            msisdn.value.startsWith("0")
+                ? "231" + msisdn.value.slice(1)
+                : msisdn.value
+        }&limit=15`;
 
-        for (const visitor of visitors.value) {
-            visitor.name = `${visitor.first_name} ${
-                visitor.middle_name || ""
-            } ${visitor.last_name}`;
+        loading.value = true;
+
+        let searchedVisitor = await fetch(url, {
+            headers: {
+                authorization: API_KEY,
+            },
+        });
+
+        loading.value = false;
+
+        if (searchedVisitor.ok) {
+            const res = await searchedVisitor.json();
+
+            let tmpVisitors = res.data.data;
+
+            if (!tmpVisitors.length) {
+                noMatch.value = true;
+                errorSearchingVisitors.value = false;
+                visitors.value = [];
+                return;
+            }
+
+            for (const visitor of tmpVisitors) {
+                visitor.name = `${visitor.first_name} ${
+                    visitor.middle_name || ""
+                } ${visitor.last_name}`;
+            }
+
+            noMatch.value = false;
+            errorSearchingVisitors.value = false;
+            visitors.value = tmpVisitors;
+        } else {
+            visitors.value = [];
+            errorSearchingVisitors.value = true;
+            noMatch.value = true;
         }
     } catch (error) {
-        console.error("Error retrieving visitor:", error);
+        visitors.value = [];
+        errorSearchingVisitors.value = true;
+        noMatch.value = false;
+        loading.value = false;
     }
-};
-
-async function searchVisitors() {
-    let url = `${API_URL}visitors?search=${
-        msisdn.value.startsWith("0")
-            ? "231" + msisdn.value.slice(1)
-            : msisdn.value
-    }&limit=12`;
-
-    let searchedVisitor = await fetch(url, {
-        headers: {
-            authorization: API_KEY,
-        },
-    });
-
-    if (!searchedVisitor.ok) {
-        alert.value.message = "Unable to search visitors, try again";
-        alert.value.status = "danger";
-
-        showModal();
-        return [];
-    }
-
-    return await searchedVisitor.json();
 }
 
 function visitorSelected(selectedVisitor) {
@@ -343,6 +362,8 @@ function updateRoom(selectedRoom) {
 
 // function to validate form before it submit the form
 const checkParticipantIn = async (belongingsAndInstitution) => {
+    $sectionIsLoading.value = true;
+
     const checkInStatus = await visitorCheckInStatus(visitorId.value);
 
     // handle error getting check in status
@@ -351,12 +372,16 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
         alert.value.status = "danger";
 
         showModal();
+        $sectionIsLoading.value = false;
         return;
     }
+
     // indicate visitor is still checked in
     else if (checkInStatus.result.data.stillCheckedIn) {
         alert.value.message = "Visitor is Still Checked In";
         alert.value.status = "warning";
+
+        $sectionIsLoading.value = false;
 
         showModal();
         return;
@@ -383,6 +408,7 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
         alert.value.status = "danger";
     }
 
+    $sectionIsLoading.value = false;
     showModal();
 };
 

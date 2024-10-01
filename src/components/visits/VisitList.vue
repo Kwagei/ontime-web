@@ -45,7 +45,7 @@ import { API_KEY, API_URL, updateDepartureTime } from "@/assets/js/index.js";
 import { formatDateTime, formatVisitData, showModal } from "@/util/util.js";
 import AlertModal from "../modals/AlertModal.vue";
 
-import { ref, watch, computed, onMounted } from "vue";
+import { ref, watch, computed, onMounted, getCurrentInstance } from "vue";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
@@ -68,6 +68,10 @@ const alert = ref({
 });
 
 const selectedVisit = ref({});
+
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
 
 const columns = [
     { data: "date_time", title: "Date" },
@@ -206,34 +210,21 @@ const filterInfo = computed(() => {
 });
 
 // function to update departure time
-const checkout = async (id) => {
-    try {
-        const visit_checkout = await updateDepartureTime(id);
-        if (!visit_checkout.ok) {
-            alert.value.message =
-                "Unable to Check Visitor Out, please try again";
-            alert.value.status = "danger";
-
-            showModal();
-        }
-    } catch (error) {
-        console.error("Error updating departure time:", error);
-    }
-};
-
 const handleCheckout = async (visit) => {
-    try {
-        // indicate visitor already checked out
-        if (visit.departure_time) {
-            alert.value.message = "Visitor Already Checked Out";
-            alert.value.status = "warning";
+    // indicate visitor already checked out
+    if (visit.departure_time) {
+        alert.value.message = "Visitor Already Checked Out";
+        alert.value.status = "warning";
 
-            showModal();
-            return;
-        }
+        showModal();
+        return;
+    }
 
-        await checkout(visit.id);
+    $sectionIsLoading.value = true;
+    const updatedDepartureTime = await updateDepartureTime(visit.id);
+    $sectionIsLoading.value = false;
 
+    if (updatedDepartureTime.ok) {
         alert.value.message = "Visitor Checked Out";
         alert.value.status = "success";
 
@@ -241,11 +232,9 @@ const handleCheckout = async (visit) => {
 
         // refresh visits table
         tableKey.value += 1;
-    } catch (error) {
-        console.error("Error updating departure time:", error);
-        alert.value.message = "Unable to check out, please try again";
+    } else {
+        alert.value.message = "Unable to check visitor out, try again";
         alert.value.status = "danger";
-
         showModal();
     }
 };

@@ -9,7 +9,11 @@
         role="status"
         style="height: 85vh"
     >
-        <div class="spinner-border" style="margin-top: -25vh" role="status">
+        <div
+            class="spinner-border spinner-border-lg"
+            style="margin-top: -25vh"
+            role="status"
+        >
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>

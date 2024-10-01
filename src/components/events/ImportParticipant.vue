@@ -82,7 +82,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, getCurrentInstance } from "vue";
 import { parse } from "papaparse"; // Import Papa Parse for CSV parsing
 import { useRoute } from "vue-router";
 
@@ -114,6 +114,10 @@ const emit = defineEmits([
     "switch",
 ]);
 
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
 const participants = ref([]);
 const participantsFile = ref(null);
 const errorAlertMessage = ref("");
@@ -125,33 +129,43 @@ function handleFileImport(event) {
     if (file && file.type === "text/csv") {
         const reader = new FileReader();
         reader.onload = (e) => {
-            const csvData = e.target.result;
-            parse(csvData, {
-                header: true,
-                skipEmptyLines: true,
-                complete: (results) => {
-                    results.data = removeEmptyRows(results.data);
+            $sectionIsLoading.value = true;
 
-                    // validate csv file table columns
-                    if (!validateParticipantsCsvFile(results)) return false;
+            // wait a bit for section loader to appear
+            setTimeout(() => {
+                const csvData = e.target.result;
+                parse(csvData, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: (results) => {
+                        results.data = removeEmptyRows(results.data);
 
-                    participants.value = [];
-                    participants.value.push(...results.data);
+                        // validate csv file table columns
+                        if (!validateParticipantsCsvFile(results)) {
+                            $sectionIsLoading.value = false;
+                            return false;
+                        }
 
-                    // Clear file input after import
-                    participantsFile.value.value = "";
+                        participants.value = [];
+                        participants.value.push(...results.data);
 
-                    formatParticipants();
+                        // Clear file input after import
+                        participantsFile.value.value = "";
 
-                    if (participants.value.length > 150) {
-                        emit("errorImportingParticipants", {
-                            status: "warning",
-                            message:
-                                "Import Maximum 150 Participants at a time",
-                        });
-                    }
-                },
-            });
+                        formatParticipants();
+
+                        $sectionIsLoading.value = false;
+
+                        if (participants.value.length > 150) {
+                            emit("errorImportingParticipants", {
+                                status: "warning",
+                                message:
+                                    "Import Maximum 150 Participants at a time",
+                            });
+                        }
+                    },
+                });
+            }, 1500);
         };
 
         reader.readAsText(file);
@@ -170,6 +184,8 @@ async function onParticipantUpdate(updatedParticipant) {
 }
 
 async function postParticipants() {
+    $sectionIsLoading.value = true;
+
     const { ok, result } = await registerEventParticipants({
         event: {
             id: props.eventId,
@@ -177,7 +193,7 @@ async function postParticipants() {
         event_participants: participants.value,
     });
 
-    console.log("result: ", result);
+    $sectionIsLoading.value = false;
 
     if (ok) {
         participants.value = [];

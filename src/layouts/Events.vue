@@ -64,7 +64,7 @@ import Options from "../components/Options.vue";
 import Icons from "../components/Icons.vue";
 const plusIcon = "add";
 
-import { onMounted, ref } from "vue";
+import { getCurrentInstance, onMounted, ref } from "vue";
 import { csvExport, getEvents } from "../assets/js/index.js";
 import FilterModal from "@/components/modals/FilterModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
@@ -96,8 +96,15 @@ const props = defineProps({
     },
 });
 
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
 onMounted(() => {
     hideSidebarOnSmallScreen();
+
+    // ensure section loader is not showing
+    $sectionIsLoading.value = false;
 });
 
 const refresh = ref(false);

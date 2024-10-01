@@ -33,7 +33,6 @@
                             class="form-select dropdown-toggle dropdown-toggle-split"
                             id="selectEventInput"
                             :id="eventID"
-                            :value="eventValue"
                             v-model="eventValue"
                             aria-expanded="false"
                             data-bs-toggle="dropdown"
@@ -100,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, getCurrentInstance } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
 import BelongingModal from "../modals/BelongingModal.vue";
@@ -296,6 +295,10 @@ const props = defineProps({
 
 activeBreadCrumbs.value = ["check-in", "event"];
 
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
 // Lifecycle Hooks
 onMounted(async () => {
     await getEventsOptions();
@@ -424,7 +427,9 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
         participant_id: participant_id.value,
     };
 
+    $sectionIsLoading.value = true;
     const response = await registerVisit(visitData);
+    $sectionIsLoading.value = false;
 
     // Reload data table to update the departure time of the participant that was just checked in
     dataTableKey.value += 1;
@@ -528,7 +533,7 @@ const updateVisitorVisitStatus = () => {
 watch(
     () => eventValue.value,
     (n) => {
-        if (!events.value.length) return;
+        if (!events.value.length && !n) return;
 
         const searchResult = eventTem.value.filter((event) =>
             event.title.toLocaleLowerCase().includes(n.toLocaleLowerCase())

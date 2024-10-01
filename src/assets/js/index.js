@@ -114,30 +114,23 @@ export const getVisits = async (queryParams = {}) => {
 };
 
 export const updateDepartureTime = async (id, data) => {
-    try {
-        // Update departure time
-        const options = {
-            method: "PUT",
-            headers: {
-                authorization: API_KEY,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        };
+    // Update departure time
+    const options = {
+        method: "PUT",
+        headers: {
+            authorization: API_KEY,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    };
 
-        const response = await fetch(`${API_URL}/visits/${id}`, options);
+    const response = await fetch(`${API_URL}/visits/${id}`, options);
 
-        const result = await response.json();
+    const result = await response.json();
 
-        if (!response.ok) {
-            throw new Error(`Error checking out: ${result}`);
-        }
+    if (!response.ok) return { ok: false, result };
 
-        return { ok: response.ok, result };
-    } catch (error) {
-        console.error("Error in updateDepartureTime: ", error);
-        return { ok: false, result: error.message };
-    }
+    return { ok: response.ok, result };
 };
 
 // Visitors functions

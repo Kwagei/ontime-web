@@ -11,6 +11,7 @@
                         </router-link>
                     </div>
                     <div class="row align-items-start gap-4">
+                        <!-- Today's Visits -->
                         <div
                             class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
                             style="padding-left: 2.5rem !important"
@@ -31,6 +32,7 @@
                                 </h2>
                             </div>
                         </div>
+                        <!-- Today's Events -->
                         <div
                             class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
                             style="padding-left: 2.5rem !important"
@@ -49,8 +51,9 @@
                                 <h2>{{ todaysEvents }}</h2>
                             </div>
                         </div>
+                        <!-- Total Visitors -->
                         <div
-                            class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
+                            class="form-control col py-3 px-4 d-flex rounded align-items-center justify-content-center gap-4"
                             style="padding-left: 2.5rem !important"
                         >
                             <div
@@ -69,21 +72,6 @@
                                 <span>Total Visitors</span>
                                 <h2>{{ totalVisitors }}</h2>
                             </div>
-                        </div>
-                        <div
-                            class="form-control col d-none rounded align-items-center gap-4"
-                            style="
-                                margin-top: auto;
-                                padding: 0 !important;
-                                background: transparent;
-                                border: none;
-                            "
-                        >
-                            <router-link to="/visits/purpose-event">
-                                <button class="btn btn-primary px-4 py-2">
-                                    Check In
-                                </button>
-                            </router-link>
                         </div>
                     </div>
                 </div>
@@ -125,7 +113,7 @@ import { RouterLink } from "vue-router";
 
 import VisitList from "@/components/visits/VisitList.vue";
 import Icons from "@/components/Icons.vue";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, getCurrentInstance, ref, watch } from "vue";
 import { getVisitors } from "@/assets/js";
 import { hideSidebarOnSmallScreen } from "@/util/util";
 
@@ -171,6 +159,10 @@ const isEventHappeningToday = (event) => {
     );
 };
 
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
 const getTodaysEvents = (events) => {
     return events.filter(isEventHappeningToday);
 };
@@ -183,6 +175,9 @@ const fetchVisitors = async () => {
 onMounted(async () => {
     await fetchVisitors();
     hideSidebarOnSmallScreen();
+
+    // ensure loader is not showing
+    $sectionIsLoading.value = false;
 });
 </script>
 

@@ -13,6 +13,8 @@ import AppView from "@/views/AppView.vue";
 import AddUsers from "@/components/users/AddUsers.vue";
 import UserDetail from "@/components/users/UserDetail.vue";
 import NewPassword from "@/components/resetPassword/NewPassword.vue";
+
+// Landing Page
 import LandingPage from "@/components/LandingPage.vue";
 
 // Visitors Components
@@ -22,15 +24,19 @@ import AddVisitors from "../components/visitors/AddVisitors.vue";
 
 // Visit Components
 import Visits from "../layouts/Visits.vue";
-import AddMeeting from "@/components/visits/AddMeeting.vue";
-import AddEvents from "@/components/visits/AddEvents.vue";
-import AddWorkspace from "@/components/visits/AddWorkspace.vue";
+
+// Check In Components
+import AddMeeting from "@/components/checkIn/AddMeeting.vue";
+import AddEvents from "@/components/checkIn/AddEvents.vue";
+import AddWorkspace from "@/components/checkIn/AddWorkspace.vue";
 
 // Users Components
 import Users from "../layouts/Users.vue";
 
 // Dashboard Components
 import Dashboard from "../layouts/Dashboard.vue";
+
+// Other Components
 import Hosts from "@/components/hosts/Hosts.vue";
 import Rooms from "@/components/Room.vue";
 

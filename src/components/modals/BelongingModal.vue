@@ -63,15 +63,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button
-                        @click="
-                            $emit('done', {
-                                institution: institution.value,
-                                belongings: belongings.value,
-                            })
-                        "
-                        class="btn btn-primary"
-                    >
+                    <button @click="done" class="btn btn-primary">
                         Check In
                     </button>
 
@@ -97,6 +89,13 @@ const temBelonging = ref("");
 const belongings = ref([]);
 const institution = ref("");
 
+function done() {
+    emit("done", {
+        institution: institution.value || "",
+        belongings: belongings.value.length ? belongings.value : [],
+    });
+}
+
 const addBelongings = (event) => {
     const { key } = event;
 
@@ -114,5 +113,17 @@ const deleteBelongings = (item) => {
 </script>
 
 <style scoped>
-/* code... */
+.belonging {
+    text-transform: capitalize;
+    display: inline-block;
+    margin: 20px 10px 0 0;
+    padding: 6px 12px;
+    background-color: #eee;
+    border-radius: 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: #777;
+    cursor: pointer;
+}
 </style>

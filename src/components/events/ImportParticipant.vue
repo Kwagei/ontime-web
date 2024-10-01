@@ -3,6 +3,7 @@
         v-if="Object.keys(participantToEdit).length"
         :data="participantToEdit"
         @updated="onParticipantUpdate"
+        @deleteParticipant="deleteParticipant"
     />
 
     <div class="container">
@@ -141,6 +142,14 @@ function handleFileImport(event) {
                     participantsFile.value.value = "";
 
                     formatParticipants();
+
+                    if (participants.value.length > 150) {
+                        emit("errorImportingParticipants", {
+                            status: "warning",
+                            message:
+                                "Import Maximum 150 Participants at a time",
+                        });
+                    }
                 },
             });
         };
@@ -300,12 +309,16 @@ function editParticipant(msisdn) {
     );
 }
 
-function deleteParticipant(msisdn) {
+async function deleteParticipant(msisdn) {
     const idxToDelete = participants.value.findIndex(
         (participant) => participant.msisdn === msisdn
     );
 
     participants.value.splice(idxToDelete, 1);
+    let errorMessage = participantToEdit.value.errorMessage;
+    participantToEdit.value = {};
+
+    if (errorMessage) await postParticipants();
 }
 
 function formatParticipants() {

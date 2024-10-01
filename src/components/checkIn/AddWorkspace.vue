@@ -214,11 +214,11 @@
 import { ref, onMounted } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
-import BelongingModal from "../checkIn/BelongingModal.vue";
+import BelongingModal from "../modals/BelongingModal.vue";
 import {
-    registerVisit,
     API_URL,
     API_KEY,
+    registerVisit,
     visitorCheckInStatus,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
@@ -260,7 +260,7 @@ const props = defineProps({
     },
 });
 
-activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
+activeBreadCrumbs.value = [...props.breadCrumbs, "workspace"];
 
 onMounted(async () => {
     formValidation();
@@ -365,10 +365,10 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
     // require values for the submittion of the form
     const visitData = {
         visitor_id: visitorId.value,
-        institution: belongingsAndInstitution.institution.value,
-        items: belongingsAndInstitution.belongings.value,
+        institution: belongingsAndInstitution.institution,
+        items: belongingsAndInstitution.belongings,
         room_id: room.value.id,
-        purpose: "Just Using Workspace",
+        purpose: "Workspace",
     };
 
     const response = await registerVisit(visitData);

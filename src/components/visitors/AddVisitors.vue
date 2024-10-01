@@ -164,22 +164,16 @@
 
                 <!-- ADDRESS -->
                 <div class="col-md-6">
-                    <label for="address" class="form-label is-required"
-                        >Address<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
+                    <label for="address" class="form-label is-required">
+                        Address
+                    </label>
                     <div class="input-group has-validation">
                         <input
                             type="text"
                             class="form-control"
                             id="address"
                             v-model="address"
-                            required
                         />
-                        <div class="invalid-feedback">
-                            Please provide an address.
-                        </div>
                     </div>
                     <div class="helpMessage form-text">
                         Enter descriptive address. For example: Congo Town,
@@ -194,7 +188,6 @@
                     </label>
                     <input
                         class="form-control"
-                        required
                         id="occupation"
                         v-model="occupation"
                         aria-describedby="inputGroupPrepend"
@@ -272,7 +265,6 @@ const onSubmit = async () => {
         !first_name.value ||
         !last_name.value ||
         !msisdn.value ||
-        !address.value ||
         !gender.value
     ) {
         return;

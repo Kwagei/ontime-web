@@ -34,13 +34,8 @@ export const msisdnValidation = (msisdns) => {
     ];
 
     for (const contact of contacts) {
-        if (!contact.startsWith("0")) {
-            if (!contact.startsWith("231")) {
-                return {
-                    valid: false,
-                    message: "Phone number should start with 0",
-                };
-            }
+        if (!contact.startsWith("0") && !contact.startsWith("231")) {
+            contact = "231" + contact;
         }
 
         // Remove country code from the msisdn if added to the msisdn.
@@ -59,7 +54,7 @@ export const msisdnValidation = (msisdns) => {
             contactNumber.startsWith(val)
         );
 
-        // Msisdn range must be 9 digits.
+        // Msisdn range must be 9 digits and a valid code.
         if (contactRange !== 9 || !validCode || !contactNumber) {
             return { valid: false, message: "Invalid phone number!" };
         }

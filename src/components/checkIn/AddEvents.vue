@@ -2,86 +2,7 @@
     <AlertModal :data="alert" />
 
     <!-- BELONGING MODAL -->
-    <div
-        class="modal fade"
-        id="visitModal"
-        tabindex="-1"
-        aria-hidden="true"
-        aria-labelledby="visitModalLabel"
-        style="z-index: 2000"
-    >
-        <div
-            class="modal-dialog modal-lg modal-dialog-centered"
-            id="modal-dialog"
-        >
-            <div class="modal-content rounded">
-                <div class="modal-header">
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        data-bs-placement="bottom"
-                        data-bs-title="Close"
-                    >
-                        <span class="visually-hidden">Close</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="belongings" class="form-label"
-                            >Belongings</label
-                        >
-                        <div class="input-group has-validation">
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="belongings"
-                                aria-describedby="inputGroupPrepend"
-                                v-model="temBelonging"
-                                @keyup.prevent="addBelongings"
-                            />
-                        </div>
-                        <div
-                            v-for="belonging in belongings"
-                            :key="belonging"
-                            @click="deleteBelongings(belonging)"
-                            class="belonging"
-                        >
-                            {{ belonging }}
-                        </div>
-                    </div>
-                    <div class="">
-                        <label for="institution" class="form-label"
-                            >Institution</label
-                        >
-                        <div class="input-group">
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="institution"
-                                aria-describedby="inputGroupPrepend"
-                                v-model="institution"
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button @click="checkParticipantIn" class="btn btn-primary">
-                        Check In
-                    </button>
-
-                    <button
-                        type="button"
-                        class="btn btn-outline-secondary"
-                        data-bs-dismiss="modal"
-                        @click="resetForm"
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <BelongingModal @done="checkParticipantIn" @cancel="resetForm" />
 
     <!-- EVENT PARTICIPANTS TABLE -->
     <div id="visit-view" class="d-flex flex-column container">
@@ -103,7 +24,7 @@
                         for="selectEventInput"
                         class="form-label is-required"
                     >
-                        Select Event:
+                        Ongoing Events
                     </label>
 
                     <div class="w-100 position-relative">
@@ -121,8 +42,22 @@
                         />
 
                         <ul class="dropdown-menu w-100">
-                            <li v-if="!events.length" class="dropdown-item">
+                            <li v-if="noMatch" class="dropdown-item">
+                                <span class="text-primary">No match!</span>
+                            </li>
+                            <li v-if="loading" class="dropdown-item">
+                                Loading...
+                            </li>
+                            <li v-if="noEvents" class="dropdown-item">
                                 No Ongoing Events!
+                            </li>
+                            <li
+                                v-if="errorRetrievingEvents"
+                                class="dropdown-item"
+                            >
+                                <span class="text-danger">
+                                    Unable to load Ongoing Events, try again!
+                                </span>
                             </li>
                             <template v-for="event in events">
                                 <li
@@ -168,6 +103,7 @@
 import { ref, onMounted, watch } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
+import BelongingModal from "../modals/BelongingModal.vue";
 import {
     registerVisit,
     getSingleVisitor,
@@ -319,16 +255,20 @@ const dataTableOptions = ref({
     order: [[0, "desc"]],
 });
 
+// event retrieval flags
+const loading = ref(true);
+const noMatch = ref(false);
+const noEvents = ref(false);
+const errorRetrievingEvents = ref(false);
+
 // visit creation data
 const participant_id = ref("");
 const msisdn = ref("");
 const visitorId = ref("");
 const host_id = ref("");
 const room_id = ref("");
-const institution = ref("");
 const address = ref("");
 const purpose = ref("");
-const belongings = ref([]);
 const room = ref("");
 
 // Modal Data
@@ -343,7 +283,6 @@ const alert = ref({
 const visitor = ref("");
 const participants = ref([]);
 const participant = ref("");
-const temBelonging = ref("");
 const MAX_DETAIL_LEN = 30;
 
 const activeBreadCrumbs = ref([]);
@@ -355,7 +294,7 @@ const props = defineProps({
     },
 });
 
-activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
+activeBreadCrumbs.value = ["check-in", "event"];
 
 // Lifecycle Hooks
 onMounted(async () => {
@@ -432,6 +371,16 @@ const getEventsOptions = async () => {
     try {
         events.value = await getEvents(null, { current: true });
 
+        if (!events.value) {
+            eventTem.value = undefined;
+            loading.value = false;
+            noMatch.value = false;
+            errorRetrievingEvents.value = true;
+
+            return;
+        }
+
+        // format event for drop down
         events.value = events.value.events.map((event) => ({
             id: event.id,
             title: event.title,
@@ -439,14 +388,24 @@ const getEventsOptions = async () => {
             host_id: event.host_id,
         }));
 
+        if (!events.value.length) noEvents.value = true;
+
         eventTem.value = events.value;
+        loading.value = false;
+        noMatch.value = false;
+        errorRetrievingEvents.value = false;
     } catch (error) {
         console.error("Error retrieving users:", error);
+
+        loading.value = false;
+        errorRetrievingEvents.value = true;
+        noMatch.value = false;
+        noEvents.value = false;
     }
 };
 
 // function to validate form before it submit the form
-const checkParticipantIn = async () => {
+const checkParticipantIn = async (belongingsAndInstitution) => {
     if (!msisdn.value || !visitor.value || !purpose.value || !room_id.value) {
         return;
     }
@@ -456,8 +415,8 @@ const checkParticipantIn = async () => {
     // Required values for checking a visitor in
     const visitData = {
         visitor_id: visitorId.value,
-        institution: institution.value,
-        items: belongings.value,
+        institution: belongingsAndInstitution.institution,
+        items: belongingsAndInstitution.belongings,
         room_id: room_id.value,
         host_id: host_id.value,
         purpose: purpose.value,
@@ -473,7 +432,7 @@ const checkParticipantIn = async () => {
     showModal("#alertModal", "#alertModalBody");
     alert.value.status = response.ok ? "success" : "danger";
     alert.value.message = response.result.message;
-    alert.value.pageLink = `/visits`;
+    alert.value.pageLink = response.ok ? `/visits` : "";
 
     if (response.ok) {
         const visitModal = getElement("#visitModal");
@@ -493,23 +452,7 @@ const resetForm = () => {
     msisdn.value = "";
     eventValue.value = "";
     belongings.value = [];
-    temBelonging.value = "";
     institution.value = "";
-};
-
-const addBelongings = (event) => {
-    const { key } = event;
-
-    if (key === "Enter" && temBelonging.value) {
-        if (!belongings.value.includes(temBelonging.value)) {
-            belongings.value.push(temBelonging.value);
-        }
-        temBelonging.value = "";
-    }
-};
-
-const deleteBelongings = (item) => {
-    belongings.value = belongings.value.filter((val) => val !== item);
 };
 
 const participantDetail = async (id) => {
@@ -585,13 +528,19 @@ const updateVisitorVisitStatus = () => {
 watch(
     () => eventValue.value,
     (n) => {
-        events.value = n
-            ? eventTem.value.filter((event) =>
-                  event.title
-                      .toLocaleLowerCase()
-                      .includes(n.toLocaleLowerCase())
-              )
-            : eventTem.value;
+        if (!events.value.length) return;
+
+        const searchResult = eventTem.value.filter((event) =>
+            event.title.toLocaleLowerCase().includes(n.toLocaleLowerCase())
+        );
+
+        if (searchResult.length) {
+            events.value = searchResult;
+            noMatch.value = false;
+        } else {
+            noMatch.value = true;
+            events.value = [];
+        }
     }
 );
 </script>

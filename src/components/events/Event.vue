@@ -13,7 +13,6 @@
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    <!-- Dont' change the margin on this div! -->
     <div v-else class="d-flex flex-column" id="eventContentDiv">
         <EventTitle :title="event.title" />
         <!-- don't change the width on this div -->

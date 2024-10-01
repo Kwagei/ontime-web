@@ -97,11 +97,12 @@
 
                         <!-- GENDER -->
                         <div class="col-md-6">
-                            <label for="gender" class="form-label is-required"
-                                >Gender<span class="visually-hidden">
-                                    (required)</span
-                                ></label
-                            >
+                            <label for="gender" class="form-label is-required">
+                                Gender
+                                <span class="visually-hidden">
+                                    (required)
+                                </span>
+                            </label>
                             <div class="input-group has-validation">
                                 <select
                                     class="form-select"
@@ -152,8 +153,8 @@
                                 </div>
                             </div>
                             <div class="helpMessage form-text">
-                                Phone number should start with 0. For example:
-                                0778675908
+                                Phone number should start with 231. For example:
+                                231778675908
                             </div>
                         </div>
 
@@ -222,14 +223,18 @@
 
                         <!-- SESSION -->
                         <div class="col-md-6">
-                            <label for="session" class="form-label">
+                            <label for="session" class="form-label is-required">
                                 Session
+                                <span class="visually-hidden">
+                                    (required)
+                                </span>
                             </label>
                             <input
                                 type="text"
-                                class="form-control"
+                                class="form-control has-validation"
                                 id="session"
                                 v-model="session"
+                                required
                                 aria-describedby="inputGroupPrepend"
                             />
                             <div class="invalid-feedback">
@@ -240,6 +245,15 @@
                         <div class="col-md-12 d-flex gap-2 justify-content-end">
                             <button type="submit" class="btn btn-primary">
                                 Update
+                            </button>
+
+                            <button
+                                v-if="errorStatus == 409"
+                                type="submit"
+                                class="btn btn-danger"
+                                @click="$emit('deleteParticipant', msisdn)"
+                            >
+                                Delete
                             </button>
 
                             <button
@@ -279,9 +293,10 @@ const gender = ref("");
 const occupation = ref("");
 const session = ref("");
 
-const emit = defineEmits(["updated", "cancel"]);
+const emit = defineEmits(["updated", "deleteParticipant", "cancel"]);
 
 const participantIndex = ref(0);
+const errorStatus = ref(-1);
 const errorMessage = ref();
 
 const validEmail = ref(false);
@@ -294,7 +309,6 @@ function update() {
         !first_name.value ||
         !last_name.value ||
         !msisdn.value ||
-        !address.value ||
         !session.value ||
         !gender.value
     ) {
@@ -370,6 +384,7 @@ const validateEmail = (mail) => {
 };
 
 function initializeFormData() {
+    errorStatus.value = props.data.status;
     errorMessage.value = props.data.errorMessage;
     participantIndex.value = props.data.idx + 1;
 

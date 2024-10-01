@@ -25,7 +25,6 @@ import Visits from "../layouts/Visits.vue";
 import AddMeeting from "@/components/visits/AddMeeting.vue";
 import AddEvents from "@/components/visits/AddEvents.vue";
 import AddWorkspace from "@/components/visits/AddWorkspace.vue";
-import AddVisits from "@/components/visits/AddVisits.vue";
 
 // Users Components
 import Users from "../layouts/Users.vue";

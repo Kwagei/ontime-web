@@ -284,6 +284,7 @@ async function searchVisitors() {
         }&limit=15`;
 
         loading.value = true;
+        visitors.value = [];
 
         let searchedVisitor = await fetch(url, {
             headers: {

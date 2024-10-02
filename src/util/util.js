@@ -19,18 +19,8 @@ export const msisdnValidation = (msisdns) => {
     const contacts = msisdns;
     const serviceCode = [
         "555",
-        "880",
-        "881",
-        "886",
-        "887",
-        "888",
-        "770",
-        "772",
-        "775",
-        "776",
-        "777",
-        "778",
-        "779",
+        "88",
+        "77",
     ];
 
     for (const contact of contacts) {

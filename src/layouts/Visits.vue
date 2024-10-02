@@ -111,7 +111,10 @@ const exportVisits = async (fields) => {
             if (field === "phone_number") {
                 data[field] = `0${visit.msisdn.slice(3)}`;
             } else if (field === "items") {
-                data[field] = visit[field].join(", ");
+                // if items array is empty, pass an empty string
+                if (Array.isArray(visit[field]))
+                    data[field] = visit[field].join(", ");
+                else data[field] = visit[field];
             } else {
                 data[field] = visit[field];
             }

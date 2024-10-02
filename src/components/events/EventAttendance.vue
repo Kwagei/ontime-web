@@ -14,6 +14,9 @@
                 />
             </div>
             <div id="optionsButtonWrapper" class="d-flex" style="gap: 0.521rem">
+                <button class="reloadIcon" @click="reloadTable">
+                    <Icons v-model:icon="reloadIcon" />
+                </button>
                 <button
                     class="btn btn-default border border-2"
                     @click="displayExportModay"
@@ -44,6 +47,7 @@
                     class="display w-100 table"
                     :columns="columns"
                     :options="options"
+                    :key="tableKey"
                     ref="table"
                     v-if="!showError"
                 />
@@ -86,8 +90,10 @@ const props = defineProps({
     eventId: String,
 });
 
+const tableKey = ref(0);
+const reloadIcon = ref("reload");
+
 const eventId = ref(props.eventId);
-const refresh = defineModel("refresh");
 const showError = ref(false);
 const attendanceList = ref("");
 const exportFields = ref([
@@ -104,13 +110,13 @@ const exportTitle = defineModel("exportTitle");
 exportTitle.value = "Event Attendance";
 
 const columns = [
-    { data: "first_name", title: "First Name" },
-    { data: "last_name", title: "Last Name" },
-    { data: "msisdn", title: "Contact" },
-    { data: "address", title: "Address" },
-    { data: "visit_date_time", title: "Time In" },
-    { data: "visit_departure_time", title: "Time Out" },
-    { data: "items", title: "Items" },
+    { data: "first_name", title: "First Name", orderable: false },
+    { data: "last_name", title: "Last Name", orderable: false },
+    { data: "msisdn", title: "Contact", orderable: false },
+    { data: "address", title: "Address", orderable: false },
+    { data: "visit_date_time", title: "Time In", orderable: false },
+    { data: "visit_departure_time", title: "Time Out", orderable: false },
+    { data: "items", title: "Items", orderable: false },
 ];
 
 const options = {
@@ -118,30 +124,24 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/events/${eventId.value}/participants/`,
+        url: `${API_URL}/events/${eventId.value}/attendance/`,
         type: "GET",
         beforeSend: function (xhr) {
             xhr.setRequestHeader("authorization", API_KEY);
         },
         data: (query) => {
-            const order =
-                query.columns[query.order[0].column].data === "date"
-                    ? "date_time"
-                    : query.columns[query.order[0].column].data;
-
             return {
                 start: query.start,
                 limit: query.length,
                 search: query.search.value,
-                sort: order,
+                sort: "date_time",
                 direction: query.order[0].dir,
             };
         },
         dataSrc: (json) => {
             showError.value = false;
-            refresh.value = false;
 
-            const { participants } = json.data;
+            const { participants, totalLength } = json.data;
 
             // format each participant record
             participants.forEach((participant) => {
@@ -178,8 +178,8 @@ const options = {
                 (participant) => participant.participant_id
             );
 
-            json.recordsTotal = attendees.length;
-            json.recordsFiltered = attendees.length;
+            json.recordsTotal = totalLength;
+            json.recordsFiltered = totalLength;
 
             attendanceList.value = attendees;
             return attendees;
@@ -187,11 +187,9 @@ const options = {
         error: (error) => {
             console.log("Error fetching data:", error.responseJSON);
             showError.value = true;
-            refresh.value = false;
         },
     },
     responsive: true,
-    lengthMenu: [50, 100],
     language: {
         searchPlaceholder: "Search ...",
         search: "",
@@ -270,6 +268,11 @@ const exportEventsAttendance = async (fields) => {
 
     csvExport(selectedAttendee);
 };
+
+function reloadTable() {
+    showError.value = false;
+    tableKey.value += 1;
+}
 </script>
 
 <style scoped>
@@ -313,5 +316,14 @@ li {
     font-size: 1rem;
     font-weight: 600;
     padding: 0.75rem 1rem;
+}
+
+.reloadIcon {
+    border: 2px solid black;
+    width: 42.5px;
+    border-radius: 5px;
+}
+.reloadIcon:hover {
+    background-color: #fff;
 }
 </style>

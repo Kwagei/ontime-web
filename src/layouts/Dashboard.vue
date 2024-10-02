@@ -28,7 +28,7 @@
                             >
                                 <span>Today's Visits</span>
                                 <h2>
-                                    {{ todaysVisits || 0 }}
+                                    {{ todaysVisits || "..." }}
                                 </h2>
                             </div>
                         </div>
@@ -48,7 +48,7 @@
                                 class="cards d-flex flex-column align-items-center"
                             >
                                 <span>Today's Events</span>
-                                <h2>{{ todaysEvents }}</h2>
+                                <h2>{{ todaysEvents || "..." }}</h2>
                             </div>
                         </div>
                         <!-- Total Visitors -->
@@ -70,7 +70,7 @@
                                 class="cards d-flex flex-column align-items-center"
                             >
                                 <span>Total Visitors</span>
-                                <h2>{{ totalVisitors }}</h2>
+                                <h2>{{ totalVisitors || "..." }}</h2>
                             </div>
                         </div>
                     </div>

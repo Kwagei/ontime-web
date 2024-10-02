@@ -17,11 +17,7 @@ export const msisdnValidation = (msisdns) => {
     if (!msisdns) return false;
 
     const contacts = msisdns;
-    const serviceCode = [
-        "555",
-        "88",
-        "77",
-    ];
+    const serviceCode = ["555", "88", "77"];
 
     for (const contact of contacts) {
         if (!contact.startsWith("0") && !contact.startsWith("231")) {
@@ -177,7 +173,7 @@ export const formatVisitData = (visits) => {
 
         if (visit.items.length) {
             visit.items = formatItems(visit.items);
-        } else visit.items = "";
+        } else visit.items = [];
 
         if (visit.purpose) {
             const purpose = visit.purpose.split(" ");

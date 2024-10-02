@@ -44,13 +44,21 @@ DataTable.use(DataTablesCore);
 
 const columns = [
     { data: "first_name", title: "First Name" },
-    { data: "middle_name", title: "Middle Name" },
     { data: "last_name", title: "Last Name" },
     { data: "gender", title: "Gender" },
     { data: "email", title: "Email" },
     { data: "msisdn", title: "Contact" },
     { data: "address", title: "Address" },
     { data: "occupation", title: "Occupation" },
+    {
+        data: null,
+        title: "Today's Attendance",
+        render: (data) => {
+            return data.participant_id
+                ? `<span class="text-success fw-bold">Attended</span>`
+                : `<span class="text-danger fw-bold">Not Attended</span>`;
+        },
+    },
 ];
 
 const options = {

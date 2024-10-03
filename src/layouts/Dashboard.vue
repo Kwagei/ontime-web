@@ -115,7 +115,7 @@ import VisitList from "@/components/visits/VisitList.vue";
 import Icons from "@/components/Icons.vue";
 import { onMounted, getCurrentInstance, ref, watch } from "vue";
 import { getVisitors } from "@/assets/js";
-import { hideSidebarOnSmallScreen } from "@/util/util";
+import { getTodaysVisits, hideSidebarOnSmallScreen } from "@/util/util";
 
 const visitIcon = "house";
 const eventIcon = "calendar-event-agenda";
@@ -179,6 +179,15 @@ onMounted(async () => {
     // ensure loader is not showing
     $sectionIsLoading.value = false;
 });
+
+onMounted(() => {
+    initializeTodaysVisits();
+});
+
+async function initializeTodaysVisits() {
+    let tmpTotalVisits = await getTodaysVisits();
+    todaysVisits.value = tmpTotalVisits.totalLength;
+}
 </script>
 
 <style scoped>

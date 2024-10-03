@@ -83,19 +83,8 @@ const options = ref({
 });
 
 import { API_KEY, API_URL, getVisits } from "@/assets/js";
-import { getTodaysVisits } from "@/util/util";
 
 const totalVisits = defineModel("totalVisits");
-const todaysVisits = defineModel("todaysVisits");
-
-onMounted(() => {
-    setTimeout(() => initializeTodaysVisits(), 7000);
-});
-
-async function initializeTodaysVisits() {
-    let tmpTotalVisits = await getTodaysVisits();
-    todaysVisits.value = tmpTotalVisits.totalLength;
-}
 
 watch(totalVisits, async (n) => {
     await fetchVisits(n);

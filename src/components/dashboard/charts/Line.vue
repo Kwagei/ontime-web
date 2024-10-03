@@ -89,7 +89,7 @@ const totalVisits = defineModel("totalVisits");
 const todaysVisits = defineModel("todaysVisits");
 
 onMounted(() => {
-    initializeTodaysVisits();
+    setTimeout(() => initializeTodaysVisits(), 4000);
 });
 
 async function initializeTodaysVisits() {

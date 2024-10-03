@@ -45,20 +45,6 @@
                     </div>
                 </div>
 
-                <!-- MIDDLE NAME -->
-                <div class="col-md-6">
-                    <label for="middle_name" class="form-label"
-                        >Middle name</label
-                    >
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="middle_name"
-                        v-model="middle_name"
-                        aria-describedby="inputGroupPrepend"
-                    />
-                </div>
-
                 <!-- LAST NAME -->
                 <div class="col-md-6">
                     <label for="last_name" class="form-label is-required"
@@ -77,6 +63,109 @@
                         <div class="invalid-feedback">
                             Please provide a last name.
                         </div>
+                    </div>
+                </div>
+
+                <!-- PHONE NUMBER -->
+                <div class="col-md-6">
+                    <label for="phone_number" class="form-label is-required">
+                        Phone number
+                        <span class="visually-hidden"> (required) </span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="tel"
+                            :class="[
+                                validMsisdn && 'validated',
+                                'form-control',
+                            ]"
+                            v-model="msisdn"
+                            id="phone_number"
+                            aria-describedby="inputGroupPrepend"
+                            required
+                            autocomplete="off"
+                        />
+                        <div
+                            :class="[
+                                'invalid-feedback',
+                                validMsisdn && 'show-feedback',
+                            ]"
+                        >
+                            {{ validMsisdnMessage }}
+                        </div>
+                    </div>
+                    <div class="helpMessage form-text">
+                        Phone number should start with 0 or 231. For example:
+                        0778675908 / 231778675908
+                    </div>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="col-md-6">
+                    <label for="email" class="form-label"> Email </label>
+                    <div class="input-group">
+                        <input
+                            type="email"
+                            :class="[validEmail && 'validated', 'form-control']"
+                            v-model="email"
+                            id="email"
+                            aria-describedby="inputGroupPrepend"
+                            autocomplete="off"
+                        />
+                        <div
+                            :class="[
+                                'invalid-feedback',
+                                email && validEmail && 'show-feedback',
+                            ]"
+                        >
+                            {{ validEmailMessage }}
+                        </div>
+                    </div>
+                    <div class="helpMessage form-text">
+                        Enter a valid email address. For example:
+                        john12@gmail.com
+                    </div>
+                </div>
+
+                <!-- ADDRESS -->
+                <div class="col-md-6">
+                    <label for="address" class="form-label"> Address </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="address"
+                            v-model="address"
+                        />
+                    </div>
+                    <div class="helpMessage form-text">
+                        Enter descriptive address. For example: Congo Town,
+                        Adjacent Satcom, Monrovia, Liberia
+                    </div>
+                </div>
+
+                <!-- SESSION -->
+                <div class="col-md-6">
+                    <label for="session" class="form-label is-required">
+                        Session
+                        <span class="visually-hidden"> (required) </span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="session"
+                            v-model="session"
+                            required
+                        />
+
+                        <div class="invalid-feedback">
+                            Please enter session information
+                        </div>
+                    </div>
+                    <div class="helpMessage form-text">
+                        Morning Session, Afternoon Session or Time in the Day of
+                        Session
                     </div>
                 </div>
 
@@ -104,98 +193,6 @@
                     </div>
                 </div>
 
-                <!-- PHONE NUMBER -->
-                <div class="col-md-6">
-                    <label for="phone_number" class="form-label is-required"
-                        >Phone number<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="tel"
-                            :class="[
-                                validMsisdn && 'validated',
-                                'form-control',
-                            ]"
-                            v-model="msisdn"
-                            id="phone_number"
-                            aria-describedby="inputGroupPrepend"
-                            required
-                            autocomplete="off"
-                        />
-                        <div
-                            :class="[
-                                'invalid-feedback',
-                                validMsisdn && 'show-feedback',
-                            ]"
-                        >
-                            {{ validMsisdnMessage }}
-                        </div>
-                    </div>
-                    <div class="helpMessage form-text">
-                        Phone number should start with 0. For example:
-                        0778675908
-                    </div>
-                </div>
-
-                <!-- EMAIL -->
-                <div class="col-md-6">
-                    <label for="email" class="form-label is-required"
-                        >Email<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="email"
-                            :class="[validEmail && 'validated', 'form-control']"
-                            v-model="email"
-                            id="email"
-                            aria-describedby="inputGroupPrepend"
-                            autocomplete="off"
-                            required
-                        />
-                        <div
-                            :class="[
-                                'invalid-feedback',
-                                validEmail && 'show-feedback',
-                            ]"
-                        >
-                            {{ validEmailMessage }}
-                        </div>
-                    </div>
-                    <div class="helpMessage form-text">
-                        Enter a valid email address. For example:
-                        john12@gmail.com
-                    </div>
-                </div>
-
-                <!-- ADDRESS -->
-                <div class="col-md-6">
-                    <label for="address" class="form-label is-required"
-                        >Address<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="address"
-                            v-model="address"
-                            required
-                        />
-                        <div class="invalid-feedback">
-                            Please provide an address.
-                        </div>
-                    </div>
-                    <div class="helpMessage form-text">
-                        Enter descriptive address. For example: Congo Town,
-                        Adjacent Satcom, Monrovia, Liberia
-                    </div>
-                </div>
-
                 <!-- OCCUPATION -->
                 <div class="col-md-6">
                     <label for="occupation" class="form-label">
@@ -208,30 +205,6 @@
                         v-model="occupation"
                         aria-describedby="inputGroupPrepend"
                     />
-                </div>
-
-                <!-- SESSION -->
-                <div class="col-md-6">
-                    <label for="session" class="form-label is-required">
-                        Session
-                        <span class="visually-hidden"> (required) </span>
-                    </label>
-                    <div class="input-group has-validation">
-                        <select
-                            v-model="session"
-                            class="form-select"
-                            id="session"
-                            required
-                        >
-                            <option selected></option>
-                            <option value="morning">Morning</option>
-                            <option value="afternoon">Afternoon</option>
-                        </select>
-
-                        <div class="invalid-feedback">
-                            Please select Morning or Afternoon.
-                        </div>
-                    </div>
                 </div>
 
                 <div class="col-md-12 d-flex justify-content-end gap-2">
@@ -278,7 +251,6 @@ const eventId = route.params.id;
 const breadCrumbs = ["Events", eventId, "Add Participant"];
 
 const first_name = ref("");
-const middle_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
@@ -298,16 +270,13 @@ const onSubmit = async () => {
         !first_name.value ||
         !last_name.value ||
         !msisdn.value ||
-        !email.value ||
-        !session.value ||
-        !address.value
+        !session.value
     ) {
         return;
     }
 
     const participant = {
         first_name: first_name.value,
-        middle_name: middle_name.value,
         last_name: last_name.value,
 
         // format msisdn for backend
@@ -426,11 +395,12 @@ const validateEmail = (mail) => {
 
 const resetForm = () => {
     first_name.value = "";
-    middle_name.value = "";
     last_name.value = "";
     msisdn.value = "";
     email.value = "";
     address.value = "";
+    gender.value = "";
+    session.value = "";
 
     // Remove validation classes
     const form = getElement(".needs-validation");

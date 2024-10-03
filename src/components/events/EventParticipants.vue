@@ -28,6 +28,7 @@ import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
 
 import { API_KEY, API_URL } from "@/assets/js";
+import { capitalize } from "@/util/util";
 
 const router = useRouter();
 const eventId = router.currentRoute.value.params.id;
@@ -100,9 +101,7 @@ const options = {
                     ? `0${participant.msisdn.slice(3)}`
                     : "";
 
-                participant.gender =
-                    participant.gender.charAt(0).toUpperCase() +
-                    participant.gender.slice(1);
+                participant.gender = capitalize(participant.gender);
             });
 
             allParticipants = participants;

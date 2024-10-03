@@ -58,20 +58,6 @@
                             </div>
                         </div>
 
-                        <!-- MIDDLE NAME -->
-                        <div class="col-md-6">
-                            <label for="middle_name" class="form-label"
-                                >Middle name</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="middle_name"
-                                v-model="middle_name"
-                                aria-describedby="inputGroupPrepend"
-                            />
-                        </div>
-
                         <!-- LAST NAME -->
                         <div class="col-md-6">
                             <label
@@ -91,32 +77,6 @@
                                 />
                                 <div class="invalid-feedback">
                                     Please provide a last name.
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- GENDER -->
-                        <div class="col-md-6">
-                            <label for="gender" class="form-label is-required">
-                                Gender
-                                <span class="visually-hidden">
-                                    (required)
-                                </span>
-                            </label>
-                            <div class="input-group has-validation">
-                                <select
-                                    class="form-select"
-                                    aria-label="Default select example"
-                                    required
-                                    id="gender"
-                                    v-model="gender"
-                                >
-                                    <option selected></option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please select a gender.
                                 </div>
                             </div>
                         </div>
@@ -166,7 +126,7 @@
                                     type="email"
                                     v-model="email"
                                     :class="[
-                                        validEmail && 'validated',
+                                        email && validEmail && 'validated',
                                         'form-control',
                                     ]"
                                     id="email"
@@ -185,6 +145,31 @@
                             <div class="helpMessage form-text">
                                 Enter a valid email address. For example:
                                 john12@gmail.com
+                            </div>
+                        </div>
+
+                        <!-- SESSION -->
+                        <div class="col-md-6">
+                            <label for="session" class="form-label is-required">
+                                Session
+                                <span class="visually-hidden">
+                                    (required)
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control has-validation"
+                                id="session"
+                                v-model="session"
+                                required
+                                aria-describedby="inputGroupPrepend"
+                            />
+                            <div class="invalid-feedback">
+                                Please enter session information
+                            </div>
+                            <div class="helpMessage form-text">
+                                Morning Session, Afternoon Session or Time in
+                                the Day of Session
                             </div>
                         </div>
 
@@ -207,6 +192,32 @@
                             </div>
                         </div>
 
+                        <!-- GENDER -->
+                        <div class="col-md-6">
+                            <label for="gender" class="form-label is-required">
+                                Gender
+                                <span class="visually-hidden">
+                                    (required)
+                                </span>
+                            </label>
+                            <div class="input-group has-validation">
+                                <select
+                                    class="form-select"
+                                    aria-label="Default select example"
+                                    required
+                                    id="gender"
+                                    v-model="gender"
+                                >
+                                    <option selected></option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select a gender.
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- OCCUPATION -->
                         <div class="col-md-6">
                             <label for="occupation" class="form-label">
@@ -219,27 +230,6 @@
                                 v-model="occupation"
                                 aria-describedby="inputGroupPrepend"
                             />
-                        </div>
-
-                        <!-- SESSION -->
-                        <div class="col-md-6">
-                            <label for="session" class="form-label is-required">
-                                Session
-                                <span class="visually-hidden">
-                                    (required)
-                                </span>
-                            </label>
-                            <input
-                                type="text"
-                                class="form-control has-validation"
-                                id="session"
-                                v-model="session"
-                                required
-                                aria-describedby="inputGroupPrepend"
-                            />
-                            <div class="invalid-feedback">
-                                Please select a session.
-                            </div>
                         </div>
 
                         <div class="col-md-12 d-flex gap-2 justify-content-end">
@@ -284,7 +274,6 @@ const props = defineProps({
 
 // Participant data
 const first_name = ref("");
-const middle_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
@@ -317,7 +306,6 @@ function update() {
 
     const updatedParticipant = {
         first_name: first_name.value,
-        middle_name: middle_name.value,
         last_name: last_name.value,
         address: address.value,
         email: email.value,
@@ -389,7 +377,6 @@ function initializeFormData() {
     participantIndex.value = props.data.idx + 1;
 
     first_name.value = props.data.participant?.first_name;
-    middle_name.value = props.data.participant?.middle_name;
     last_name.value = props.data.participant?.last_name;
     msisdn.value = props.data.participant?.msisdn;
     email.value = props.data.participant?.email;

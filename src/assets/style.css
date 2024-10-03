@@ -247,3 +247,7 @@ a {
         margin-top: 0 !important;
     }
 }
+
+select.form-select {
+    height: 48px !important;
+}

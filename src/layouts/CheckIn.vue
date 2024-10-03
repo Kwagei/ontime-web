@@ -65,6 +65,10 @@ onMounted(() => {
     width: 15%;
     text-decoration: none;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+.checkInOption:hover {
+    padding: 15px !important;
 }
 
 @media (min-width: 1251px) {

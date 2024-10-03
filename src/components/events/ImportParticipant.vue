@@ -327,14 +327,6 @@ function formatParticipants() {
             true
         );
 
-        // format middle_name if any
-        if (participant.middle_name) {
-            participant.middle_name = removeQuotes(
-                participant.middle_name.trim(),
-                true
-            );
-        }
-
         participant.last_name = removeQuotes(
             participant.last_name.trim(),
             true

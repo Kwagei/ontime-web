@@ -144,7 +144,6 @@ const selectedRow = ref("");
 const columns = [
     { data: "created_at", visible: false },
     { data: "first_name", title: "First name" },
-    { data: "middle_name", title: "Middle name" },
     { data: "last_name", title: "Last name" },
     { data: "msisdn", title: "Phone number" },
     { data: "email", title: "Email" },
@@ -476,7 +475,6 @@ const participantDetail = async (id) => {
     if (!visitorData) {
         const response = await registerVisitor({
             first_name: participant.first_name,
-            middle_name: participant.middle_name,
             last_name: participant.last_name,
             email: participant.email,
             msisdn: participant.msisdn,
@@ -496,9 +494,7 @@ const participantDetail = async (id) => {
     }
 
     // Add first name, add middle name if the visitor has one, and add last name
-    visitor.value = `${visitorData.first_name}${
-        visitorData.middle_name ? visitorData.middle_name + " " : ""
-    } ${visitorData.last_name}`;
+    visitor.value = `${visitorData.first_name} ${visitorData.last_name}`;
 
     visitorId.value = visitorData.id;
     msisdn.value = visitorData.msisdn;

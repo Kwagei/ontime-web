@@ -117,6 +117,7 @@ const options = {
                 query.columns[query.order[0].column].data === "date"
                     ? "date_time"
                     : query.columns[query.order[0].column].data;
+
             return {
                 start: query.start,
                 limit: query.length,

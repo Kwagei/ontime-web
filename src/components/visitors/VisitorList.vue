@@ -51,6 +51,7 @@ import { useRouter } from "vue-router";
 
 import { API_KEY, API_URL } from "@/assets/js/index.js";
 import { formatDateTime } from "@/util/util.js";
+import { capitalize } from "@/util/util";
 
 DataTable.use(DataTablesCore);
 
@@ -59,12 +60,12 @@ const totalVisitors = defineModel("totalVisitors");
 
 const columns = [
     { data: "first_name", title: "First name" },
-    { data: "middle_name", title: "Middle name" },
     { data: "last_name", title: "Last name" },
     { data: "gender", title: "Gender" },
     { data: "msisdn", title: "Phone number" },
     { data: "email", title: "Email" },
     { data: "address", title: "Address" },
+    { data: "occupation", title: "Occupation" },
     { data: "created_at", title: "Creation Date" },
 ];
 
@@ -100,9 +101,7 @@ const options = {
             totalVisitors.value = totalLength;
 
             data.forEach((visitor) => {
-                visitor.gender =
-                    visitor.gender.charAt(0).toUpperCase() +
-                    visitor.gender.slice(1);
+                visitor.gender = capitalize(visitor.gender);
                 visitor.address = formatAddress(visitor.address);
                 visitor.msisdn = `0${visitor.msisdn.slice(3)}`;
                 visitor.created_at = formatDateTime(visitor.created_at, {

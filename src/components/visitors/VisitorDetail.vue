@@ -36,7 +36,6 @@
                                     <div>
                                         <span>
                                             {{ visitorInfo.first_name }}
-                                            {{ visitorInfo?.middle_name }}
                                             {{ visitorInfo.last_name }}
                                         </span>
                                     </div>

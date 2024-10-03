@@ -294,6 +294,7 @@ import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
 import { useRouter } from "vue-router";
 import {
+    capitalize,
     formValidation,
     getElement,
     removeClass,
@@ -485,7 +486,7 @@ onMounted(async () => {
         $("#breadCrumbsOl")[0].innerHTML = `
 			<li style="margin: 10px">
 				<span class="text fw-bold">
-					${mode.charAt(0).toUpperCase() + mode.slice(1)} Event
+					${capitalize(mode)} Event
 				</span>
 			</li>
 		`;

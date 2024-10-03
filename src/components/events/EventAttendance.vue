@@ -76,7 +76,12 @@ import "datatables.net-responsive-dt";
 DataTable.use(DataTablesCore);
 
 // Utility
-import { formatDateTime, formatDepartureTime, showModal } from "@/util/util";
+import {
+    capitalize,
+    formatDateTime,
+    formatDepartureTime,
+    showModal,
+} from "@/util/util";
 import { API_KEY, API_URL, csvExport } from "@/assets/js";
 
 // Components
@@ -103,6 +108,8 @@ const exportFields = ref([
     { name: "Address", selected: false },
     { name: "Time in", selected: false },
     { name: "Time out", selected: false },
+    { name: "Gender", selected: false },
+    { name: "Session", selected: false },
     { name: "Items", selected: false },
 ]);
 
@@ -112,11 +119,12 @@ exportTitle.value = "Event Attendance";
 const columns = [
     { data: "first_name", title: "First Name", orderable: false },
     { data: "last_name", title: "Last Name", orderable: false },
+    { data: "gender", title: "Gender", orderable: false },
     { data: "msisdn", title: "Contact", orderable: false },
     { data: "address", title: "Address", orderable: false },
     { data: "visit_date_time", title: "Time In", orderable: false },
     { data: "visit_departure_time", title: "Time Out", orderable: false },
-    { data: "items", title: "Items", orderable: false },
+    { data: "session", title: "Session", orderable: false },
 ];
 
 const options = {
@@ -145,9 +153,14 @@ const options = {
 
             // format each participant record
             participants.forEach((participant) => {
+                participant.session = capitalize(participant.session);
+
                 participant.msisdn = participant.msisdn
                     ? `0${participant.msisdn.slice(3)}`
                     : "";
+
+                // capitalize first letter of gender
+                participant.gender = capitalize(participant.gender);
 
                 // format visit date time or arrival time if any
                 if (participant.visit_date_time) {

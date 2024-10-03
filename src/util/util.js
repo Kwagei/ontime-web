@@ -335,3 +335,7 @@ export const removeQuotes = (data, isString = false) => {
         return item;
     });
 };
+
+export const capitalize = (str) => {
+    if (str) return str.charAt(0).toUpperCase() + str.slice(1);
+};

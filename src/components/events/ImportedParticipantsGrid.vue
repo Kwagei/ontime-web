@@ -15,7 +15,6 @@
                 v-model="type"
             >
                 <option value="first_name">First Name</option>
-                <option value="middle_name">Middle Name</option>
                 <option value="last_name">Last Name</option>
                 <option value="gender">Gender</option>
                 <option value="email">Email</option>
@@ -53,7 +52,6 @@
                     <div>
                         <span style="font-weight: 600">
                             {{ participant.first_name }}
-                            {{ participant?.middle_name }}
                             {{ participant.last_name }}
                         </span>
                     </div>
@@ -207,6 +205,7 @@ const sortParticipans = (participants) => {
         return 0;
     });
 };
+
 const emit = defineEmits(["edit", "delete"]);
 
 function search() {

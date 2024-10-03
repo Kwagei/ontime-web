@@ -40,20 +40,6 @@
                     </div>
                 </div>
 
-                <!-- MIDDLE NAME -->
-                <div class="col-md-6">
-                    <label for="middle_name" class="form-label"
-                        >Middle name</label
-                    >
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="middle_name"
-                        v-model="middle_name"
-                        aria-describedby="inputGroupPrepend"
-                    />
-                </div>
-
                 <!-- LAST NAME -->
                 <div class="col-md-6">
                     <label for="last_name" class="form-label is-required"
@@ -71,31 +57,6 @@
                         />
                         <div class="invalid-feedback">
                             Please provide a last name.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- GENDER -->
-                <div class="col-md-6">
-                    <label for="gender" class="form-label is-required"
-                        >Gender<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <select
-                            class="form-select"
-                            aria-label="Default select example"
-                            required
-                            id="gender"
-                            v-model="gender"
-                        >
-                            <option selected></option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a gender.
                         </div>
                     </div>
                 </div>
@@ -162,6 +123,44 @@
                     </div>
                 </div>
 
+                <!-- GENDER -->
+                <div class="col-md-6">
+                    <label for="gender" class="form-label is-required"
+                        >Gender<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+                    <div class="input-group has-validation">
+                        <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            required
+                            id="gender"
+                            v-model="gender"
+                        >
+                            <option selected></option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a gender.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OCCUPATION -->
+                <div class="col-md-6">
+                    <label for="occupation" class="form-label">
+                        Occupation
+                    </label>
+                    <input
+                        class="form-control"
+                        id="occupation"
+                        v-model="occupation"
+                        aria-describedby="inputGroupPrepend"
+                    />
+                </div>
+
                 <!-- ADDRESS -->
                 <div class="col-md-6">
                     <label for="address" class="form-label"> Address </label>
@@ -177,19 +176,6 @@
                         Enter descriptive address. For example: Congo Town,
                         Adjacent Satcom, Monrovia, Liberia
                     </div>
-                </div>
-
-                <!-- OCCUPATION -->
-                <div class="col-md-6">
-                    <label for="occupation" class="form-label">
-                        Occupation
-                    </label>
-                    <input
-                        class="form-control"
-                        id="occupation"
-                        v-model="occupation"
-                        aria-describedby="inputGroupPrepend"
-                    />
                 </div>
 
                 <div class="col-md-12 d-flex gap-2 justify-content-end">
@@ -232,7 +218,6 @@ const router = useRouter();
 
 // visitor data
 const first_name = ref("");
-const middle_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
@@ -270,7 +255,6 @@ const onSubmit = async () => {
 
     const visitor = {
         first_name: first_name.value,
-        middle_name: middle_name.value,
         last_name: last_name.value,
 
         // format msisdn for backend
@@ -306,7 +290,6 @@ const fetchVisitor = async () => {
 
         // update references for input fields
         first_name.value = visitorInfo.first_name;
-        middle_name.value = visitorInfo.middle_name;
         last_name.value = visitorInfo.last_name;
         msisdn.value = visitorInfo.msisdn;
         email.value = visitorInfo.email;
@@ -370,7 +353,6 @@ const validateEmail = (mail) => {
 
 const resetForm = () => {
     first_name.value = "";
-    middle_name.value = "";
     last_name.value = "";
     msisdn.value = "";
     email.value = "";

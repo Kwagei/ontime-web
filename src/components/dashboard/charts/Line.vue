@@ -88,8 +88,8 @@ import { getTodaysVisits } from "@/util/util";
 const totalVisits = defineModel("totalVisits");
 const todaysVisits = defineModel("todaysVisits");
 
-onMounted(() => {
-    setTimeout(() => initializeTodaysVisits(), 4000);
+onMounted(async () => {
+    await initializeTodaysVisits();
 });
 
 async function initializeTodaysVisits() {

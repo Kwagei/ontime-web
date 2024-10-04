@@ -32,6 +32,7 @@
                             <input
                                 type="text"
                                 class="form-control"
+                                autofocus="true"
                                 id="belongings"
                                 aria-describedby="inputGroupPrepend"
                                 v-model="temBelonging"

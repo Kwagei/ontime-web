@@ -4,8 +4,17 @@
             <div id="dashboardFirstChild" class="row gap-4 my-3">
                 <div id="stats">
                     <div
-                        class="d-flex justify-content-end align-items-end w-100 pb-3"
+                        class="d-flex justify-content-end align-items-end w-100 pb-3 gap-2"
                     >
+                        <button
+                            @click="router.go(0)"
+                            class="btn border border-2"
+                        >
+                            <Icons
+                                style="width: 20px"
+                                v-model:icon="reloadIcon"
+                            />
+                        </button>
                         <router-link :to="{ name: 'check-in' }">
                             <button class="btn btn-primary">Check In</button>
                         </router-link>
@@ -109,7 +118,7 @@
 import Bar from "../components/dashboard/charts/Bar.vue";
 import Line from "../components/dashboard/charts/Line.vue";
 import Calender from "../components/dashboard/Calender.vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 
 import VisitList from "@/components/visits/VisitList.vue";
 import Icons from "@/components/Icons.vue";
@@ -117,9 +126,12 @@ import { onMounted, getCurrentInstance, ref, watch } from "vue";
 import { getVisitors } from "@/assets/js";
 import { hideSidebarOnSmallScreen } from "@/util/util";
 
+const router = useRouter();
+
 const visitIcon = "house";
 const eventIcon = "calendar-event-agenda";
 const visitorIcon = "collective-class-training";
+const reloadIcon = ref("reload");
 
 const totalVisits = defineModel("totalVisits");
 const totalVisitors = defineModel("totalVisitors");

@@ -74,7 +74,7 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/visitors`,
+        url: `${API_URL}visitors`,
         type: "GET",
         beforeSend: function (xhr) {
             xhr.setRequestHeader("Authorization", API_KEY);

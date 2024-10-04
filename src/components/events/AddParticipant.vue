@@ -37,6 +37,7 @@
                             id="first_name"
                             aria-describedby="inputGroupPrepend"
                             v-model="first_name"
+                            autofocus="true"
                             required
                         />
                         <div class="invalid-feedback">
@@ -401,6 +402,7 @@ const resetForm = () => {
     address.value = "";
     gender.value = "";
     session.value = "";
+    occupation.value = "";
 
     // Remove validation classes
     const form = getElement(".needs-validation");

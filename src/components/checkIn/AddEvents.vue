@@ -37,6 +37,7 @@
                             aria-expanded="false"
                             data-bs-toggle="dropdown"
                             autocomplete="off"
+                            autofocus="true"
                             placeholder="Select Event..."
                         />
 
@@ -90,6 +91,7 @@
                     :options="dataTableOptions"
                     ref="table"
                 />
+
                 <h3 class="mt-5 text-center fw-bold" v-if="showError">
                     Unable to load event participants, try again!
                 </h3>
@@ -118,6 +120,7 @@ import {
     getElement,
     removeClass,
     showModal,
+    formatMsisdn,
 } from "@/util/util";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -147,15 +150,19 @@ const columns = [
     { data: "last_name", title: "Last name" },
     { data: "msisdn", title: "Phone number" },
     { data: "email", title: "Email" },
-    { data: "address", title: "Address" },
+    { data: "session", title: "Session" },
     {
         data: null,
         title: "Visited Today",
         className: "text-center",
         render: (data) => {
             return data.participant_id
-                ? `<span class="text-success fw-bold">Yes</span>`
-                : `<span class="text-danger fw-bold">No</span>`;
+                ? `<div class="w-100 text-center text-success fw-bold">
+					  <span>Yes</span>
+				   </div>`
+                : `<div class="w-100 text-center text-danger fw-bold">
+					  <span>No</span>
+				  </div>`;
         },
     },
     {
@@ -226,13 +233,13 @@ const dataTableOptions = ref({
         emptyTable: `
 			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4" >
 				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"/></svg>
-				No participants for this event
+				No match!
 			</div>
 		`,
         zeroRecords: `
 			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4" >
 				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"/></svg>
-				No participants for this event
+				No Event Participant
 			</div>
 		`,
         loadingRecords: `
@@ -334,10 +341,9 @@ function checkInBtnClicked(row, data) {
         alert.value.status = "warning";
         alert.value.message = `Visitor ${data.first_name} ${data.last_name} is still checked in`;
         alert.value.pageLink = `/visits`;
-    } else {
-        // otherwise check visitor in
-        showModal("#visitModal", "#modal-dialog");
-
+    }
+    // otherwise check visitor in
+    else {
         participantDetail(data.id);
 
         participant.value = row;
@@ -417,6 +423,7 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
     // Required values for checking a visitor in
     const visitData = {
         visitor_id: visitorId.value,
+        event_id: eventID.value,
         institution: belongingsAndInstitution.institution,
         items: belongingsAndInstitution.belongings,
         room_id: room_id.value,
@@ -430,25 +437,31 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
     const response = await registerVisit(visitData);
     $sectionIsLoading.value = false;
 
-    // Reload data table to update the departure time of the participant that was just checked in
-    dataTableKey.value += 1;
-
-    showModal("#alertModal", "#alertModalBody");
-    alert.value.status = response.ok ? "success" : "danger";
-    alert.value.message = response.result.message;
-    alert.value.pageLink = response.ok ? `/visits` : "";
+    // hide belongings and institution modal
+    const visitModal = getElement("#visitModal");
+    removeClass(visitModal, "show");
+    visitModal.style.display = "none";
 
     if (response.ok) {
-        const visitModal = getElement("#visitModal");
-        removeClass(visitModal, "show");
-        visitModal.style.display = "none";
-
         // Update visitor status for last visit
         updateVisitorVisitStatus();
 
+        // Reload data table to update the departure time of the participant that was just checked in
+        dataTableKey.value += 1;
+
+        alert.value.message = "Visitor Checked In";
+        alert.value.status = "success";
+        alert.value.pageLink = response.ok ? `/visits` : "";
+
         // Reset form if the response is successful
         resetForm();
+    } else {
+        alert.value.status = "danger";
+        alert.value.message = response.result.message;
     }
+
+    // show alert modal
+    showModal();
 };
 
 const resetForm = () => {
@@ -469,7 +482,9 @@ const participantDetail = async (id) => {
     participant_id.value = participant.id;
 
     // Check if the visitor exists
-    let visitorData = await getSingleVisitor({ msisdn: participant.msisdn });
+    let visitorData = await getSingleVisitor({
+        msisdn: participant.visitor_id || formatMsisdn(participant.msisdn),
+    });
 
     // Create visitor if this participant is not already a visitor.
     if (!visitorData) {
@@ -493,6 +508,19 @@ const participantDetail = async (id) => {
         }
     }
 
+    // further ensure which exact participant the visitor we're checking is
+    else if (
+        participant.visitor_id &&
+        participant.visitor_id != visitorData.id
+    ) {
+        alert.value.message =
+            "Duplicated Phone Number - A Visitor already exists with this phone number!";
+        alert.value.status = "danger";
+
+        showModal();
+        return;
+    }
+
     // Add first name, add middle name if the visitor has one, and add last name
     visitor.value = `${visitorData.first_name} ${visitorData.last_name}`;
 
@@ -500,6 +528,9 @@ const participantDetail = async (id) => {
     msisdn.value = visitorData.msisdn;
     room_id.value = event.room_id;
     host_id.value = event.host_id;
+
+    // show institution and belongings modal to complete check in
+    showModal("#visitModal", "#modal-dialog");
 };
 
 function formatAddress(address) {

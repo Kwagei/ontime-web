@@ -31,6 +31,7 @@
                             class="form-control"
                             id="first_name"
                             aria-describedby="inputGroupPrepend"
+                            autofocus="true"
                             v-model="first_name"
                             required
                         />
@@ -70,12 +71,12 @@
                     >
                     <div class="input-group has-validation">
                         <input
+                            v-model="msisdn"
                             type="tel"
                             :class="[
                                 validMsisdn && 'validated',
                                 'form-control',
                             ]"
-                            v-model="msisdn"
                             id="phone_number"
                             aria-describedby="inputGroupPrepend"
                             required
@@ -111,7 +112,7 @@
                         <div
                             :class="[
                                 'invalid-feedback',
-                                validEmail && 'show-feedback',
+                                email && validEmail && 'show-feedback',
                             ]"
                         >
                             {{ validEmailMessage }}

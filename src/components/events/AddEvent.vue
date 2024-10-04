@@ -41,6 +41,7 @@
                             id="title"
                             aria-describedby="inputGroupPrepend"
                             v-model="title"
+                            autofocus="true"
                             required
                         />
 

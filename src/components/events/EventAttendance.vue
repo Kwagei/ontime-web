@@ -376,10 +376,21 @@ watch(
 
         // ensure selected date is today or earlier
         if (new Date(newVal) > new Date()) {
-            alert.value.message = "Please select day on or before today";
+            alert.value.message = "";
             alert.value.status = "danger";
 
             showModal();
+
+            $("#alertMessageParagraph").text(
+                "Please select day on or before today on which this event occurred!"
+            );
+            $("#alertStatusDiv").removeClass("alert-undefined");
+            $("#alertStatusDiv").addClass("alert-danger");
+            $("#alertModalBody > .modal-content").removeClass(
+                "border-undefined"
+            );
+            $("#alertModalBody > .modal-content").addClass("border-danger");
+
             return;
         }
 

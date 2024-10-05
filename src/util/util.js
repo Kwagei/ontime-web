@@ -292,6 +292,7 @@ export async function getTodaysVisits() {
         },
         error: (err) => {
             console.error("error fetching today's visits: ", err);
+            todaysVisits = "error";
         },
     });
 

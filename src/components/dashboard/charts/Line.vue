@@ -19,7 +19,7 @@
     <Line :data="chartData" :options="options" />
 </template>
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { Line } from "vue-chartjs";
 import {
     Chart as ChartJS,
@@ -83,19 +83,8 @@ const options = ref({
 });
 
 import { API_KEY, API_URL, getVisits } from "@/assets/js";
-import { getTodaysVisits } from "@/util/util";
 
 const totalVisits = defineModel("totalVisits");
-const todaysVisits = defineModel("todaysVisits");
-
-onMounted(async () => {
-    setTimeout(() => initializeTodaysVisits(), 4000);
-});
-
-async function initializeTodaysVisits() {
-    let tmpTotalVisits = await getTodaysVisits();
-    todaysVisits.value = tmpTotalVisits.totalLength;
-}
 
 watch(totalVisits, async (n) => {
     await fetchVisits(n);

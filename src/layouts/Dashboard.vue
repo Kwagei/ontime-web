@@ -124,7 +124,7 @@ import VisitList from "@/components/visits/VisitList.vue";
 import Icons from "@/components/Icons.vue";
 import { onMounted, getCurrentInstance, ref, watch } from "vue";
 import { getVisitors } from "@/assets/js";
-import { hideSidebarOnSmallScreen } from "@/util/util";
+import { getTodaysVisits, hideSidebarOnSmallScreen } from "@/util/util";
 
 const router = useRouter();
 
@@ -190,7 +190,19 @@ onMounted(async () => {
 
     // ensure loader is not showing
     $sectionIsLoading.value = false;
+
+    setTimeout(() => initializeTodaysVisits(), 3000);
 });
+
+async function initializeTodaysVisits() {
+    const data = await getTodaysVisits();
+
+    if (data == "error") {
+        return initializeTodaysVisits();
+    }
+
+    todaysVisits.value = data.totalLength;
+}
 </script>
 
 <style scoped>

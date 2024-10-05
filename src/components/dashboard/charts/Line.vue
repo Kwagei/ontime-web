@@ -94,10 +94,6 @@ onMounted(async () => {
 
 async function initializeTodaysVisits() {
     let tmpTotalVisits = await getTodaysVisits();
-    console.log("retrieved: ", tmpTotalVisits);
-
-    if (tmpTotalVisits == "error") return initializeTodaysVisits();
-
     todaysVisits.value = tmpTotalVisits.totalLength;
 }
 

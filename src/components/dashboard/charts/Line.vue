@@ -19,7 +19,7 @@
     <Line :data="chartData" :options="options" />
 </template>
 <script setup>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { Line } from "vue-chartjs";
 import {
     Chart as ChartJS,
@@ -30,6 +30,9 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
+
+import { API_KEY, API_URL, getVisits } from "@/assets/js";
+import { getTodaysVisits } from "@/util/util";
 
 // Register the Chart.js components
 ChartJS.register(
@@ -82,9 +85,21 @@ const options = ref({
     },
 });
 
-import { API_KEY, API_URL, getVisits } from "@/assets/js";
-
 const totalVisits = defineModel("totalVisits");
+const todaysVisits = defineModel("todaysVisits");
+
+onMounted(async () => {
+    setTimeout(() => initializeTodaysVisits(), 4000);
+});
+
+async function initializeTodaysVisits() {
+    let tmpTotalVisits = await getTodaysVisits();
+    console.log("retrieved: ", tmpTotalVisits);
+
+    if (tmpTotalVisits == "error") return initializeTodaysVisits();
+
+    todaysVisits.value = tmpTotalVisits.totalLength;
+}
 
 watch(totalVisits, async (n) => {
     await fetchVisits(n);

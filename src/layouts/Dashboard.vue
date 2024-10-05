@@ -124,7 +124,7 @@ import VisitList from "@/components/visits/VisitList.vue";
 import Icons from "@/components/Icons.vue";
 import { onMounted, getCurrentInstance, ref, watch } from "vue";
 import { getVisitors } from "@/assets/js";
-import { getTodaysVisits, hideSidebarOnSmallScreen } from "@/util/util";
+import { hideSidebarOnSmallScreen } from "@/util/util";
 
 const router = useRouter();
 
@@ -135,9 +135,9 @@ const reloadIcon = ref("reload");
 
 const totalVisits = defineModel("totalVisits");
 const totalVisitors = defineModel("totalVisitors");
-const todaysVisits = defineModel("todaysVisits");
 const todaysEvents = ref(0);
 const allEvents = defineModel("allEvents");
+
 allEvents.value = [];
 const filterDates = ref({
     from: "",
@@ -190,19 +190,7 @@ onMounted(async () => {
 
     // ensure loader is not showing
     $sectionIsLoading.value = false;
-
-    setTimeout(() => initializeTodaysVisits(), 3000);
 });
-
-async function initializeTodaysVisits() {
-    const data = await getTodaysVisits();
-
-    if (data == "error") {
-        return initializeTodaysVisits();
-    }
-
-    todaysVisits.value = data.totalLength;
-}
 </script>
 
 <style scoped>

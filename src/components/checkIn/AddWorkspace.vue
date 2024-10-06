@@ -420,6 +420,12 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
     }
 
     $sectionIsLoading.value = false;
+
+    // hide belongings and institution modal
+    const visitModal = getElement("#visitModal");
+    removeClass(visitModal, "show");
+    visitModal.style.display = "none";
+
     showModal();
 };
 

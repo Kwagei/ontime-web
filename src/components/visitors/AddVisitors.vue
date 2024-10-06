@@ -1,5 +1,8 @@
 <template>
     <AlertModal :data="alert" />
+
+    <BelongingModal @done="checkInVisitor" :getRoom="true" />
+
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             id="entitiesBreadCrumbsWrapper"
@@ -182,6 +185,14 @@
                 <div class="col-md-12 d-flex gap-2 justify-content-end">
                     <button type="submit" class="btn btn-primary">Save</button>
                     <button
+                        type="submit"
+                        v-if="formStatus.startsWith('new')"
+                        @click="action = 'checkIn'"
+                        class="btn btn-success"
+                    >
+                        Check In
+                    </button>
+                    <button
                         class="btn btn-outline-secondary"
                         type="button"
                         @click="router.back()"
@@ -199,10 +210,14 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
+import BelongingModal from "../modals/BelongingModal.vue";
 import {
     registerVisitor,
     editVisitor,
     getSingleVisitor,
+    API_URL,
+    API_KEY,
+    registerVisit,
 } from "@/assets/js/index.js";
 import {
     msisdnValidation,
@@ -234,6 +249,9 @@ const alert = ref({
 });
 
 let visitorInfo;
+const createdVisitor = ref({});
+
+const action = ref("");
 
 // Form status and breadcrumbs
 const activeBreadCrumbs = ref([]);
@@ -280,9 +298,38 @@ const onSubmit = async () => {
 
     // Reset form if the response is successful
     if (response.ok) {
-        resetForm();
+        if (action.value == "checkIn") {
+            createdVisitor.value = response.result.data[0];
+            showModal("#visitModal", "#modal-dialog");
+        } else resetForm();
     }
 };
+
+async function checkInVisitor(modalResponse) {
+    const checkInData = {
+        visitor_id: createdVisitor.value.id,
+        purpose: "Workspace",
+        room_id: modalResponse.selectedRoomId,
+        institution: modalResponse.institution,
+        items: modalResponse.belongings,
+    };
+
+    const checkInResponse = await registerVisit(checkInData);
+
+    alert.value.message = checkInResponse.result.message;
+    alert.value.status = checkInResponse.ok ? "success" : "danger";
+
+    showModal();
+
+    if (checkInResponse.ok) {
+        // hide belongings and institution modal
+        const visitModal = getElement("#visitModal");
+        removeClass(visitModal, "show");
+        visitModal.style.display = "none";
+
+        resetForm();
+    }
+}
 
 const fetchVisitor = async () => {
     if (formStatus.startsWith("edit")) {
@@ -353,12 +400,15 @@ const validateEmail = (mail) => {
 };
 
 const resetForm = () => {
+    return;
+
     first_name.value = "";
     last_name.value = "";
     msisdn.value = "";
     email.value = "";
     address.value = "";
     gender.value = "";
+    occupation.value = "";
 
     // Remove validation classes
     const form = getElement(".needs-validation");

@@ -35,6 +35,7 @@
             />
             <AddParticipant
                 v-if="state == 'addParticipant'"
+                :event="event"
                 @switch="switchState"
                 @participantAdded="setModalData"
                 @errorCreatingParticipant="setModalData"

@@ -19,7 +19,7 @@ export const msisdnValidation = (msisdns) => {
     let contacts = msisdns;
     const serviceCode = ["555", "88", "77"];
 
-    for (const contact of contacts) {
+    for (let contact of contacts) {
         if (!contact.startsWith("0") && !contact.startsWith("231")) {
             contact = "231" + contact;
         }

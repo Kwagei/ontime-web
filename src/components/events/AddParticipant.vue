@@ -1,12 +1,8 @@
 <template>
-    <AlertModal
-        :data="{
-            message: message,
-            status: status,
-            pageLink: pageLink,
-            title: title,
-        }"
-    />
+    <AlertModal :data="alert" />
+
+    <BelongingModal @done="checkInParticipant" />
+
     <div id="addParticipantFormContainer" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -147,17 +143,13 @@
 
                 <!-- SESSION -->
                 <div class="col-md-6">
-                    <label for="session" class="form-label is-required">
-                        Session
-                        <span class="visually-hidden"> (required) </span>
-                    </label>
+                    <label for="session" class="form-label"> Session </label>
                     <div class="input-group has-validation">
                         <input
                             type="text"
                             class="form-control"
                             id="session"
                             v-model="session"
-                            required
                         />
 
                         <div class="invalid-feedback">
@@ -211,6 +203,13 @@
                 <div class="col-md-12 d-flex justify-content-end gap-2">
                     <button type="submit" class="btn btn-primary">Save</button>
                     <button
+                        type="submit"
+                        @click="action = 'checkIn'"
+                        class="btn btn-success"
+                    >
+                        Check In
+                    </button>
+                    <button
                         @click="$emit('switch', 'details')"
                         class="btn btn-outline-secondary"
                     >
@@ -224,12 +223,19 @@
 
 <script setup>
 import AlertModal from "../modals/AlertModal.vue";
+import BreadCrumbs from "../BreadCrumbs.vue";
+import BelongingModal from "../modals/BelongingModal.vue";
 
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, getCurrentInstance } from "vue";
 import { useRoute } from "vue-router";
 import $ from "jquery";
 
-import { API_KEY, API_URL } from "@/assets/js/index.js";
+import {
+    API_KEY,
+    API_URL,
+    registerVisit,
+    registerVisitor,
+} from "@/assets/js/index.js";
 import {
     msisdnValidation,
     emailValidation,
@@ -240,11 +246,15 @@ import {
     formValidation,
 } from "@/util/util.js";
 
-import BreadCrumbs from "../BreadCrumbs.vue";
-
 const props = defineProps({
     breadCrumbs: Object,
+    event: Object,
 });
+
+const action = ref("");
+const createdParticipant = ref({});
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
 
 // Route and State
 const route = useRoute();
@@ -260,19 +270,21 @@ const gender = ref("");
 const occupation = ref("");
 const session = ref("");
 
-const status = ref("");
-const title = ref("");
-const message = ref("");
-const pageLink = ref("");
+const alert = ref({
+    status: "",
+    title: "",
+    message: "",
+    pageLink: "",
+});
+
+const validEmail = ref(false);
+const validMsisdn = ref(false);
+const validMsisdnMessage = ref("Please provide a phone number");
+const validEmailMessage = ref("Please provide a valid email address");
 
 // Functions
 const onSubmit = async () => {
-    if (
-        !first_name.value ||
-        !last_name.value ||
-        !msisdn.value ||
-        !session.value
-    ) {
+    if (!first_name.value || !last_name.value || !gender.value) {
         return;
     }
 
@@ -299,7 +311,9 @@ const onSubmit = async () => {
         event_participants: [participant],
     };
 
-    $.ajax({
+    $sectionIsLoading.value = true;
+
+    await $.ajax({
         url: `${API_URL}event_participants`,
         type: "POST",
         data: body,
@@ -307,13 +321,18 @@ const onSubmit = async () => {
             authorization: API_KEY,
         },
         success: (data) => {
-            status.value = "success";
-            message.value = data.message;
-            title.value = data.message;
-            pageLink.value = `/events/${eventId}`;
+            alert.value.status = "success";
+            alert.value.message = data.message;
+            alert.value.title = data.message;
+            alert.value.pageLink = `/events/${eventId}`;
 
             showModal();
-            resetForm();
+            $sectionIsLoading.value = false;
+
+            if (action.value == "checkIn") {
+                createdParticipant.value = data.data[0];
+                showModal("#visitModal", "#modal-dialog");
+            } else resetForm();
 
             setTimeout(() => {
                 $("#alertMessageParagraph").text(data.message);
@@ -321,13 +340,21 @@ const onSubmit = async () => {
                 $("#alertStatusDiv").removeClass("alert-warning");
                 $("#alertStatusDiv").removeClass("alert-danger");
                 $("#alertStatusDiv").addClass("alert-success");
+                $("#alertModalBody > .modal-content").removeClass(
+                    "border-undefined"
+                );
+                $("#alertModalBody > .modal-content").addClass(
+                    "border-success"
+                );
             }, 150);
         },
         error: (error) => {
-            pageLink.value = "danger";
-            title.value = error.responseJSON.message;
-            message.value = error.responseJSON.message;
-            status.value = "";
+            $sectionIsLoading.value = false;
+
+            alert.value.pageLink = "danger";
+            alert.value.title = error.responseJSON.message;
+            alert.value.message = error.responseJSON.message;
+            alert.value.status = "";
 
             showModal();
 
@@ -337,15 +364,95 @@ const onSubmit = async () => {
                 $("#alertStatusDiv").removeClass("alert-warning");
                 $("#alertStatusDiv").removeClass("alert-danger");
                 $("#alertStatusDiv").addClass("alert-danger");
+                $("#alertModalBody").removeClass("border-undefined");
+                $("#alertModalBody").addClass("border-success");
             }, 150);
         },
     });
 };
 
-const validEmail = ref(false);
-const validMsisdn = ref(false);
-const validMsisdnMessage = ref("Please provide a phone number");
-const validEmailMessage = ref("Please provide a valid email address");
+async function checkInParticipant(modalResponse) {
+    $sectionIsLoading.value = true;
+
+    // create visitor
+    const createdVisitor = await registerVisitor({
+        first_name: createdParticipant.value.first_name,
+        last_name: createdParticipant.value.last_name,
+        msisdn: createdParticipant.value.msisdn,
+        email: createdParticipant.value.email,
+        address: createdParticipant.value.address,
+        gender: createdParticipant.value.gender,
+        occupation: createdParticipant.value.occupation,
+    });
+
+    // handle error creating visitor
+    if (!createdVisitor.ok) {
+        showModal();
+
+        setTimeout(() => {
+            $("#alertMessageParagraph").text(data.message);
+            $("#alertStatusDiv").removeClass("alert-undefined");
+            $("#alertStatusDiv").removeClass("alert-warning");
+            $("#alertStatusDiv").removeClass("alert-danger");
+            $("#alertStatusDiv").addClass("alert-danger");
+            $("#alertModalBody > .modal-content").removeClass(
+                "border-undefined"
+            );
+            $("#alertModalBody > .modal-content").addClass("border-danger");
+        }, 150);
+
+        return;
+    }
+
+    // format visit data
+    const checkInData = {
+        visitor_id: createdVisitor.result.data[0].id,
+        purpose: props.event?.title,
+        room_id: props.event?.room_id,
+        institution: modalResponse.institution,
+        items: modalResponse.belongings,
+    };
+
+    // check participant in finally
+    const checkInResponse = await registerVisit(checkInData);
+
+    showModal();
+
+    $sectionIsLoading.value = false;
+
+    if (checkInResponse.ok) {
+        setTimeout(() => {
+            $("#alertMessageParagraph").text(checkInResponse.result.message);
+            $("#alertStatusDiv").removeClass("alert-undefined");
+            $("#alertStatusDiv").removeClass("alert-warning");
+            $("#alertStatusDiv").removeClass("alert-danger");
+            $("#alertStatusDiv").addClass("alert-success");
+            $("#alertModalBody > .modal-content").removeClass(
+                "border-undefined"
+            );
+            $("#alertModalBody > .modal-content").addClass("border-success");
+        }, 150);
+
+        // hide belongings and institution modal
+        const visitModal = getElement("#visitModal");
+        removeClass(visitModal, "show");
+        visitModal.style.display = "none";
+
+        resetForm();
+    } else {
+        setTimeout(() => {
+            $("#alertMessageParagraph").text(checkInResponse.result.message);
+            $("#alertStatusDiv").removeClass("alert-undefined");
+            $("#alertStatusDiv").removeClass("alert-warning");
+            $("#alertStatusDiv").removeClass("alert-danger");
+            $("#alertStatusDiv").addClass("alert-danger");
+            $("#alertModalBody > .modal-content").removeClass(
+                "border-undefined"
+            );
+            $("#alertModalBody > .modal-content").addClass("border-danger");
+        }, 150);
+    }
+}
 
 const validateMsisdn = (number) => {
     if (!number) {

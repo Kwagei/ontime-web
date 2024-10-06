@@ -297,6 +297,7 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    getRoom: Boolean,
 });
 
 activeBreadCrumbs.value = ["check-in", "event"];
@@ -315,7 +316,7 @@ onMounted(async () => {
         setTimeout(
             () =>
                 checkInBtnClicked(selectedRow.value, selectedParticipant.value),
-            250
+            150
         );
     });
 

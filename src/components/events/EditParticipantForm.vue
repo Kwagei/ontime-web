@@ -150,18 +150,14 @@
 
                         <!-- SESSION -->
                         <div class="col-md-6">
-                            <label for="session" class="form-label is-required">
+                            <label for="session" class="form-label">
                                 Session
-                                <span class="visually-hidden">
-                                    (required)
-                                </span>
                             </label>
                             <input
                                 type="text"
                                 class="form-control has-validation"
                                 id="session"
                                 v-model="session"
-                                required
                                 aria-describedby="inputGroupPrepend"
                             />
                             <div class="invalid-feedback">
@@ -298,7 +294,6 @@ function update() {
         !first_name.value ||
         !last_name.value ||
         !msisdn.value ||
-        !session.value ||
         !gender.value
     ) {
         return;

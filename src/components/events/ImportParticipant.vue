@@ -240,8 +240,7 @@ function removeEmptyRows(data) {
             participant.first_name ||
             participant.last_name ||
             participant.msisdn ||
-            participant.email ||
-            participant.session
+            participant.email
     );
 }
 
@@ -275,12 +274,6 @@ function validateParticipantsCsvFile(result) {
     // ensure gender column exists
     if (!fields.includes("gender")) {
         errorAlertMessage.value = "`gender` column required but not found";
-        return false;
-    }
-
-    // ensure session column exists
-    if (!fields.includes("session")) {
-        errorAlertMessage.value = "`session` column required but not found";
         return false;
     }
 
@@ -336,7 +329,12 @@ function formatParticipants() {
             true
         );
 
-        participant.session = removeQuotes(participant.session.trim(), true);
+        if (participant.session) {
+            participant.session = removeQuotes(
+                participant.session.trim(),
+                true
+            );
+        }
 
         // format occupation if any
         if (participant.occupation) {

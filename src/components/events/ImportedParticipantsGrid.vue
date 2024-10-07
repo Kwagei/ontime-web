@@ -84,7 +84,7 @@
                         </span>
                     </div>
 
-                    <div>
+                    <div v-if="participant.msisdn">
                         <span>
                             <Icons
                                 style="width: 1.2rem"
@@ -102,7 +102,7 @@
                         </span>
                     </div>
 
-                    <div>
+                    <div v-if="participant.gender">
                         <span>
                             <Icons
                                 style="width: 1.2rem"
@@ -140,7 +140,7 @@
                         </span>
                     </div>
 
-                    <div>
+                    <div v-if="participant.session">
                         <span>
                             <Icons
                                 style="width: 1.2rem"
@@ -256,7 +256,6 @@ function search() {
 .participantGridItem {
     max-width: 300px;
     min-width: 300px;
-    min-height: 280px;
 }
 
 .boxShadow {

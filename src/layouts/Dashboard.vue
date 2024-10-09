@@ -37,7 +37,11 @@
                             >
                                 <span>Today's Visits</span>
                                 <h2>
-                                    {{ todaysVisits || "..." }}
+                                    {{
+                                        Number(todaysVisits) >= 0
+                                            ? todaysVisits
+                                            : "..."
+                                    }}
                                 </h2>
                             </div>
                         </div>
@@ -103,7 +107,7 @@
             <h4>Last 5 Check In</h4>
             <div class="row">
                 <div class="col p-0" id="dashboardTable">
-                    <VisitList
+                    <VisitTable
                         v-model:totalVisits="totalVisits"
                         v-model:filterDates="filterDates"
                         v-model:dtd="dashboardTableData"
@@ -118,13 +122,13 @@
 import Bar from "../components/dashboard/charts/Bar.vue";
 import Line from "../components/dashboard/charts/Line.vue";
 import Calender from "../components/dashboard/Calender.vue";
-import { RouterLink, useRouter } from "vue-router";
-
-import VisitList from "@/components/visits/VisitList.vue";
+import VisitTable from "@/components/dashboard/VisitTable.vue";
 import Icons from "@/components/Icons.vue";
-import { onMounted, getCurrentInstance, ref, watch } from "vue";
 import { getVisitors } from "@/assets/js";
 import { hideSidebarOnSmallScreen } from "@/util/util";
+
+import { onMounted, getCurrentInstance, ref, watch } from "vue";
+import { RouterLink, useRouter } from "vue-router";
 
 const router = useRouter();
 
@@ -135,24 +139,14 @@ const reloadIcon = ref("reload");
 
 const totalVisits = defineModel("totalVisits");
 const totalVisitors = defineModel("totalVisitors");
-const todaysEvents = ref(0);
 const allEvents = defineModel("allEvents");
+const todaysEvents = ref(0);
 
 allEvents.value = [];
 const filterDates = ref({
     from: "",
     to: "",
 });
-
-const dashboardTableData = defineModel("dtd");
-dashboardTableData.value = {
-    lengthMenu: [5],
-    bLengthChange: false,
-    recordsFiltered: 0,
-    bInfo: false,
-    paging: true,
-    searching: false,
-};
 
 watch(allEvents, (events) => {
     todaysEvents.value = getTodaysEvents(events).length;

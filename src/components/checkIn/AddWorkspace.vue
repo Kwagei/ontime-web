@@ -2,7 +2,7 @@
     <AlertModal :data="alert" />
 
     <!-- BELONGING MODAL -->
-    <BelongingModal @done="checkParticipantIn" @cancel="resetForm" />
+    <BelongingModal @done="checkParticipantIn" />
 
     <div
         class="d-flex flex-column container gap-3"
@@ -229,7 +229,12 @@ import {
     visitorCheckInStatus,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
-import { formValidation, showModal } from "@/util/util";
+import {
+    formValidation,
+    showModal,
+    getElement,
+    removeClass,
+} from "@/util/util";
 
 const msisdn = ref("");
 const visitor = ref("");
@@ -414,6 +419,8 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
         alert.value.message = "Visitor Checked In";
         alert.value.status = "success";
         alert.value.pageLink = "/visits";
+
+        resetForm();
     } else {
         alert.value.message = response.result.message;
         alert.value.status = "danger";
@@ -441,6 +448,14 @@ function getInstitutionAndBelongings() {
     }
 
     setTimeout(() => showModal("#visitModal", "#modal-dialog"), 500);
+}
+
+function resetForm() {
+    msisdn.value = "";
+    visitor.value = "";
+    visitorId.value = "";
+    room.value.id = "";
+    room.value.name = "";
 }
 </script>
 

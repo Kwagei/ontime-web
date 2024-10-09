@@ -37,12 +37,12 @@
                     <h5>Participant {{ index + 1 }}</h5>
                     <div class="d-flex justify-content-end gap-2 mb-3">
                         <Icons
-                            @click="emit('edit', participant.msisdn)"
+                            @click="emit('edit', participant.id)"
                             class="icons"
                             v-model:icon="editIcon"
                         />
                         <Icons
-                            @click="emit('delete', participant.msisdn)"
+                            @click="emit('delete', participant.id)"
                             class="icons"
                             v-model:icon="deleteIcon"
                         />

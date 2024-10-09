@@ -400,8 +400,6 @@ const validateEmail = (mail) => {
 };
 
 const resetForm = () => {
-    return;
-
     first_name.value = "";
     last_name.value = "";
     msisdn.value = "";

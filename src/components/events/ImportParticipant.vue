@@ -163,7 +163,7 @@ function handleFileImport(event) {
                         }
                     },
                 });
-            }, 1500);
+            }, 1000);
         };
 
         reader.readAsText(file);
@@ -259,18 +259,6 @@ function validateParticipantsCsvFile(result) {
         return false;
     }
 
-    // // ensure address column exists
-    // if (!fields.includes("address")) {
-    //     errorAlertMessage.value = "`address` column required but not found";
-    //     return false;
-    // }
-
-    // ensure msisdn column exists
-    if (!fields.includes("msisdn")) {
-        errorAlertMessage.value = "`msisdn` column required but not found";
-        return false;
-    }
-
     // ensure gender column exists
     if (!fields.includes("gender")) {
         errorAlertMessage.value = "`gender` column required but not found";
@@ -283,9 +271,9 @@ function validateParticipantsCsvFile(result) {
     return true;
 }
 
-function editParticipant(msisdn) {
+function editParticipant(id) {
     const idxToEdit = participants.value.findIndex(
-        (participant) => participant.msisdn === msisdn
+        (participant) => participant.id === id
     );
 
     // set a participant to edit
@@ -301,9 +289,9 @@ function editParticipant(msisdn) {
     );
 }
 
-async function deleteParticipant(msisdn) {
+async function deleteParticipant(id) {
     const idxToDelete = participants.value.findIndex(
-        (participant) => participant.msisdn === msisdn
+        (participant) => participant.id === id
     );
 
     participants.value.splice(idxToDelete, 1);
@@ -314,7 +302,7 @@ async function deleteParticipant(msisdn) {
 }
 
 function formatParticipants() {
-    for (const participant of participants.value) {
+    for (const [idx, participant] of participants.value.entries()) {
         participant.first_name = removeQuotes(
             participant.first_name.trim(),
             true
@@ -346,12 +334,15 @@ function formatParticipants() {
         }
 
         if (
+            participant.msisdn &&
             !participant.msisdn.startsWith("0") &&
             !participant.msisdn.startsWith("231")
         ) {
             participant.msisdn =
                 "231" + removeQuotes(participant.msisdn.trim(), true);
         }
+
+        participant.id = idx;
     }
 }
 </script>

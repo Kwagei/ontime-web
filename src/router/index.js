@@ -47,17 +47,17 @@ const routes = [
         path: "/sign-in",
         component: SignIn,
         name: "sign-in",
-        meta: {
-            logOutRequired: true,
-        },
+        // meta: {
+        //     logOutRequired: true,
+        // },
     },
     {
         path: "/reset-password",
         component: ResetPassword,
         name: "reset-password",
-        meta: {
-            logOutRequired: true,
-        },
+        // meta: {
+        //     logOutRequired: true,
+        // },
         children: [
             {
                 path: "",
@@ -81,9 +81,9 @@ const routes = [
         path: "/app",
         component: AppView,
         name: "app",
-        meta: {
-            requiresAuth: true,
-        },
+        // meta: {
+        //     requiresAuth: true,
+        // },
         children: [
             {
                 path: "",

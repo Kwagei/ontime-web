@@ -58,11 +58,11 @@
     </section>
     
     <!-- Features Section -->
-     <section class="feature-section">
+     <!-- <section class="feature-section">
         <div class="container">
           <h2>Features</h2>
         </div>
-     </section>
+     </section> -->
 
 
     <!-- Our Team Section -->

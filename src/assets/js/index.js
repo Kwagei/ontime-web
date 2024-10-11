@@ -548,7 +548,8 @@ export const getEvents = async (id, query = {}) => {
         });
 
         if (!response.ok) {
-            throw new Error("Network response was not ok");
+            console.log("Unable to load ongoing events");
+            return;
         }
         const { data } = await response.json();
 

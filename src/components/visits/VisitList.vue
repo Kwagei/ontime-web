@@ -123,7 +123,7 @@ const options = {
                 sort: order,
                 // get today's visits if we're not filtering visits in a date range
                 today:
-                    filterDates.value.from || filterDates.value.to ? "" : "1",
+                    filterDates.value.from || filterDates.value.to ? null : "1",
                 from: filterDates.value.from || "",
                 to: filterDates.value.to || "",
                 order: query.order[0].dir,

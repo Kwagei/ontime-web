@@ -74,11 +74,11 @@ const $sectionIsLoading =
     getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
 
 const columns = [
-    { data: "date_time", title: "Date" },
+    { data: "date_time", title: "Date", orderable: false },
     { data: "visitor", title: "Visitor", orderable: false },
-    { data: "departure_time", title: "Departure Time" },
-    { data: "purpose", title: "Purpose" },
-    { data: "items", title: "Items" },
+    { data: "departure_time", title: "Departure Time", orderable: false },
+    { data: "purpose", title: "Purpose", orderable: false },
+    { data: "items", title: "Items", orderable: false },
     {
         data: null,
         title: "Status",
@@ -87,6 +87,7 @@ const columns = [
                 ? `<span class="text-default fw-bold">Checked Out</span>`
                 : `<span class="text-success fw-bold">Checked In</span>`;
         },
+        orderable: false,
     },
     {
         data: null,
@@ -100,6 +101,7 @@ const columns = [
                          Check Out
                       </button>`;
         },
+        orderable: false,
     },
 ];
 

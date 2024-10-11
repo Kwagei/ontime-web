@@ -16,70 +16,73 @@
         <div
             id="eventCheckInWrapper"
             class="mt-4 p-0 d-flex flex-column"
-            style="border: none; background-color: transparent; gap: 3rem"
+            style="border: none; background-color: transparent"
         >
-            <form class="row g-3">
-                <div class="dropdown" id="selectEventWrapper">
-                    <label
-                        for="selectEventInput"
-                        class="form-label is-required"
-                    >
-                        Ongoing Events
-                    </label>
+            <div id="selectEventWrapper">
+                <button
+                    id="dropdownBtn"
+                    class="btn btn-dropdown dropdown-toggle mb-3 ms-2 w-25 text-start"
+                    type="button"
+                    @click="
+                        $('#ongoingEventsGridWrapper').toggleClass('d-none')
+                    "
+                >
+                    Ongoing Events
+                </button>
 
-                    <div class="w-100 position-relative">
-                        <input
-                            type="text"
-                            class="form-select dropdown-toggle dropdown-toggle-split"
-                            id="selectEventInput"
-                            :id="eventID"
-                            v-model="eventValue"
-                            aria-expanded="false"
-                            data-bs-toggle="dropdown"
-                            autocomplete="off"
-                            autofocus="true"
-                            placeholder="Select Event..."
-                        />
-
-                        <ul class="dropdown-menu w-100">
-                            <li v-if="noMatch" class="dropdown-item">
-                                <span class="text-primary">No match!</span>
-                            </li>
-                            <li v-if="loading" class="dropdown-item">
-                                Loading...
-                            </li>
-                            <li v-if="noEvents" class="dropdown-item">
-                                No Ongoing Events!
-                            </li>
-                            <li
-                                v-if="errorRetrievingEvents"
-                                class="dropdown-item"
-                            >
-                                <span class="text-danger">
-                                    Unable to load Ongoing Events, try again!
-                                </span>
-                            </li>
-                            <template v-for="event in events">
-                                <li
-                                    class="dropdown-item"
-                                    :value="event.id"
-                                    @click="updateEventTerm(event)"
-                                >
-                                    {{ event.title }}
-                                </li>
-                            </template>
-                            <router-link to="/events/add-event">
-                                <li
-                                    class="dropdown-item"
-                                    style="color: #ff7900"
-                                >
-                                    Create new event
-                                </li>
-                            </router-link>
-                        </ul>
+                <!-- Loader -->
+                <div v-if="loading" class="w-25 text-center ms-2 pt-5">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
-            </form>
+
+                <!-- No Ongoing Events -->
+                <div
+                    v-if="noEvents"
+                    class="text text-primary w-100 ms-2 fw-bold fs-3"
+                >
+                    No Ongoing Events!
+                </div>
+                <div
+                    v-if="errorRetrievingEvents"
+                    class="w-100 ms-2 fw-bold fs-3"
+                >
+                    <span class="text-danger">
+                        Unable to load Ongoing Events, try again!
+                    </span>
+                </div>
+
+                <div
+                    v-if="events && events.length"
+                    id="ongoingEventsGridWrapper"
+                >
+                    <div
+                        id="ongoingEventsGrid"
+                        class="d-flex px-2 justify-content-start flex-wrap align-items-start gap-4"
+                    >
+                        <div
+                            v-for="(event, idx) in events"
+                            :class="{ 'chosen-event': chosenEvent === idx }"
+                            class="d-flex flex-column align-items-center justify-content-center p-3 checkInOption"
+                            @click="updateEventTerm(event, idx)"
+                        >
+                            <Icons
+                                :height="'68%'"
+                                :width="'70%'"
+                                class="optionIcon"
+                                icon="calendar-event-agenda"
+                            />
+                            <h3>{{ event.title }}</h3>
+                        </div>
+                    </div>
+                    <router-link to="/events/add-event">
+                        <button class="btn btn-primary my-3 ms-2">
+                            Create new event
+                        </button>
+                    </router-link>
+                </div>
+            </div>
 
             <!-- All Participants -->
             <div v-if="showTable" class="container">
@@ -101,10 +104,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, getCurrentInstance } from "vue";
+import { ref, onMounted, getCurrentInstance } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
 import BelongingModal from "../modals/BelongingModal.vue";
+import Icons from "../Icons.vue";
 import {
     registerVisit,
     getSingleVisitor,
@@ -276,6 +280,8 @@ const address = ref("");
 const purpose = ref("");
 const room = ref("");
 
+const chosenEvent = ref("");
+
 // Modal Data
 const alert = ref({
     status: "",
@@ -351,7 +357,9 @@ function checkInBtnClicked(row, data) {
     }
 }
 
-const updateEventTerm = (event) => {
+const updateEventTerm = (event, idx) => {
+    chosenEvent.value = idx;
+
     purpose.value = event.title;
     eventValue.value = event.title;
     eventID.value = event.id;
@@ -365,22 +373,26 @@ const updateEventTerm = (event) => {
     // reload the table with the new url
     dataTableKey.value += 1;
 
-    const selectedHost = events.value.find((val) => val.id === eventID.value);
+    const selectedEvent = events.value.find((val) => val.id === eventID.value);
 
-    if (selectedHost) {
-        room.value = selectedHost.room;
+    if (selectedEvent) {
+        room.value = selectedEvent.room;
     }
 
     // display data table if it's not already displayed
     if (showTable.value == false) showTable.value = true;
+    $("#ongoingEventsGridWrapper").addClass("d-none");
 };
 
 // function for inserting each username in the select element
 const getEventsOptions = async () => {
     try {
         events.value = await getEvents(null, { current: true });
+        console.log("raw events val: ", events.value);
 
+        // if `getEvents` returns a falsy value, indicate error
         if (!events.value) {
+            console.log("error caught");
             eventTem.value = undefined;
             loading.value = false;
             noMatch.value = false;
@@ -480,7 +492,7 @@ const participantDetail = async (id) => {
     const participant = participants.value.find((val) => val.id === id);
 
     // Assign participant id for visit checking in
-    participant_id.value = participant.id;
+    if (participant) participant_id.value = participant.id;
 
     // Check if the visitor exists
     let visitorData = await getSingleVisitor({
@@ -557,25 +569,6 @@ const updateVisitorVisitStatus = () => {
     // Reset for new participant.
     participant.value = "";
 };
-
-watch(
-    () => eventValue.value,
-    (n) => {
-        if (!events.value.length && !n) return;
-
-        const searchResult = eventTem.value.filter((event) =>
-            event.title.toLocaleLowerCase().includes(n.toLocaleLowerCase())
-        );
-
-        if (searchResult.length) {
-            events.value = searchResult;
-            noMatch.value = false;
-        } else {
-            noMatch.value = true;
-            events.value = [];
-        }
-    }
-);
 </script>
 
 <style scoped>
@@ -603,7 +596,44 @@ a {
     background-color: #1616157a;
 }
 
+#dropdownBtn {
+    justify-content: space-between !important;
+}
+
+.chosen-event {
+    outline: 2px solid #595959;
+    box-shadow: 0 0px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.checkInOption {
+    display: flex;
+    align-items: center;
+    border-radius: 15px;
+    background-color: #eee;
+    min-width: 225px;
+    height: 100% !important;
+    width: 15%;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+.checkInOption:hover {
+    padding: 15px !important;
+}
+
+@media (min-width: 1251px) {
+    a {
+        min-height: 175px !important;
+    }
+}
+
+/* Small Screen */
 @media (max-width: 1250px) {
+    #ongoingEventsGrid {
+        justify-content: center !important;
+    }
+
     #eventCheckInWrapper {
         gap: 0.75rem !important;
     }

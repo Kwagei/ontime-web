@@ -81,40 +81,7 @@
 					</div>
 				</div>
 
-				<!-- PHONE NUMBER -->
-				<div class="col-md-6">
-					<label for="phone_number" class="form-label is-required"
-						>Phone number<span class="visually-hidden">
-							(required)</span
-						></label
-					>
-					<div class="input-group has-validation">
-						<input
-							type="tel"
-							:class="[
-								validMsisdn && 'validated',
-								'form-control',
-							]"
-							v-model="msisdn"
-							id="phone_number"
-							aria-describedby="inputGroupPrepend"
-							required
-						/>
-						<div
-							:class="[
-								'invalid-feedback',
-								validMsisdn && 'show-feedback',
-							]"
-						>
-							{{ validMsisdnMessage }}
-						</div>
-					</div>
-					<div class="helpMessage form-text">
-						For example: 0778456789
-					</div>
-				</div>
-
-				<!-- Details -->
+				<!-- DETAILS -->
 				<div class="col-md-6">
 					<label for="detailsTextarea" class="form-label"
 						>Details</label
@@ -150,7 +117,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import BreadCrumbs from "@/components/BreadCrumbs.vue";
 import Modal from "@/components/modals/AlertModal.vue";
@@ -159,7 +126,6 @@ import {
 	addClass,
 	formValidation,
 	getElement,
-	msisdnValidation,
 	removeClass,
 	showModal,
 } from "@/util/util.js";
@@ -168,7 +134,6 @@ import router from "@/router";
 // Route and State
 const route = useRoute();
 const name = ref("");
-const msisdn = ref("");
 const details = ref("");
 const type = ref("Company");
 
@@ -193,16 +158,12 @@ const formStatus = tem.pop();
 
 // Functions
 const onSubmit = async () => {
-	if (!name.value || !msisdn.value) {
+	if (!name.value) {
 		return;
 	}
 
 	const host = {
 		name: name.value,
-		msisdn:
-			msisdn.value[0] == "0"
-				? `231${msisdn.value.slice(1)}`
-				: msisdn.value,
 		details: details.value,
 		type: type.value,
 	};
@@ -232,41 +193,12 @@ const fetchHost = async () => {
 		hostInfo = await getHosts({ id });
 
 		name.value = hostInfo.name;
-		msisdn.value = hostInfo.msisdn;
 		details.value = hostInfo.details;
 	}
 };
 
-const validMsisdn = ref(false);
-const validMsisdnMessage = ref("Please provide a phone number");
-
-const validateMsisdn = () => {
-	if (!msisdn.value) {
-		validMsisdn.value = false;
-		validMsisdnMessage.value = "Please provide a phone number";
-
-		return;
-	}
-	const isvalid = msisdnValidation([msisdn.value]);
-
-	if (!isvalid.valid) {
-		validMsisdn.value = true;
-		validMsisdnMessage.value = isvalid.message;
-	} else {
-		validMsisdn.value = false;
-	}
-};
-
-watch(
-	() => msisdn.value,
-	(n) => {
-		validateMsisdn(n);
-	}
-);
-
 const resetForm = () => {
 	name.value = "";
-	msisdn.value = "";
 	details.value = "";
 	buttonLabel.value = "Save";
 
@@ -278,10 +210,10 @@ const resetForm = () => {
 // Lifecycle Hooks
 onMounted(() => {
 	fetchHost();
-
 	formValidation();
 });
 </script>
+
 
 <style scoped>
 .show-feedback {

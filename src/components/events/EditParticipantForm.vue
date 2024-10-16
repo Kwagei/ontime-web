@@ -83,14 +83,10 @@
 
                         <!-- PHONE NUMBER -->
                         <div class="col-md-6">
-                            <label
-                                for="phone_number"
-                                class="form-label is-required"
-                                >Phone number<span class="visually-hidden">
-                                    (required)</span
-                                ></label
-                            >
-                            <div class="input-group has-validation">
+                            <label for="phone_number" class="form-label">
+                                Phone number
+                            </label>
+                            <div class="input-group">
                                 <input
                                     type="tel"
                                     :class="[
@@ -100,21 +96,22 @@
                                     v-model="msisdn"
                                     id="phone_number"
                                     aria-describedby="inputGroupPrepend"
-                                    required
                                     autocomplete="off"
                                 />
                                 <div
                                     :class="[
                                         'invalid-feedback',
-                                        validMsisdn && 'show-feedback',
+                                        msisdn &&
+                                            validMsisdn &&
+                                            'show-feedback',
                                     ]"
                                 >
                                     {{ validMsisdnMessage }}
                                 </div>
                             </div>
                             <div class="helpMessage form-text">
-                                Phone number should start with 231. For example:
-                                231778675908
+                                Phone number should start with 231 or 0. For
+                                example: 231778675908 or 0778675908
                             </div>
                         </div>
 
@@ -150,18 +147,14 @@
 
                         <!-- SESSION -->
                         <div class="col-md-6">
-                            <label for="session" class="form-label is-required">
+                            <label for="session" class="form-label">
                                 Session
-                                <span class="visually-hidden">
-                                    (required)
-                                </span>
                             </label>
                             <input
                                 type="text"
                                 class="form-control has-validation"
                                 id="session"
                                 v-model="session"
-                                required
                                 aria-describedby="inputGroupPrepend"
                             />
                             <div class="invalid-feedback">
@@ -294,13 +287,7 @@ const validMsisdnMessage = ref("Please provide a phone number");
 const validEmailMessage = ref("Please provide a valid email address");
 
 function update() {
-    if (
-        !first_name.value ||
-        !last_name.value ||
-        !msisdn.value ||
-        !session.value ||
-        !gender.value
-    ) {
+    if (!first_name.value || !last_name.value || !gender.value) {
         return;
     }
 

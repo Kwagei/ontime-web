@@ -1,5 +1,6 @@
 <template>
     <AlertModal :data="alert" />
+
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             id="entitiesBreadCrumbsWrapper"
@@ -31,6 +32,7 @@
                             class="form-control"
                             id="first_name"
                             aria-describedby="inputGroupPrepend"
+                            autofocus="true"
                             v-model="first_name"
                             required
                         />
@@ -70,12 +72,12 @@
                     >
                     <div class="input-group has-validation">
                         <input
+                            v-model="msisdn"
                             type="tel"
                             :class="[
                                 validMsisdn && 'validated',
                                 'form-control',
                             ]"
-                            v-model="msisdn"
                             id="phone_number"
                             aria-describedby="inputGroupPrepend"
                             required
@@ -111,7 +113,7 @@
                         <div
                             :class="[
                                 'invalid-feedback',
-                                validEmail && 'show-feedback',
+                                email && validEmail && 'show-feedback',
                             ]"
                         >
                             {{ validEmailMessage }}
@@ -178,8 +180,108 @@
                     </div>
                 </div>
 
+                <!-- ROOM -->
+                <div class="col-md-6">
+                    <label for="room" class="form-label is-required"
+                        >Room<span class="visually-hidden">
+                            (required)</span
+                        ></label
+                    >
+
+                    <div class="input-group has-validation position-relative">
+                        <input
+                            type="text"
+                            class="form-select"
+                            id="facilitatorInput"
+                            :id="roomID"
+                            :value="roomValue"
+                            v-model="roomValue"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            autocomplete="off"
+                            required
+                        />
+
+                        <ul class="dropdown-menu w-100">
+                            <template v-for="room in roomsData">
+                                <li
+                                    class="dropdown-item"
+                                    :value="room.id"
+                                    @click="updateRoomTerm(room)"
+                                >
+                                    {{ room.name }}
+                                </li>
+                            </template>
+                            <router-link
+                                :to="{ name: 'new-room' }"
+                                class="text-primary"
+                            >
+                                <li class="dropdown-item">Create new room</li>
+                            </router-link>
+                        </ul>
+
+                        <div class="invalid-feedback">
+                            Please select a room.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BELONGINGS -->
+                <div class="col-md-6">
+                    <label for="belongings" class="form-label">
+                        Belongings
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            autofocus="true"
+                            id="belongings"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="temBelonging"
+                            @keyup.prevent="addBelongings"
+                            @keydown.enter.prevent
+                        />
+                    </div>
+                    <div
+                        v-for="belonging in belongings"
+                        :key="belonging"
+                        @click="deleteBelongings(belonging)"
+                        class="belonging"
+                    >
+                        {{ belonging }}
+                    </div>
+                </div>
+
+                <!-- PURPOSE -->
+                <div class="col-md-6">
+                    <label for="purpose" class="form-label is-required">
+                        Purpose
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            required
+                            id="purpose"
+                            v-model="purpose"
+                        >
+                            <option value="Workspace" selected>
+                                Workspace
+                            </option>
+                            <option value="Meeting">Meeting</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a purpose for this visit.
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-12 d-flex gap-2 justify-content-end">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-success">
+                        Check In
+                    </button>
                     <button
                         class="btn btn-outline-secondary"
                         type="button"
@@ -202,6 +304,8 @@ import {
     registerVisitor,
     editVisitor,
     getSingleVisitor,
+    registerVisit,
+    getRooms,
 } from "@/assets/js/index.js";
 import {
     msisdnValidation,
@@ -224,6 +328,19 @@ const email = ref("");
 const address = ref("");
 const gender = ref("");
 const occupation = ref("");
+const purpose = ref("Workspace");
+
+// Rooms Data
+const roomValue = ref("");
+const roomID = ref("");
+const roomsData = ref("");
+const roomTem = ref("");
+
+// Belongings Data
+const temBelonging = ref("");
+const belongings = ref([]);
+
+const checkInData = ref({});
 
 const alert = ref({
     status: "",
@@ -233,6 +350,7 @@ const alert = ref({
 });
 
 let visitorInfo;
+const createdVisitor = ref({});
 
 // Form status and breadcrumbs
 const activeBreadCrumbs = ref([]);
@@ -248,7 +366,9 @@ const onSubmit = async () => {
         !first_name.value ||
         !last_name.value ||
         !msisdn.value ||
-        !gender.value
+        !gender.value ||
+        !roomID.value ||
+        !purpose.value
     ) {
         return;
     }
@@ -272,16 +392,36 @@ const onSubmit = async () => {
         ? await registerVisitor(visitor)
         : await editVisitor(visitorInfo.id, visitor);
 
-    showModal("#alertModal", "#alertModalBody");
+    showModal();
     alert.value.status = response.ok ? "success" : "danger";
     alert.value.message = response.result.message;
-    alert.value.pageLink = `/visitors/${response.result.data[0].id}`;
 
     // Reset form if the response is successful
     if (response.ok) {
-        resetForm();
+        alert.value.pageLink = `/visitors/${response.result.data[0].id}`;
+        createdVisitor.value = response.result.data[0];
+
+        checkInVisitor();
     }
 };
+
+async function checkInVisitor() {
+    checkInData.value = {
+        visitor_id: createdVisitor.value.id,
+        purpose: purpose.value,
+        room_id: roomID.value || "",
+        items: belongings.value,
+    };
+
+    const checkInResponse = await registerVisit(checkInData.value);
+
+    alert.value.message = checkInResponse.result.message;
+    alert.value.status = checkInResponse.ok ? "success" : "danger";
+
+    showModal();
+
+    if (checkInResponse.ok) resetForm();
+}
 
 const fetchVisitor = async () => {
     if (formStatus.startsWith("edit")) {
@@ -322,6 +462,23 @@ const validateMsisdn = (number) => {
     }
 };
 
+const updateRoomTerm = (room) => {
+    roomValue.value = room.name;
+    roomID.value = room.id;
+};
+
+// Local search for rooms
+watch(
+    () => roomValue.value,
+    (n) => {
+        roomsData.value = n
+            ? roomTem.value.filter((room) =>
+                  room.name.toLocaleLowerCase().includes(n.toLocaleLowerCase())
+              )
+            : roomTem.value;
+    }
+);
+
 watch(
     () => msisdn.value,
     (n) => {
@@ -358,10 +515,26 @@ const resetForm = () => {
     email.value = "";
     address.value = "";
     gender.value = "";
+    occupation.value = "";
 
     // Remove validation classes
     const form = getElement(".needs-validation");
     removeClass(form, "was-validated");
+};
+
+const addBelongings = (event) => {
+    const { key } = event;
+
+    if (key === "Enter" && temBelonging.value) {
+        if (!belongings.value.includes(temBelonging.value)) {
+            belongings.value.push(temBelonging.value);
+        }
+        temBelonging.value = "";
+    }
+};
+
+const deleteBelongings = (item) => {
+    belongings.value = belongings.value.filter((val) => val !== item);
 };
 
 // Lifecycle Hooks
@@ -381,6 +554,10 @@ onMounted(async () => {
 			</li>
 		`;
     }
+
+    const { rooms } = await getRooms();
+    roomsData.value = rooms;
+    roomTem.value = rooms;
 });
 </script>
 
@@ -406,5 +583,19 @@ svg {
 
 #visitor-view {
     gap: 1.5rem;
+}
+
+.belonging {
+    text-transform: capitalize;
+    display: inline-block;
+    margin: 20px 10px 0 0;
+    padding: 6px 12px;
+    background-color: #eee;
+    border-radius: 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: #777;
+    cursor: pointer;
 }
 </style>

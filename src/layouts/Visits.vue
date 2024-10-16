@@ -98,6 +98,8 @@ const exportFields = ref([
 
 exportTitle.value = "Visits";
 
+breadCrumbs.value = ["Today's Visits"];
+
 const exportVisits = async (fields) => {
     const { visits } = await getVisits({
         limit: totalVisits.value,

@@ -4,8 +4,17 @@
             <div id="dashboardFirstChild" class="row gap-4 my-3">
                 <div id="stats">
                     <div
-                        class="d-flex justify-content-end align-items-end w-100 pb-3"
+                        class="d-flex justify-content-end align-items-end w-100 pb-3 gap-2"
                     >
+                        <button
+                            @click="router.go(0)"
+                            class="btn border border-2"
+                        >
+                            <Icons
+                                style="width: 20px"
+                                v-model:icon="reloadIcon"
+                            />
+                        </button>
                         <router-link :to="{ name: 'check-in' }">
                             <button class="btn btn-primary">Check In</button>
                         </router-link>
@@ -28,7 +37,11 @@
                             >
                                 <span>Today's Visits</span>
                                 <h2>
-                                    {{ todaysVisits || "..." }}
+                                    {{
+                                        Number(todaysVisits) >= 0
+                                            ? todaysVisits
+                                            : "..."
+                                    }}
                                 </h2>
                             </div>
                         </div>
@@ -75,6 +88,74 @@
                         </div>
                     </div>
                 </div>
+                <div id="stats">
+                    <div class="row align-items-start gap-4">
+                        <!-- Today's Workspace Visits -->
+                        <div
+                            class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
+                            style="padding-left: 2.5rem !important"
+                        >
+                            <div
+                                id="visitIcon"
+                                class="icon-circle"
+                                style="background-color: #ff77002a"
+                            >
+                                <Icons class="icons" v-model:icon="visitIcon" />
+                            </div>
+                            <div
+                                class="cards d-flex flex-column align-items-center"
+                            >
+                                <span>Today's Workspace Visits</span>
+                                <h2>
+                                    {{
+                                        "..."
+                                    }}
+                                </h2>
+                            </div>
+                        </div>
+                        <!-- Today's Events -->
+                        <div
+                            class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
+                            style="padding-left: 2.5rem !important"
+                        >
+                            <div
+                                id="eventIcon"
+                                class="icon-circle"
+                                style="background-color: #1970c221"
+                            >
+                                <Icons class="icons" v-model:icon="eventIcon" />
+                            </div>
+                            <div
+                                class="cards d-flex flex-column align-items-center"
+                            >
+                                <span>Today's Event Visit</span>
+                                <h2>{{ "..." }}</h2>
+                            </div>
+                        </div>
+                        <!-- Today's meeting visits -->
+                        <div
+                            class="form-control col py-3 px-4 d-flex rounded align-items-center justify-content-center gap-4"
+                            style="padding-left: 2.5rem !important"
+                        >
+                            <div
+                                id="visitorIcon"
+                                class="icon-circle"
+                                style="background-color: rgb(0 128 0 / 19%)"
+                            >
+                                <Icons
+                                    class="icons"
+                                    v-model:icon="visitorIcon"
+                                />
+                            </div>
+                            <div
+                                class="cards d-flex flex-column align-items-center"
+                            >
+                                <span>Today's Meeting Visits</span>
+                                <h2>{{ "..." }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="form-control rounded col">
                     <Line
                         v-model:totalVisits="totalVisits"
@@ -94,7 +175,7 @@
             <h4>Last 5 Check In</h4>
             <div class="row">
                 <div class="col p-0" id="dashboardTable">
-                    <VisitList
+                    <VisitTable
                         v-model:totalVisits="totalVisits"
                         v-model:filterDates="filterDates"
                         v-model:dtd="dashboardTableData"
@@ -109,38 +190,31 @@
 import Bar from "../components/dashboard/charts/Bar.vue";
 import Line from "../components/dashboard/charts/Line.vue";
 import Calender from "../components/dashboard/Calender.vue";
-import { RouterLink } from "vue-router";
-
-import VisitList from "@/components/visits/VisitList.vue";
+import VisitTable from "@/components/dashboard/VisitTable.vue";
 import Icons from "@/components/Icons.vue";
-import { onMounted, getCurrentInstance, ref, watch } from "vue";
 import { getVisitors } from "@/assets/js";
 import { getTodaysVisits, hideSidebarOnSmallScreen } from "@/util/util";
+
+import { onMounted, getCurrentInstance, ref, watch } from "vue";
+import { RouterLink, useRouter } from "vue-router";
+
+const router = useRouter();
 
 const visitIcon = "house";
 const eventIcon = "calendar-event-agenda";
 const visitorIcon = "collective-class-training";
+const reloadIcon = ref("reload");
 
 const totalVisits = defineModel("totalVisits");
 const totalVisitors = defineModel("totalVisitors");
-const todaysVisits = defineModel("todaysVisits");
-const todaysEvents = ref(0);
 const allEvents = defineModel("allEvents");
+const todaysEvents = ref(0);
+
 allEvents.value = [];
 const filterDates = ref({
     from: "",
     to: "",
 });
-
-const dashboardTableData = defineModel("dtd");
-dashboardTableData.value = {
-    lengthMenu: [5],
-    bLengthChange: false,
-    recordsFiltered: 0,
-    bInfo: false,
-    paging: true,
-    searching: false,
-};
 
 watch(allEvents, (events) => {
     todaysEvents.value = getTodaysEvents(events).length;

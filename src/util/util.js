@@ -16,10 +16,10 @@ dayjs.extend(customParseFormat);
 export const msisdnValidation = (msisdns) => {
     if (!msisdns) return false;
 
-    const contacts = msisdns;
+    let contacts = msisdns;
     const serviceCode = ["555", "88", "77"];
 
-    for (const contact of contacts) {
+    for (let contact of contacts) {
         if (!contact.startsWith("0") && !contact.startsWith("231")) {
             contact = "231" + contact;
         }
@@ -292,6 +292,7 @@ export async function getTodaysVisits() {
         },
         error: (err) => {
             console.error("error fetching today's visits: ", err);
+            todaysVisits = "error";
         },
     });
 
@@ -338,4 +339,12 @@ export const removeQuotes = (data, isString = false) => {
 
 export const capitalize = (str) => {
     if (str) return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+// format msisdn to 231777123456 from 0777123456 or anything else
+// msisdn should validated with the `msisdnValidation()` method
+// before formatting it with this method
+export const formatMsisdn = (msisdn) => {
+    if (msisdn.startsWith("231")) return "231" + msisdn.slice(3, 12);
+    return "231" + msisdn.slice(1, 9);
 };

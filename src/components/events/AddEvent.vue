@@ -41,6 +41,7 @@
                             id="title"
                             aria-describedby="inputGroupPrepend"
                             v-model="title"
+                            autofocus="true"
                             required
                         />
 
@@ -364,6 +365,17 @@ const updateRoomTerm = (room) => {
 const updateEventTerm = (et) => {
     type.value = et;
 };
+
+watch([startDate, endDate], ([newStart, newEnd]) => {
+    // ensure start date is on or before end date
+    if (newStart && newEnd && new Date(newStart) > new Date(newEnd)) {
+        alert.value.message = "START DATE must be on or before END DATE";
+        alert.value.status = "warning";
+
+        endDate.value = "";
+        showModal();
+    }
+});
 
 // Local search for host
 watch(

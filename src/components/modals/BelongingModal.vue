@@ -24,6 +24,57 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div
+                        v-if="props.getRoom"
+                        class="dropdown w-100 mb-3 col-md-6"
+                    >
+                        <label for="room" class="form-label is-required"
+                            >Room<span class="visually-hidden">
+                                (required)</span
+                            ></label
+                        >
+
+                        <div
+                            class="input-group has-validation position-relative"
+                        >
+                            <input
+                                type="text"
+                                class="form-select"
+                                id="facilitatorInput"
+                                :id="roomID"
+                                :value="roomValue"
+                                v-model="roomValue"
+                                aria-expanded="false"
+                                data-bs-toggle="dropdown"
+                                autocomplete="off"
+                                required
+                            />
+
+                            <ul class="dropdown-menu w-100">
+                                <template v-for="room in roomsData">
+                                    <li
+                                        class="dropdown-item"
+                                        :value="room.id"
+                                        @click="updateRoomTerm(room)"
+                                    >
+                                        {{ room.name }}
+                                    </li>
+                                </template>
+                                <router-link
+                                    :to="{ name: 'new-room' }"
+                                    class="text-primary"
+                                >
+                                    <li class="dropdown-item">
+                                        Create new room
+                                    </li>
+                                </router-link>
+                            </ul>
+
+                            <div class="invalid-feedback">
+                                Please provide a host.
+                            </div>
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label for="belongings" class="form-label"
                             >Belongings</label
@@ -32,6 +83,7 @@
                             <input
                                 type="text"
                                 class="form-control"
+                                autofocus="true"
                                 id="belongings"
                                 aria-describedby="inputGroupPrepend"
                                 v-model="temBelonging"
@@ -82,15 +134,27 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { getRooms } from "@/assets/js";
+import { watch, ref, onMounted } from "vue";
 const emit = defineEmits(["done", "cancel"]);
 
 const temBelonging = ref("");
 const belongings = ref([]);
 const institution = ref("");
 
+const props = defineProps({
+    getRoom: Boolean,
+});
+
+// Rooms Data
+const roomValue = ref("");
+const roomID = ref("");
+const roomsData = ref("");
+const roomTem = ref("");
+
 function done() {
     emit("done", {
+        selectedRoomId: roomID.value || "",
         institution: institution.value || "",
         belongings: belongings.value.length ? belongings.value : [],
     });
@@ -110,6 +174,30 @@ const addBelongings = (event) => {
 const deleteBelongings = (item) => {
     belongings.value = belongings.value.filter((val) => val !== item);
 };
+
+// Lifecycle Hooks
+onMounted(async () => {
+    const { rooms } = await getRooms();
+    roomsData.value = rooms;
+    roomTem.value = rooms;
+});
+
+const updateRoomTerm = (room) => {
+    roomValue.value = room.name;
+    roomID.value = room.id;
+};
+
+// Local search for rooms
+watch(
+    () => roomValue.value,
+    (n) => {
+        roomsData.value = n
+            ? roomTem.value.filter((room) =>
+                  room.name.toLocaleLowerCase().includes(n.toLocaleLowerCase())
+              )
+            : roomTem.value;
+    }
+);
 </script>
 
 <style scoped>

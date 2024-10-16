@@ -2,7 +2,7 @@
     <AlertModal :data="alert" />
 
     <!-- BELONGING MODAL -->
-    <BelongingModal @done="checkParticipantIn" @cancel="resetForm" />
+    <BelongingModal @done="checkParticipantIn" />
 
     <div
         class="d-flex flex-column container gap-3"
@@ -18,7 +18,7 @@
                     Find Visitor by Contact or Name
                 </label>
 
-                <div>
+                <div class="input-group has-validation">
                     <input
                         @input="searchVisitors"
                         type="text"
@@ -28,11 +28,12 @@
                         aria-describedby="inputGroupPrepend"
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
+                        autofocus="true"
                         autocomplete="off"
                         required
                         placeholder="Enter Phone Number or Name"
                     />
-                    <ul class="dropdown-menu w-100" style="max-width: 98.5%">
+                    <ul class="dropdown-menu w-100">
                         <li class="dropdown-item" v-if="noMatch">No Match</li>
                         <li v-if="loading" class="dropdown-item">Loading...</li>
                         <li v-if="errorSearchingVisitors" class="dropdown-item">
@@ -83,45 +84,54 @@
                             >(required)</span
                         >
                     </label>
-                    <input
-                        @input="searchVisitors"
-                        type="text"
-                        class="form-select dropdown-toggle dropdown-toggle-split"
-                        v-model="msisdn"
-                        id="selectVisitorInput"
-                        aria-describedby="inputGroupPrepend"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                        autocomplete="off"
-                        required
-                        placeholder="Enter Phone Number or Name"
-                    />
-                    <ul class="dropdown-menu w-100" style="max-width: 98.5%">
-                        <li class="dropdown-item" v-if="noMatch">No Match</li>
-                        <li v-if="loading" class="dropdown-item">Loading...</li>
-                        <li v-if="errorSearchingVisitors" class="dropdown-item">
-                            <span class="text-danger">
-                                Unable to search visitors, try again!
-                            </span>
-                        </li>
-                        <template v-for="visitor in visitors">
+                    <div class="input-group has-validation">
+                        <input
+                            @input="searchVisitors"
+                            type="text"
+                            class="form-select dropdown-toggle dropdown-toggle-split"
+                            v-model="msisdn"
+                            id="selectVisitorInput"
+                            aria-describedby="inputGroupPrepend"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            autocomplete="off"
+                            required
+                            placeholder="Enter Phone Number or Name"
+                        />
+                        <ul class="dropdown-menu w-100">
+                            <li class="dropdown-item" v-if="noMatch">
+                                No Match
+                            </li>
+                            <li v-if="loading" class="dropdown-item">
+                                Loading...
+                            </li>
                             <li
-                                @click="visitorSelected(visitor)"
+                                v-if="errorSearchingVisitors"
                                 class="dropdown-item"
-                                :value="visitor.id"
                             >
-                                {{ visitor.name }}
+                                <span class="text-danger">
+                                    Unable to search visitors, try again!
+                                </span>
                             </li>
-                        </template>
-                        <router-link
-                            :to="{ name: 'add-visitor' }"
-                            class="text-primary"
-                        >
-                            <li class="dropdown-item text-decoration-none">
-                                Create new visitor
-                            </li>
-                        </router-link>
-                    </ul>
+                            <template v-for="visitor in visitors">
+                                <li
+                                    @click="visitorSelected(visitor)"
+                                    class="dropdown-item"
+                                    :value="visitor.id"
+                                >
+                                    {{ visitor.name }}
+                                </li>
+                            </template>
+                            <router-link
+                                :to="{ name: 'add-visitor' }"
+                                class="text-primary"
+                            >
+                                <li class="dropdown-item text-decoration-none">
+                                    Create new visitor
+                                </li>
+                            </router-link>
+                        </ul>
+                    </div>
                 </div>
 
                 <!-- NEW VISITOR -->
@@ -219,7 +229,12 @@ import {
     visitorCheckInStatus,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
-import { formValidation, showModal } from "@/util/util";
+import {
+    formValidation,
+    showModal,
+    getElement,
+    removeClass,
+} from "@/util/util";
 
 const msisdn = ref("");
 const visitor = ref("");
@@ -404,12 +419,20 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
         alert.value.message = "Visitor Checked In";
         alert.value.status = "success";
         alert.value.pageLink = "/visits";
+
+        resetForm();
     } else {
         alert.value.message = response.result.message;
         alert.value.status = "danger";
     }
 
     $sectionIsLoading.value = false;
+
+    // hide belongings and institution modal
+    const visitModal = getElement("#visitModal");
+    removeClass(visitModal, "show");
+    visitModal.style.display = "none";
+
     showModal();
 };
 
@@ -425,6 +448,14 @@ function getInstitutionAndBelongings() {
     }
 
     setTimeout(() => showModal("#visitModal", "#modal-dialog"), 500);
+}
+
+function resetForm() {
+    msisdn.value = "";
+    visitor.value = "";
+    visitorId.value = "";
+    room.value.id = "";
+    room.value.name = "";
 }
 </script>
 

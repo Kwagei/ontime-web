@@ -58,6 +58,8 @@ const refresh = defineModel("refresh");
 const filterDates = defineModel("filterDates");
 const tableKey = ref(0);
 const showError = ref(false);
+const dashboardTableData = defineModel("dtd");
+dashboardTableData.value = {};
 
 const alert = ref({
     message: "",
@@ -72,11 +74,11 @@ const $sectionIsLoading =
     getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
 
 const columns = [
-    { data: "date_time", title: "Date" },
+    { data: "date_time", title: "Date", orderable: false },
     { data: "visitor", title: "Visitor", orderable: false },
-    { data: "departure_time", title: "Departure Time" },
-    { data: "purpose", title: "Purpose" },
-    { data: "items", title: "Items" },
+    { data: "departure_time", title: "Departure Time", orderable: false },
+    { data: "purpose", title: "Purpose", orderable: false },
+    { data: "items", title: "Items", orderable: false },
     {
         data: null,
         title: "Status",
@@ -85,6 +87,7 @@ const columns = [
                 ? `<span class="text-default fw-bold">Checked Out</span>`
                 : `<span class="text-success fw-bold">Checked In</span>`;
         },
+        orderable: false,
     },
     {
         data: null,
@@ -98,6 +101,7 @@ const columns = [
                          Check Out
                       </button>`;
         },
+        orderable: false,
     },
 ];
 
@@ -110,23 +114,12 @@ const options = {
         beforeSend: function (xhr) {
             xhr.setRequestHeader("authorization", API_KEY);
         },
-        data: (query) => {
-            const order =
-                query.columns[query.order[0].column].data === "date"
-                    ? "date_time"
-                    : query.columns[query.order[0].column].data;
-
+        data: () => {
             return {
-                start: query.start,
-                limit: query.length,
-                search: query.search.value,
-                sort: order,
-                // get today's visits if we're not filtering visits in a date range
-                today:
-                    filterDates.value.from || filterDates.value.to ? null : "1",
-                from: filterDates.value.from || "",
-                to: filterDates.value.to || "",
-                order: query.order[0].dir,
+                start: 0,
+                limit: 5,
+                sort: "date_time",
+                order: "desc",
             };
         },
         dataSrc: (json) => {
@@ -147,13 +140,18 @@ const options = {
             refresh.value = false;
         },
     },
-    lengthMenu: [10, 25, 50, 100],
+    lengthMenu: [5],
+    bLengthChange: false,
+    recordsFiltered: 0,
+    bInfo: false,
+    paging: true,
+    searching: false,
     language: {
         searchPlaceholder: "Search ...",
         search: "",
         emptyTable: `
 				<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
-					No Visits Today!
+					No Visits to show!
 					<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M82.5 37.5V35l-15-15H60v-3.75A1.25 1.25 0 0058.75 15h-2.5A1.25 1.25 0 0055 16.25V20H40v-3.75A1.25 1.25 0 0038.75 15h-2.5A1.25 1.25 0 0035 16.25V20h-7.5l-15 15v2.5h5V85H15v2.5h65V85h-2.5V37.5zM35 77.5H25V70a5 5 0 015-5 5 5 0 015 5zm0-25H25V45a5 5 0 015-5 5 5 0 015 5zM52.5 85h-10V70a5 5 0 015-5 5 5 0 015 5zm0-32.5h-10V45a5 5 0 015-5 5 5 0 015 5zm17.5 25H60V70a5 5 0 015-5 5 5 0 015 5zm0-25H60V45a5 5 0 015-5 5 5 0 015 5z"/></svg>
 					<button class="btn btn-secondary"
                         data-bs-toggle="offcanvas"
@@ -250,41 +248,6 @@ watch(
     // watch for change on the from or to dates
     () => [filterDates.value.from, filterDates.value.to],
     ([newFrom, newTo]) => {
-        // ensure the selected TO filter date is today or earlier
-        if (new Date(newTo) > new Date()) {
-            alert.value.message = "TO filter date must be today or earlier";
-            alert.value.status = "warning";
-
-            showModal();
-
-            filterDates.value.from = "";
-            filterDates.value.to = "";
-            return;
-        }
-        // ensure the selected FROM filter date is today or earlier
-        else if (new Date(newFrom) > new Date()) {
-            alert.value.message = "FROM filter date must be today or earlier";
-            alert.value.status = "warning";
-
-            showModal();
-
-            filterDates.value.from = "";
-            filterDates.value.to = "";
-            return;
-        }
-        // ensure the FROM date is not after TO date
-        else if (new Date(newFrom) > new Date(newTo)) {
-            alert.value.message =
-                "FROM filter date must be on or before TO filter date";
-            alert.value.status = "warning";
-
-            showModal();
-
-            filterDates.value.from = "";
-            filterDates.value.to = "";
-            return;
-        }
-
         // update the date from and to dates for the request query
         filterDates.value.from = newFrom;
         filterDates.value.to = newTo;

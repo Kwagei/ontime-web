@@ -248,6 +248,7 @@ a {
     }
 }
 
+input.form-select,
 select.form-select {
     height: 48px !important;
 }

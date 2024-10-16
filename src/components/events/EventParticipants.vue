@@ -5,6 +5,7 @@
     >
         <div>
             <DataTable
+                id="eventParticipantsTable"
                 class="display w-100 table"
                 :key="tableKey"
                 :columns="columns"
@@ -87,6 +88,7 @@ const options = {
             };
         },
         dataSrc: (json) => {
+            $("#eventParticipantsTable").show();
             showError.value = false;
             refresh.value = false;
 
@@ -110,6 +112,7 @@ const options = {
         },
         error: (error) => {
             console.log("Error fetching data:", error.responseJSON);
+            $("#eventParticipantsTable").hide();
             showError.value = true;
             refresh.value = false;
         },

@@ -37,12 +37,12 @@
                     <h5>Participant {{ index + 1 }}</h5>
                     <div class="d-flex justify-content-end gap-2 mb-3">
                         <Icons
-                            @click="emit('edit', participant.msisdn)"
+                            @click="emit('edit', participant.id)"
                             class="icons"
                             v-model:icon="editIcon"
                         />
                         <Icons
-                            @click="emit('delete', participant.msisdn)"
+                            @click="emit('delete', participant.id)"
                             class="icons"
                             v-model:icon="deleteIcon"
                         />
@@ -84,7 +84,7 @@
                         </span>
                     </div>
 
-                    <div>
+                    <div v-if="participant.msisdn">
                         <span>
                             <Icons
                                 style="width: 1.2rem"
@@ -102,7 +102,7 @@
                         </span>
                     </div>
 
-                    <div>
+                    <div v-if="participant.gender">
                         <span>
                             <Icons
                                 style="width: 1.2rem"
@@ -140,7 +140,7 @@
                         </span>
                     </div>
 
-                    <div>
+                    <div v-if="participant.session">
                         <span>
                             <Icons
                                 style="width: 1.2rem"
@@ -256,7 +256,6 @@ function search() {
 .participantGridItem {
     max-width: 300px;
     min-width: 300px;
-    min-height: 280px;
 }
 
 .boxShadow {

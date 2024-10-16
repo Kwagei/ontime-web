@@ -35,6 +35,7 @@
             />
             <AddParticipant
                 v-if="state == 'addParticipant'"
+                :event="event"
                 @switch="switchState"
                 @participantAdded="setModalData"
                 @errorCreatingParticipant="setModalData"
@@ -83,6 +84,7 @@ onMounted(async () => {
 async function fetchEvents() {
     try {
         const data = await getEvents(eventId.value);
+        console.log("retrieved event: ", data);
         event.value = data[0];
     } catch {
         event.value = "error";

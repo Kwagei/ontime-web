@@ -5,7 +5,7 @@
             <h3>Why are you here?</h3>
         </div>
         <div
-            class="d-flex px-2 justify-content-center flex-wrap aign-items-center gap-4"
+            class="d-flex px-2 justify-content-center flex-wrap align-items-center gap-4"
         >
             <div
                 class="d-flex flex-column align-items-center justify-content-center p-3 checkInOption"

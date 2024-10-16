@@ -79,9 +79,7 @@
                             >
                                 <!-- Start & End Date -->
                                 <div class="d-flex flex-column gap-1">
-                                    <span>
-                                        <Icons icon="clock" /> Timespan
-                                    </span>
+                                    <span> <Icons icon="clock" /> Date </span>
                                     <span class="fw-bold">
                                         {{
                                             formatDateTime(event.startDate, {
@@ -642,7 +640,7 @@ a {
 
 #dropdownBtn {
     justify-content: space-between !important;
-    min-width: 95%;
+    min-width: 98.5%;
 }
 
 .optionIcon {
@@ -672,6 +670,7 @@ a {
     padding: 15px !important;
 }
 
+/* Large Screen */
 @media (min-width: 1251px) {
     a {
         min-height: 175px !important;
@@ -691,8 +690,6 @@ a {
     #selectEventWrapper {
         margin-top: 0 !important;
         max-width: 95%;
-        margin-left: auto;
-        margin-right: auto;
     }
 }
 </style>

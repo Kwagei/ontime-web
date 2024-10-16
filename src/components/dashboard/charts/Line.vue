@@ -6,14 +6,26 @@
                 <span class="male-color"></span>
                 <span>Male</span>
             </div>
-            <h3 class="mb-1">{{ gender.male || "..." }}</h3>
+            <h3 class="mb-1">
+                {{
+                    Number(gender.male) || gender.male == 0
+                        ? gender.male
+                        : "..."
+                }}
+            </h3>
         </div>
         <div class="data-body">
             <div class="d-flex align-items-center gap-1">
                 <span class="female-color"></span>
                 <span>Female</span>
             </div>
-            <h3 class="mb-1">{{ gender.female || "..." }}</h3>
+            <h3 class="mb-1">
+                {{
+                    Number(gender.female) || gender.female == 0
+                        ? gender.female
+                        : "..."
+                }}
+            </h3>
         </div>
     </div>
     <Line :data="chartData" :options="options" />

@@ -323,7 +323,14 @@ const hostsData = ref("");
 const hostsTerm = ref("");
 
 // Event types
-const eventTypes = ["Course", "Conference", "Workshop", "Hackathon"];
+const eventTypes = [
+    "Course",
+    "Conference",
+    "Workshop",
+    "Hackathon",
+    "Program",
+    "Excursion",
+];
 
 // Modal Data
 const alert = ref({
@@ -367,6 +374,19 @@ const updateEventTerm = (et) => {
 };
 
 watch([startDate, endDate], ([newStart, newEnd]) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // ensure the event start date is not before today
+    if (newStart && new Date(newStart) < today) {
+        alert.value.message = "START DATE can not be before today";
+        alert.value.status = "warning";
+
+        startDate.value = "";
+
+        showModal();
+    }
+
     // ensure start date is on or before end date
     if (newStart && newEnd && new Date(newStart) > new Date(newEnd)) {
         alert.value.message = "START DATE must be on or before END DATE";

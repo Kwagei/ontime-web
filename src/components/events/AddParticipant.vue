@@ -1,8 +1,6 @@
 <template>
     <AlertModal :data="alert" />
 
-    <BelongingModal @done="checkInParticipant" />
-
     <div id="addParticipantFormContainer" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -224,7 +222,6 @@
 <script setup>
 import AlertModal from "../modals/AlertModal.vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
-import BelongingModal from "../modals/BelongingModal.vue";
 
 import { ref, onMounted, watch, getCurrentInstance } from "vue";
 import { useRoute } from "vue-router";
@@ -242,8 +239,8 @@ import {
     showModal,
     getElement,
     removeClass,
-    addClass,
     formValidation,
+    formatMsisdn,
 } from "@/util/util.js";
 
 const props = defineProps({
@@ -291,12 +288,7 @@ const onSubmit = async () => {
     const participant = {
         first_name: first_name.value,
         last_name: last_name.value,
-
-        // format msisdn for backend
-        msisdn: msisdn.value.startsWith("0")
-            ? `231${msisdn.value.slice(1)}`
-            : msisdn.value,
-
+        msisdn: formatMsisdn(msisdn.value),
         email: email.value,
         address: address.value,
         gender: gender.value,
@@ -331,7 +323,7 @@ const onSubmit = async () => {
 
             if (action.value == "checkIn") {
                 createdParticipant.value = data.data[0];
-                showModal("#visitModal", "#modal-dialog");
+                checkInParticipant();
             } else resetForm();
 
             setTimeout(() => {
@@ -371,7 +363,7 @@ const onSubmit = async () => {
     });
 };
 
-async function checkInParticipant(modalResponse) {
+async function checkInParticipant() {
     $sectionIsLoading.value = true;
 
     // create visitor
@@ -409,8 +401,7 @@ async function checkInParticipant(modalResponse) {
         visitor_id: createdVisitor.result.data[0].id,
         purpose: props.event?.title,
         room_id: props.event?.room_id,
-        institution: modalResponse.institution,
-        items: modalResponse.belongings,
+        items: [],
     };
 
     // check participant in finally
@@ -432,11 +423,6 @@ async function checkInParticipant(modalResponse) {
             );
             $("#alertModalBody > .modal-content").addClass("border-success");
         }, 150);
-
-        // hide belongings and institution modal
-        const visitModal = getElement("#visitModal");
-        removeClass(visitModal, "show");
-        visitModal.style.display = "none";
 
         resetForm();
     } else {

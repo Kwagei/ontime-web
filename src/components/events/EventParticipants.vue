@@ -27,6 +27,7 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
+import $ from "jquery";
 
 import { API_KEY, API_URL } from "@/assets/js";
 import { capitalize } from "@/util/util";
@@ -40,9 +41,15 @@ const emit = defineEmits(["switch"]);
 let allParticipants = [];
 
 const refresh = defineModel("refresh");
+
+const table = ref();
 const tableKey = ref(0);
 
 DataTable.use(DataTablesCore);
+
+const props = defineProps({
+    event: Object,
+});
 
 const columns = [
     { data: "first_name", title: "First Name" },
@@ -60,6 +67,7 @@ const columns = [
                 ? `<span class="text-success fw-bold">Attended</span>`
                 : `<span class="text-danger fw-bold">Not Attended</span>`;
         },
+        visible: props.event.type == "Course" ? true : false,
     },
 ];
 
@@ -152,8 +160,6 @@ const options = {
     order: [[2, "desc"]],
     destroy: true,
 };
-
-const table = ref();
 
 onMounted(() => {
     handleEventDetail();

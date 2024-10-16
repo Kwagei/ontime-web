@@ -104,7 +104,7 @@
                 </div>
             </div>
         </div>
-        <EventParticipants v-model:refresh="refresh" />
+        <EventParticipants :event="props.event" v-model:refresh="refresh" />
 
         <ExportModal
             :exportFields="exportFields"

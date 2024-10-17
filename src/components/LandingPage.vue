@@ -8,11 +8,12 @@
             </a>
             </div>
             <form class="d-flex navbar-item gap-2" role="search">
-                <button class="btn btn-primary" type="submit">About</button>
-                <button class="btn btn-primary" type="submit">Features</button>
-                <button class="btn btn-primary" type="submit">Our team</button>
+                <a class="btn btn-primary" type="submit" href="#about">About</a>
+                <a class="btn btn-primary" type="submit" href="#demo">Demo</a>
+                <a class="btn btn-primary" type="submit" href="#features">Features</a>
+                <a class="btn btn-primary" type="submit" href="#team">Our team</a>
                 <router-link :to="{ name: 'sign-in' }">
-                    <button class="btn btn-primary" type="submit">Log in</button>
+                    <a class="btn btn-primary" type="submit">Log in</a>
                 </router-link>
             </form>
         </div>
@@ -36,7 +37,16 @@
       <div class="container">
         <h2 class="section-title">About Ontime</h2>
         <p>
-          Ontime is a comprehensive platform offering efficient solutions for attendance management, visitor check-ins, and event scheduling. Our system ensures streamlined operations, data security, and real-time collaboration for seamless team management.
+          Ontime is a comprehensive platform designed to streamline organizational management, offering robust solutions for 
+          attendance tracking, visitor check-ins, and event scheduling. Tailored to enhance productivity and improve team dynamics, 
+          Ontime simplifies daily operations with a user-friendly interface, ensuring smooth processes from workforce management to 
+          visitor handling. At places like the Orange Digital Center (ODC), where visitors must undergo detailed check-in and check-out 
+          procedures to ensure security and prevent theft, Ontime can automate and optimize these processes for greater efficiency.
+          <br><br>
+          In addition to its operational benefits, Ontime prioritizes data security, safeguarding sensitive information while adhering to 
+          industry standards. The platform also fosters real-time collaboration, enabling teams to communicate and coordinate effortlessly, 
+          whether managing staff, welcoming visitors, or organizing events. With features that support both large workforces and smaller teams, 
+          Ontime is the ideal solution for ensuring seamless management and operational excellence.
         </p>
       </div>
     </section>
@@ -50,19 +60,66 @@
           Try Ontime with the following credentials to explore the platform's features:
         </p>
         <div class="credentials-img d-flex">
-          <img src="../assets/images/Screenshot 2024-09-30 at 18-23-54 OnTime.png" alt="">
-          <img src="../assets/images/loginshot3.png" alt="">
-
+          <img src="../assets/images/demo.png" alt="">
+          <img src="../assets/images/demo1.png" alt="">
+          <img src="../assets/images/demo2.png" alt="">
         </div>
       </div>
     </section>
     
     <!-- Features Section -->
-     <!-- <section class="feature-section">
+    <section class="feature-section" id="features">
         <div class="container">
-          <h2>Features</h2>
+            <h2>Features:</h2>
+            <div class="row text-center gap-4">
+              <div class="col-md-5 features">
+                <img src="../assets/images/dashboard.png" alt="Visitor Check-ins" class="img-fluid">
+                <h3>Dashboard</h3>
+                <p>
+                  Easy to track the total number of people visiting the ODC on a weekly basis.
+                  Insights on the number of male and female students visiting weekly.Insights on the total visits for the last 3 months.
+
+                </p>
+              </div>
+              <div class="col-md-5 features">
+                  <img src="../assets/images/check-in.png" alt="Attendance Management" class="img-fluid">
+                  <h3>Check-in</h3>
+                  <p>
+                    Check-in, and check-out processes for visitors, capturing information such as their name, host, reason for visit, arrival time, and departure time. 
+                    Additionally, it will offer administrators an interface for viewing visitor records, and generating reports for analysis purposes.
+                  </p>
+              </div>
+              <div class="col-md-5 features">
+                  <img src="../assets/images/events.png" alt="Event Scheduling" class="img-fluid">
+                  <h3>Event Scheduling</h3>
+                  <p>
+                      Organize and manage events seamlessly with our scheduling tools. Coordinate with your team, send invites, and ensure everyone is on the same page with our collaborative calendar features.
+                  </p>
+              </div>
+              <div class="col-md-5 features">
+                  <img src="../assets/images/attendance.png" alt="Event Scheduling" class="img-fluid">
+                  <h3>Attendance</h3>
+                  <p>
+                    Capturing attendance for a course has been done manually on paper so far at the ODC. OnTime automates this by recording attendance for a student once they checked in. 
+                  </p>
+              </div>
+              <div class="col-md-5 features">
+                  <img src="../assets/images/import.png" alt="Event Scheduling" class="img-fluid">
+                  <h3>Data Import</h3>
+                  <p>
+                    Ontime supports the fast and efficient importing of data using CSV files, which simplifies the process of handling large amounts of information. This feature allows users to quickly upload visitor or event data in bulk, making it easier to manage and update records without manual input.  
+                  </p>
+              </div>
+              <div class="col-md-5 features">
+                  <img src="../assets/images/export.png" alt="Event Scheduling" class="img-fluid">
+                  <h3>Data Export</h3>
+                  <p>
+                    Ontime supports the fast and efficient exporting of data using CSV files, which simplifies the process of handling large amounts of information. This feature allows users to quickly download visitor or event data in bulk, making it easier to manage and update records without manual input.  
+                  </p>
+              </div>
+            </div>
         </div>
-     </section> -->
+    </section>
 
 
     <!-- Our Team Section -->
@@ -193,6 +250,18 @@ body {
   background-color: #f9f9f9;
 }
 
+.features{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 25px;
+  padding: 1.5rem;
+}
+
+.features img{
+  margin-bottom: 18px;
+}
+
 /* Demo Credentials Section */
 .demo-section {
   padding: 60px 0;
@@ -203,6 +272,10 @@ body {
 
 .credentials-img {
   justify-content: space-between;
+}
+
+.features img, .features, .credentials-img img{
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .demo-credentials ul {

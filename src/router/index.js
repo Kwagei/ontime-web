@@ -86,7 +86,7 @@ const routes = [
         // },
         children: [
             {
-                path: "",
+                path: "/",
                 component: LandingPage,
                 name: "landing-page",
             },

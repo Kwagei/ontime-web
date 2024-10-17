@@ -15,7 +15,6 @@
                 v-model="type"
             >
                 <option value="first_name">First Name</option>
-                <option value="middle_name">Middle Name</option>
                 <option value="last_name">Last Name</option>
                 <option value="gender">Gender</option>
                 <option value="email">Email</option>
@@ -38,12 +37,12 @@
                     <h5>Participant {{ index + 1 }}</h5>
                     <div class="d-flex justify-content-end gap-2 mb-3">
                         <Icons
-                            @click="emit('edit', participant.msisdn)"
+                            @click="emit('edit', participant.id)"
                             class="icons"
                             v-model:icon="editIcon"
                         />
                         <Icons
-                            @click="emit('delete', participant.msisdn)"
+                            @click="emit('delete', participant.id)"
                             class="icons"
                             v-model:icon="deleteIcon"
                         />
@@ -53,7 +52,6 @@
                     <div>
                         <span style="font-weight: 600">
                             {{ participant.first_name }}
-                            {{ participant?.middle_name }}
                             {{ participant.last_name }}
                         </span>
                     </div>
@@ -86,7 +84,7 @@
                         </span>
                     </div>
 
-                    <div>
+                    <div v-if="participant.msisdn">
                         <span>
                             <Icons
                                 style="width: 1.2rem"
@@ -104,7 +102,7 @@
                         </span>
                     </div>
 
-                    <div>
+                    <div v-if="participant.gender">
                         <span>
                             <Icons
                                 style="width: 1.2rem"
@@ -142,7 +140,7 @@
                         </span>
                     </div>
 
-                    <div>
+                    <div v-if="participant.session">
                         <span>
                             <Icons
                                 style="width: 1.2rem"
@@ -207,6 +205,7 @@ const sortParticipans = (participants) => {
         return 0;
     });
 };
+
 const emit = defineEmits(["edit", "delete"]);
 
 function search() {
@@ -248,10 +247,15 @@ function search() {
     margin-top: 15px;
 }
 
+.visitor-info {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
 .participantGridItem {
     max-width: 300px;
     min-width: 300px;
-    min-height: 280px;
 }
 
 .boxShadow {

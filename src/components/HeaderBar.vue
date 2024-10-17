@@ -19,7 +19,9 @@
                     <span class="navbar-toggler-icon"></span>
                 </div>
                 <div class="navbar-brand order-0">
-                    <h3 class="m-0 active-section">{{ activeSection }}</h3>
+                    <h3 class="m-0 active-section">
+                        {{ activeSection.replace("-", " ") }}
+                    </h3>
                 </div>
                 <div
                     class="bg-dark rounded-circle p-1"

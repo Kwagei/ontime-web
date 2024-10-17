@@ -1,4 +1,5 @@
 import { API_KEY, API_URL } from "@/assets/js";
+import validator from "validator";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
@@ -15,31 +16,12 @@ dayjs.extend(customParseFormat);
 export const msisdnValidation = (msisdns) => {
     if (!msisdns) return false;
 
-    const contacts = msisdns;
-    const serviceCode = [
-        "555",
-        "880",
-        "881",
-        "886",
-        "887",
-        "888",
-        "770",
-        "772",
-        "775",
-        "776",
-        "777",
-        "778",
-        "779",
-    ];
+    let contacts = msisdns;
+    const serviceCode = ["555", "88", "77"];
 
-    for (const contact of contacts) {
-        if (!contact.startsWith("0")) {
-            if (!contact.startsWith("231")) {
-                return {
-                    valid: false,
-                    message: "Phone number should start with 0",
-                };
-            }
+    for (let contact of contacts) {
+        if (!contact.startsWith("0") && !contact.startsWith("231")) {
+            contact = "231" + contact;
         }
 
         // Remove country code from the msisdn if added to the msisdn.
@@ -58,7 +40,7 @@ export const msisdnValidation = (msisdns) => {
             contactNumber.startsWith(val)
         );
 
-        // Msisdn range must be 9 digits.
+        // Msisdn range must be 9 digits and a valid code.
         if (contactRange !== 9 || !validCode || !contactNumber) {
             return { valid: false, message: "Invalid phone number!" };
         }
@@ -74,10 +56,7 @@ export const msisdnValidation = (msisdns) => {
  * @returns {boolean} - true / false
  */
 export const emailValidation = (mail) => {
-    const validEmail =
-        /^[a-zA-Z0-9.!#$%&'*+/=?^/_`{|}~-]+@[a-z]+(?:\.[a-zA-Z0-9]+)*$/;
-
-    const isValid = mail.match(validEmail);
+    const isValid = validator.isEmail(mail.trim());
 
     if (!isValid) {
         return { valid: false, message: "Invalid email address!" };
@@ -194,7 +173,7 @@ export const formatVisitData = (visits) => {
 
         if (visit.items.length) {
             visit.items = formatItems(visit.items);
-        } else visit.items = "";
+        } else visit.items = [];
 
         if (visit.purpose) {
             const purpose = visit.purpose.split(" ");
@@ -313,6 +292,7 @@ export async function getTodaysVisits() {
         },
         error: (err) => {
             console.error("error fetching today's visits: ", err);
+            todaysVisits = "error";
         },
     });
 
@@ -355,4 +335,16 @@ export const removeQuotes = (data, isString = false) => {
         // Return non-string elements as they are
         return item;
     });
+};
+
+export const capitalize = (str) => {
+    if (str) return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+// format msisdn to 231777123456 from 0777123456 or anything else
+// msisdn should validated with the `msisdnValidation()` method
+// before formatting it with this method
+export const formatMsisdn = (msisdn) => {
+    if (msisdn.startsWith("231")) return "231" + msisdn.slice(3, 12);
+    return "231" + msisdn.slice(1, 9);
 };

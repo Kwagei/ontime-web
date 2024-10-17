@@ -3,6 +3,7 @@
         v-if="Object.keys(participantToEdit).length"
         :data="participantToEdit"
         @updated="onParticipantUpdate"
+        @deleteParticipant="deleteParticipant"
     />
 
     <div class="container">
@@ -81,7 +82,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, getCurrentInstance } from "vue";
 import { parse } from "papaparse"; // Import Papa Parse for CSV parsing
 import { useRoute } from "vue-router";
 
@@ -113,36 +114,56 @@ const emit = defineEmits([
     "switch",
 ]);
 
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
 const participants = ref([]);
 const participantsFile = ref(null);
 const errorAlertMessage = ref("");
 const participantToEdit = ref({});
-const participantIndex = defineModel("participantIndex");
 
 function handleFileImport(event) {
     const file = event.target.files[0];
     if (file && file.type === "text/csv") {
         const reader = new FileReader();
         reader.onload = (e) => {
-            const csvData = e.target.result;
-            parse(csvData, {
-                header: true,
-                skipEmptyLines: true,
-                complete: (results) => {
-                    results.data = removeEmptyRows(results.data);
+            $sectionIsLoading.value = true;
+            errorAlertMessage.value = "";
+            participants.value = [];
 
-                    // validate csv file table columns
-                    if (!validateParticipantsCsvFile(results)) return false;
+            // wait a bit for section loader to appear
+            setTimeout(() => {
+                const csvData = e.target.result;
+                parse(csvData, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: (results) => {
+                        results.data = removeEmptyRows(results.data);
 
-                    participants.value = [];
-                    participants.value.push(...results.data);
+                        // validate csv file table columns
+                        if (!validateParticipantsCsvFile(results)) {
+                            $sectionIsLoading.value = false;
+                            return false;
+                        }
 
-                    // Clear file input after import
-                    participantsFile.value.value = "";
+                        participants.value = [];
+                        participants.value.push(...results.data);
 
-                    formatParticipants();
-                },
-            });
+                        formatParticipants();
+
+                        $sectionIsLoading.value = false;
+
+                        if (participants.value.length > 150) {
+                            emit("errorImportingParticipants", {
+                                status: "warning",
+                                message:
+                                    "Import Maximum 150 Participants at a time",
+                            });
+                        }
+                    },
+                });
+            }, 1000);
         };
 
         reader.readAsText(file);
@@ -161,12 +182,16 @@ async function onParticipantUpdate(updatedParticipant) {
 }
 
 async function postParticipants() {
+    $sectionIsLoading.value = true;
+
     const { ok, result } = await registerEventParticipants({
         event: {
             id: props.eventId,
         },
         event_participants: participants.value,
     });
+
+    $sectionIsLoading.value = false;
 
     if (ok) {
         participants.value = [];
@@ -181,6 +206,13 @@ async function postParticipants() {
             emit("errorImportingParticipants", {
                 status: "danger",
                 message: "Unable to Import Participants, try again",
+            });
+            return;
+        } else if (result.type == "entity.too.large") {
+            emit("errorImportingParticipants", {
+                status: "danger",
+                message:
+                    "Participants too many, please import participants in smaller partitions (100 each)",
             });
             return;
         }
@@ -206,10 +238,8 @@ function removeEmptyRows(data) {
     return data.filter(
         (participant) =>
             participant.first_name ||
-            participant.middle_name ||
             participant.last_name ||
             participant.msisdn ||
-            participant.address ||
             participant.email
     );
 }
@@ -217,17 +247,9 @@ function removeEmptyRows(data) {
 function validateParticipantsCsvFile(result) {
     const fields = result.meta.fields;
 
-    if (result.errors.length) return true;
-
     // ensure first_name column exists
     if (!fields.includes("first_name")) {
         errorAlertMessage.value = "`first_name` column required but not found";
-        return false;
-    }
-
-    // ensure middle_name column exists
-    if (!fields.includes("middle_name")) {
-        errorAlertMessage.value = "`middle_name` column required but not found";
         return false;
     }
 
@@ -237,39 +259,9 @@ function validateParticipantsCsvFile(result) {
         return false;
     }
 
-    // ensure email column exists
-    if (!fields.includes("email")) {
-        errorAlertMessage.value = "`email` column required but not found";
-        return false;
-    }
-
-    // ensure address column exists
-    if (!fields.includes("address")) {
-        errorAlertMessage.value = "`address` column required but not found";
-        return false;
-    }
-
-    // ensure msisdn column exists
-    if (!fields.includes("msisdn")) {
-        errorAlertMessage.value = "`msisdn` column required but not found";
-        return false;
-    }
-
     // ensure gender column exists
     if (!fields.includes("gender")) {
         errorAlertMessage.value = "`gender` column required but not found";
-        return false;
-    }
-
-    // ensure occupation column exists
-    if (!fields.includes("occupation")) {
-        errorAlertMessage.value = "`occupation` column required but not found";
-        return false;
-    }
-
-    // ensure session column exists
-    if (!fields.includes("session")) {
-        errorAlertMessage.value = "`session` column required but not found";
         return false;
     }
 
@@ -279,9 +271,9 @@ function validateParticipantsCsvFile(result) {
     return true;
 }
 
-function editParticipant(msisdn) {
+function editParticipant(id) {
     const idxToEdit = participants.value.findIndex(
-        (participant) => participant.msisdn === msisdn
+        (participant) => participant.id === id
     );
 
     // set a participant to edit
@@ -291,31 +283,31 @@ function editParticipant(msisdn) {
         errorMessage: "",
     };
 
-    participantIndex.value = idxToEdit + 1;
     setTimeout(
         () => showModal("#editParticipantModal", "#editParticipantModalBody"),
         150
     );
 }
 
-function deleteParticipant(msisdn) {
+async function deleteParticipant(id) {
     const idxToDelete = participants.value.findIndex(
-        (participant) => participant.msisdn === msisdn
+        (participant) => participant.id === id
     );
 
     participants.value.splice(idxToDelete, 1);
+    let errorMessage = participantToEdit.value.errorMessage;
+    participantToEdit.value = {};
+
+    if (errorMessage) await postParticipants();
 }
 
 function formatParticipants() {
-    for (const participant of participants.value) {
+    for (const [idx, participant] of participants.value.entries()) {
         participant.first_name = removeQuotes(
             participant.first_name.trim(),
             true
         );
-        participant.middle_name = removeQuotes(
-            participant.middle_name.trim(),
-            true
-        );
+
         participant.last_name = removeQuotes(
             participant.last_name.trim(),
             true
@@ -324,13 +316,25 @@ function formatParticipants() {
             participant.gender.toLowerCase().trim(),
             true
         );
-        participant.address = removeQuotes(participant.address.trim(), true);
-        participant.occupation = removeQuotes(
-            participant.occupation.trim(),
-            true
-        );
+
+        if (participant.session) {
+            participant.session = removeQuotes(
+                participant.session.trim(),
+                true
+            );
+        }
+
+        // format occupation if any
+        if (participant.occupation) {
+            // participant.address = removeQuotes(participant.address.trim(), true);
+            participant.occupation = removeQuotes(
+                participant.occupation.trim(),
+                true
+            );
+        }
 
         if (
+            participant.msisdn &&
             !participant.msisdn.startsWith("0") &&
             !participant.msisdn.startsWith("231")
         ) {
@@ -338,7 +342,7 @@ function formatParticipants() {
                 "231" + removeQuotes(participant.msisdn.trim(), true);
         }
 
-        console.log("formatted participant: ", participant);
+        participant.id = idx;
     }
 }
 </script>

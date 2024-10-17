@@ -13,6 +13,8 @@ import AppView from "@/views/AppView.vue";
 import AddUsers from "@/components/users/AddUsers.vue";
 import UserDetail from "@/components/users/UserDetail.vue";
 import NewPassword from "@/components/resetPassword/NewPassword.vue";
+
+// Landing Page
 import LandingPage from "@/components/LandingPage.vue";
 
 // Visitors Components
@@ -22,21 +24,25 @@ import AddVisitors from "../components/visitors/AddVisitors.vue";
 
 // Visit Components
 import Visits from "../layouts/Visits.vue";
-import AddMeeting from "@/components/visits/AddMeeting.vue";
-import AddEvents from "@/components/visits/AddEvents.vue";
-import AddWorkspace from "@/components/visits/AddWorkspace.vue";
-import AddVisits from "@/components/visits/AddVisits.vue";
+
+// Check In Components
+import AddMeeting from "@/components/checkIn/AddMeeting.vue";
+import AddEvents from "@/components/checkIn/AddEvents.vue";
+import AddWorkspace from "@/components/checkIn/AddWorkspace.vue";
 
 // Users Components
 import Users from "../layouts/Users.vue";
 
 // Dashboard Components
 import Dashboard from "../layouts/Dashboard.vue";
+
+// Other Components
 import Hosts from "@/components/hosts/Hosts.vue";
 import Rooms from "@/components/Room.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
+import CheckIn from "@/layouts/CheckIn.vue";
 
 const routes = [
     {
@@ -128,16 +134,16 @@ const routes = [
             },
             {
                 path: "/visits",
+                component: Visits,
+                name: "visits",
+            },
+            {
+                path: "/check-in",
                 children: [
                     {
                         path: "",
-                        component: Visits,
-                        name: "visits",
-                    },
-                    {
-                        path: "new-visit",
-                        component: AddVisits,
-                        name: "add-visit",
+                        component: CheckIn,
+                        name: "check-in",
                     },
                     {
                         path: "purpose-meeting",
@@ -232,7 +238,7 @@ const routes = [
 ];
 
 export const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHistory(import.meta.env.VITE_BASE_URL),
     routes,
 });
 

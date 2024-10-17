@@ -1,79 +1,26 @@
 <template>
     <div>
-        <div
-            class="offcanvas offcanvas-start"
-            tabindex="-1"
-            id="offcanvasExample"
-            aria-labelledby="offcanvasExampleLabel"
-        >
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasExampleLabel">
-                    Purpose
-                </h5>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="offcanvas"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="bottom"
-                    data-bs-title="Close"
-                >
-                    <span class="visually-hidden">Close</span>
-                </button>
-            </div>
-            <div class="m-3">
-                <router-link :to="{ name: 'visit-event' }">
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id=""
-                        style="padding: 0.5rem 1.5rem; font-weight: 600"
-                    >
-                        Events
-                    </button>
-                </router-link>
-
-                <router-link :to="''">
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id=""
-                        style="padding: 0.5rem 1.5rem; font-weight: 600"
-                        disabled
-                    >
-                        Meeting
-                    </button>
-                </router-link>
-
-                <router-link :to="{ name: 'visit-workspace' }">
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        id=""
-                        style="padding: 0.5rem 1.5rem; font-weight: 600"
-                    >
-                        Workspace
-                    </button>
-                </router-link>
-            </div>
-        </div>
-
         <div class="container text-center">
             <div id="dashboardFirstChild" class="row gap-4 my-3">
-                <div class="" id="stats">
+                <div id="stats">
                     <div
-                        class="d-flex justify-content-end align-items-end w-100 pb-3"
+                        class="d-flex justify-content-end align-items-end w-100 pb-3 gap-2"
                     >
                         <button
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#offcanvasExample"
-                            aria-controls="offcanvasExample"
-                            class="btn btn-primary"
+                            @click="router.go(0)"
+                            class="btn border border-2"
                         >
-                            Check In
+                            <Icons
+                                style="width: 20px"
+                                v-model:icon="reloadIcon"
+                            />
                         </button>
+                        <router-link :to="{ name: 'check-in' }">
+                            <button class="btn btn-primary">Check In</button>
+                        </router-link>
                     </div>
                     <div class="row align-items-start gap-4">
+                        <!-- Today's Visits -->
                         <div
                             class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
                             style="padding-left: 2.5rem !important"
@@ -90,10 +37,15 @@
                             >
                                 <span>Today's Visits</span>
                                 <h2>
-                                    {{ todaysVisits || 0 }}
+                                    {{
+                                        Number(todaysVisits) >= 0
+                                            ? todaysVisits
+                                            : "..."
+                                    }}
                                 </h2>
                             </div>
                         </div>
+                        <!-- Today's Events -->
                         <div
                             class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
                             style="padding-left: 2.5rem !important"
@@ -109,11 +61,12 @@
                                 class="cards d-flex flex-column align-items-center"
                             >
                                 <span>Today's Events</span>
-                                <h2>{{ todaysEvents }}</h2>
+                                <h2>{{ todaysEvents || "..." }}</h2>
                             </div>
                         </div>
+                        <!-- Total Visitors -->
                         <div
-                            class="form-control col py-3 px-4 d-flex rounded align-items-center gap-4"
+                            class="form-control col py-3 px-4 d-flex rounded align-items-center justify-content-center gap-4"
                             style="padding-left: 2.5rem !important"
                         >
                             <div
@@ -130,23 +83,8 @@
                                 class="cards d-flex flex-column align-items-center"
                             >
                                 <span>Total Visitors</span>
-                                <h2>{{ totalVisitors }}</h2>
+                                <h2>{{ totalVisitors || "..." }}</h2>
                             </div>
-                        </div>
-                        <div
-                            class="form-control col d-none rounded align-items-center gap-4"
-                            style="
-                                margin-top: auto;
-                                padding: 0 !important;
-                                background: transparent;
-                                border: none;
-                            "
-                        >
-                            <router-link to="/visits/purpose-event">
-                                <button class="btn btn-primary px-4 py-2">
-                                    Check In
-                                </button>
-                            </router-link>
                         </div>
                     </div>
                 </div>
@@ -169,7 +107,7 @@
             <h4>Last 5 Check In</h4>
             <div class="row">
                 <div class="col p-0" id="dashboardTable">
-                    <VisitList
+                    <VisitTable
                         v-model:totalVisits="totalVisits"
                         v-model:filterDates="filterDates"
                         v-model:dtd="dashboardTableData"
@@ -184,38 +122,31 @@
 import Bar from "../components/dashboard/charts/Bar.vue";
 import Line from "../components/dashboard/charts/Line.vue";
 import Calender from "../components/dashboard/Calender.vue";
-import { RouterLink } from "vue-router";
-
-import VisitList from "@/components/visits/VisitList.vue";
+import VisitTable from "@/components/dashboard/VisitTable.vue";
 import Icons from "@/components/Icons.vue";
-import { onMounted, ref, watch } from "vue";
 import { getVisitors } from "@/assets/js";
 import { hideSidebarOnSmallScreen } from "@/util/util";
+
+import { onMounted, getCurrentInstance, ref, watch } from "vue";
+import { RouterLink, useRouter } from "vue-router";
+
+const router = useRouter();
 
 const visitIcon = "house";
 const eventIcon = "calendar-event-agenda";
 const visitorIcon = "collective-class-training";
+const reloadIcon = ref("reload");
 
 const totalVisits = defineModel("totalVisits");
 const totalVisitors = defineModel("totalVisitors");
-const todaysVisits = defineModel("todaysVisits");
-const todaysEvents = ref(0);
 const allEvents = defineModel("allEvents");
+const todaysEvents = ref(0);
+
 allEvents.value = [];
 const filterDates = ref({
     from: "",
     to: "",
 });
-
-const dashboardTableData = defineModel("dtd");
-dashboardTableData.value = {
-    lengthMenu: [5],
-    bLengthChange: false,
-    recordsFiltered: 0,
-    bInfo: false,
-    paging: true,
-    searching: false,
-};
 
 watch(allEvents, (events) => {
     todaysEvents.value = getTodaysEvents(events).length;
@@ -234,6 +165,10 @@ const isEventHappeningToday = (event) => {
     );
 };
 
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
 const getTodaysEvents = (events) => {
     return events.filter(isEventHappeningToday);
 };
@@ -246,6 +181,9 @@ const fetchVisitors = async () => {
 onMounted(async () => {
     await fetchVisitors();
     hideSidebarOnSmallScreen();
+
+    // ensure loader is not showing
+    $sectionIsLoading.value = false;
 });
 </script>
 

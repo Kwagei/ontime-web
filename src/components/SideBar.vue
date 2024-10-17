@@ -29,9 +29,7 @@
             <li class="nav-item" v-for="item in navItems" :key="item.name">
                 <router-link
                     class="nav-link text-white"
-                    :to="{
-                        name: item.name === 'check in' ? 'visits' : item.name,
-                    }"
+                    :to="{ name: item.url || item.name }"
                     :id="item.name"
                 >
                     <Icons style="margin-right: 0.5rem" :icon="item.svg" />
@@ -91,8 +89,13 @@ const navItems = [
         svg: "group",
     },
     {
-        name: "check in",
+        name: "visits",
         svg: "house",
+    },
+    {
+        name: "check in",
+        url: "check-in",
+        svg: "inside",
     },
     {
         name: "events",
@@ -137,5 +140,15 @@ function hideSidebar() {
 
 #logoLink {
     margin-bottom: 0 !important;
+}
+
+#checkInNavItem div {
+    cursor: pointer;
+    border-radius: 7px;
+}
+
+#checkInNavItem div:hover {
+    background-color: #eee;
+    color: #000000 !important;
 }
 </style>

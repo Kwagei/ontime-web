@@ -15,6 +15,15 @@
                 <HeaderBar :activeSection="activeSection" />
 
                 <section>
+                    <div v-if="$sectionIsLoading" id="sectionLoader">
+                        <div
+                            id="sectionSpinner"
+                            class="spinner-grow spinner-grow-lg"
+                            role="status"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
                     <RouterView :breadCrumbs="breadCrumbs" />
                 </section>
             </main>
@@ -26,15 +35,35 @@
 import SideBar from "../components/SideBar.vue";
 import HeaderBar from "../components/HeaderBar.vue";
 
-import { ref } from "vue";
+import { getCurrentInstance, ref } from "vue";
 import { RouterView } from "vue-router";
 import { hideSidebarOnSmallScreen } from "@/util/util";
 
 const activeSection = ref("");
 const breadCrumbs = ref([]);
+
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
 </script>
 
 <style>
+#sectionLoader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 6rem;
+    left: 20rem;
+    right: 0;
+    bottom: 0;
+    z-index: 9999999999999;
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+#sectionSpinner {
+    background-color: black;
+}
+
 #wrapper {
     height: 100vh;
     width: 100vw;
@@ -82,6 +111,10 @@ main {
 
     main {
         margin-left: 0 !important;
+    }
+
+    #sectionLoader {
+        left: 0 !important;
     }
 }
 </style>

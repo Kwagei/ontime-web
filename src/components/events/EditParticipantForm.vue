@@ -58,20 +58,6 @@
                             </div>
                         </div>
 
-                        <!-- MIDDLE NAME -->
-                        <div class="col-md-6">
-                            <label for="middle_name" class="form-label"
-                                >Middle name</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="middle_name"
-                                v-model="middle_name"
-                                aria-describedby="inputGroupPrepend"
-                            />
-                        </div>
-
                         <!-- LAST NAME -->
                         <div class="col-md-6">
                             <label
@@ -95,40 +81,12 @@
                             </div>
                         </div>
 
-                        <!-- GENDER -->
-                        <div class="col-md-6">
-                            <label for="address" class="form-label is-required"
-                                >Gender<span class="visually-hidden">
-                                    (required)</span
-                                ></label
-                            >
-                            <div class="input-group has-validation">
-                                <select
-                                    class="form-select"
-                                    aria-label="Default select example"
-                                    required
-                                    v-model="gender"
-                                >
-                                    <option selected></option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please select a gender.
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- PHONE NUMBER -->
                         <div class="col-md-6">
-                            <label
-                                for="phone_number"
-                                class="form-label is-required"
-                                >Phone number<span class="visually-hidden">
-                                    (required)</span
-                                ></label
-                            >
-                            <div class="input-group has-validation">
+                            <label for="phone_number" class="form-label">
+                                Phone number
+                            </label>
+                            <div class="input-group">
                                 <input
                                     type="tel"
                                     :class="[
@@ -138,21 +96,22 @@
                                     v-model="msisdn"
                                     id="phone_number"
                                     aria-describedby="inputGroupPrepend"
-                                    required
                                     autocomplete="off"
                                 />
                                 <div
                                     :class="[
                                         'invalid-feedback',
-                                        validMsisdn && 'show-feedback',
+                                        msisdn &&
+                                            validMsisdn &&
+                                            'show-feedback',
                                     ]"
                                 >
                                     {{ validMsisdnMessage }}
                                 </div>
                             </div>
                             <div class="helpMessage form-text">
-                                Phone number should start with 0. For example:
-                                0778675908
+                                Phone number should start with 231 or 0. For
+                                example: 231778675908 or 0778675908
                             </div>
                         </div>
 
@@ -164,7 +123,7 @@
                                     type="email"
                                     v-model="email"
                                     :class="[
-                                        validEmail && 'validated',
+                                        email && validEmail && 'validated',
                                         'form-control',
                                     ]"
                                     id="email"
@@ -186,28 +145,69 @@
                             </div>
                         </div>
 
+                        <!-- SESSION -->
+                        <div class="col-md-6">
+                            <label for="session" class="form-label">
+                                Session
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control has-validation"
+                                id="session"
+                                v-model="session"
+                                aria-describedby="inputGroupPrepend"
+                            />
+                            <div class="invalid-feedback">
+                                Please enter session information
+                            </div>
+                            <div class="helpMessage form-text">
+                                Morning Session, Afternoon Session or Time in
+                                the Day of Session
+                            </div>
+                        </div>
+
                         <!-- ADDRESS -->
                         <div class="col-md-6">
-                            <label for="address" class="form-label is-required"
-                                >Address<span class="visually-hidden">
-                                    (required)</span
-                                ></label
-                            >
-                            <div class="input-group has-validation">
+                            <label for="address" class="form-label">
+                                Address
+                            </label>
+                            <div class="input-group">
                                 <input
                                     type="text"
                                     class="form-control"
                                     id="address"
                                     v-model="address"
-                                    required
                                 />
-                                <div class="invalid-feedback">
-                                    Please provide an address.
-                                </div>
                             </div>
                             <div class="helpMessage form-text">
                                 Enter descriptive address. For example: Congo
                                 Town, Adjacent Satcom, Monrovia, Liberia
+                            </div>
+                        </div>
+
+                        <!-- GENDER -->
+                        <div class="col-md-6">
+                            <label for="gender" class="form-label is-required">
+                                Gender
+                                <span class="visually-hidden">
+                                    (required)
+                                </span>
+                            </label>
+                            <div class="input-group has-validation">
+                                <select
+                                    class="form-select"
+                                    aria-label="Default select example"
+                                    required
+                                    id="gender"
+                                    v-model="gender"
+                                >
+                                    <option selected></option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select a gender.
+                                </div>
                             </div>
                         </div>
 
@@ -225,34 +225,18 @@
                             />
                         </div>
 
-                        <!-- SESSION -->
-                        <div class="col-md-6">
-                            <label for="session" class="form-label is-required">
-                                Session
-                                <span class="visually-hidden">
-                                    (required)
-                                </span>
-                            </label>
-                            <div class="input-group has-validation">
-                                <select
-                                    class="form-select"
-                                    aria-label="Default select example"
-                                    required
-                                    v-model="session"
-                                >
-                                    <option selected></option>
-                                    <option value="morning">Morning</option>
-                                    <option value="afternoon">Afternoon</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please select a session.
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="col-md-12 d-flex gap-2 justify-content-end">
                             <button type="submit" class="btn btn-primary">
                                 Update
+                            </button>
+
+                            <button
+                                v-if="errorStatus == 409"
+                                type="submit"
+                                class="btn btn-danger"
+                                @click="$emit('deleteParticipant', msisdn)"
+                            >
+                                Delete
                             </button>
 
                             <button
@@ -283,7 +267,6 @@ const props = defineProps({
 
 // Participant data
 const first_name = ref("");
-const middle_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
 const email = ref("");
@@ -292,9 +275,10 @@ const gender = ref("");
 const occupation = ref("");
 const session = ref("");
 
-const emit = defineEmits(["updated", "cancel"]);
+const emit = defineEmits(["updated", "deleteParticipant", "cancel"]);
 
 const participantIndex = ref(0);
+const errorStatus = ref(-1);
 const errorMessage = ref();
 
 const validEmail = ref(false);
@@ -303,20 +287,12 @@ const validMsisdnMessage = ref("Please provide a phone number");
 const validEmailMessage = ref("Please provide a valid email address");
 
 function update() {
-    if (
-        !first_name.value ||
-        !last_name.value ||
-        !msisdn.value ||
-        !address.value ||
-        !session.value ||
-        !gender.value
-    ) {
+    if (!first_name.value || !last_name.value || !gender.value) {
         return;
     }
 
     const updatedParticipant = {
         first_name: first_name.value,
-        middle_name: middle_name.value,
         last_name: last_name.value,
         address: address.value,
         email: email.value,
@@ -383,11 +359,11 @@ const validateEmail = (mail) => {
 };
 
 function initializeFormData() {
+    errorStatus.value = props.data.status;
     errorMessage.value = props.data.errorMessage;
     participantIndex.value = props.data.idx + 1;
 
     first_name.value = props.data.participant?.first_name;
-    middle_name.value = props.data.participant?.middle_name;
     last_name.value = props.data.participant?.last_name;
     msisdn.value = props.data.participant?.msisdn;
     email.value = props.data.participant?.email;

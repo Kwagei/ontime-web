@@ -38,7 +38,7 @@
                                 class="dropdown-item"
                                 @click="emit('switch', 'todaysAttendance')"
                             >
-                                Today's Attendance
+                                Attendance
                             </li>
                         </ul>
                     </div>

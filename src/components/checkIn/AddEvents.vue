@@ -2,86 +2,7 @@
     <AlertModal :data="alert" />
 
     <!-- BELONGING MODAL -->
-    <div
-        class="modal fade"
-        id="visitModal"
-        tabindex="-1"
-        aria-hidden="true"
-        aria-labelledby="visitModalLabel"
-        style="z-index: 2000"
-    >
-        <div
-            class="modal-dialog modal-lg modal-dialog-centered"
-            id="modal-dialog"
-        >
-            <div class="modal-content rounded">
-                <div class="modal-header">
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        data-bs-placement="bottom"
-                        data-bs-title="Close"
-                    >
-                        <span class="visually-hidden">Close</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="belongings" class="form-label"
-                            >Belongings</label
-                        >
-                        <div class="input-group has-validation">
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="belongings"
-                                aria-describedby="inputGroupPrepend"
-                                v-model="temBelonging"
-                                @keyup.prevent="addBelongings"
-                            />
-                        </div>
-                        <div
-                            v-for="belonging in belongings"
-                            :key="belonging"
-                            @click="deleteBelongings(belonging)"
-                            class="belonging"
-                        >
-                            {{ belonging }}
-                        </div>
-                    </div>
-                    <div class="">
-                        <label for="institution" class="form-label"
-                            >Institution</label
-                        >
-                        <div class="input-group">
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="institution"
-                                aria-describedby="inputGroupPrepend"
-                                v-model="institution"
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button @click="checkParticipantIn" class="btn btn-primary">
-                        Check In
-                    </button>
-
-                    <button
-                        type="button"
-                        class="btn btn-outline-secondary"
-                        data-bs-dismiss="modal"
-                        @click="resetForm"
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <BelongingModal @done="checkParticipantIn" @cancel="resetForm" />
 
     <!-- EVENT PARTICIPANTS TABLE -->
     <div id="visit-view" class="d-flex flex-column container">
@@ -95,56 +16,113 @@
         <div
             id="eventCheckInWrapper"
             class="mt-4 p-0 d-flex flex-column"
-            style="border: none; background-color: transparent; gap: 3rem"
+            style="border: none; background-color: transparent"
         >
-            <form class="row g-3">
-                <div class="dropdown" id="selectEventWrapper">
-                    <label
-                        for="selectEventInput"
-                        class="form-label is-required"
-                    >
-                        Select Event:
-                    </label>
+            <div id="selectEventWrapper">
+                <button
+                    id="dropdownBtn"
+                    class="btn btn-dropdown dropdown-toggle mb-3 ms-2 w-25 text-start"
+                    type="button"
+                    @click="
+                        $('#ongoingEventsGridWrapper').toggleClass('d-none')
+                    "
+                >
+                    Ongoing Events
+                </button>
 
-                    <div class="w-100 position-relative">
-                        <input
-                            type="text"
-                            class="form-select dropdown-toggle dropdown-toggle-split"
-                            id="selectEventInput"
-                            :id="eventID"
-                            :value="eventValue"
-                            v-model="eventValue"
-                            aria-expanded="false"
-                            data-bs-toggle="dropdown"
-                            autocomplete="off"
-                            placeholder="Select Event..."
-                        />
-
-                        <ul class="dropdown-menu w-100">
-                            <li v-if="!events.length" class="dropdown-item">
-                                No Ongoing Events!
-                            </li>
-                            <template v-for="event in events">
-                                <li
-                                    class="dropdown-item"
-                                    :value="event.id"
-                                    @click="updateEventTerm(event)"
-                                >
-                                    {{ event.title }}
-                                </li>
-                            </template>
-                            <router-link to="/events/add-event">
-                                <li
-                                    class="dropdown-item"
-                                    style="color: #ff7900"
-                                >
-                                    Create new event
-                                </li>
-                            </router-link>
-                        </ul>
+                <!-- Loader -->
+                <div v-if="loading" class="w-100 text-center ms-2 pt-5">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
-            </form>
+
+                <!-- No Ongoing Events -->
+                <div
+                    v-if="noEvents"
+                    class="text text-primary w-100 ms-2 fw-bold fs-3"
+                >
+                    No Ongoing Events!
+                </div>
+                <div
+                    v-if="errorRetrievingEvents"
+                    class="w-100 ms-2 fw-bold fs-3"
+                >
+                    <span class="text-danger">
+                        Unable to load Ongoing Events, try again!
+                    </span>
+                </div>
+
+                <div
+                    v-if="events && events.length"
+                    id="ongoingEventsGridWrapper"
+                >
+                    <div
+                        id="ongoingEventsGrid"
+                        class="d-flex px-2 justify-content-start flex-wrap align-items-start gap-4"
+                    >
+                        <div
+                            v-for="(event, idx) in events"
+                            :class="{ 'chosen-event': chosenEvent === idx }"
+                            class="d-flex flex-column align-items-center justify-content-center p-3 checkInOption"
+                            @click="updateEventTerm(event, idx)"
+                        >
+                            <Icons
+                                :height="'58%'"
+                                :width="'60%'"
+                                class="optionIcon"
+                                icon="calendar-event-agenda"
+                            />
+                            <h3>{{ event.title }}</h3>
+                            <div
+                                class="d-flex flex-column gap-2 w-100 text-start text text-secondary"
+                            >
+                                <!-- Start & End Date -->
+                                <div class="d-flex flex-column gap-1">
+                                    <span>
+                                        <Icons icon="clock" /> Timespan
+                                    </span>
+                                    <span class="fw-bold">
+                                        {{
+                                            formatDateTime(event.startDate, {
+                                                date: true,
+                                            })
+                                        }}
+                                        to<br />
+                                        {{
+                                            formatDateTime(event.endDate, {
+                                                date: true,
+                                            })
+                                        }}
+                                    </span>
+                                </div>
+                                <!-- Facilitator -->
+                                <div class="d-flex flex-column gap-1">
+                                    <span>
+                                        <Icons icon="administrator" />
+                                        Facilitator
+                                    </span>
+                                    <span class="fw-bold">
+                                        {{ event.facilitator }}
+                                    </span>
+                                </div>
+                                <!-- Type -->
+                                <div class="d-flex flex-column gap-1">
+                                    <span> <Icons icon="apps" /> Type </span>
+                                    <span class="fw-bold">{{
+                                        event.type
+                                    }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <router-link to="/events/add-event">
+                        <button class="btn btn-primary my-3 ms-2">
+                            Create new event
+                        </button>
+                    </router-link>
+                </div>
+            </div>
 
             <!-- All Participants -->
             <div v-if="showTable" class="container">
@@ -156,6 +134,7 @@
                     :options="dataTableOptions"
                     ref="table"
                 />
+
                 <h3 class="mt-5 text-center fw-bold" v-if="showError">
                     Unable to load event participants, try again!
                 </h3>
@@ -165,9 +144,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, getCurrentInstance } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
+import BelongingModal from "../modals/BelongingModal.vue";
+import Icons from "../Icons.vue";
 import {
     registerVisit,
     getSingleVisitor,
@@ -183,6 +164,8 @@ import {
     getElement,
     removeClass,
     showModal,
+    formatMsisdn,
+    formatDateTime,
 } from "@/util/util";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -209,19 +192,22 @@ const selectedRow = ref("");
 const columns = [
     { data: "created_at", visible: false },
     { data: "first_name", title: "First name" },
-    { data: "middle_name", title: "Middle name" },
     { data: "last_name", title: "Last name" },
     { data: "msisdn", title: "Phone number" },
     { data: "email", title: "Email" },
-    { data: "address", title: "Address" },
+    { data: "session", title: "Session" },
     {
         data: null,
         title: "Visited Today",
         className: "text-center",
         render: (data) => {
             return data.participant_id
-                ? `<span class="text-success fw-bold">Yes</span>`
-                : `<span class="text-danger fw-bold">No</span>`;
+                ? `<div class="w-100 text-center text-success fw-bold">
+					  <span>Yes</span>
+				   </div>`
+                : `<div class="w-100 text-center text-danger fw-bold">
+					  <span>No</span>
+				  </div>`;
         },
     },
     {
@@ -292,13 +278,13 @@ const dataTableOptions = ref({
         emptyTable: `
 			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4" >
 				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"/></svg>
-				No participants for this event
+				No Event Participant
 			</div>
 		`,
         zeroRecords: `
 			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4" >
 				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M33.8 87.5V69.684A10.02 10.02 0 0126.3 60V48.75a18.7 18.7 0 011.763-7.943 16.64 16.64 0 01-10.72-4.533A15.29 15.29 0 008.8 50v11.912C8.8 65.81 12.001 69 15.9 69v18.5a4.965 4.965 0 004.959 5h14.857a7.47 7.47 0 01-1.916-5m48.958-51.226a16.64 16.64 0 01-10.72 4.533A18.7 18.7 0 0173.8 48.75V60a10.02 10.02 0 01-7.5 9.684V87.5a7.47 7.47 0 01-1.916 5h14.857a4.965 4.965 0 004.959-5V69c3.899 0 7.1-3.19 7.1-7.088V50a15.29 15.29 0 00-8.542-13.726M71.3 12.5a12.44 12.44 0 00-6.538 1.845q.135.286.26.579a16.24 16.24 0 01-2.416 16.644l.723.356a18.8 18.8 0 016.668 5.509A12.5 12.5 0 1071.3 12.5m-7.5 8.75A13.75 13.75 0 1150.05 7.5 13.75 13.75 0 0163.8 21.25m-1.576 12.916a17.747 17.747 0 01-24.348 0A16.25 16.25 0 0028.8 48.75V60a7.5 7.5 0 007.5 7.5v20a5 5 0 005 5h17.5a5 5 0 005-5v-20a7.5 7.5 0 007.5-7.5V48.75a16.25 16.25 0 00-9.076-14.584m-32.12 3.266a18.8 18.8 0 016.667-5.508l.723-.357a16.27 16.27 0 01-2.416-16.643q.125-.292.26-.58A12.5 12.5 0 1028.8 37.5a13 13 0 001.304-.067Z"/></svg>
-				No participants for this event
+				No match!
 			</div>
 		`,
         loadingRecords: `
@@ -319,17 +305,23 @@ const dataTableOptions = ref({
     order: [[0, "desc"]],
 });
 
+// event retrieval flags
+const loading = ref(true);
+const noMatch = ref(false);
+const noEvents = ref(false);
+const errorRetrievingEvents = ref(false);
+
 // visit creation data
 const participant_id = ref("");
 const msisdn = ref("");
 const visitorId = ref("");
 const host_id = ref("");
 const room_id = ref("");
-const institution = ref("");
 const address = ref("");
 const purpose = ref("");
-const belongings = ref([]);
 const room = ref("");
+
+const chosenEvent = ref("");
 
 // Modal Data
 const alert = ref({
@@ -343,7 +335,6 @@ const alert = ref({
 const visitor = ref("");
 const participants = ref([]);
 const participant = ref("");
-const temBelonging = ref("");
 const MAX_DETAIL_LEN = 30;
 
 const activeBreadCrumbs = ref([]);
@@ -353,9 +344,14 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    getRoom: Boolean,
 });
 
-activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
+activeBreadCrumbs.value = ["check-in", "event"];
+
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
 
 // Lifecycle Hooks
 onMounted(async () => {
@@ -367,7 +363,7 @@ onMounted(async () => {
         setTimeout(
             () =>
                 checkInBtnClicked(selectedRow.value, selectedParticipant.value),
-            250
+            150
         );
     });
 
@@ -393,17 +389,18 @@ function checkInBtnClicked(row, data) {
         alert.value.status = "warning";
         alert.value.message = `Visitor ${data.first_name} ${data.last_name} is still checked in`;
         alert.value.pageLink = `/visits`;
-    } else {
-        // otherwise check visitor in
-        showModal("#visitModal", "#modal-dialog");
-
+    }
+    // otherwise check visitor in
+    else {
         participantDetail(data.id);
 
         participant.value = row;
     }
 }
 
-const updateEventTerm = (event) => {
+const updateEventTerm = (event, idx) => {
+    chosenEvent.value = idx;
+
     purpose.value = event.title;
     eventValue.value = event.title;
     eventID.value = event.id;
@@ -417,14 +414,15 @@ const updateEventTerm = (event) => {
     // reload the table with the new url
     dataTableKey.value += 1;
 
-    const selectedHost = events.value.find((val) => val.id === eventID.value);
+    const selectedEvent = events.value.find((val) => val.id === eventID.value);
 
-    if (selectedHost) {
-        room.value = selectedHost.room;
+    if (selectedEvent) {
+        room.value = selectedEvent.room;
     }
 
     // display data table if it's not already displayed
     if (showTable.value == false) showTable.value = true;
+    $("#ongoingEventsGridWrapper").addClass("d-none");
 };
 
 // function for inserting each username in the select element
@@ -432,21 +430,47 @@ const getEventsOptions = async () => {
     try {
         events.value = await getEvents(null, { current: true });
 
+        // if `getEvents` returns a falsy value, indicate error
+        if (!events.value) {
+            console.log("error caught");
+            eventTem.value = undefined;
+            loading.value = false;
+            noMatch.value = false;
+            errorRetrievingEvents.value = true;
+
+            return;
+        }
+
+        // format event for drop down
         events.value = events.value.events.map((event) => ({
             id: event.id,
             title: event.title,
+            startDate: event.start_date,
+            endDate: event.end_date,
+            type: event.type,
+            facilitator: event.facilitator,
             room_id: event.room_id,
             host_id: event.host_id,
         }));
 
+        if (!events.value.length) noEvents.value = true;
+
         eventTem.value = events.value;
+        loading.value = false;
+        noMatch.value = false;
+        errorRetrievingEvents.value = false;
     } catch (error) {
         console.error("Error retrieving users:", error);
+
+        loading.value = false;
+        errorRetrievingEvents.value = true;
+        noMatch.value = false;
+        noEvents.value = false;
     }
 };
 
 // function to validate form before it submit the form
-const checkParticipantIn = async () => {
+const checkParticipantIn = async (belongingsAndInstitution) => {
     if (!msisdn.value || !visitor.value || !purpose.value || !room_id.value) {
         return;
     }
@@ -456,8 +480,9 @@ const checkParticipantIn = async () => {
     // Required values for checking a visitor in
     const visitData = {
         visitor_id: visitorId.value,
-        institution: institution.value,
-        items: belongings.value,
+        event_id: eventID.value,
+        institution: belongingsAndInstitution.institution,
+        items: belongingsAndInstitution.belongings,
         room_id: room_id.value,
         host_id: host_id.value,
         purpose: purpose.value,
@@ -465,27 +490,35 @@ const checkParticipantIn = async () => {
         participant_id: participant_id.value,
     };
 
+    $sectionIsLoading.value = true;
     const response = await registerVisit(visitData);
+    $sectionIsLoading.value = false;
 
-    // Reload data table to update the departure time of the participant that was just checked in
-    dataTableKey.value += 1;
-
-    showModal("#alertModal", "#alertModalBody");
-    alert.value.status = response.ok ? "success" : "danger";
-    alert.value.message = response.result.message;
-    alert.value.pageLink = `/visits`;
+    // hide belongings and institution modal
+    const visitModal = getElement("#visitModal");
+    removeClass(visitModal, "show");
+    visitModal.style.display = "none";
 
     if (response.ok) {
-        const visitModal = getElement("#visitModal");
-        removeClass(visitModal, "show");
-        visitModal.style.display = "none";
-
         // Update visitor status for last visit
         updateVisitorVisitStatus();
 
+        // Reload data table to update the departure time of the participant that was just checked in
+        dataTableKey.value += 1;
+
+        alert.value.message = "Visitor Checked In";
+        alert.value.status = "success";
+        alert.value.pageLink = response.ok ? `/visits` : "";
+
         // Reset form if the response is successful
         resetForm();
+    } else {
+        alert.value.status = "danger";
+        alert.value.message = response.result.message;
     }
+
+    // show alert modal
+    showModal();
 };
 
 const resetForm = () => {
@@ -493,23 +526,7 @@ const resetForm = () => {
     msisdn.value = "";
     eventValue.value = "";
     belongings.value = [];
-    temBelonging.value = "";
     institution.value = "";
-};
-
-const addBelongings = (event) => {
-    const { key } = event;
-
-    if (key === "Enter" && temBelonging.value) {
-        if (!belongings.value.includes(temBelonging.value)) {
-            belongings.value.push(temBelonging.value);
-        }
-        temBelonging.value = "";
-    }
-};
-
-const deleteBelongings = (item) => {
-    belongings.value = belongings.value.filter((val) => val !== item);
 };
 
 const participantDetail = async (id) => {
@@ -519,16 +536,17 @@ const participantDetail = async (id) => {
     const participant = participants.value.find((val) => val.id === id);
 
     // Assign participant id for visit checking in
-    participant_id.value = participant.id;
+    if (participant) participant_id.value = participant.id;
 
     // Check if the visitor exists
-    let visitorData = await getSingleVisitor({ msisdn: participant.msisdn });
+    let visitorData = await getSingleVisitor({
+        msisdn: participant.visitor_id || formatMsisdn(participant.msisdn),
+    });
 
     // Create visitor if this participant is not already a visitor.
     if (!visitorData) {
         const response = await registerVisitor({
             first_name: participant.first_name,
-            middle_name: participant.middle_name,
             last_name: participant.last_name,
             email: participant.email,
             msisdn: participant.msisdn,
@@ -547,15 +565,29 @@ const participantDetail = async (id) => {
         }
     }
 
+    // further ensure which exact participant the visitor we're checking is
+    else if (
+        participant.visitor_id &&
+        participant.visitor_id != visitorData.id
+    ) {
+        alert.value.message =
+            "Duplicated Phone Number - A Visitor already exists with this phone number!";
+        alert.value.status = "danger";
+
+        showModal();
+        return;
+    }
+
     // Add first name, add middle name if the visitor has one, and add last name
-    visitor.value = `${visitorData.first_name}${
-        visitorData.middle_name ? visitorData.middle_name + " " : ""
-    } ${visitorData.last_name}`;
+    visitor.value = `${visitorData.first_name} ${visitorData.last_name}`;
 
     visitorId.value = visitorData.id;
     msisdn.value = visitorData.msisdn;
     room_id.value = event.room_id;
     host_id.value = event.host_id;
+
+    // show institution and belongings modal to complete check in
+    showModal("#visitModal", "#modal-dialog");
 };
 
 function formatAddress(address) {
@@ -581,19 +613,6 @@ const updateVisitorVisitStatus = () => {
     // Reset for new participant.
     participant.value = "";
 };
-
-watch(
-    () => eventValue.value,
-    (n) => {
-        events.value = n
-            ? eventTem.value.filter((event) =>
-                  event.title
-                      .toLocaleLowerCase()
-                      .includes(n.toLocaleLowerCase())
-              )
-            : eventTem.value;
-    }
-);
 </script>
 
 <style scoped>
@@ -621,7 +640,50 @@ a {
     background-color: #1616157a;
 }
 
+#dropdownBtn {
+    justify-content: space-between !important;
+    min-width: 95%;
+}
+
+.optionIcon {
+    min-height: 80px;
+    min-width: 78px;
+}
+
+.chosen-event {
+    outline: 2px solid #595959;
+    box-shadow: 0 0px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.checkInOption {
+    display: flex;
+    align-items: center;
+    border-radius: 15px;
+    background-color: #eee;
+    min-width: 225px;
+    height: 100% !important;
+    width: 20%;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+.checkInOption:hover {
+    padding: 15px !important;
+}
+
+@media (min-width: 1251px) {
+    a {
+        min-height: 175px !important;
+    }
+}
+
+/* Small Screen */
 @media (max-width: 1250px) {
+    #ongoingEventsGrid {
+        justify-content: center !important;
+    }
+
     #eventCheckInWrapper {
         gap: 0.75rem !important;
     }

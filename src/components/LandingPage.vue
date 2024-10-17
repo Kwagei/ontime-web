@@ -165,7 +165,7 @@
               <img src="../assets/images/jeedo.jpg" alt="Team Member" class="team-photo"/>
             </div>
             <div class="team-name">
-              <h3 class="team-name">Jee-do Gbozee Arkio</h3>
+              <h3 class="team-name">Jee-do Gbozee Arkoi</h3>
             </div>
             <div class="team-role">
               <p class="team-role">Developer</p>
@@ -234,6 +234,11 @@ body {
 }
 .cta-button:hover {
   background-color: #e68900;
+}
+
+.row{
+  display: flex;
+  justify-content: space-between;
 }
 
 /* About Section */
@@ -305,6 +310,7 @@ body {
 .team-grid {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 20px;
 }

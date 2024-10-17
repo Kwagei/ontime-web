@@ -6,14 +6,14 @@
                 <span class="male-color"></span>
                 <span>Male</span>
             </div>
-            <h3 class="mb-1">{{ gender.male }}</h3>
+            <h3 class="mb-1">{{ gender.male || "..." }}</h3>
         </div>
         <div class="data-body">
             <div class="d-flex align-items-center gap-1">
                 <span class="female-color"></span>
                 <span>Female</span>
             </div>
-            <h3 class="mb-1">{{ gender.female }}</h3>
+            <h3 class="mb-1">{{ gender.female || "..." }}</h3>
         </div>
     </div>
     <Line :data="chartData" :options="options" />
@@ -30,6 +30,9 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
+
+import { API_KEY, API_URL, getVisits } from "@/assets/js";
+import { getTodaysVisits } from "@/util/util";
 
 // Register the Chart.js components
 ChartJS.register(
@@ -82,19 +85,16 @@ const options = ref({
     },
 });
 
-import { API_KEY, API_URL, getVisits } from "@/assets/js";
-import { getTodaysVisits } from "@/util/util";
-
 const totalVisits = defineModel("totalVisits");
 const todaysVisits = defineModel("todaysVisits");
 
-onMounted(() => {
-    setTimeout(() => initializeTodaysVisits(), 2000);
+onMounted(async () => {
+    initializeTodaysVisits();
 });
 
 async function initializeTodaysVisits() {
-    let tmpTotalVisits = await getTodaysVisits();
-    todaysVisits.value = tmpTotalVisits.totalLength;
+    let tmpTodaysVisits = await getTodaysVisits();
+    todaysVisits.value = tmpTodaysVisits.totalLength;
 }
 
 watch(totalVisits, async (n) => {
@@ -109,17 +109,33 @@ const fetchVisits = async (total) => {
 
 const updateWeeklyVisitData = async () => {
     const currentWeekVisits = await getCurrentWeekData();
-    const datesOfWeek = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-    ];
 
     const maleVisits = new Array(6).fill(0);
     const femaleVisits = new Array(6).fill(0);
+
+    let todaysDay = new Date().getDay() - 1;
+    let daysOfWeekIdx = 5,
+        nextDayIdx;
+    const daysOfWeek = new Array(6).fill("...");
+    const daysKeys = {
+        0: "Monday",
+        1: "Tuesday",
+        2: "Wednesday",
+        3: "Thursday",
+        4: "Friday",
+        5: "Saturday",
+    };
+
+    // format dates for chart x axis
+    while (daysOfWeekIdx >= 0) {
+        // wrap around the week days
+        // exclude Sunday
+        nextDayIdx = todaysDay <= -1 ? (todaysDay = 5) : todaysDay;
+
+        daysOfWeek[daysOfWeekIdx] = daysKeys[nextDayIdx];
+        todaysDay -= 1;
+        daysOfWeekIdx -= 1;
+    }
 
     // loop through each day of the week
     for (const [dayIndex, eachDayVisits] of currentWeekVisits.entries()) {
@@ -137,7 +153,7 @@ const updateWeeklyVisitData = async () => {
     }
 
     chartData.value = {
-        labels: datesOfWeek,
+        labels: daysOfWeek,
         datasets: [
             {
                 label: "Male",

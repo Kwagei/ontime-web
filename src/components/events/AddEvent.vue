@@ -41,6 +41,7 @@
                             id="title"
                             aria-describedby="inputGroupPrepend"
                             v-model="title"
+                            autofocus="true"
                             required
                         />
 
@@ -294,6 +295,7 @@ import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
 import { useRouter } from "vue-router";
 import {
+    capitalize,
     formValidation,
     getElement,
     removeClass,
@@ -363,6 +365,17 @@ const updateRoomTerm = (room) => {
 const updateEventTerm = (et) => {
     type.value = et;
 };
+
+watch([startDate, endDate], ([newStart, newEnd]) => {
+    // ensure start date is on or before end date
+    if (newStart && newEnd && new Date(newStart) > new Date(newEnd)) {
+        alert.value.message = "START DATE must be on or before END DATE";
+        alert.value.status = "warning";
+
+        endDate.value = "";
+        showModal();
+    }
+});
 
 // Local search for host
 watch(
@@ -485,7 +498,7 @@ onMounted(async () => {
         $("#breadCrumbsOl")[0].innerHTML = `
 			<li style="margin: 10px">
 				<span class="text fw-bold">
-					${mode.charAt(0).toUpperCase() + mode.slice(1)} Event
+					${capitalize(mode)} Event
 				</span>
 			</li>
 		`;

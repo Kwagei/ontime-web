@@ -29,75 +29,16 @@
                     </ul>
                 </div>
 
-                <button
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasExample"
-                    aria-controls="offcanvasExample"
-                    type="button"
-                    id="addVisitBtn"
-                    class="btn btn-primary"
-                >
-                    <Icons v-model:icon="add" />
-                    New
-                </button>
-
-                <div
-                    class="offcanvas offcanvas-start"
-                    tabindex="-1"
-                    id="offcanvasExample"
-                    aria-labelledby="offcanvasExampleLabel"
-                >
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasExampleLabel">
-                            Purpose
-                        </h5>
-                        <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="offcanvas"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="bottom"
-                            data-bs-title="Close"
-                        >
-                            <span class="visually-hidden">Close</span>
-                        </button>
-                    </div>
-                    <div class="m-3">
-                        <router-link :to="{ name: 'visit-event' }">
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id=""
-                                style="padding: 0.5rem 1.5rem; font-weight: 600"
-                            >
-                                Events
-                            </button>
-                        </router-link>
-
-                        <router-link :to="''">
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id=""
-                                style="padding: 0.5rem 1.5rem; font-weight: 600"
-                                disabled
-                            >
-                                Meeting
-                            </button>
-                        </router-link>
-
-                        <router-link :to="{ name: 'visit-workspace' }">
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id=""
-                                style="padding: 0.5rem 1.5rem; font-weight: 600"
-                            >
-                                Workspace
-                            </button>
-                        </router-link>
-                    </div>
-                </div>
+                <router-link :to="{ name: 'check-in' }">
+                    <button
+                        type="button"
+                        id="addVisitBtn"
+                        class="btn btn-primary"
+                    >
+                        <Icons v-model:icon="add" />
+                        New
+                    </button>
+                </router-link>
             </div>
         </div>
 
@@ -118,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { getCurrentInstance, ref, onMounted } from "vue";
 
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import VisitList from "../components/visits/VisitList.vue";
@@ -157,6 +98,8 @@ const exportFields = ref([
 
 exportTitle.value = "Visits";
 
+breadCrumbs.value = ["Today's Visits"];
+
 const exportVisits = async (fields) => {
     const { visits } = await getVisits({
         limit: totalVisits.value,
@@ -170,7 +113,10 @@ const exportVisits = async (fields) => {
             if (field === "phone_number") {
                 data[field] = `0${visit.msisdn.slice(3)}`;
             } else if (field === "items") {
-                data[field] = visit[field].join(", ");
+                // if items array is empty, pass an empty string
+                if (Array.isArray(visit[field]))
+                    data[field] = visit[field].join(", ");
+                else data[field] = visit[field];
             } else {
                 data[field] = visit[field];
             }
@@ -191,6 +137,10 @@ function displayFilterModal() {
     showModal("#filterModal", "#modal-dialog");
 }
 
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
 const displayExportModay = () => {
     showModal("#exportModal", "#modal-dialog");
 };
@@ -202,6 +152,9 @@ function filterCompleted(newDates) {
 
 onMounted(() => {
     hideSidebarOnSmallScreen();
+
+    // ensure loader is not visible
+    $sectionIsLoading.value = false;
 });
 </script>
 

@@ -5,6 +5,7 @@
     >
         <div>
             <DataTable
+                id="eventParticipantsTable"
                 class="display w-100 table"
                 :key="tableKey"
                 :columns="columns"
@@ -28,6 +29,7 @@ import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
 
 import { API_KEY, API_URL } from "@/assets/js";
+import { capitalize } from "@/util/util";
 
 const router = useRouter();
 const eventId = router.currentRoute.value.params.id;
@@ -44,8 +46,8 @@ DataTable.use(DataTablesCore);
 
 const columns = [
     { data: "first_name", title: "First Name" },
-    { data: "middle_name", title: "Middle Name" },
     { data: "last_name", title: "Last Name" },
+    { data: "gender", title: "Gender" },
     { data: "email", title: "Email" },
     { data: "msisdn", title: "Contact" },
     { data: "address", title: "Address" },
@@ -86,6 +88,7 @@ const options = {
             };
         },
         dataSrc: (json) => {
+            $("#eventParticipantsTable").show();
             showError.value = false;
             refresh.value = false;
 
@@ -99,6 +102,8 @@ const options = {
                 participant.msisdn = participant.msisdn
                     ? `0${participant.msisdn.slice(3)}`
                     : "";
+
+                participant.gender = capitalize(participant.gender);
             });
 
             allParticipants = participants;
@@ -107,6 +112,7 @@ const options = {
         },
         error: (error) => {
             console.log("Error fetching data:", error.responseJSON);
+            $("#eventParticipantsTable").hide();
             showError.value = true;
             refresh.value = false;
         },

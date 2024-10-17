@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { getCurrentInstance, onMounted, ref } from "vue";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import VisitorList from "../components/visitors/VisitorList.vue";
 import RefreshList from "../components/RefreshList.vue";
@@ -122,6 +122,10 @@ const displayExportModay = () => {
     showModal("#exportModal", "#modal-dialog");
 };
 
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
 // update date ranges, then it will be caught by watchers in visitors table
 const filterCompleted = (newDates) => {
     filterDates.value = newDates;
@@ -129,6 +133,9 @@ const filterCompleted = (newDates) => {
 
 onMounted(() => {
     hideSidebarOnSmallScreen();
+
+    // ensure section loader is not visible
+    $sectionIsLoading.value = false;
 });
 </script>
 

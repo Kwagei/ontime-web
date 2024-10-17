@@ -9,11 +9,14 @@
         role="status"
         style="height: 85vh"
     >
-        <div class="spinner-border" style="margin-top: -25vh" role="status">
+        <div
+            class="spinner-border spinner-border-lg"
+            style="margin-top: -25vh"
+            role="status"
+        >
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    <!-- Dont' change the margin on this div! -->
     <div v-else class="d-flex flex-column" id="eventContentDiv">
         <EventTitle :title="event.title" />
         <!-- don't change the width on this div -->
@@ -32,6 +35,7 @@
             />
             <AddParticipant
                 v-if="state == 'addParticipant'"
+                :event="event"
                 @switch="switchState"
                 @participantAdded="setModalData"
                 @errorCreatingParticipant="setModalData"
@@ -80,6 +84,7 @@ onMounted(async () => {
 async function fetchEvents() {
     try {
         const data = await getEvents(eventId.value);
+        console.log("retrieved event: ", data);
         event.value = data[0];
     } catch {
         event.value = "error";

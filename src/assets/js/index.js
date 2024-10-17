@@ -29,7 +29,6 @@ export const registerVisit = async (data) => {
         };
 
         const response = await fetch(`${API_URL}visits`, options);
-
         const result = await response.json();
 
         return { ok: response.ok, result };
@@ -41,7 +40,7 @@ export const registerVisit = async (data) => {
 // Check whether a visitor is checked in or not
 export async function visitorCheckInStatus(id) {
     let visitorStatus = await fetch(
-        `${API_URL}/visitors/${id}/check-in-status`,
+        `${API_URL}visitors/${id}/check-in-status`,
         {
             method: "GET",
             headers: {
@@ -114,30 +113,23 @@ export const getVisits = async (queryParams = {}) => {
 };
 
 export const updateDepartureTime = async (id, data) => {
-    try {
-        // Update departure time
-        const options = {
-            method: "PUT",
-            headers: {
-                authorization: API_KEY,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        };
+    // Update departure time
+    const options = {
+        method: "PUT",
+        headers: {
+            authorization: API_KEY,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    };
 
-        const response = await fetch(`${API_URL}/visits/${id}`, options);
+    const response = await fetch(`${API_URL}visits/${id}`, options);
 
-        const result = await response.json();
+    const result = await response.json();
 
-        if (!response.ok) {
-            throw new Error(`Error checking out: ${result}`);
-        }
+    if (!response.ok) return { ok: false, result };
 
-        return { ok: response.ok, result };
-    } catch (error) {
-        console.error("Error in updateDepartureTime: ", error);
-        return { ok: false, result: error.message };
-    }
+    return { ok: response.ok, result };
 };
 
 // Visitors functions
@@ -152,7 +144,7 @@ export const registerVisitor = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/visitors`, options);
+        const response = await fetch(`${API_URL}visitors`, options);
 
         const result = await response.json();
 
@@ -210,9 +202,9 @@ export const getSingleVisitor = async ({ id, msisdn }) => {
     try {
         const url = id
             ? // Get by id
-              `${API_URL}/visitors/${id}`
+              `${API_URL}visitors/${id}`
             : // Get by phone number
-              `${API_URL}/visitors?search=${msisdn}`;
+              `${API_URL}visitors?search=${msisdn}`;
 
         const response = await fetch(url, {
             method: "GET",
@@ -244,7 +236,7 @@ export const editVisitor = async (id, data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/visitors/${id}`, options);
+        const response = await fetch(`${API_URL}visitors/${id}`, options);
 
         const result = await response.json();
 
@@ -277,7 +269,7 @@ export const getVisitorWithVisits = async (id, query) => {
             order = "",
         } = query;
 
-        let url = `${API_URL}/visitors/${id}/visits?&start=${start}&limit=${limit}`;
+        let url = `${API_URL}visitors/${id}/visits?&start=${start}&limit=${limit}`;
 
         if (search) {
             url += `&search=${search}`;
@@ -319,7 +311,7 @@ export const registerUser = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/users`, options);
+        const response = await fetch(`${API_URL}users`, options);
 
         const result = await response.json();
 
@@ -340,7 +332,7 @@ export const editUser = async (id, data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/users/${id}`, options);
+        const response = await fetch(`${API_URL}users/${id}`, options);
 
         const result = await response.json();
 
@@ -428,7 +420,7 @@ export const resetPassword = async (data) => {
         };
 
         const response = await fetch(
-            `${API_URL}/reset-password${code ? "/code" : ""}`,
+            `${API_URL}reset-password${code ? "/code" : ""}`,
             options
         );
 
@@ -456,9 +448,9 @@ export const getSingleUser = async (data) => {
     try {
         const url = id
             ? // Get by id
-              `${API_URL}/users/${id}`
+              `${API_URL}users/${id}`
             : // Get by phone number
-              `${API_URL}/users?search=${msisdn}`;
+              `${API_URL}users?search=${msisdn}`;
 
         const response = await fetch(url, {
             method: "GET",
@@ -519,7 +511,7 @@ export const getEvents = async (id, query = {}) => {
             current = 0,
         } = query;
 
-        let url = `${API_URL}/events/`;
+        let url = `${API_URL}events/`;
 
         if (id) {
             url += id;
@@ -556,7 +548,8 @@ export const getEvents = async (id, query = {}) => {
         });
 
         if (!response.ok) {
-            throw new Error("Network response was not ok");
+            console.log("Unable to load ongoing events");
+            return;
         }
         const { data } = await response.json();
 
@@ -576,7 +569,7 @@ export const getParticipants = async (id, query = {}) => {
             order = "",
         } = query;
 
-        let url = `${API_URL}/events/${id}/participants?start=${start}&limit=${limit}`;
+        let url = `${API_URL}events/${id}/participants?start=${start}&limit=${limit}`;
 
         if (search) {
             url += `&search=${search}`;
@@ -628,7 +621,7 @@ export const registerEventParticipants = async (data) => {
 // Hosts functions
 export const getHosts = async (id) => {
     try {
-        let url = `${API_URL}/hosts`;
+        let url = `${API_URL}hosts`;
 
         if (id) {
             url += `/${id}`;
@@ -663,7 +656,7 @@ export const registerHost = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/hosts`, options);
+        const response = await fetch(`${API_URL}hosts`, options);
 
         const result = await response.json();
 
@@ -684,7 +677,7 @@ export const editHost = async (id, data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/hosts/${id}`, options);
+        const response = await fetch(`${API_URL}hosts/${id}`, options);
 
         const result = await response.json();
 
@@ -697,7 +690,7 @@ export const editHost = async (id, data) => {
 // Room functions
 export const getRooms = async (id) => {
     try {
-        let url = `${API_URL}/rooms`;
+        let url = `${API_URL}rooms`;
 
         if (id) {
             url += `/${id}`;
@@ -731,7 +724,7 @@ export const registerRoom = async (data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/rooms`, options);
+        const response = await fetch(`${API_URL}rooms`, options);
 
         const result = await response.json();
 
@@ -752,7 +745,7 @@ export const editRoom = async (id, data) => {
             body: JSON.stringify(data),
         };
 
-        const response = await fetch(`${API_URL}/rooms/${id}`, options);
+        const response = await fetch(`${API_URL}rooms/${id}`, options);
 
         const result = await response.json();
 

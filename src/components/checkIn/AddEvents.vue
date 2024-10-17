@@ -533,13 +533,17 @@ const participantDetail = async (id) => {
     // Find the specific participant being checked in
     const participant = participants.value.find((val) => val.id === id);
 
-    // Assign participant id for visit checking in
-    if (participant) participant_id.value = participant.id;
+    let visitorData;
 
-    // Check if the visitor exists
-    let visitorData = await getSingleVisitor({
-        msisdn: participant.visitor_id || formatMsisdn(participant.msisdn),
-    });
+    if (participant) {
+        // Assign participant id for visit checking in
+        participant_id.value = participant.id;
+
+        // Check if the visitor exists
+        visitorData = await getSingleVisitor({
+            msisdn: participant.visitor_id || formatMsisdn(participant.msisdn),
+        });
+    }
 
     // Create visitor if this participant is not already a visitor.
     if (!visitorData) {

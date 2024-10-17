@@ -1,8 +1,8 @@
 <template>
     <div class="d-flex align-items-center flex-column w-100">
-        <div class="container">
+        <div v-if="mode == 'details'" class="container">
             <div class="w-100 d-flex justify-content-between gap-4 pt-3">
-                <BreadCrumbs :breadCrumbs="['events', event.title]" />
+                <BreadCrumbs :breadCrumbs="breadCrumbs" />
                 <div
                     class="d-flex mb-3"
                     style="gap: 0.521rem; margin-left: auto"
@@ -104,7 +104,19 @@
                 </div>
             </div>
         </div>
-        <EventParticipants :event="props.event" v-model:refresh="refresh" />
+
+        <EditParticipant
+            v-if="mode == 'editParticipant'"
+            :participant="participantToEdit"
+            @back="back"
+        />
+
+        <EventParticipants
+            v-if="mode == 'details'"
+            :event="props.event"
+            v-model:refresh="refresh"
+            @editParticipant="editParticipant"
+        />
 
         <ExportModal
             :exportFields="exportFields"
@@ -124,10 +136,14 @@ import { csvExport, getParticipants } from "@/assets/js";
 import { ref } from "vue";
 import Options from "../Options.vue";
 import ExportModal from "../modals/ExportModal.vue";
+import EditParticipant from "./EditParticipant.vue";
 
 const add = "add";
 const refresh = defineModel("refresh");
 const totalEventParticipants = defineModel("totalEventParticipants");
+
+const mode = ref("details");
+const participantToEdit = ref({});
 
 const exportFields = ref([
     { name: "First name", selected: false },
@@ -169,11 +185,22 @@ const props = defineProps({
     },
 });
 
+const breadCrumbs = ref(["events", props.event.title]);
+
 const emit = defineEmits(["editEvent", "switch"]);
 
 const displayExportModay = () => {
     showModal("#exportModal", "#modal-dialog");
 };
+
+function back() {
+    mode.value = "details";
+}
+
+function editParticipant(participant) {
+    participantToEdit.value = participant;
+    mode.value = "editParticipant";
+}
 </script>
 
 <style scoped>

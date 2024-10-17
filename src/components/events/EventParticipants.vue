@@ -207,6 +207,17 @@ const options = {
 onMounted(() => {
     handleEventDetail();
 
+    // delegate event listener on edit participant button
+    $(document).on("click", ".editParticipantBtn", (event) => {
+        const id = event.currentTarget.dataset.id;
+
+        emit(
+            "editParticipant",
+            allParticipants.filter((participant) => participant.id == id)[0]
+        );
+    });
+
+    // delegate event listener on delete participant button
     $(document).on("click", ".deleteParticipantBtn", (event) => {
         const participant = event.currentTarget.dataset;
         participantToDelete.value = participant.id;

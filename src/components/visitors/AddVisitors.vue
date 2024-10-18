@@ -181,7 +181,7 @@
                 </div>
 
                 <!-- ROOM -->
-                <div class="col-md-6">
+                <div class="col-md-6" v-if="formStatus.startsWith('new')">
                     <label for="room" class="form-label is-required"
                         >Room<span class="visually-hidden">
                             (required)</span
@@ -227,7 +227,7 @@
                 </div>
 
                 <!-- BELONGINGS -->
-                <div class="col-md-6">
+                <div class="col-md-6" v-if="formStatus.startsWith('new')">
                     <label for="belongings" class="form-label">
                         Belongings
                     </label>
@@ -254,7 +254,7 @@
                 </div>
 
                 <!-- PURPOSE -->
-                <div class="col-md-6">
+                <div class="col-md-6" v-if="formStatus.startsWith('new')">
                     <label for="purpose" class="form-label is-required">
                         Purpose
                         <span class="visually-hidden">(required)</span>
@@ -279,7 +279,19 @@
                 </div>
 
                 <div class="col-md-12 d-flex gap-2 justify-content-end">
-                    <button type="submit" class="btn btn-success">
+                    <button
+                        v-if="formStatus.startsWith('edit')"
+                        class="btn btn-primary"
+                        type="submit"
+                    >
+                        Save
+                    </button>
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                        v-else
+                        @click="mode = 'checkIn'"
+                    >
                         Check In
                     </button>
                     <button
@@ -341,6 +353,7 @@ const temBelonging = ref("");
 const belongings = ref([]);
 
 const checkInData = ref({});
+const mode = ref("");
 
 const alert = ref({
     status: "",
@@ -362,16 +375,19 @@ const formStatus = tem.pop();
 
 // Functions
 const onSubmit = async () => {
+    // required fields for a visitor
     if (
         !first_name.value ||
         !last_name.value ||
         !msisdn.value ||
-        !gender.value ||
-        !roomID.value ||
-        !purpose.value
+        !gender.value
     ) {
         return;
     }
+
+    // required fields for a visit check in
+    if (formStatus.startsWith("new") && (!roomID.value || !purpose.value))
+        return;
 
     const visitor = {
         first_name: first_name.value,
@@ -401,7 +417,8 @@ const onSubmit = async () => {
         alert.value.pageLink = `/visitors/${response.result.data[0].id}`;
         createdVisitor.value = response.result.data[0];
 
-        checkInVisitor();
+        if (mode.value == "checkIn") checkInVisitor();
+        else resetForm();
     }
 };
 

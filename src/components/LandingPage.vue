@@ -39,6 +39,9 @@
                             <a class="nav-link" href="#about"> About </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="#problem"> The Problem </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" type="submit" href="#features">
                                 Features
                             </a>
@@ -64,7 +67,7 @@
                         events attendance system designed to streamline the
                         process of recording visitor information, managing
                         attendance for events, data visualization and
-                        management.
+                        management at the Orange Digital Center (ODC).
                     </p>
                     <router-link :to="{ name: 'dashboard' }">
                         <button
@@ -97,6 +100,29 @@
                         check-out procedures to ensure security and prevent
                         theft, OnTime can automate and optimize these processes
                         for greater efficiency.
+                    </p>
+                </div>
+            </section>
+
+            <section id="problem" class="about-section aboutWrapper">
+                <div class="container mx-auto fs-4">
+                    <h2 class="section-title">
+                        The Problem
+                    </h2>
+                    <p>
+                      Each day, visitors at the Orange Digital Center (ODC) must undergo
+                      a lengthy procedure before entering and leaving the premises. The 
+                      procedure involves the collection of personal information (name, 
+                      phone number, address, etc), the purpose of their visit, and a detailed 
+                      account of the items in the visitor's possession (backpack, laptop, etc.) 
+                      - this is done as a measure to mitigate the risk of theft. When checking out, 
+                      the items in the visitor's possession are verified to ensure they match the items 
+                      declared upon check-in. OnTime provides a holistic solution for managing the entry 
+                      and exit of visitors to the ODC. It is designed to streamline the registration, 
+                      check-in, and check-out processes for visitors, capturing relevant information such as 
+                      their name, host, reason for visit, arrival time, and departure time. Additionally, it 
+                      will offer administrators a web-based interface for viewing visitor records and generating 
+                      reports for analysis purposes. 
                     </p>
                 </div>
             </section>
@@ -271,18 +297,6 @@
                         <li class="nav-link fw-bold">
                             © <span class="orange">On</span>Time 2024
                         </li>
-                        <li>
-                            <a class="nav-link" href="#"
-                                >Terms and conditions</a
-                            >
-                        </li>
-                        <li><a class="nav-link" href="#">Privacy</a></li>
-                        <li>
-                            <a class="nav-link" href="#"
-                                >Accessibility statement</a
-                            >
-                        </li>
-                        <li><a class="nav-link" href="#">Cookie policy</a></li>
                     </ul>
                 </div>
             </footer>

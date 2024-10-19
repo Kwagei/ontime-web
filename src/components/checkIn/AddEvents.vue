@@ -70,7 +70,7 @@
                 >
                     <div
                         id="ongoingEventsGrid"
-                        class="d-flex px-2 justify-content-start flex-wrap align-items-start gap-4 pb-3"
+                        class="d-flex px-2 justify-content-start flex-wrap align-items-start gap-4 py-3"
                     >
                         <div
                             v-for="(event, idx) in events"

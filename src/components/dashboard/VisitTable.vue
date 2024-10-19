@@ -75,7 +75,13 @@ const $sectionIsLoading =
 
 const columns = [
     { data: "date_time", title: "Date", orderable: false },
-    { data: "visitor", title: "Visitor", orderable: false },
+    {
+        data: null,
+        render: (data) =>
+            `<a href="/visitors/${data.visitor_id}">${data.visitor}</a>`,
+        title: "Visitor",
+        orderable: false,
+    },
     { data: "departure_time", title: "Departure Time", orderable: false },
     { data: "purpose", title: "Purpose", orderable: false },
     { data: "items", title: "Items", orderable: false },

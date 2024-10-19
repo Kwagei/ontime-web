@@ -70,7 +70,7 @@ const $sectionIsLoading =
 }
 
 /* Section Scrolling Media Query */
-@media (min-width: 1700px) and (min-height: 920px) {
+@media (min-width: 1700px) {
     #wrapper {
         position: fixed;
     }

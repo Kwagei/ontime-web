@@ -47,7 +47,7 @@ import CheckIn from "@/layouts/CheckIn.vue";
 const routes = [
     {
         path: "",
-        redirect: "/check-in",
+        component: LandingPage,
     },
     {
         path: "/sign-in",

@@ -11,11 +11,13 @@
                     >
                         <div id="mobileFormWrapper" class="card-body p-5">
                             <div class="d-flex justify-content-center mb-4">
-                                <img
-                                    src="../assets/images/ontime_logo.jpg"
-                                    style="width: 9rem"
-                                    alt=""
-                                />
+                                <router-link to="/">
+                                    <img
+                                        src="../assets/images/ontime_logo.jpg"
+                                        style="width: 9rem"
+                                        alt=""
+                                    />
+                                </router-link>
                             </div>
 
                             <form
@@ -127,13 +129,6 @@
                                             Keep me logged in
                                         </label>
                                     </div>
-                                    <div
-                                        class="d-flex justify-content-end form-check-label"
-                                    >
-                                        <a @click="resetPasswordForm" href="#"
-                                            >Forgot Password?</a
-                                        >
-                                    </div>
                                 </div>
 
                                 <div
@@ -224,9 +219,9 @@ const signIn = async () => {
         ok ? "#83d61631" : "#ea060629"
     );
 
-    // After 1 second, perform further actions based on the API response
-    setTimeout(() => {
-        if (ok) {
+    if (ok) {
+        // After 1 second, perform further actions based on the API response
+        setTimeout(() => {
             // Reset form fields and remove validation classes
             resetForm();
 
@@ -235,9 +230,9 @@ const signIn = async () => {
             setCookie("token", token, keepLoggedIn.value ? 1 : 0.5);
 
             // Navigate to the dashboard page
-            router.push("/dashboard");
-        }
-    }, 1000);
+            router.push("/check-in");
+        }, 1000);
+    }
 };
 
 const resetPasswordForm = () => {

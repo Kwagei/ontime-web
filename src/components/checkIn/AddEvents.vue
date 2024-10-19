@@ -19,16 +19,26 @@
             style="border: none; background-color: transparent"
         >
             <div id="selectEventWrapper">
-                <button
-                    id="dropdownBtn"
-                    class="btn btn-dropdown dropdown-toggle mb-3 ms-2 w-25 text-start"
-                    type="button"
-                    @click="
-                        $('#ongoingEventsGridWrapper').toggleClass('d-none')
-                    "
+                <div
+                    class="w-100 d-flex justify-content-between gap-2 pb-4"
+                    id="dropdownAddEventBtnsWrapper"
                 >
-                    Ongoing Events
-                </button>
+                    <button
+                        id="dropdownBtn"
+                        class="btn btn-dropdown dropdown-toggle text-start"
+                        type="button"
+                        @click="
+                            $('#ongoingEventsGridWrapper').toggleClass('d-none')
+                        "
+                    >
+                        Ongoing Events
+                    </button>
+                    <router-link to="/events/add-event">
+                        <button class="btn btn-primary" id="createEventBtn">
+                            Create Event
+                        </button>
+                    </router-link>
+                </div>
 
                 <!-- Loader -->
                 <div v-if="loading" class="w-100 text-center ms-2 pt-5">
@@ -114,11 +124,6 @@
                             </div>
                         </div>
                     </div>
-                    <router-link to="/events/add-event">
-                        <button class="btn btn-primary my-3 ms-2">
-                            Create new event
-                        </button>
-                    </router-link>
                 </div>
             </div>
 
@@ -642,9 +647,28 @@ a {
     background-color: #1616157a;
 }
 
+#createEventBtn {
+    min-width: 140px;
+}
+
 #dropdownBtn {
     justify-content: space-between !important;
-    min-width: 98.5%;
+    width: 100%;
+    max-height: 50px;
+}
+
+#dropdownAddEventBtnsWrapper {
+    min-width: 100%;
+}
+
+@media (max-width: 400px) {
+    #dropdownAddEventBtnsWrapper {
+        flex-direction: column;
+    }
+
+    #dropdownAddEventBtnsWrapper > a > button {
+        width: 100%;
+    }
 }
 
 .optionIcon {
@@ -674,13 +698,6 @@ a {
     padding: 15px !important;
 }
 
-/* Large Screen */
-@media (min-width: 1251px) {
-    a {
-        min-height: 175px !important;
-    }
-}
-
 /* Small Screen */
 @media (max-width: 1250px) {
     #ongoingEventsGrid {
@@ -694,6 +711,9 @@ a {
     #selectEventWrapper {
         margin-top: 0 !important;
         max-width: 95%;
+        min-width: 95%;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 </style>

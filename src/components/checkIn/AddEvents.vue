@@ -8,19 +8,20 @@
     <div id="visit-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-            style="margin-top: 0.3rem"
+            style="margin-top: 1.5rem"
         >
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
         <div
             id="eventCheckInWrapper"
-            class="mt-4 p-0 d-flex flex-column"
+            class="mt-3 p-0 d-flex flex-column"
             style="border: none; background-color: transparent"
         >
             <div id="selectEventWrapper">
+                <h2 v-if="chosenEventTitle">{{ chosenEventTitle }}</h2>
                 <div
-                    class="w-100 d-flex justify-content-between gap-2 pb-4"
+                    class="w-100 d-flex justify-content-between gap-2 pb-1"
                     id="dropdownAddEventBtnsWrapper"
                 >
                     <button
@@ -69,7 +70,7 @@
                 >
                     <div
                         id="ongoingEventsGrid"
-                        class="d-flex px-2 justify-content-start flex-wrap align-items-start gap-4"
+                        class="d-flex px-2 justify-content-start flex-wrap align-items-start gap-4 pb-3"
                     >
                         <div
                             v-for="(event, idx) in events"
@@ -187,6 +188,7 @@ const events = ref([]);
 const eventID = ref("");
 const eventValue = ref("");
 const eventTem = ref("");
+const chosenEventTitle = ref("");
 
 const selectedParticipant = ref({});
 const selectedRow = ref("");
@@ -403,6 +405,7 @@ function checkInBtnClicked(row, data) {
 
 const updateEventTerm = (event, idx) => {
     chosenEvent.value = idx;
+    chosenEventTitle.value = event.title;
 
     purpose.value = event.title;
     eventValue.value = event.title;
@@ -623,6 +626,12 @@ const updateVisitorVisitStatus = () => {
 </script>
 
 <style scoped>
+@media (max-width: 1250px) {
+    #dropdownAddEventBtnsWrapper {
+        padding-bottom: 1.5rem !important;
+    }
+}
+
 .belonging {
     text-transform: capitalize;
     display: inline-block;

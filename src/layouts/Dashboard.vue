@@ -61,7 +61,13 @@
                                 class="cards d-flex flex-column align-items-center"
                             >
                                 <span>Today's Events</span>
-                                <h2>{{ todaysEvents || "..." }}</h2>
+                                <h2>
+                                    {{
+                                        Number(todaysEvents) >= 0
+                                            ? todaysEvents
+                                            : "..."
+                                    }}
+                                </h2>
                             </div>
                         </div>
                         <!-- Total Visitors -->

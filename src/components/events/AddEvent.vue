@@ -377,14 +377,27 @@ watch([startDate, endDate], ([newStart, newEnd]) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // ensure the event start date is not before today
-    if (newStart && new Date(newStart) < today) {
-        alert.value.message = "START DATE can not be before today";
-        alert.value.status = "warning";
+    // show error only if it's a new event is being added
+    if (mode == "add") {
+        // ensure the event start date is not before today
+        if (newStart && new Date(newStart) < today) {
+            alert.value.message = "START DATE can not be before today";
+            alert.value.status = "warning";
 
-        startDate.value = "";
+            startDate.value = "";
 
-        showModal();
+            showModal();
+        }
+
+        // ensure the event end date is not before today
+        if (newEnd && new Date(newEnd) < today) {
+            alert.value.message = "END DATE can not be before today";
+            alert.value.status = "warning";
+
+            startDate.value = "";
+
+            showModal();
+        }
     }
 
     // ensure start date is on or before end date
@@ -526,6 +539,8 @@ onMounted(async () => {
 });
 
 function setMode() {
+    // claim the event is being edited if there's an event ID
+    // otherwise assume it's a new event that's being added
     return eventId.value ? "edit" : "add";
 }
 

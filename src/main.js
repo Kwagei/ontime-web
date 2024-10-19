@@ -4,6 +4,7 @@ import { createApp, ref } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import routerGuards from "@/middlewares/auth.routes";
 
 const app = createApp(App);
 
@@ -11,6 +12,6 @@ app.config.globalProperties.$sectionIsLoading = ref(false);
 
 app.use(router);
 app.use(store);
-// app.use(routerGuards);
+app.use(routerGuards);
 
 app.mount("#app");

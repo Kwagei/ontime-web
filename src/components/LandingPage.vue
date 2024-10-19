@@ -6,7 +6,7 @@
                 class="container-fluid d-flex justify-content-between align-items-center p-2"
             >
                 <div class="navbar-brand">
-                    <a class="stretched-link" href="#">
+                    <a class="stretched-link" href="/">
                         <img
                             style="min-height: 50px"
                             src="../assets/images/ontime_logo.jpg"
@@ -39,16 +39,22 @@
                             <a class="nav-link" href="#about"> About </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" type="submit" href="#features">
-                                Features
+                            <a class="nav-link" href="#problem">
+                                The Problem
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" type="submit" href="#team">
-                                Our Team
-                            </a>
+                            <a class="nav-link" href="#features"> Features </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="#team"> Our Team </a>
+                        </li>
+                        <li @click="signOut" v-if="loggedIn" class="nav-item">
+                            <a class="nav-link" style="cursor: pointer">
+                                Sign Out
+                            </a>
+                        </li>
+                        <li @click="signOut" v-else class="nav-item">
                             <a class="nav-link" href="/sign-in">Sign In</a>
                         </li>
                     </ul>
@@ -57,21 +63,18 @@
         </nav>
         <!-- Hero Section -->
         <div id="app">
-            <section class="p-3 fw-bold bg-light">
-                <div class="container">
-                    <p class="fs-3">
+            <section id="section">
+                <div id="sectionOverlay"></div>
+                <div id="sectionWrapper" class="mx-auto">
+                    <p class="sectionText fw-bold">
                         <span class="orange">On</span>Time is a check-in and
                         events attendance system designed to streamline the
                         process of recording visitor information, managing
-                        attendance for events, data visualization and
-                        management.
+                        attendance for events, data visualization and management
+                        at the Orange Digital Center (ODC).
                     </p>
                     <router-link :to="{ name: 'dashboard' }">
-                        <button
-                            type="button"
-                            class="btn btn-primary"
-                            style="padding: 0.5rem 1.5rem; font-weight: 600"
-                        >
+                        <button type="button" class="btn btn-primary">
                             Dashboard
                         </button>
                     </router-link>
@@ -101,10 +104,37 @@
                 </div>
             </section>
 
+            <!-- The Problem Section -->
+            <section id="problem" class="problem-section problemWrapper">
+                <div class="container mx-auto fs-4">
+                    <h2 class="section-title">The Problem</h2>
+                    <p>
+                        Each day, visitors at the Orange Digital Center (ODC)
+                        must undergo a lengthy procedure before entering and
+                        leaving the premises. The procedure involves the
+                        collection of personal information (name, phone number,
+                        address, etc), the purpose of their visit, and a
+                        detailed account of the items in the visitor's
+                        possession (backpack, laptop, etc.) - this is done as a
+                        measure to mitigate the risk of theft. When checking
+                        out, the items in the visitor's possession are verified
+                        to ensure they match the items declared upon check-in.
+                        OnTime provides a holistic solution for managing the
+                        entry and exit of visitors to the ODC. It is designed to
+                        streamline the registration, check-in, and check-out
+                        processes for visitors, capturing relevant information
+                        such as their name, host, reason for visit, arrival
+                        time, and departure time. Additionally, it will offer
+                        administrators a web-based interface for viewing visitor
+                        records and generating reports for analysis purposes.
+                    </p>
+                </div>
+            </section>
+
             <!-- Features Section -->
             <section class="feature-section" id="features">
-                <div class="container">
-                    <h2 class="ms-4">Features:</h2>
+                <div class="container mx-auto">
+                    <h2 class="section-title">Features</h2>
                     <div class="row text-center gap-5 justify-content-center">
                         <!-- Dashboard -->
                         <div class="col-md-5 features">
@@ -271,18 +301,6 @@
                         <li class="nav-link fw-bold">
                             © <span class="orange">On</span>Time 2024
                         </li>
-                        <li>
-                            <a class="nav-link" href="#"
-                                >Terms and conditions</a
-                            >
-                        </li>
-                        <li><a class="nav-link" href="#">Privacy</a></li>
-                        <li>
-                            <a class="nav-link" href="#"
-                                >Accessibility statement</a
-                            >
-                        </li>
-                        <li><a class="nav-link" href="#">Cookie policy</a></li>
                     </ul>
                 </div>
             </footer>
@@ -290,7 +308,14 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { isAuthenticated, removeCookie } from "@/middlewares/auth.cookie";
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const loggedIn = computed(() => isAuthenticated());
+
 $("#navBarToggler").on("click", () => {
     setTimeout(() => {
         if (window.innerWidth >= 1021) {
@@ -302,6 +327,12 @@ $("#navBarToggler").on("click", () => {
         }
     }, 500);
 });
+
+function signOut() {
+    console.log("-------- LOGGING OUT ---------");
+    removeCookie("token");
+    router.go(0);
+}
 </script>
 
 <style>
@@ -317,6 +348,58 @@ body {
     position: relative !important;
 }
 
+#section {
+    background: url("@/assets/images/landingPageBackDrop.png");
+    background-position: center;
+    background-size: cover;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+#sectionOverlay {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+}
+
+#sectionWrapper {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 2;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    width: 100%;
+    max-width: 1320px;
+}
+
+.sectionText {
+    max-width: 59rem;
+    font-size: 2.5em;
+}
+
+@media (max-width: 1010px) and (min-width: 450px) {
+    .sectionText {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 449px) {
+    .sectionText {
+        font-size: 1.5em;
+    }
+}
+
 #shadow {
     position: sticky;
     top: 0;
@@ -324,7 +407,25 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+@media (min-width: 1020px) and (max-width: 1550px) {
+    #problem > div,
+    #features > div,
+    #about > div {
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+
+    #sectionWrapper {
+        margin-left: 2rem !important;
+    }
+}
+
+/* Tablet and Mobile */
 @media (max-width: 1020px) {
+    #features > div > .section-title {
+        margin-left: 1.5rem !important;
+    }
+
     #demoWrapper {
         flex-direction: column !important;
     }
@@ -334,8 +435,21 @@ body {
         gap: 3rem !important;
     }
 
+    .problemWrapper,
     .aboutWrapper {
         padding: 1rem 1.5rem !important;
+    }
+
+    #sectionWrapper {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
+
+/* Large Screen */
+@media (min-width: 1021px) {
+    .features {
+        width: 47%;
     }
 }
 
@@ -370,23 +484,16 @@ body {
 }
 
 /* About Section */
+.problem-section,
 .about-section {
-    padding: 60px 0;
+    padding: 30px 0;
     background-color: #f9f9f9;
 }
 
 /* Features Section */
 .feature-section {
-    padding: 60px 0;
+    padding: 30px 0;
     background-color: #f9f9f9;
-}
-
-.features {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    margin-bottom: 25px;
-    padding: 1.5rem;
 }
 
 .features img {

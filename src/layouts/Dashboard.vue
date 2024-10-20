@@ -146,7 +146,7 @@ const reloadIcon = ref("reload");
 const totalVisits = defineModel("totalVisits");
 const totalVisitors = defineModel("totalVisitors");
 const allEvents = defineModel("allEvents");
-const todaysEvents = ref(0);
+const todaysEvents = ref(undefined);
 
 allEvents.value = [];
 const filterDates = ref({

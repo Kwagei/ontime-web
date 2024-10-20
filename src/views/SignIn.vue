@@ -56,6 +56,7 @@
                                             aria-describedby="inputGroupPrepend"
                                             v-model="email"
                                             required
+                                            autofocus
                                         />
 
                                         <div class="invalid-feedback">

@@ -344,7 +344,15 @@ export const capitalize = (str) => {
 // format msisdn to 231777123456 from 0777123456 or anything else
 // msisdn should validated with the `msisdnValidation()` method
 // before formatting it with this method
-export const formatMsisdn = (msisdn) => {
+export const formatMsisdn = (tmpMsisdn) => {
+    if (!tmpMsisdn) return;
+
+    let msisdn = "";
+
+    for (let digit of tmpMsisdn) {
+        if (digit == "0" || Number(digit)) msisdn += digit;
+    }
+
     if (msisdn.startsWith("231")) return "231" + msisdn.slice(3, 12);
-    return "231" + msisdn.slice(1, 9);
+    return "231" + msisdn.slice(1, 10);
 };

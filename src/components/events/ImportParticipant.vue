@@ -92,7 +92,7 @@ import EditParticipantForm from "./EditParticipantForm.vue";
 import Alert from "../Alert.vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import BackArrow from "../BackArrow.vue";
-import { showModal, removeQuotes } from "@/util/util.js";
+import { showModal, removeQuotes, formatMsisdn } from "@/util/util.js";
 
 const route = useRoute();
 const eventId = route.params.id;
@@ -333,13 +333,8 @@ function formatParticipants() {
             );
         }
 
-        if (
-            participant.msisdn &&
-            !participant.msisdn.startsWith("0") &&
-            !participant.msisdn.startsWith("231")
-        ) {
-            participant.msisdn =
-                "231" + removeQuotes(participant.msisdn.trim(), true);
+        if (participant.msisdn) {
+            participant.msisdn = formatMsisdn(participant.msisdn);
         }
 
         participant.id = idx;

@@ -139,9 +139,21 @@
                                         type="submit"
                                         class="btn btn-primary w-100"
                                         style="padding: 0.4rem"
+                                        :disabled="loading"
                                     >
-                                        <Icons v-model:icon="signInIcon" />
-                                        Sign In
+                                        <div
+                                            class="spinner-border submitBtnLoader"
+                                            role="status"
+                                            v-if="loading"
+                                        >
+                                            <span class="visually-hidden"
+                                                >Loading...</span
+                                            >
+                                        </div>
+                                        <span v-else>
+                                            <Icons v-model:icon="signInIcon" />
+                                            Sign In
+                                        </span>
                                     </button>
                                 </div>
                             </form>
@@ -182,6 +194,8 @@ const stayLoggedIn = (event) => {
     keepLoggedIn.value = event.target.checked;
 };
 
+const loading = ref(false);
+
 const togglePassword = () => {
     if (hidePassword.value) {
         hidePassword.value = false;
@@ -202,16 +216,22 @@ const togglePassword = () => {
  * @returns {void}
  */
 const signIn = async () => {
+    if (loading.value) return;
+
     // Check if email and password fields are not empty
     if (!email.value || !password.value) {
         return;
     }
+
+    loading.value = true;
 
     // Make an API call to authenticate the user
     const { ok, result } = await login({
         username: email.value,
         password: password.value,
     });
+
+    loading.value = false;
 
     // Display a warning message based on the API response
     warning(
@@ -234,10 +254,6 @@ const signIn = async () => {
             router.push("/check-in");
         }, 1000);
     }
-};
-
-const resetPasswordForm = () => {
-    router.push("/reset-password");
 };
 
 // Reset form fields and remove validation classes on form submission

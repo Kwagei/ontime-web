@@ -67,7 +67,17 @@
                                 type="submit"
                                 class="btn btn-primary w-100"
                                 style="padding: 0.7rem 0.5rem"
+                                :disabled="loading"
                             >
+                                <div
+                                    class="spinner-border submitBtnLoader"
+                                    role="status"
+                                    v-if="loading"
+                                >
+                                    <span class="visually-hidden"
+                                        >Loading...</span
+                                    >
+                                </div>
                                 Submit
                             </button>
                         </div>
@@ -95,10 +105,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import { formValidation, getElement, removeClass } from "@/util/util";
+import { formValidation } from "@/util/util";
 import { resetPassword } from "@/assets/js";
 import store from "@/store";
 const email = ref("");
@@ -108,16 +118,24 @@ const warningMessage = ref("");
 const warningStatus = ref("");
 const warningBgColor = ref("");
 
+const loading = ref(false);
+
 const onSubmit = async () => {
+    if (loading.value) return;
+
     // Check if email is not empty.
     if (!email) {
         return;
     }
 
+    loading.value = true;
+
     // Make an API call to reset user password.
     const { ok, result } = await resetPassword({
         email: email.value,
     });
+
+    loading.value = false;
 
     isWarning.value = true;
 

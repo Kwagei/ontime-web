@@ -199,7 +199,18 @@
                 </div>
 
                 <div class="col-md-12 d-flex justify-content-end gap-2">
-                    <button type="submit" class="btn btn-primary">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        :disabled="loading"
+                    >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="loading"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                         Update
                     </button>
                     <button
@@ -222,12 +233,7 @@ import { ref, onMounted, watch, getCurrentInstance } from "vue";
 import { useRoute } from "vue-router";
 import $ from "jquery";
 
-import {
-    API_KEY,
-    API_URL,
-    registerVisit,
-    registerVisitor,
-} from "@/assets/js/index.js";
+import { API_KEY, API_URL } from "@/assets/js/index.js";
 import {
     msisdnValidation,
     emailValidation,
@@ -244,8 +250,6 @@ const props = defineProps({
     participant: Object,
 });
 
-const action = ref("");
-const createdParticipant = ref({});
 const $sectionIsLoading =
     getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
 
@@ -272,6 +276,8 @@ const alert = ref({
 
 const emit = defineEmits(["back"]);
 
+const loading = ref(false);
+
 const validEmail = ref(false);
 const validMsisdn = ref(false);
 const validMsisdnMessage = ref("Please provide a phone number");
@@ -279,6 +285,8 @@ const validEmailMessage = ref("Please provide a valid email address");
 
 // Functions
 const onSubmit = async () => {
+    if (loading.value) return;
+
     if (!first_name.value || !last_name.value || !gender.value) {
         return;
     }
@@ -294,6 +302,7 @@ const onSubmit = async () => {
         session: session.value,
     };
 
+    loading.value = true;
     $sectionIsLoading.value = true;
 
     await $.ajax({
@@ -311,6 +320,7 @@ const onSubmit = async () => {
 
             showModal();
             $sectionIsLoading.value = false;
+            loading.value = false;
 
             resetForm();
 
@@ -330,6 +340,7 @@ const onSubmit = async () => {
         },
         error: (error) => {
             $sectionIsLoading.value = false;
+            loading.value = false;
 
             alert.value.pageLink = "danger";
             alert.value.title = error.responseJSON.message;

@@ -266,7 +266,20 @@
                 </div>
 
                 <div class="col-md-12 d-flex justify-content-end gap-2">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        :disabled="loading"
+                    >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="loading"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        Save
+                    </button>
                     <button
                         @click="router.back()"
                         class="btn btn-outline-secondary"
@@ -346,6 +359,8 @@ const props = defineProps({
         required: true,
     },
 });
+
+const loading = ref(false);
 
 const router = useRouter();
 const eventId = ref(router.currentRoute.value.params.id);
@@ -435,6 +450,8 @@ watch(
 );
 
 const onSubmit = async () => {
+    if (loading.value) return;
+
     if (
         !title.value ||
         !facilitator.value ||
@@ -446,6 +463,8 @@ const onSubmit = async () => {
     ) {
         return;
     }
+
+    loading.value = true;
 
     const body = {
         title: title.value,
@@ -467,8 +486,8 @@ const onSubmit = async () => {
         url: options.url,
         type: options.type,
         data: body,
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+        headers: {
+            authorization: API_KEY,
         },
         success: (data) => {
             showModal();
@@ -479,14 +498,16 @@ const onSubmit = async () => {
                 data.data.length ? data.data[0].id : data.data.id
             }`;
 
-            if (setMode() !== "edit") {
-                resetForm();
-            }
+            resetForm();
+
+            loading.value = false;
         },
         error: (error) => {
             showModal();
             alert.value.status = "danger";
             alert.value.message = error.responseJSON.message;
+
+            loading.value = false;
         },
     });
 };

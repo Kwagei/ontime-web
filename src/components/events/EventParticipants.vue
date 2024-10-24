@@ -91,7 +91,12 @@ const columns = [
                 ? `<span class="text-success fw-bold">Attended</span>`
                 : `<span class="text-danger fw-bold">Not Attended</span>`;
         },
-        visible: props.event.type == "Course" ? true : false,
+        visible:
+            props.event.type != "Course" ||
+            new Date(props.event.start_date) >= new Date() ||
+            new Date(props.event.end_date) <= new Date()
+                ? false
+                : true,
     },
     {
         data: null,

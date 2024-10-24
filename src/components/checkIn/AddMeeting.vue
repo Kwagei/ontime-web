@@ -222,7 +222,15 @@
                         class="btn btn-primary px-5"
                         style="margin-left: auto"
                         type="submit"
+                        :disabled="loading"
                     >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="loading"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                         Save
                     </button>
                     <button
@@ -248,7 +256,7 @@ import {
     getHosts,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
-import { addClass, getElement, removeClass } from "@/util/util";
+import { addClass, getElement, getElementAll, removeClass } from "@/util/util";
 
 const events = ref(null);
 const options = ref([]);
@@ -276,6 +284,8 @@ const title = ref("");
 const activeBreadCrumbs = ref([]);
 
 const router = useRouter();
+
+const loading = ref(false);
 
 const props = defineProps({
     breadCrumbs: {
@@ -313,20 +323,6 @@ const updateHostTerm = (host) => {
     hostID.value = host.id;
 };
 
-// function for inserting each username in the select element
-const getEventsOptions = async () => {
-    try {
-        events.value = await getEvents();
-
-        options.value = events.value.map((event) => ({
-            value: event.id,
-            text: event.title,
-        }));
-    } catch (error) {
-        console.error("Error retrieving users:", error);
-    }
-};
-
 // function to get visitor bt MSISDN
 const getVisitor = async () => {
     try {
@@ -354,15 +350,18 @@ watch(purpose, (title) => {
 
 // function to validate form before it submit the form
 const onSubmit = async () => {
+    if (loading.value) return;
+
     if (
         !msisdn.value ||
         !visitor.value ||
         !purpose.value ||
         !room.value ||
         !address.value
-    ) {
+    )
         return;
-    }
+
+    loading.value = true;
 
     // plitting text into array by using command as the deleminator
     const items = belonging.value.split(",").map((item) => item.trim());
@@ -392,6 +391,8 @@ const onSubmit = async () => {
     if (response.ok) {
         resetForm();
     }
+
+    loading.value = false;
 };
 
 function visuallyHideModalBackdrop() {

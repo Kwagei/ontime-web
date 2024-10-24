@@ -28,7 +28,7 @@
                             <div
                                 id="visitIcon"
                                 class="icon-circle"
-                                style="background-color: #ff77002a"
+                                style="background-color: #b8ebd6"
                             >
                                 <Icons class="icons" v-model:icon="visitIcon" />
                             </div>
@@ -78,7 +78,7 @@
                             <div
                                 id="visitorIcon"
                                 class="icon-circle"
-                                style="background-color: rgb(255 204 0 / 19%)"
+                                style="background-color: #d9c2f0"
                             >
                                 <Icons
                                     class="icons"
@@ -235,15 +235,18 @@ span {
 }
 
 #visitIcon {
-    color: #ff7900;
+    color: #0a6e31;
+    box-shadow: 0px 0px 8px rgba(184, 235, 214, 0.7);
 }
 
 #eventIcon {
-    color: #1971c2;
+    color: #085ebd;
+    box-shadow: 0px 0px 8px rgba(181, 232, 247, 0.7);
 }
 
 #visitorIcon {
-    color: #fc0;
+    color: #492191;
+    box-shadow: 0px 0px 6px rgba(217, 194, 240, 0.7);
 }
 
 .m-3 {

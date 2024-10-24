@@ -7,11 +7,7 @@
                 <span>Male</span>
             </div>
             <h3 class="mb-1">
-                {{
-                    Number(gender.male) || gender.male == 0
-                        ? gender.male
-                        : "..."
-                }}
+                {{ gender.male }}
             </h3>
         </div>
         <div class="data-body">
@@ -20,18 +16,14 @@
                 <span>Female</span>
             </div>
             <h3 class="mb-1">
-                {{
-                    Number(gender.female) || gender.female == 0
-                        ? gender.female
-                        : "..."
-                }}
+                {{ gender.female }}
             </h3>
         </div>
     </div>
     <Line :data="chartData" :options="options" />
 </template>
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import { Line } from "vue-chartjs";
 import {
     Chart as ChartJS,
@@ -43,8 +35,7 @@ import {
     Legend,
 } from "chart.js";
 
-import { API_KEY, API_URL, getVisits } from "@/assets/js";
-import { getTodaysVisits } from "@/util/util";
+import { API_KEY, API_URL } from "@/assets/js";
 
 // Register the Chart.js components
 ChartJS.register(
@@ -57,8 +48,8 @@ ChartJS.register(
 );
 
 const gender = ref({
-    male: 0,
-    female: 0,
+    male: "...",
+    female: "...",
 });
 
 const chartData = ref({
@@ -81,12 +72,7 @@ const options = ref({
         },
     },
     scales: {
-        x: {
-            title: {
-                display: true,
-                text: "Days of Week",
-            },
-        },
+        x: {},
         y: {
             title: {
                 display: true,
@@ -97,87 +83,51 @@ const options = ref({
     },
 });
 
-const totalVisits = defineModel("totalVisits");
+const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+];
+
 const todaysVisits = defineModel("todaysVisits");
 
 onMounted(async () => {
-    initializeTodaysVisits();
+    initializeWeeklyVisitData();
 });
 
-async function initializeTodaysVisits() {
-    let tmpTodaysVisits = await getTodaysVisits();
-    todaysVisits.value = tmpTodaysVisits.totalLength;
-}
-
-watch(totalVisits, async (n) => {
-    await fetchVisits(n);
-});
-
-const fetchVisits = async (total) => {
-    const { visits } = await getVisits({ limit: total });
-
-    updateWeeklyVisitData(visits);
-};
-
-const updateWeeklyVisitData = async () => {
+const initializeWeeklyVisitData = async () => {
     const currentWeekVisits = await getCurrentWeekData();
 
-    const maleVisits = new Array(6).fill(0);
-    const femaleVisits = new Array(6).fill(0);
+    // initialize today's visits
+    todaysVisits.value =
+        currentWeekVisits[currentWeekVisits.length - 1].gender.total;
 
-    let todaysDay = new Date().getDay() - 1;
-    let daysOfWeekIdx = 5,
-        nextDayIdx;
-    const daysOfWeek = new Array(6).fill("...");
-    const daysKeys = {
-        0: "Monday",
-        1: "Tuesday",
-        2: "Wednesday",
-        3: "Thursday",
-        4: "Friday",
-        5: "Saturday",
-    };
+    gender.value.male = currentWeekVisits[0].weekly_male_total;
+    gender.value.female = currentWeekVisits[0].weekly_female_total;
 
-    // format dates for chart x axis
-    while (daysOfWeekIdx >= 0) {
-        // wrap around the week days
-        // exclude Sunday
-        nextDayIdx = todaysDay <= -1 ? (todaysDay = 5) : todaysDay;
-
-        daysOfWeek[daysOfWeekIdx] = daysKeys[nextDayIdx];
-        todaysDay -= 1;
-        daysOfWeekIdx -= 1;
-    }
-
-    // loop through each day of the week
-    for (const [dayIndex, eachDayVisits] of currentWeekVisits.entries()) {
-        // loop through each visit for the day
-        for (const visit of eachDayVisits) {
-            // update gender accordingly
-            if (visit.gender.toLowerCase() == "male") {
-                maleVisits[dayIndex]++;
-                gender.value.male++;
-            } else {
-                femaleVisits[dayIndex]++;
-                gender.value.female++;
-            }
-        }
-    }
+    const maleVisits = currentWeekVisits.map((day) => day.gender.male);
+    const femaleVisits = currentWeekVisits.map((day) => day.gender.female);
 
     chartData.value = {
-        labels: daysOfWeek,
+        labels: currentWeekVisits.map(
+            (day) => daysOfWeek[new Date(day.day).getDay()]
+        ),
         datasets: [
             {
                 label: "Male",
-                backgroundColor: "rgba(255, 121, 0, 0.2)",
-                borderColor: "#ff7900",
+                backgroundColor: "rgba(0, 191, 255, 0.2)",
+                borderColor: "#085EBD",
                 data: maleVisits,
                 fill: true,
             },
             {
                 label: "Female",
-                backgroundColor: "rgba(0, 191, 255, 0.2)",
-                borderColor: "#1971c2",
+                backgroundColor: "rgba(255, 121, 0, 0.2)",
+                borderColor: "#F16E00",
                 data: femaleVisits,
                 fill: true,
             },
@@ -186,7 +136,7 @@ const updateWeeklyVisitData = async () => {
 };
 
 const getCurrentWeekData = async () => {
-    let currentWeekVisits = Array(6).fill(new Array());
+    let currentWeekVisits = [];
 
     await $.ajax(`${API_URL}visits/current-week-visits`, {
         method: "GET",

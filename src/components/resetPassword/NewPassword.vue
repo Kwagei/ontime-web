@@ -88,7 +88,17 @@
                                 type="submit"
                                 class="btn btn-primary w-100"
                                 style="padding: 0.7rem 0.5rem"
+                                :disabled="loading"
                             >
+                                <div
+                                    class="spinner-border submitBtnLoader"
+                                    role="status"
+                                    v-if="loading"
+                                >
+                                    <span class="visually-hidden"
+                                        >Loading...</span
+                                    >
+                                </div>
                                 Reset Password
                             </button>
                         </div>
@@ -117,19 +127,19 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 
 import { formValidation, passwordValidation } from "@/util/util";
-import { editUser, resetPassword } from "@/assets/js";
+import { editUser } from "@/assets/js";
 import store from "@/store";
-const route = useRoute();
 const router = useRouter();
-const email = ref(route.query.email);
 
 const isWarning = ref(false);
 const warningMessage = ref("");
 const warningStatus = ref("");
 const warningBgColor = ref("");
+
+const loading = ref(false);
 
 // Passwords
 const newPassword = ref("");
@@ -164,6 +174,8 @@ watch(
 );
 
 const onSubmit = async () => {
+    if (loading.value) return;
+
     // Check if code is not complete.
     if (!newPassword.value) {
         return;
@@ -171,12 +183,14 @@ const onSubmit = async () => {
 
     const user_id = store.state.resetPasswordUser;
 
-    console.log(user_id);
+    loading.value = true;
 
     // Make an API call to reset user password.
     const { ok, result } = await editUser(user_id, {
         password: newPassword.value,
     });
+
+    loading.value = false;
 
     // // Display a warning message based on the API response
     warning(

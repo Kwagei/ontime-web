@@ -199,12 +199,33 @@
                 </div>
 
                 <div class="col-md-12 d-flex justify-content-end gap-2">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        :disabled="loading"
+                    >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="loading"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        Save
+                    </button>
                     <button
                         type="submit"
                         @click="action = 'checkIn'"
                         class="btn btn-success"
+                        :disabled="loading"
                     >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="loading"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                         Check In
                     </button>
                     <button
@@ -253,6 +274,8 @@ const createdParticipant = ref({});
 const $sectionIsLoading =
     getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
 
+const loading = ref(false);
+
 // Route and State
 const route = useRoute();
 const eventId = route.params.id;
@@ -281,6 +304,8 @@ const validEmailMessage = ref("Please provide a valid email address");
 
 // Functions
 const onSubmit = async () => {
+    if (loading.value) return;
+
     if (!first_name.value || !last_name.value || !gender.value) {
         return;
     }
@@ -303,6 +328,7 @@ const onSubmit = async () => {
         event_participants: [participant],
     };
 
+    loading.value = true;
     $sectionIsLoading.value = true;
 
     await $.ajax({
@@ -319,12 +345,15 @@ const onSubmit = async () => {
             alert.value.pageLink = `/events/${eventId}`;
 
             showModal();
-            $sectionIsLoading.value = false;
 
             if (action.value == "checkIn") {
                 createdParticipant.value = data.data[0];
                 checkInParticipant();
-            } else resetForm();
+            } else {
+                resetForm();
+                $sectionIsLoading.value = false;
+                loading.value = false;
+            }
 
             setTimeout(() => {
                 $("#alertMessageParagraph").text(data.message);
@@ -342,6 +371,7 @@ const onSubmit = async () => {
         },
         error: (error) => {
             $sectionIsLoading.value = false;
+            loading.value = false;
 
             alert.value.pageLink = "danger";
             alert.value.title = error.responseJSON.message;
@@ -364,8 +394,6 @@ const onSubmit = async () => {
 };
 
 async function checkInParticipant() {
-    $sectionIsLoading.value = true;
-
     // create visitor
     const createdVisitor = await registerVisitor({
         first_name: createdParticipant.value.first_name,
@@ -410,6 +438,7 @@ async function checkInParticipant() {
     showModal();
 
     $sectionIsLoading.value = false;
+    loading.value = false;
 
     if (checkInResponse.ok) {
         setTimeout(() => {

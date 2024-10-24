@@ -3,22 +3,27 @@
     <div class="data d-flex gap-4 px-3 mb-4">
         <div
             class="data-body"
+            style="min-width: 90px"
             v-for="monthlyVisit in monthlyVisitData"
             :key="monthlyVisit.name"
         >
-            <span>{{ monthlyVisit.name }} {{ currentYear }}</span>
-            <h3 class="mb-1">{{ monthlyVisit.total }}</h3>
-            <div
-                class="border-color"
-                :style="`background-color: ${monthlyVisit.color}`"
-            ></div>
+            <span
+                >{{ monthlyVisit.name || "..." }}
+                {{ monthlyVisit.name ? currentYear : "..." }}</span
+            >
+            <h3 class="mb-1">
+                {{ monthlyVisit.gender.total || "..." }}
+            </h3>
+            <div class="border-color" style="background-color: #ddd"></div>
         </div>
     </div>
     <Bar :data="data" :options="options" :key="barIndex" />
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { API_KEY, API_URL } from "@/assets/js";
+
+import { onMounted, ref } from "vue";
 import {
     Chart as ChartJS,
     Title,
@@ -40,28 +45,13 @@ ChartJS.register(
     Legend
 );
 
-const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-];
-
-const dataLabel = ref([]);
-const dataSets = ref([]);
+const barIndex = ref(0);
+const currentYear = new Date().getFullYear();
 
 // Define chart data and options as reactive objects
 const data = ref({
-    labels: dataLabel.value,
-    datasets: dataSets.value,
+    labels: [],
+    datasets: [],
 });
 
 const options = ref({
@@ -73,9 +63,20 @@ const options = ref({
     },
     scales: {
         x: {
-            title: {
-                display: true,
-                text: "Visits for the last 3 months",
+            ticks: {
+                callback: function (val, index) {
+                    val;
+                    // format month
+                    let month = new Date(
+                        monthlyVisitData.value[index].month
+                    ).toLocaleString("default", {
+                        month: "long",
+                    });
+
+                    // Custom labels for the gender under each category
+                    // use array to put them in seperate lines
+                    return ["    Male    |    Female", month];
+                },
             },
         },
         y: {
@@ -88,125 +89,87 @@ const options = ref({
     },
 });
 
-import { getVisits } from "@/assets/js";
+const fetchPastThreeMonthsVisits = async () => {
+    let allVisits = [];
 
-const date = new Date();
-const currentYear = date.getFullYear();
-const currentMonth = date.getMonth();
-const colors = [
-    { rank: "max", color: "#2f9e44" },
-    { rank: "mid", color: "#1971c2" },
-    { rank: "min", color: "#e03131" },
-];
-
-const fetchVisits = async () => {
-    const { visits } = await getVisits({
-        limit: "all",
+    await $.ajax(`${API_URL}visits/past-three-months`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+        success: (res) => {
+            allVisits = res.data.visits;
+        },
+        error: (error) => {
+            console.error("error retrieving past three months visits: ", error);
+        },
     });
 
-    const currentYearVisits = getCurrentYearVisits(visits);
-
-    updateMonthlyVisitData(currentYearVisits);
+    return allVisits;
 };
 
-onMounted(() => {
-    fetchVisits();
-});
+const monthlyVisitData = ref([
+    {
+        name: "",
+        gender: {
+            total: "",
+        },
+    },
+    {
+        name: "",
+        gender: {
+            total: "",
+        },
+    },
+    {
+        name: "",
+        gender: {
+            total: "",
+        },
+    },
+]);
 
-const getCurrentYearVisits = (visits) =>
-    visits.filter((visit) => visit.date_time.startsWith(currentYear));
+onMounted(async () => {
+    const allVisits = await fetchPastThreeMonthsVisits();
 
-const monthlyVisitData = ref([]);
-
-const updateMonthlyVisitData = (visits) => {
-    const monthLabels = [];
-
-    for (let i = 3; i > 0; i--) {
-        // Calculate the month index, considering the year transition
-        const monthIndex = (currentMonth + 1 - i + 12) % 12;
-        const monthName = months[monthIndex];
-        monthLabels.push(monthName);
-
-        // Determine the month number to compare with visit data
-        const targetMonthNumber = monthIndex + 1;
-
-        // Filter visits for the specific month
-        const filteredVisits = visits.filter(
-            (visit) => +visit.date_time.split("-")[1] === targetMonthNumber
-        );
-
-        // Update the monthly visit data
-        monthlyVisitData.value.push({
-            name: monthName.slice(0, 3),
-            total: filteredVisits.length,
+    for (const month of allVisits) {
+        month["name"] = new Date(month.month).toLocaleString("default", {
+            month: "short",
         });
     }
 
-    assignColors();
+    monthlyVisitData.value = allVisits;
 
-    // Update dataLabel.value with the month labels for the chart
-    dataLabel.value = monthLabels;
-};
-
-const assignColors = () => {
     // Extract the 'total' values from each item in the monthlyVisitData array
-    const totalMonthlyVisits = monthlyVisitData.value.map((visit) => {
-        return visit.total;
+    const chartGenderStats = monthlyVisitData.value.map((visit) => {
+        return { male: visit.gender.male, female: visit.gender.female };
     });
 
-    // Find the maximum value among the totals
-    const max = Math.max(...totalMonthlyVisits);
+    data.value.labels = monthlyVisitData.value.map((monthVisits) =>
+        new Date(monthVisits.month).toLocaleString("default", {
+            month: "long",
+        })
+    );
 
-    // Find the minimum value among the totals
-    const min = Math.min(...totalMonthlyVisits);
+    // generate array of male and female visits for the past three months
+    chartGenderStats.male = chartGenderStats.map((gender) => gender.male);
+    chartGenderStats.female = chartGenderStats.map((gender) => gender.female);
 
-    // Find the middle value (neither maximum nor minimum)
-    const mid = totalMonthlyVisits.find((num) => num !== max && num !== min);
-
-    /**
-     * Iterate over each item in the monthlyVisitData array and
-     * assign color based on whether the total matches max, mid, or min.
-     */
-    for (const visits of monthlyVisitData.value) {
-        if (visits.total === max) {
-            visits.color = colors.find((color) => color.rank === "max").color;
-        } else if (visits.total === mid) {
-            visits.color = colors.find((color) => color.rank === "mid").color;
-        } else {
-            visits.color = colors.find((color) => color.rank === "min").color;
-        }
-    }
-
-    dataSets.value = [
+    data.value.datasets = [
         {
-            data: totalMonthlyVisits,
-            backgroundColor: monthlyVisitData.value.map((visit) => visit.color),
+            label: "Male",
+            data: chartGenderStats.male,
+            backgroundColor: "#085EBD",
+        },
+        {
+            label: "Female",
+            data: chartGenderStats.female,
+            backgroundColor: "#F16E00",
         },
     ];
-};
 
-const barIndex = ref(0);
-
-// Watch for changes in dataLabel and update chart data
-watch(
-    dataLabel,
-    (newLabels) => {
-        data.value.labels = newLabels;
-        barIndex.value++;
-    },
-    {
-        immediate: true,
-    }
-);
-
-watch(
-    dataSets,
-    (newLabels) => {
-        data.value.datasets = newLabels;
-        barIndex.value++;
-    },
-    { immediate: true }
-);
+    barIndex.value += 1;
+});
 </script>
 <style scoped>
 h4 {

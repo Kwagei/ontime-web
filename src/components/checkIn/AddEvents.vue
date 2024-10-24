@@ -1,9 +1,6 @@
 <template>
     <AlertModal :data="alert" />
 
-    <!-- BELONGING MODAL -->
-    <BelongingModal @done="checkParticipantIn" @cancel="resetForm" />
-
     <!-- EVENT PARTICIPANTS TABLE -->
     <div id="visit-view" class="d-flex flex-column container">
         <div
@@ -151,7 +148,6 @@
 import { ref, onMounted, getCurrentInstance } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
-import BelongingModal from "../modals/BelongingModal.vue";
 import Icons from "../Icons.vue";
 import {
     registerVisit,
@@ -166,7 +162,6 @@ import $ from "jquery";
 import {
     formValidation,
     getElement,
-    removeClass,
     showModal,
     formatMsisdn,
     formatDateTime,
@@ -476,7 +471,7 @@ const getEventsOptions = async () => {
 };
 
 // function to validate form before it submit the form
-const checkParticipantIn = async (belongingsAndInstitution) => {
+const checkParticipantIn = async () => {
     if (!msisdn.value || !visitor.value || !purpose.value || !room_id.value) {
         return;
     }
@@ -487,8 +482,7 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
     const visitData = {
         visitor_id: visitorId.value,
         event_id: eventID.value,
-        institution: belongingsAndInstitution.institution,
-        items: belongingsAndInstitution.belongings,
+        items: [],
         room_id: room_id.value,
         host_id: host_id.value,
         purpose: purpose.value,
@@ -499,11 +493,6 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
     $sectionIsLoading.value = true;
     const response = await registerVisit(visitData);
     $sectionIsLoading.value = false;
-
-    // hide belongings and institution modal
-    const visitModal = getElement("#visitModal");
-    removeClass(visitModal, "show");
-    visitModal.style.display = "none";
 
     if (response.ok) {
         // Update visitor status for last visit
@@ -531,8 +520,6 @@ const resetForm = () => {
     visitor.value = "";
     msisdn.value = "";
     eventValue.value = "";
-    belongings.value = [];
-    institution.value = "";
 };
 
 const participantDetail = async (id) => {
@@ -596,8 +583,7 @@ const participantDetail = async (id) => {
     room_id.value = event.room_id;
     host_id.value = event.host_id;
 
-    // show institution and belongings modal to complete check in
-    showModal("#visitModal", "#modal-dialog");
+    checkParticipantIn();
 };
 
 function formatAddress(address) {
@@ -696,7 +682,7 @@ a {
     border-radius: 15px;
     background-color: #eee;
     min-width: 225px;
-    height: 100% !important;
+    height: auto !important;
     width: 20%;
     text-align: center;
     text-decoration: none;

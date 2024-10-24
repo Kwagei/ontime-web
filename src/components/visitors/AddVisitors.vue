@@ -283,15 +283,31 @@
                         v-if="formStatus.startsWith('edit')"
                         class="btn btn-primary"
                         type="submit"
+                        :disabled="loading"
                     >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="loading"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                         Save
                     </button>
                     <button
                         type="submit"
                         class="btn btn-success"
+                        :disabled="loading"
                         v-else
                         @click="mode = 'checkIn'"
                     >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="loading"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                         Check In
                     </button>
                     <button
@@ -355,6 +371,8 @@ const belongings = ref([]);
 const checkInData = ref({});
 const mode = ref("");
 
+const loading = ref(false);
+
 const alert = ref({
     status: "",
     title: "",
@@ -375,19 +393,20 @@ const formStatus = tem.pop();
 
 // Functions
 const onSubmit = async () => {
+    // do nothing if the request is already loading
+    if (loading.value) return;
+
     // required fields for a visitor
-    if (
-        !first_name.value ||
-        !last_name.value ||
-        !msisdn.value ||
-        !gender.value
-    ) {
+    if (!first_name.value || !last_name.value || !msisdn.value || !gender.value)
         return;
-    }
+
+    loading.value = true;
 
     // required fields for a visit check in
-    if (formStatus.startsWith("new") && (!roomID.value || !purpose.value))
+    if (formStatus.startsWith("new") && (!roomID.value || !purpose.value)) {
+        loading.value = false;
         return;
+    }
 
     const visitor = {
         first_name: first_name.value,
@@ -418,7 +437,10 @@ const onSubmit = async () => {
         createdVisitor.value = response.result.data[0];
 
         if (mode.value == "checkIn") checkInVisitor();
-        else resetForm();
+        else {
+            loading.value = false;
+            resetForm();
+        }
     }
 };
 
@@ -438,6 +460,8 @@ async function checkInVisitor() {
     showModal();
 
     if (checkInResponse.ok) resetForm();
+
+    loading.value = false;
 }
 
 const fetchVisitor = async () => {

@@ -1,9 +1,6 @@
 <template>
     <AlertModal :data="alert" />
 
-    <!-- BELONGING MODAL -->
-    <BelongingModal @done="checkParticipantIn" />
-
     <div
         class="d-flex flex-column container gap-3"
         style="padding: 0 !important"
@@ -72,7 +69,7 @@
             <form
                 class="row g-3 needs-validation"
                 novalidate
-                @submit.prevent="getInstitutionAndBelongings"
+                @submit.prevent="checkParticipantIn"
             >
                 <!-- PHONE NUMBER -->
                 <div class="col-md-6">
@@ -97,7 +94,14 @@
                             autocomplete="off"
                             required
                             placeholder="Enter Phone Number or Name"
+                            :class="{ inputOutline: msisdnError }"
                         />
+                        <div
+                            :class="{ 'd-flex': msisdnError }"
+                            class="invalid-feedback"
+                        >
+                            Please provide a visitor phone number.
+                        </div>
                         <ul class="dropdown-menu w-100">
                             <li class="dropdown-item" v-if="noMatch">
                                 No Match
@@ -150,8 +154,12 @@
                             aria-describedby="inputGroupPrepend"
                             v-model="visitor"
                             required
+                            :class="{ inputOutline: nameError }"
                         />
-                        <div class="invalid-feedback">
+                        <div
+                            :class="{ 'd-flex': nameError }"
+                            class="invalid-feedback"
+                        >
                             Please provide a visitor name.
                         </div>
                     </div>
@@ -199,13 +207,48 @@
                     </div>
                 </div>
 
+                <!-- BELONGINGS -->
+                <div class="col-md-6">
+                    <label for="belongings" class="form-label">
+                        Belongings
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            autofocus="true"
+                            id="belongings"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="temBelonging"
+                            @keyup.prevent="addBelongings"
+                            @keydown.enter.prevent
+                        />
+                    </div>
+                    <div
+                        v-for="belonging in belongings"
+                        :key="belonging"
+                        @click="deleteBelongings(belonging)"
+                        class="belonging"
+                    >
+                        {{ belonging }}
+                    </div>
+                </div>
+
                 <!-- Submit Button -->
                 <div class="col-12 d-flex gap-2">
                     <button
                         class="btn btn-primary"
                         style="margin-left: auto"
                         type="submit"
+                        :disabled="submitting"
                     >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="submitting"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                         Save
                     </button>
                     <button class="btn btn-secondary" @click="router.back()">
@@ -221,7 +264,6 @@
 import { ref, onMounted, getCurrentInstance } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
-import BelongingModal from "../modals/BelongingModal.vue";
 import {
     API_URL,
     API_KEY,
@@ -245,6 +287,14 @@ const activeBreadCrumbs = ref([]);
 // section loader flag
 const $sectionIsLoading =
     getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
+// Belongings Data
+const temBelonging = ref("");
+const belongings = ref([]);
+
+const submitting = ref(false);
+const msisdnError = ref(false);
+const nameError = ref(false);
 
 // visitors searching flags
 const loading = ref(false);
@@ -286,8 +336,33 @@ activeBreadCrumbs.value = [...props.breadCrumbs, "workspace"];
 onMounted(async () => {
     formValidation();
 
+    fetchTop10Visitors();
+
     fetchRooms();
 });
+
+async function fetchTop10Visitors() {
+    $.ajax(`${API_URL}visitors/top-visitors?notIn=1`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+        success: (res) => {
+            const tmpVisitors = res.data;
+
+            for (const visitor of tmpVisitors) {
+                visitor.name = `${visitor.first_name} ${
+                    visitor.middle_name || ""
+                } ${visitor.last_name}`;
+            }
+
+            visitors.value = tmpVisitors;
+        },
+        error: (err) => {
+            console.error("error retrieving top ten visitors: ", err);
+        },
+    });
+}
 
 // function to get visitor by NAME or MSISDN
 async function searchVisitors() {
@@ -377,8 +452,33 @@ function updateRoom(selectedRoom) {
 }
 
 // function to validate form before it submit the form
-const checkParticipantIn = async (belongingsAndInstitution) => {
+const checkParticipantIn = async () => {
+    msisdnError.value = false;
+    nameError.value = false;
+
+    // ensure msisdn was given
+    if (!msisdn.value) {
+        msisdnError.value = true;
+        return;
+    }
+
+    // ensure msisdn was given
+    if (!visitor.value) {
+        nameError.value = true;
+        return;
+    }
+
+    // ensure room was selected
+    if (!room.value.id) {
+        alert.value.message = "Room is required";
+        alert.value.status = "danger";
+
+        showModal();
+        return;
+    }
+
     $sectionIsLoading.value = true;
+    submitting.value = true;
 
     const checkInStatus = await visitorCheckInStatus(visitorId.value);
 
@@ -389,6 +489,7 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
 
         showModal();
         $sectionIsLoading.value = false;
+        submitting.value = false;
         return;
     }
 
@@ -398,6 +499,7 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
         alert.value.status = "warning";
 
         $sectionIsLoading.value = false;
+        submitting.value = false;
 
         showModal();
         return;
@@ -406,8 +508,7 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
     // require values for the submittion of the form
     const visitData = {
         visitor_id: visitorId.value,
-        institution: belongingsAndInstitution.institution,
-        items: belongingsAndInstitution.belongings,
+        items: belongings.value,
         room_id: room.value.id,
         purpose: "Workspace",
     };
@@ -427,28 +528,10 @@ const checkParticipantIn = async (belongingsAndInstitution) => {
     }
 
     $sectionIsLoading.value = false;
-
-    // hide belongings and institution modal
-    const visitModal = getElement("#visitModal");
-    removeClass(visitModal, "show");
-    visitModal.style.display = "none";
+    submitting.value = false;
 
     showModal();
 };
-
-// complete check in with institution and belongings
-function getInstitutionAndBelongings() {
-    // ensure room was selected
-    if (!room.value.id) {
-        alert.value.message = "Room is required";
-        alert.value.status = "danger";
-
-        showModal();
-        return;
-    }
-
-    setTimeout(() => showModal("#visitModal", "#modal-dialog"), 500);
-}
 
 function resetForm() {
     msisdn.value = "";
@@ -456,7 +539,23 @@ function resetForm() {
     visitorId.value = "";
     room.value.id = "";
     room.value.name = "";
+    belongings.value = [];
 }
+
+const addBelongings = (event) => {
+    const { key } = event;
+
+    if (key === "Enter" && temBelonging.value) {
+        if (!belongings.value.includes(temBelonging.value)) {
+            belongings.value.push(temBelonging.value);
+        }
+        temBelonging.value = "";
+    }
+};
+
+const deleteBelongings = (item) => {
+    belongings.value = belongings.value.filter((val) => val !== item);
+};
 </script>
 
 <style scoped>
@@ -477,6 +576,10 @@ function resetForm() {
     font-weight: bold;
     color: #777;
     cursor: pointer;
+}
+
+.inputOutline {
+    outline: 2px solid red outset;
 }
 
 a {

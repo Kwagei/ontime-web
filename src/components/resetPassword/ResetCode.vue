@@ -87,9 +87,18 @@
                             <button
                                 type="submit"
                                 class="btn btn-primary"
-                                :disabled="!isCodeComplete"
+                                :disabled="!isCodeComplete || loading"
                                 style="flex: 0 0 49%"
                             >
+                                <div
+                                    class="spinner-border submitBtnLoader"
+                                    role="status"
+                                    v-if="loading"
+                                >
+                                    <span class="visually-hidden"
+                                        >Loading...</span
+                                    >
+                                </div>
                                 Verify
                             </button>
                             <button
@@ -125,15 +134,17 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, watch } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
-import { formValidation, getElement, removeClass } from "@/util/util";
+import { formValidation } from "@/util/util";
 import { resetPassword } from "@/assets/js";
 import store from "@/store";
 const route = useRoute();
 const router = useRouter();
 const email = ref(route.query.email);
+
+const loading = ref(false);
 
 const formattedEmail = computed(() => {
     const [local, domain] = email.value.split("@");
@@ -141,10 +152,14 @@ const formattedEmail = computed(() => {
 });
 
 const onSubmit = async () => {
+    if (loading.value) return;
+
     // Check if code is not complete.
     if (!isCodeComplete.value) {
         return;
     }
+
+    loading.value = true;
 
     // Make an API call to reset user password.
     const { ok, result } = await resetPassword({
@@ -153,7 +168,7 @@ const onSubmit = async () => {
         timestamp: generateSubmissionTimestamp(),
     });
 
-    console.log(result);
+    loading.value = false;
 
     // Display a warning message based on the API response
     warning(

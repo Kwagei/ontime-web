@@ -78,7 +78,7 @@
                             <div
                                 id="visitorIcon"
                                 class="icon-circle"
-                                style="background-color: #d9c2f0"
+                                style="background-color: rgba(255, 121, 0, 0.2)"
                             >
                                 <Icons
                                     class="icons"
@@ -245,8 +245,8 @@ span {
 }
 
 #visitorIcon {
-    color: #492191;
-    box-shadow: 0px 0px 6px rgba(217, 194, 240, 0.7);
+    color: #f16e00;
+    box-shadow: 0px 0px 6px rgba(255, 121, 0, 0.2);
 }
 
 .m-3 {

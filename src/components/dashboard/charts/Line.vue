@@ -126,8 +126,8 @@ const initializeWeeklyVisitData = async () => {
             },
             {
                 label: "Female",
-                backgroundColor: "rgba(255, 121, 0, 0.2)",
-                borderColor: "#F16E00",
+                backgroundColor: "rgba(184, 235, 214, 0.2)",
+                borderColor: "#0A6E31",
                 data: femaleVisits,
                 fill: true,
             },
@@ -169,14 +169,14 @@ span {
 
 .male-color {
     padding: 0.3rem;
-    background-color: #ff7900;
+    background-color: #1971c2;
     height: 1px;
     border-radius: 50%;
 }
 
 .female-color {
     padding: 0.3rem;
-    background-color: #1971c2;
+    background-color: #0a6e31;
     height: 1px;
     border-radius: 50%;
 }

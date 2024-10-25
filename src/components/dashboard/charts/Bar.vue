@@ -164,7 +164,7 @@ onMounted(async () => {
         {
             label: "Female",
             data: chartGenderStats.female,
-            backgroundColor: "#F16E00",
+            backgroundColor: "#0A6E31",
         },
     ];
 

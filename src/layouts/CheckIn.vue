@@ -7,6 +7,7 @@
         <div
             class="d-flex px-2 justify-content-center flex-wrap align-items-center gap-4"
         >
+            <!-- Event -->
             <div
                 class="d-flex flex-column align-items-center justify-content-center p-3 checkInOption"
                 @click="router.push('/check-in/purpose-event')"
@@ -19,6 +20,20 @@
                 />
                 <h2 class="text text-large">Event</h2>
             </div>
+            <!-- Meeting -->
+            <!-- <div -->
+            <!--     class="d-flex flex-column align-items-center justify-content-center p-3 checkInOption" -->
+            <!--     @click="router.push('/check-in/purpose-meeting')" -->
+            <!-- > -->
+            <!--     <Icons -->
+            <!--         :height="'auto'" -->
+            <!--         :width="'80%'" -->
+            <!--         class="optionIcon" -->
+            <!--         icon="collective-class-training" -->
+            <!--     /> -->
+            <!--     <h2 class="text text-large">Meeting</h2> -->
+            <!-- </div> -->
+            <!-- Workspace -->
             <div
                 class="d-flex flex-column align-items-center justify-content-center p-3 checkInOption"
                 @click="router.push('/check-in/purpose-workspace')"

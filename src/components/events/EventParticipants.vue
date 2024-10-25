@@ -51,6 +51,7 @@ const emit = defineEmits(["switch"]);
 let allParticipants = [];
 
 const refresh = defineModel("refresh");
+const totalParticipants = defineModel("totalParticipants");
 
 const table = ref();
 const tableKey = ref(0);
@@ -152,7 +153,7 @@ const options = {
 
             json.recordsTotal = totalLength;
             json.recordsFiltered = totalLength;
-            totalEventParticipants.value = totalLength;
+            totalParticipants.value = totalLength;
 
             participants.forEach((participant) => {
                 participant.msisdn = participant.msisdn

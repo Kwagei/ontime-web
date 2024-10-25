@@ -96,7 +96,7 @@
                 <div class="border border-1"></div>
                 <div
                     id="eventDetailsDiv"
-                    class="pt-2 text-left flex-grow-1"
+                    class="d-flex flex-column pt-2 text-left flex-grow-1 gap-2"
                     style="width: 40%"
                 >
                     <span class="fs-6">Details</span>
@@ -115,6 +115,7 @@
             v-if="mode == 'details'"
             :event="props.event"
             v-model:refresh="refresh"
+            v-model:totalParticipants="totalParticipants"
             @editParticipant="editParticipant"
         />
 
@@ -140,7 +141,8 @@ import EditParticipant from "./EditParticipant.vue";
 
 const add = "add";
 const refresh = defineModel("refresh");
-const totalEventParticipants = defineModel("totalEventParticipants");
+const totalParticipants = defineModel("totalParticipants");
+totalParticipants.value = "...";
 
 const mode = ref("details");
 const participantToEdit = ref({});
@@ -159,7 +161,7 @@ exportTitle.value = "Participants";
 
 const exportEventParticipants = async (fields) => {
     const { participants } = await getParticipants(props.event.id, {
-        limit: totalEventParticipants.value,
+        limit: "all",
     });
 
     const selectedParticipants = participants.map((participant) => {

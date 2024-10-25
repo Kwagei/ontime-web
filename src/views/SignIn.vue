@@ -226,12 +226,19 @@ const signIn = async () => {
     loading.value = true;
 
     // Make an API call to authenticate the user
-    const { ok, result } = await login({
+    const loginResponse = await login({
         username: email.value,
         password: password.value,
     });
 
     loading.value = false;
+
+    if (!loginResponse) {
+        warning("Unable to login, please try again!", "danger", "#ea060629");
+        return;
+    }
+
+    const { ok, result } = loginResponse;
 
     // Display a warning message based on the API response
     warning(

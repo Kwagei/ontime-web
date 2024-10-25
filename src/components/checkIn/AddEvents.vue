@@ -16,21 +16,27 @@
             style="border: none; background-color: transparent"
         >
             <div id="selectEventWrapper">
-                <h2 v-if="chosenEventTitle">{{ chosenEventTitle }}</h2>
+                <div
+                    class="d-flex gap-3 align-items-center mb-3"
+                    v-if="chosenEventTitle && stage == 1"
+                >
+                    <BackArrow @click="stage = 0" />
+                    <h2 class="m-0">
+                        {{ chosenEventTitle }}
+                    </h2>
+                </div>
                 <div
                     class="w-100 d-flex justify-content-between gap-2 pb-1"
                     id="dropdownAddEventBtnsWrapper"
+                    v-if="stage == 0"
                 >
-                    <button
-                        id="dropdownBtn"
-                        class="btn btn-dropdown dropdown-toggle text-start"
-                        type="button"
-                        @click="
-                            $('#ongoingEventsGridWrapper').toggleClass('d-none')
-                        "
-                    >
-                        Ongoing Events
-                    </button>
+                    <input
+                        id="searchEventInput"
+                        class="form-control"
+                        placeholder="Search..."
+                        v-model="searchValue"
+                        @input="searchEvents"
+                    />
                     <router-link to="/events/add-event">
                         <button class="btn btn-primary" id="createEventBtn">
                             Create Event
@@ -62,15 +68,12 @@
                 </div>
 
                 <div
-                    v-if="events && events.length"
+                    v-if="events && events.length && stage == 0"
                     id="ongoingEventsGridWrapper"
                 >
-                    <div
-                        id="ongoingEventsGrid"
-                        class="d-flex px-2 justify-content-start flex-wrap align-items-start gap-4 py-3"
-                    >
+                    <div id="ongoingEventsGrid">
                         <div
-                            v-for="(event, idx) in events"
+                            v-for="(event, idx) in tmpEvents"
                             :class="{ 'chosen-event': chosenEvent === idx }"
                             class="d-flex flex-column align-items-center justify-content-center p-3 checkInOption"
                             @click="updateEventTerm(event, idx)"
@@ -90,13 +93,13 @@
                                     <span> <Icons icon="clock" /> Date </span>
                                     <span class="fw-bold">
                                         {{
-                                            formatDateTime(event.startDate, {
+                                            formatDateTime(event.start_date, {
                                                 date: true,
                                             })
                                         }}
                                         to<br />
                                         {{
-                                            formatDateTime(event.endDate, {
+                                            formatDateTime(event.end_date, {
                                                 date: true,
                                             })
                                         }}
@@ -126,7 +129,7 @@
             </div>
 
             <!-- All Participants -->
-            <div v-if="showTable" class="container">
+            <div v-if="showTable && stage == 1" class="container">
                 <DataTable
                     :key="dataTableKey"
                     id="eventParticipantsTable"
@@ -170,6 +173,7 @@ import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
 import "datatables.net-responsive";
 import "datatables.net-responsive-dt";
+import BackArrow from "../BackArrow.vue";
 
 DataTable.use(DataTablesCore);
 
@@ -182,7 +186,7 @@ const dataTableKey = ref(0);
 const events = ref([]);
 const eventID = ref("");
 const eventValue = ref("");
-const eventTem = ref("");
+const tmpEvents = ref("");
 const chosenEventTitle = ref("");
 
 const selectedParticipant = ref({});
@@ -322,6 +326,8 @@ const purpose = ref("");
 const room = ref("");
 
 const chosenEvent = ref("");
+const stage = ref(0);
+const searchValue = ref("");
 
 // Modal Data
 const alert = ref({
@@ -366,19 +372,6 @@ onMounted(async () => {
             150
         );
     });
-
-    $("#breadCrumbs").css("display", "block");
-    const breadCrumbsOl = $("#breadCrumbsOl")[0];
-
-    if (window.innerWidth <= 1070) {
-        breadCrumbsOl.innerHTML = `
-			<li>
-				<span class="text fw-bold">
-					Check In for Event
-				</span>
-			</li>
-		`;
-    }
 });
 
 function checkInBtnClicked(row, data) {
@@ -399,6 +392,8 @@ function checkInBtnClicked(row, data) {
 }
 
 const updateEventTerm = (event, idx) => {
+    stage.value = 1;
+
     chosenEvent.value = idx;
     chosenEventTitle.value = event.title;
 
@@ -423,18 +418,16 @@ const updateEventTerm = (event, idx) => {
 
     // display data table if it's not already displayed
     if (showTable.value == false) showTable.value = true;
-    $("#ongoingEventsGridWrapper").addClass("d-none");
 };
 
 // function for inserting each username in the select element
 const getEventsOptions = async () => {
     try {
-        events.value = await getEvents(null, { current: true });
+        const res = await getEvents(null, { current: true });
 
         // if `getEvents` returns a falsy value, indicate error
-        if (!events.value) {
-            console.log("error caught");
-            eventTem.value = undefined;
+        if (!res) {
+            tmpEvents.value = undefined;
             loading.value = false;
             noMatch.value = false;
             errorRetrievingEvents.value = true;
@@ -443,20 +436,11 @@ const getEventsOptions = async () => {
         }
 
         // format event for drop down
-        events.value = events.value.events.map((event) => ({
-            id: event.id,
-            title: event.title,
-            startDate: event.start_date,
-            endDate: event.end_date,
-            type: event.type,
-            facilitator: event.facilitator,
-            room_id: event.room_id,
-            host_id: event.host_id,
-        }));
+        events.value = res.events;
 
         if (!events.value.length) noEvents.value = true;
 
-        eventTem.value = events.value;
+        tmpEvents.value = events.value;
         loading.value = false;
         noMatch.value = false;
         errorRetrievingEvents.value = false;
@@ -469,6 +453,20 @@ const getEventsOptions = async () => {
         noEvents.value = false;
     }
 };
+
+function searchEvents() {
+    let query = searchValue.value.toLowerCase();
+
+    tmpEvents.value = events.value.filter(
+        (event) =>
+            event.title.toLowerCase().includes(query) ||
+            event.type.toLowerCase().includes(query) ||
+            event.facilitator.toLowerCase().includes(query) ||
+            event.details.toLowerCase().includes(query) ||
+            event.host.toLowerCase().includes(query) ||
+            event.room.toLowerCase().includes(query)
+    );
+}
 
 // function to validate form before it submit the form
 const checkParticipantIn = async () => {
@@ -490,7 +488,6 @@ const checkParticipantIn = async () => {
         participant_id: participant_id.value,
     };
 
-    $sectionIsLoading.value = true;
     const response = await registerVisit(visitData);
     $sectionIsLoading.value = false;
 
@@ -530,6 +527,7 @@ const participantDetail = async (id) => {
 
     let visitorData;
 
+    $sectionIsLoading.value = true;
     if (participant) {
         // Assign participant id for visit checking in
         participant_id.value = participant.id;
@@ -646,10 +644,10 @@ a {
     min-width: 140px;
 }
 
-#dropdownBtn {
+#searchEventInput {
     justify-content: space-between !important;
     width: 100%;
-    max-height: 50px;
+    max-height: 41px;
 }
 
 #dropdownAddEventBtnsWrapper {
@@ -683,22 +681,43 @@ a {
     background-color: #eee;
     min-width: 225px;
     height: auto !important;
-    width: 20%;
     text-align: center;
     text-decoration: none;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     cursor: pointer;
 }
 .checkInOption:hover {
-    padding: 15px !important;
+    box-shadow: 0px 0px 15px rgb(153, 153, 153);
+}
+
+#ongoingEventsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    padding: 1.2rem;
+}
+
+@media (max-width: 512px) {
+    #ongoingEventsGrid {
+        display: flex !important;
+        overflow-x: scroll;
+    }
+}
+
+@media (min-width: 513px) and (max-width: 754px) {
+    #ongoingEventsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 755px) and (max-width: 1024px) {
+    #ongoingEventsGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 /* Small Screen */
 @media (max-width: 1250px) {
-    #ongoingEventsGrid {
-        justify-content: center !important;
-    }
-
     #eventCheckInWrapper {
         gap: 0.75rem !important;
     }

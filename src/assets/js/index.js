@@ -511,10 +511,10 @@ export const getEvents = async (id, query = {}) => {
             current = 0,
         } = query;
 
-        let url = `${API_URL}events/`;
+        let url = `${API_URL}events`;
 
         if (id) {
-            url += id;
+            url += "/" + id;
         } else {
             url += `?&start=${start}&limit=${limit}`;
 

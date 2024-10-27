@@ -180,19 +180,88 @@
                     </div>
                 </div>
 
-                <!-- ROOM -->
+                <!-- PURPOSE -->
                 <div class="col-md-6" v-if="formStatus.startsWith('new')">
-                    <label for="room" class="form-label is-required"
-                        >Room<span class="visually-hidden">
-                            (required)</span
-                        ></label
+                    <label for="purpose" class="form-label is-required">
+                        Purpose
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            class="form-control"
+                            aria-label="Default select example"
+                            required
+                            id="purpose"
+                            :value="purpose"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            autocomplete="off"
+                            editable="false"
+                        />
+                        <ul class="dropdown-menu w-100">
+                            <li
+                                class="dropdown-item"
+                                @click="purpose = 'Workspace'"
+                            >
+                                Workspace
+                            </li>
+                            <li
+                                class="dropdown-item"
+                                @click="purpose = 'Meeting'"
+                            >
+                                Meeting
+                            </li>
+                        </ul>
+                        <div class="invalid-feedback">
+                            Please select a purpose for this visit.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BELONGINGS -->
+                <div class="col-md-6" v-if="formStatus.startsWith('new')">
+                    <label for="belongings" class="form-label">
+                        Belongings
+                    </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            autofocus="true"
+                            id="belongings"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="temBelonging"
+                            @keyup.prevent="addBelongings"
+                            @keydown.enter.prevent
+                        />
+                    </div>
+                    <div
+                        v-for="belonging in belongings"
+                        :key="belonging"
+                        @click="deleteBelongings(belonging)"
+                        class="belonging"
                     >
+                        {{ belonging }}
+                    </div>
+                </div>
+
+                <!-- ROOM -->
+                <div
+                    class="col-md-6"
+                    v-if="
+                        formStatus.startsWith('new') && purpose == 'Workspace'
+                    "
+                >
+                    <label for="room" class="form-label is-required">
+                        Room
+                        <span class="visually-hidden">(required)</span>
+                    </label>
 
                     <div class="input-group has-validation position-relative">
                         <input
                             type="text"
                             class="form-select"
-                            id="facilitatorInput"
+                            id="room"
                             :id="roomID"
                             :value="roomValue"
                             v-model="roomValue"
@@ -226,58 +295,50 @@
                     </div>
                 </div>
 
-                <!-- BELONGINGS -->
-                <div class="col-md-6" v-if="formStatus.startsWith('new')">
-                    <label for="belongings" class="form-label">
-                        Belongings
-                    </label>
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            autofocus="true"
-                            id="belongings"
-                            aria-describedby="inputGroupPrepend"
-                            v-model="temBelonging"
-                            @keyup.prevent="addBelongings"
-                            @keydown.enter.prevent
-                        />
-                    </div>
-                    <div
-                        v-for="belonging in belongings"
-                        :key="belonging"
-                        @click="deleteBelongings(belonging)"
-                        class="belonging"
-                    >
-                        {{ belonging }}
-                    </div>
-                </div>
-
-                <!-- PURPOSE -->
-                <div class="col-md-6" v-if="formStatus.startsWith('new')">
-                    <label for="purpose" class="form-label is-required">
-                        Purpose
+                <!-- EMPLOYEE -->
+                <div
+                    class="col-md-6"
+                    v-if="formStatus.startsWith('new') && purpose == 'Meeting'"
+                >
+                    <label for="employee" class="form-label is-required">
+                        Employee
                         <span class="visually-hidden">(required)</span>
                     </label>
-                    <div class="input-group has-validation">
-                        <select
+
+                    <div class="input-group position-relative">
+                        <input
+                            type="text"
                             class="form-select"
-                            aria-label="Default select example"
-                            required
-                            id="purpose"
-                            v-model="purpose"
-                        >
-                            <option value="Workspace" selected>
-                                Workspace
-                            </option>
-                            <option value="Meeting">Meeting</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a purpose for this visit.
-                        </div>
+                            id="employee"
+                            v-model="employeeQuery"
+                            aria-expanded="false"
+                            data-bs-toggle="dropdown"
+                            autocomplete="off"
+                            @input="searchEmployees"
+                        />
+
+                        <ul class="dropdown-menu w-100">
+                            <template v-for="employee in employees">
+                                <li
+                                    class="dropdown-item"
+                                    @click="employeeSelected(employee)"
+                                >
+                                    {{ employee.name }}
+                                </li>
+                            </template>
+                            <router-link
+                                :to="{ name: 'new-room' }"
+                                class="text-primary"
+                            >
+                                <li class="dropdown-item">
+                                    Create new employee
+                                </li>
+                            </router-link>
+                        </ul>
                     </div>
                 </div>
 
+                <!-- BUTTONS -->
                 <div class="col-md-12 d-flex gap-2 justify-content-end">
                     <button
                         v-if="formStatus.startsWith('edit')"
@@ -334,6 +395,8 @@ import {
     getSingleVisitor,
     registerVisit,
     getRooms,
+    API_URL,
+    API_KEY,
 } from "@/assets/js/index.js";
 import {
     msisdnValidation,
@@ -342,6 +405,7 @@ import {
     getElement,
     removeClass,
     formValidation,
+    formatMsisdn,
 } from "@/util/util.js";
 
 // Route and State
@@ -370,6 +434,17 @@ const belongings = ref([]);
 
 const checkInData = ref({});
 const mode = ref("");
+
+// Meeting Check In Data
+const employeeQuery = ref("");
+const employees = ref([]);
+const noEmployeeMatch = ref(false);
+const errorSearchingEmployees = ref(false);
+const employee = ref({
+    id: "",
+    name: "",
+    room_id: "",
+});
 
 const loading = ref(false);
 
@@ -403,24 +478,33 @@ const onSubmit = async () => {
     loading.value = true;
 
     // required fields for a visit check in
-    if (formStatus.startsWith("new") && (!roomID.value || !purpose.value)) {
-        loading.value = false;
-        return;
+    if (formStatus.startsWith("new")) {
+        if (purpose.value == "Workspace" && !roomID.value) {
+            loading.value = false;
+            return;
+        } else if (
+            purpose.value == "Meeting" &&
+            (!employee.value.id || !employee.value.room_id)
+        ) {
+            loading.value = false;
+
+            alert.value.message = "Please select an employee!";
+            alert.value.status = "danger";
+            alert.value.pageLink = "";
+            showModal();
+
+            return;
+        }
     }
 
     const visitor = {
-        first_name: first_name.value,
-        last_name: last_name.value,
-
-        // format msisdn for backend
-        msisdn: msisdn.value.startsWith("0")
-            ? `231${msisdn.value.slice(1)}`
-            : msisdn.value,
-
-        email: email.value,
-        address: address.value,
-        gender: gender.value,
-        occupation: occupation.value,
+        first_name: first_name.value || "",
+        last_name: last_name.value || "",
+        msisdn: formatMsisdn(msisdn.value),
+        email: email.value || "",
+        address: address.value || "",
+        gender: gender.value || "",
+        occupation: occupation.value || "",
     };
 
     const response = formStatus.startsWith("new")
@@ -430,6 +514,7 @@ const onSubmit = async () => {
     showModal();
     alert.value.status = response.ok ? "success" : "danger";
     alert.value.message = response.result.message;
+    alert.value.pageLink = "";
 
     // Reset form if the response is successful
     if (response.ok) {
@@ -441,16 +526,25 @@ const onSubmit = async () => {
             loading.value = false;
             resetForm();
         }
-    }
+    } else loading.value = false;
 };
 
 async function checkInVisitor() {
     checkInData.value = {
         visitor_id: createdVisitor.value.id,
         purpose: purpose.value,
-        room_id: roomID.value || "",
         items: belongings.value,
     };
+
+    if (purpose.value == "Meeting") {
+        checkInData.value.room_id = employee.value.room_id;
+        checkInData.value.employee_id = employee.value.id;
+        checkInData.value.type = "Meeting";
+        checkInData.value.purpose = "Meeting with " + employee.value.name;
+    } else if (purpose.value == "Workspace") {
+        checkInData.value.room_id = roomID.value;
+        checkInData.value.type = "Workspace";
+    }
 
     const checkInResponse = await registerVisit(checkInData.value);
 
@@ -503,6 +597,88 @@ const validateMsisdn = (number) => {
     }
 };
 
+async function fetchEmployees() {
+    $.ajax(`${API_URL}employees?limit=10`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+        success: (res) => {
+            const tmpEmployees = res.data.employees;
+
+            for (const employee of tmpEmployees) {
+                employee.name = `${employee.first_name} ${employee.last_name}`;
+            }
+
+            employees.value = tmpEmployees;
+        },
+        error: (err) => {
+            console.error("error retrieving employees: ", err);
+        },
+    });
+}
+
+// function to get employee by NAME or MSISDN
+async function searchEmployees() {
+    setTimeout(async () => {
+        try {
+            const searchValue = Number(employeeQuery.value)
+                ? formatMsisdn(employeeQuery.value)
+                : employeeQuery.value;
+
+            let url = `${API_URL}employees?search=${searchValue}&limit=10`;
+
+            let searchedEmployee = await fetch(url, {
+                headers: {
+                    authorization: API_KEY,
+                },
+            });
+
+            if (searchedEmployee.ok) {
+                const res = await searchedEmployee.json();
+
+                let tmpEmployees = res.data.employees;
+
+                if (!tmpEmployees.length) {
+                    noEmployeeMatch.value = true;
+                    errorSearchingEmployees.value = false;
+                    employees.value = [];
+                    return;
+                }
+
+                for (const employee of tmpEmployees) {
+                    employee.name = `${employee.first_name} ${employee.last_name}`;
+                }
+
+                noEmployeeMatch.value = false;
+                errorSearchingEmployees.value = false;
+                employees.value = tmpEmployees;
+            } else {
+                console.error("error searching employees: ", error);
+
+                employees.value = [];
+                errorSearchingVisitors.value = true;
+                noEmployeeMatch.value = false;
+            }
+        } catch (error) {
+            console.error("error searching employees: ", error);
+
+            employees.value = [];
+            errorSearchingEmployees.value = true;
+            noMatch.value = false;
+            loading.value = false;
+        }
+    }, 750);
+}
+
+function employeeSelected(selectedEmployee) {
+    employeeQuery.value = selectedEmployee.name;
+
+    employee.value.id = selectedEmployee.id;
+    employee.value.name = selectedEmployee.name;
+    employee.value.room_id = selectedEmployee.room_id;
+}
+
 const updateRoomTerm = (room) => {
     roomValue.value = room.name;
     roomID.value = room.id;
@@ -550,6 +726,8 @@ const validateEmail = (mail) => {
 };
 
 const resetForm = () => {
+    return;
+
     first_name.value = "";
     last_name.value = "";
     msisdn.value = "";
@@ -557,6 +735,13 @@ const resetForm = () => {
     address.value = "";
     gender.value = "";
     occupation.value = "";
+
+    employee.value.id = "";
+    employee.value.name = "";
+    employee.value.room_id = "";
+
+    roomID.value = "";
+    roomValue.value = "";
 
     // Remove validation classes
     const form = getElement(".needs-validation");
@@ -580,7 +765,9 @@ const deleteBelongings = (item) => {
 
 // Lifecycle Hooks
 onMounted(async () => {
-    await fetchVisitor();
+    fetchVisitor();
+    fetchEmployees();
+
     formValidation();
 
     $("#breadCrumbs").css("display", "block");

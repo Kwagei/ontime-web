@@ -249,7 +249,7 @@
                         >
                             <span class="visually-hidden">Loading...</span>
                         </div>
-                        Save
+                        Check In
                     </button>
                     <button class="btn btn-secondary" @click="router.back()">
                         Cancel
@@ -271,12 +271,7 @@ import {
     visitorCheckInStatus,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
-import {
-    formValidation,
-    showModal,
-    getElement,
-    removeClass,
-} from "@/util/util";
+import { formValidation, showModal, formatMsisdn } from "@/util/util";
 
 const msisdn = ref("");
 const visitor = ref("");
@@ -331,7 +326,7 @@ const props = defineProps({
     },
 });
 
-activeBreadCrumbs.value = [...props.breadCrumbs, "workspace"];
+activeBreadCrumbs.value = ["check-in", "workspace"];
 
 onMounted(async () => {
     formValidation();
@@ -366,56 +361,53 @@ async function fetchTop10Visitors() {
 
 // function to get visitor by NAME or MSISDN
 async function searchVisitors() {
-    try {
-        let url = `${API_URL}visitors?search=${
-            msisdn.value.startsWith("0")
-                ? "231" + msisdn.value.slice(1)
-                : msisdn.value
-        }&limit=15`;
+    setTimeout(async () => {
+        try {
+            const searchValue = Number(msisdn.value)
+                ? formatMsisdn(msisdn.value)
+                : msisdn.value;
 
-        loading.value = true;
-        visitors.value = [];
+            let url = `${API_URL}visitors?search=${searchValue}&limit=15`;
 
-        let searchedVisitor = await fetch(url, {
-            headers: {
-                authorization: API_KEY,
-            },
-        });
+            let searchedVisitor = await fetch(url, {
+                headers: {
+                    authorization: API_KEY,
+                },
+            });
 
-        loading.value = false;
+            if (searchedVisitor.ok) {
+                const res = await searchedVisitor.json();
 
-        if (searchedVisitor.ok) {
-            const res = await searchedVisitor.json();
+                let tmpVisitors = res.data.data;
 
-            let tmpVisitors = res.data.data;
+                if (!tmpVisitors.length) {
+                    noMatch.value = true;
+                    errorSearchingVisitors.value = false;
+                    visitors.value = [];
+                    return;
+                }
 
-            if (!tmpVisitors.length) {
-                noMatch.value = true;
+                for (const visitor of tmpVisitors) {
+                    visitor.name = `${visitor.first_name} ${
+                        visitor.middle_name || ""
+                    } ${visitor.last_name}`;
+                }
+
+                noMatch.value = false;
                 errorSearchingVisitors.value = false;
+                visitors.value = tmpVisitors;
+            } else {
                 visitors.value = [];
-                return;
+                errorSearchingVisitors.value = true;
+                noMatch.value = true;
             }
-
-            for (const visitor of tmpVisitors) {
-                visitor.name = `${visitor.first_name} ${
-                    visitor.middle_name || ""
-                } ${visitor.last_name}`;
-            }
-
-            noMatch.value = false;
-            errorSearchingVisitors.value = false;
-            visitors.value = tmpVisitors;
-        } else {
+        } catch (error) {
             visitors.value = [];
             errorSearchingVisitors.value = true;
-            noMatch.value = true;
+            noMatch.value = false;
+            loading.value = false;
         }
-    } catch (error) {
-        visitors.value = [];
-        errorSearchingVisitors.value = true;
-        noMatch.value = false;
-        loading.value = false;
-    }
+    }, 750);
 }
 
 function visitorSelected(selectedVisitor) {
@@ -511,6 +503,7 @@ const checkParticipantIn = async () => {
         items: belongings.value,
         room_id: room.value.id,
         purpose: "Workspace",
+        type: "Workspace",
     };
 
     const response = await registerVisit(visitData);

@@ -21,18 +21,18 @@
                 <h2 class="text text-large">Event</h2>
             </div>
             <!-- Meeting -->
-            <!-- <div -->
-            <!--     class="d-flex flex-column align-items-center justify-content-center p-3 checkInOption" -->
-            <!--     @click="router.push('/check-in/purpose-meeting')" -->
-            <!-- > -->
-            <!--     <Icons -->
-            <!--         :height="'auto'" -->
-            <!--         :width="'80%'" -->
-            <!--         class="optionIcon" -->
-            <!--         icon="collective-class-training" -->
-            <!--     /> -->
-            <!--     <h2 class="text text-large">Meeting</h2> -->
-            <!-- </div> -->
+            <div
+                class="d-flex flex-column align-items-center justify-content-center p-3 checkInOption"
+                @click="router.push('/check-in/purpose-meeting')"
+            >
+                <Icons
+                    :height="'auto'"
+                    :width="'80%'"
+                    class="optionIcon"
+                    icon="collective-class-training"
+                />
+                <h2 class="text text-large">Meeting</h2>
+            </div>
             <!-- Workspace -->
             <div
                 class="d-flex flex-column align-items-center justify-content-center p-3 checkInOption"

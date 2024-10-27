@@ -169,6 +169,7 @@
         </div>
     </div>
 </template>
+
 <script setup>
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Icons from "../Icons.vue";

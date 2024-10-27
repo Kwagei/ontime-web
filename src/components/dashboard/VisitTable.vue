@@ -83,7 +83,16 @@ const columns = [
         orderable: false,
     },
     { data: "departure_time", title: "Departure Time", orderable: false },
-    { data: "purpose", title: "Purpose", orderable: false },
+    {
+        data: null,
+        title: "Purpose",
+        orderable: false,
+        render: (data) => {
+            if (data.event_id)
+                return `<a href="/events/${data.event_id}">${data.purpose}</a>`;
+            return data.purpose;
+        },
+    },
     { data: "items", title: "Items", orderable: false },
     {
         data: null,

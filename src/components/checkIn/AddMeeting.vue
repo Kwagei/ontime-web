@@ -1,25 +1,75 @@
 <template>
-    <Modal :data="{ title, message, status }" />
+    <AlertModal :data="alert" />
+
     <div
-        id="visit-view"
-        class="d-flex flex-column container"
-        style="padding-top: 2rem"
+        class="d-flex flex-column container gap-3"
+        style="padding: 0 !important"
     >
-        <div
-            class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-            style="margin-top: 0.3rem"
-        >
+        <div id="workspaceBreadcrumbsWrapper" class="mt-4 mb-2">
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
+        <form @submit.prevent v-show="stage == 0" class="row g-3">
+            <div class="dropdown mt-2" id="selectEventWrapper">
+                <label for="selectVisitorInput" class="form-label is-required">
+                    Find Visitor by Contact or Name
+                </label>
+
+                <div class="input-group has-validation">
+                    <input
+                        @input="searchVisitors"
+                        type="text"
+                        class="form-select dropdown-toggle dropdown-toggle-split"
+                        v-model="msisdn"
+                        id="selectVisitorInput"
+                        aria-describedby="inputGroupPrepend"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        autofocus="true"
+                        autocomplete="off"
+                        required
+                        placeholder="Enter Phone Number or Name"
+                    />
+                    <ul class="dropdown-menu w-100">
+                        <li class="dropdown-item" v-if="noMatch">No Match</li>
+                        <li v-if="loading" class="dropdown-item">Loading...</li>
+                        <li v-if="errorSearchingVisitors" class="dropdown-item">
+                            <span class="text-danger">
+                                Unable to search visitors, try again!
+                            </span>
+                        </li>
+                        <template v-for="visitor in visitors">
+                            <li
+                                @click="visitorSelected(visitor)"
+                                class="dropdown-item"
+                                :value="visitor.id"
+                            >
+                                {{ visitor.name }}
+                            </li>
+                        </template>
+                        <router-link
+                            :to="{ name: 'add-visitor' }"
+                            class="text-primary"
+                        >
+                            <li class="dropdown-item text-decoration-none">
+                                Create new visitor
+                            </li>
+                        </router-link>
+                    </ul>
+                </div>
+            </div>
+        </form>
+
         <div
-            class="mt-4 form-control input"
-            style="margin: auto; padding: 3rem"
+            class="form-control input"
+            id="mobileFormWrapper"
+            style="padding: 3rem"
+            v-if="stage == 1"
         >
             <form
                 class="row g-3 needs-validation"
                 novalidate
-                @submit.prevent="onSubmit"
+                @submit.prevent="checkParticipantIn"
             >
                 <!-- PHONE NUMBER -->
                 <div class="col-md-6">
@@ -33,21 +83,62 @@
                     </label>
                     <div class="input-group has-validation">
                         <input
-                            @blur="getVisitor"
+                            @input="searchVisitors"
                             type="text"
-                            class="form-control"
+                            class="form-select dropdown-toggle dropdown-toggle-split"
                             v-model="msisdn"
-                            id="validationCustomVisitorNumber"
+                            id="selectVisitorInput"
                             aria-describedby="inputGroupPrepend"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            autocomplete="off"
                             required
+                            placeholder="Enter Phone Number or Name"
+                            :class="{ inputOutline: msisdnError }"
                         />
-                        <div class="invalid-feedback">
-                            Please provide a valid phone number.
+                        <div
+                            :class="{ 'd-flex': msisdnError }"
+                            class="invalid-feedback"
+                        >
+                            Please provide a visitor phone number.
                         </div>
+                        <ul class="dropdown-menu w-100">
+                            <li class="dropdown-item" v-if="noMatch">
+                                No Match
+                            </li>
+                            <li v-if="loading" class="dropdown-item">
+                                Loading...
+                            </li>
+                            <li
+                                v-if="errorSearchingVisitors"
+                                class="dropdown-item"
+                            >
+                                <span class="text-danger">
+                                    Unable to search visitors, try again!
+                                </span>
+                            </li>
+                            <template v-for="visitor in visitors">
+                                <li
+                                    @click="visitorSelected(visitor)"
+                                    class="dropdown-item"
+                                    :value="visitor.id"
+                                >
+                                    {{ visitor.name }}
+                                </li>
+                            </template>
+                            <router-link
+                                :to="{ name: 'add-visitor' }"
+                                class="text-primary"
+                            >
+                                <li class="dropdown-item text-decoration-none">
+                                    Create new visitor
+                                </li>
+                            </router-link>
+                        </ul>
                     </div>
                 </div>
 
-                <!-- VISITOR -->
+                <!-- NEW VISITOR -->
                 <div class="col-md-6">
                     <label
                         for="validationCustomNewVisitor"
@@ -63,180 +154,127 @@
                             aria-describedby="inputGroupPrepend"
                             v-model="visitor"
                             required
+                            :class="{ inputOutline: nameError }"
                         />
-                        <div class="invalid-feedback">
+                        <div
+                            :class="{ 'd-flex': nameError }"
+                            class="invalid-feedback"
+                        >
                             Please provide a visitor name.
                         </div>
                     </div>
                 </div>
 
-                <!-- Host -->
-                <div class="dropdown col-md-6">
-                    <label for="typeInput" class="form-label is-required">
-                        Host
+                <!-- Employee -->
+                <div class="col-md-6">
+                    <label
+                        for="validationCustomEmployeeNumber"
+                        class="form-label is-required"
+                    >
+                        Employee
                         <span class="visually-hidden">(required)</span>
                     </label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="facilitatorInput"
-                        :class="{
-                            border: facilitatorError,
-                            'border-danger': facilitatorError,
-                        }"
-                        :id="hostID"
-                        :value="hostValue"
-                        aria-expanded="false"
-                        data-bs-toggle="dropdown"
-                        autocomplete="off"
-                        required
-                    />
-                    <ul class="dropdown-menu" style="width: 97%">
-                        <template v-for="(host, index) in hosts">
-                            <li
-                                class="dropdown-item"
-                                :value="host.id"
-                                @click="updateHostTerm(host)"
-                            >
-                                {{ host.name }}
+                    <div class="input-group has-validation">
+                        <input
+                            @input="searchEmployees"
+                            type="text"
+                            class="form-select dropdown-toggle dropdown-toggle-split"
+                            v-model="employeeQuery"
+                            id="selectVisitorInput"
+                            aria-describedby="inputGroupPrepend"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            autocomplete="off"
+                            required
+                            :class="{ inputOutline: employeeError }"
+                        />
+                        <div
+                            :class="{ 'd-flex': employeeError }"
+                            class="invalid-feedback"
+                        >
+                            Please select an employee.
+                        </div>
+                        <ul class="dropdown-menu w-100">
+                            <li class="dropdown-item" v-if="noEmployeeMatch">
+                                No Match
                             </li>
+                            <li v-if="loadingEmployee" class="dropdown-item">
+                                Loading...
+                            </li>
+                            <li
+                                v-if="errorSearchingEmployees"
+                                class="dropdown-item"
+                            >
+                                <span class="text-danger">
+                                    Unable to search employees, try again!
+                                </span>
+                            </li>
+                            <template v-for="employee in employees">
+                                <li
+                                    @click="employeeSelected(employee)"
+                                    class="dropdown-item"
+                                    :value="employee.id"
+                                >
+                                    {{ employee.name }}
+                                </li>
+                            </template>
                             <router-link
-                                :to="{ name: 'new-host' }"
+                                :to="{ name: 'add-employee' }"
                                 class="text-primary"
                             >
-                                <li
-                                    class="dropdown-item"
-                                    v-if="!hosts[index + 1]"
-                                >
-                                    create new host
+                                <li class="dropdown-item text-decoration-none">
+                                    Create new employee
                                 </li>
                             </router-link>
-                        </template>
-                    </ul>
-
-                    <Alert :title="typeError" />
-                </div>
-
-                <!-- Room -->
-                <!-- <div class="col-md-6">
-					<label
-						for="validationCustomRoom"
-						class="form-label is-required"
-					>
-						Room<span class="visually-hidden">(required)</span>
-					</label>
-					<div class="input-group has-validation">
-						<input
-							type="text"
-							class="form-control"
-							id="validationCustomRoom"
-							v-model="room"
-							required
-						/>
-						<div class="invalid-feedback">
-							Please provide a room name.
-						</div>
-					</div>
-				</div> -->
-
-                <!-- Belonging -->
-                <div class="col-md-6">
-                    <label for="validationCustomBelonging" class="form-label">
-                        Items
-                    </label>
-                    <div class="input-group">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="validationCustomBelonging"
-                            v-model="belonging"
-                        />
+                        </ul>
                     </div>
                 </div>
 
-                <!-- Institution -->
+                <!-- BELONGINGS -->
                 <div class="col-md-6">
-                    <label for="validationCustomInstitution" class="form-label">
-                        Institution<span class="visually-hidden"
-                            >(required)</span
-                        >
+                    <label for="belongings" class="form-label">
+                        Belongings
                     </label>
                     <div class="input-group has-validation">
                         <input
                             type="text"
                             class="form-control"
-                            id="validationCustomInstitution"
-                            v-model="institution"
+                            autofocus="true"
+                            id="belongings"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="temBelonging"
+                            @keyup.prevent="addBelongings"
+                            @keydown.enter.prevent
                         />
                     </div>
-                </div>
-
-                <!-- Address -->
-                <div class="col-md-6">
-                    <label
-                        for="validationCustomAddress"
-                        class="form-label is-required"
+                    <div
+                        v-for="belonging in belongings"
+                        :key="belonging"
+                        @click="deleteBelongings(belonging)"
+                        class="belonging"
                     >
-                        Address<span class="visually-hidden">(required)</span>
-                    </label>
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="validationCustomAddress"
-                            v-model="address"
-                            required
-                        />
-                        <div class="invalid-feedback">
-                            Please provide an address.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Purpose -->
-                <div class="col-md-6">
-                    <label
-                        for="validationCustomPurpose"
-                        class="form-label is-required"
-                    >
-                        Purpose
-                        <span class="visually-hidden">(required)</span>
-                    </label>
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="validationCustomPurpose"
-                            v-model="purpose"
-                            required
-                        />
-                        <div class="invalid-feedback">
-                            Please provide an address.
-                        </div>
+                        {{ belonging }}
                     </div>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="col-12 d-flex gap-2">
                     <button
-                        class="btn btn-primary px-5"
+                        class="btn btn-primary"
                         style="margin-left: auto"
                         type="submit"
-                        :disabled="loading"
+                        :disabled="submitting"
                     >
                         <div
                             class="spinner-border submitBtnLoader"
                             role="status"
-                            v-if="loading"
+                            v-if="submitting"
                         >
                             <span class="visually-hidden">Loading...</span>
                         </div>
-                        Save
+                        Check In
                     </button>
-                    <button
-                        class="btn btn-secondary px-5"
-                        @click="router.back()"
-                    >
+                    <button class="btn btn-secondary" @click="router.back()">
                         Cancel
                     </button>
                 </div>
@@ -246,46 +284,68 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, onMounted, getCurrentInstance } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
-import Modal from "../modals/AlertModal.vue";
+import AlertModal from "../modals/AlertModal.vue";
 import {
+    API_URL,
+    API_KEY,
     registerVisit,
-    getSingleVisitor,
-    getEvents,
-    getHosts,
+    visitorCheckInStatus,
 } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
-import { addClass, getElement, getElementAll, removeClass } from "@/util/util";
+import { formValidation, showModal, formatMsisdn } from "@/util/util";
 
-const events = ref(null);
-const options = ref([]);
-
-// Form Data
-const hosts = ref("");
-const hostValue = ref("");
-const hostID = ref("");
-const host_id = ref("");
-const room_id = ref("");
-const room = ref("");
-const institution = ref("");
-const address = ref("");
-const purpose = ref("");
-const belonging = ref("");
 const msisdn = ref("");
 const visitor = ref("");
 const visitorId = ref("");
 
-// Modal Data
-const status = ref("");
-const message = ref("");
-const title = ref("");
+const visitors = ref([]);
+const employees = ref([]);
+const employee = ref({
+    id: "",
+    name: "",
+    room_id: "",
+});
+const loadingEmployee = ref(false);
+const employeeQuery = ref("");
+const errorSearchingEmployees = ref(false);
+const noEmployeeMatch = ref(false);
 
 const activeBreadCrumbs = ref([]);
 
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
+
+// Belongings Data
+const temBelonging = ref("");
+const belongings = ref([]);
+
+const submitting = ref(false);
+const msisdnError = ref(false);
+const nameError = ref(false);
+
+// visitors searching flags
+const loading = ref(true);
+const noMatch = ref(false);
+const errorSearchingVisitors = ref(false);
+
 const router = useRouter();
 
-const loading = ref(false);
+const alert = ref({
+    message: "",
+    status: "success",
+    pageLink: "",
+});
+
+/*
+ * Stage of Workspace Check In
+ * 0 => Enter Contact to Search for Visitor
+ * 1 => Enter Check In Details
+ * 2 => Check In
+ */
+const stage = ref(0);
 
 const props = defineProps({
     breadCrumbs: {
@@ -294,138 +354,343 @@ const props = defineProps({
     },
 });
 
-activeBreadCrumbs.value = [...props.breadCrumbs, "visit-checkin"];
+activeBreadCrumbs.value = ["check-in", "meeting"];
 
 onMounted(async () => {
-    (() => {
-        "use strict";
+    formValidation();
 
-        const form = getElement(".needs-validation");
+    fetchTop10Visitors();
 
-        form.addEventListener(
-            "submit",
-            (event) => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
+    fetchEmployees();
+});
+
+async function fetchTop10Visitors() {
+    $.ajax(`${API_URL}visitors/top-visitors?notIn=1`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+        success: (res) => {
+            const tmpVisitors = res.data;
+
+            for (const visitor of tmpVisitors) {
+                visitor.name = `${visitor.first_name} ${
+                    visitor.middle_name || ""
+                } ${visitor.last_name}`;
+            }
+
+            loading.value = false;
+
+            visitors.value = tmpVisitors;
+        },
+        error: (err) => {
+            console.error("error retrieving top ten visitors: ", err);
+        },
+    });
+}
+
+async function fetchEmployees() {
+    $.ajax(`${API_URL}employees?limit=10`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+        success: (res) => {
+            const tmpEmployees = res.data.employees;
+
+            for (const employee of tmpEmployees) {
+                employee.name = `${employee.first_name} ${
+                    employee.middle_name || ""
+                } ${employee.last_name}`;
+            }
+
+            employees.value = tmpEmployees;
+        },
+        error: (err) => {
+            console.error("error retrieving employees: ", err);
+        },
+    });
+}
+
+// function to search visitors
+async function searchVisitors() {
+    setTimeout(async () => {
+        try {
+            const searchValue = Number(msisdn.value)
+                ? formatMsisdn(msisdn.value)
+                : msisdn.value;
+
+            let url = `${API_URL}visitors?search=${searchValue}&limit=10`;
+
+            let searchedVisitor = await fetch(url, {
+                headers: {
+                    authorization: API_KEY,
+                },
+            });
+
+            if (searchedVisitor.ok) {
+                const res = await searchedVisitor.json();
+
+                let tmpVisitors = res.data.data;
+
+                if (!tmpVisitors.length) {
+                    noMatch.value = true;
+                    errorSearchingVisitors.value = false;
+                    visitors.value = [];
+                    return;
                 }
 
-                addClass(form, "was-validated");
-            },
-            false
-        );
-    })();
+                for (const visitor of tmpVisitors) {
+                    visitor.name = `${visitor.first_name} ${
+                        visitor.middle_name || ""
+                    } ${visitor.last_name}`;
+                }
 
-    hosts.value = await getHosts();
-});
-const updateHostTerm = (host) => {
-    hostValue.value = host.name;
-    hostID.value = host.id;
-};
-
-// function to get visitor bt MSISDN
-const getVisitor = async () => {
-    try {
-        const visitorData = await getSingleVisitor({ msisdn: msisdn.value });
-        if (!visitorData) {
-            visitor.value = "";
-            return;
+                noMatch.value = false;
+                errorSearchingVisitors.value = false;
+                visitors.value = tmpVisitors;
+            } else {
+                visitors.value = [];
+                errorSearchingVisitors.value = true;
+                noMatch.value = true;
+            }
+        } catch (error) {
+            visitors.value = [];
+            errorSearchingVisitors.value = true;
+            noMatch.value = false;
+            loading.value = false;
         }
-        visitor.value = `${visitorData.first_name} ${visitorData.last_name}`;
-        visitorId.value = visitorData.id;
-    } catch (error) {
-        console.error("Error retrieving visitor:", error);
-    }
-};
+    }, 750);
+}
 
-// watching selected host name to update host ID
-watch(purpose, (title) => {
-    const selectedEvent = events.value.find((event) => event.title === title);
-    if (selectedEvent) {
-        host_id.value = selectedEvent.host_id;
-        room_id.value = selectedEvent.room_id;
-        room.value = selectedEvent.room;
-    }
-});
+// function to get employee by NAME or MSISDN
+async function searchEmployees() {
+    setTimeout(async () => {
+        try {
+            const searchValue = Number(employeeQuery.value)
+                ? formatMsisdn(employeeQuery.value)
+                : employeeQuery.value;
+
+            let url = `${API_URL}employees?search=${searchValue}&limit=10`;
+
+            let searchedEmployee = await fetch(url, {
+                headers: {
+                    authorization: API_KEY,
+                },
+            });
+
+            if (searchedEmployee.ok) {
+                const res = await searchedEmployee.json();
+
+                let tmpEmployees = res.data.employees;
+
+                if (!tmpEmployees.length) {
+                    noEmployeeMatch.value = true;
+                    errorSearchingEmployees.value = false;
+                    employees.value = [];
+                    return;
+                }
+
+                for (const employee of tmpEmployees) {
+                    employee.name = `${employee.first_name} ${employee.last_name}`;
+                }
+
+                noEmployeeMatch.value = false;
+                errorSearchingEmployees.value = false;
+                employees.value = tmpEmployees;
+            } else {
+                console.error("error searching employees: ", error);
+
+                employees.value = [];
+                errorSearchingVisitors.value = true;
+                noEmployeeMatch.value = false;
+            }
+        } catch (error) {
+            console.error("error searching employees: ", error);
+
+            employees.value = [];
+            errorSearchingEmployees.value = true;
+            noMatch.value = false;
+            loading.value = false;
+        }
+    }, 750);
+}
+
+function visitorSelected(selectedVisitor) {
+    msisdn.value = selectedVisitor.msisdn;
+    visitor.value = selectedVisitor.name;
+    visitorId.value = selectedVisitor.id;
+
+    stage.value = 1;
+}
+
+function employeeSelected(selectedEmployee) {
+    employeeQuery.value = selectedEmployee.name;
+
+    employee.value.name = selectedEmployee.name;
+    employee.value.id = selectedEmployee.id;
+    employee.value.room_id = selectedEmployee.room_id;
+}
 
 // function to validate form before it submit the form
-const onSubmit = async () => {
-    if (loading.value) return;
+const checkParticipantIn = async () => {
+    msisdnError.value = false;
+    nameError.value = false;
 
-    if (
-        !msisdn.value ||
-        !visitor.value ||
-        !purpose.value ||
-        !room.value ||
-        !address.value
-    )
+    // ensure msisdn was given
+    if (!msisdn.value) {
+        msisdnError.value = true;
         return;
+    }
 
-    loading.value = true;
+    // ensure msisdn was given
+    if (!visitor.value) {
+        nameError.value = true;
+        return;
+    }
 
-    // plitting text into array by using command as the deleminator
-    const items = belonging.value.split(",").map((item) => item.trim());
+    // ensure employee was selected
+    if (!employee.value.id) {
+        alert.value.message = "Employee is required";
+        alert.value.status = "danger";
+
+        showModal();
+        return;
+    }
+
+    $sectionIsLoading.value = true;
+    submitting.value = true;
+
+    const checkInStatus = await visitorCheckInStatus(visitorId.value);
+
+    // handle error getting check in status
+    if (!checkInStatus.ok) {
+        alert.value.message = "Unable to get check in status";
+        alert.value.status = "danger";
+
+        showModal();
+        $sectionIsLoading.value = false;
+        submitting.value = false;
+        return;
+    }
+
+    // indicate visitor is still checked in
+    else if (checkInStatus.result.data.stillCheckedIn) {
+        alert.value.message = "Visitor is Still Checked In";
+        alert.value.status = "warning";
+
+        $sectionIsLoading.value = false;
+        submitting.value = false;
+
+        showModal();
+        return;
+    }
 
     // require values for the submittion of the form
     const visitData = {
         visitor_id: visitorId.value,
-        institution: institution.value,
-        address: address.value,
-        items,
-        room_id: room_id.value,
-        host_id: host_id.value,
-        purpose: purpose.value,
+        items: belongings.value,
+        employee_id: employee.value.id,
+        room_id: employee.value.room_id,
+        purpose: "Meeting with " + employee.value.name,
+        type: "Meeting",
     };
 
     const response = await registerVisit(visitData);
 
-    const myModal = new boosted.Modal("#exampleModal", { backdrop: true });
-    myModal.show(getElement("#toggleMyModal"));
-    status.value = response.ok ? "success" : "danger";
-    message.value = response.result.message;
-    title.value = response.ok ? "Success" : "Error";
+    // successful check in
+    if (response.result.status == 201) {
+        alert.value.message = "Visitor Checked In";
+        alert.value.status = "success";
+        alert.value.pageLink = "/visits";
 
-    visuallyHideModalBackdrop();
-
-    // Reset form if the response is successful
-    if (response.ok) {
         resetForm();
+    } else {
+        alert.value.message = response.result.message;
+        alert.value.status = "danger";
     }
 
-    loading.value = false;
+    $sectionIsLoading.value = false;
+    submitting.value = false;
+
+    showModal();
 };
 
-function visuallyHideModalBackdrop() {
-    const modalsBackdrops = getElementAll(".modal-backdrop");
-
-    if (modalsBackdrops.length) {
-        modalsBackdrops.forEach((modal) =>
-            modal.classList.add("visually-hidden")
-        );
-    }
+function resetForm() {
+    msisdn.value = "";
+    visitor.value = "";
+    visitorId.value = "";
+    employee.value.id = "";
+    employee.value.room_id = "";
+    employee.value.name = "";
+    belongings.value = [];
 }
 
-const resetForm = () => {
-    visitor.value = "";
-    purpose.value = "";
-    room.value = "";
-    msisdn.value = "";
-    address.value = "";
-    hostValue.value = "";
-    belonging.value = "";
-    institution.value = "";
+const addBelongings = (event) => {
+    const { key } = event;
 
-    // Remove validation classes
-    const form = getElement(".needs-validation");
-    removeClass(form, "was-validated");
+    if (key === "Enter" && temBelonging.value) {
+        if (!belongings.value.includes(temBelonging.value)) {
+            belongings.value.push(temBelonging.value);
+        }
+        temBelonging.value = "";
+    }
+};
+
+const deleteBelongings = (item) => {
+    belongings.value = belongings.value.filter((val) => val !== item);
 };
 </script>
 
 <style scoped>
+.input {
+    border: 0.0125rem solid #ccc;
+    border-radius: 0.25rem !important;
+}
+
+.belonging {
+    text-transform: capitalize;
+    display: inline-block;
+    margin: 20px 10px 0 0;
+    padding: 6px 12px;
+    background-color: #eee;
+    border-radius: 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: #777;
+    cursor: pointer;
+}
+
+.inputOutline {
+    outline: 2px solid red outset;
+}
+
 a {
     text-decoration: none;
 }
-.form-select {
-    padding: calc(1rem - 1px) 1rem calc(0.5rem + 1px);
+
+@media (max-width: 1250px) {
+    #eventCheckInWrapper {
+        gap: 0.75rem !important;
+    }
+
+    #selectEventWrapper {
+        margin-top: 0 !important;
+        max-width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #workspaceBreadcrumbsWrapper {
+        margin-left: 2.6%;
+        margin-top: 0.7rem;
+        margin-bottom: 0.7rem;
+    }
+
+    #mobileFormWrapper {
+        margin: 0 auto;
+        max-width: 95%;
+    }
 }
 </style>

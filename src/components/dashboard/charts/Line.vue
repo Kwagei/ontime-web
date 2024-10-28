@@ -103,8 +103,11 @@ const initializeWeeklyVisitData = async () => {
     const currentWeekVisits = await getCurrentWeekData();
 
     // initialize today's visits
+    // set today's visits to 0 on Sunday
     todaysVisits.value =
-        currentWeekVisits[currentWeekVisits.length - 1].gender.total;
+        new Date().getDay() != 0
+            ? currentWeekVisits[currentWeekVisits.length - 1].gender.total
+            : 0;
 
     gender.value.male = currentWeekVisits[0].weekly_male_total;
     gender.value.female = currentWeekVisits[0].weekly_female_total;

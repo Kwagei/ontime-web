@@ -290,6 +290,12 @@ const gender = ref("");
 const occupation = ref("");
 const session = ref("");
 
+// success flags
+const visitorCreated = ref(false);
+const participantCreated = ref(false);
+
+const createdVisitor = ref({});
+
 const alert = ref({
     status: "",
     title: "",
@@ -310,15 +316,19 @@ const onSubmit = async () => {
         return;
     }
 
+    // don't bother recreating participant if already created
+    // but there was an error in on of the other steps
+    if (participantCreated.value) return checkInParticipant();
+
     const participant = {
-        first_name: first_name.value,
-        last_name: last_name.value,
+        first_name: first_name.value || "",
+        last_name: last_name.value || "",
         msisdn: formatMsisdn(msisdn.value),
-        email: email.value,
-        address: address.value,
-        gender: gender.value,
-        occupation: occupation.value,
-        session: session.value,
+        email: email.value || "",
+        address: address.value || "",
+        gender: gender.value || "",
+        occupation: occupation.value || "",
+        session: session.value || "",
     };
 
     const body = {
@@ -343,6 +353,8 @@ const onSubmit = async () => {
             alert.value.message = data.message;
             alert.value.title = data.message;
             alert.value.pageLink = `/events/${eventId}`;
+
+            participantCreated.value = true;
 
             showModal();
 
@@ -373,10 +385,8 @@ const onSubmit = async () => {
             $sectionIsLoading.value = false;
             loading.value = false;
 
-            alert.value.pageLink = "danger";
-            alert.value.title = error.responseJSON.message;
             alert.value.message = error.responseJSON.message;
-            alert.value.status = "";
+            alert.value.status = "danger";
 
             showModal();
 
@@ -387,48 +397,61 @@ const onSubmit = async () => {
                 $("#alertStatusDiv").removeClass("alert-danger");
                 $("#alertStatusDiv").addClass("alert-danger");
                 $("#alertModalBody").removeClass("border-undefined");
-                $("#alertModalBody").addClass("border-success");
+                $("#alertModalBody").addClass("border-danger");
             }, 150);
         },
     });
 };
 
 async function checkInParticipant() {
-    // create visitor
-    const createdVisitor = await registerVisitor({
-        first_name: createdParticipant.value.first_name,
-        last_name: createdParticipant.value.last_name,
-        msisdn: createdParticipant.value.msisdn,
-        email: createdParticipant.value.email,
-        address: createdParticipant.value.address,
-        gender: createdParticipant.value.gender,
-        occupation: createdParticipant.value.occupation,
-    });
+    // create visitor if not already created
+    if (!visitorCreated.value) {
+        // create visitor
+        createdVisitor.value = await registerVisitor({
+            first_name: createdParticipant.value.first_name || "",
+            last_name: createdParticipant.value.last_name || "",
+            msisdn: createdParticipant.value.msisdn || "",
+            email: createdParticipant.value.email || "",
+            address: createdParticipant.value.address || "",
+            gender: createdParticipant.value.gender || "",
+            occupation: createdParticipant.value.occupation || "",
+        });
 
-    // handle error creating visitor
-    if (!createdVisitor.ok) {
-        showModal();
+        // handle error creating visitor
+        if (!createdVisitor.value.ok) {
+            $sectionIsLoading.value = false;
+            loading.value = false;
 
-        setTimeout(() => {
-            $("#alertMessageParagraph").text(data.message);
-            $("#alertStatusDiv").removeClass("alert-undefined");
-            $("#alertStatusDiv").removeClass("alert-warning");
-            $("#alertStatusDiv").removeClass("alert-danger");
-            $("#alertStatusDiv").addClass("alert-danger");
-            $("#alertModalBody > .modal-content").removeClass(
-                "border-undefined"
-            );
-            $("#alertModalBody > .modal-content").addClass("border-danger");
-        }, 150);
+            showModal();
 
-        return;
+            setTimeout(() => {
+                $("#alertMessageParagraph").text(
+                    createdVisitor.value.result.message
+                );
+                $("#alertStatusDiv").removeClass("alert-undefined");
+                $("#alertStatusDiv").removeClass("alert-warning");
+                $("#alertStatusDiv").removeClass("alert-danger");
+                $("#alertStatusDiv").addClass("alert-danger");
+                $("#alertModalBody > .modal-content").removeClass(
+                    "border-undefined"
+                );
+                $("#alertModalBody > .modal-content").addClass("border-danger");
+            }, 150);
+
+            return;
+        }
     }
+
+    visitorCreated.value = true;
 
     // format visit data
     const checkInData = {
-        visitor_id: createdVisitor.result.data[0].id,
+        visitor_id: createdVisitor.value.result.data[0].id,
+        participant_id: createdParticipant.value.id,
         purpose: props.event?.title,
         room_id: props.event?.room_id,
+        event_id: props.event?.id,
+        type: "Event",
         items: [],
     };
 
@@ -450,6 +473,8 @@ async function checkInParticipant() {
             $("#alertModalBody > .modal-content").removeClass(
                 "border-undefined"
             );
+            $("#alertModalBody > .modal-content").removeClass("border-danger");
+            $("#alertModalBody > .modal-content").removeClass("border-warning");
             $("#alertModalBody > .modal-content").addClass("border-success");
         }, 150);
 
@@ -517,6 +542,12 @@ const validateEmail = (mail) => {
 };
 
 const resetForm = () => {
+    visitorCreated.value = false;
+    participantCreated.value = false;
+
+    createdVisitor.value = {};
+    createdParticipant.value = {};
+
     first_name.value = "";
     last_name.value = "";
     msisdn.value = "";

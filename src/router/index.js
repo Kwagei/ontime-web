@@ -33,6 +33,11 @@ import AddWorkspace from "@/components/checkIn/AddWorkspace.vue";
 // Users Components
 import Users from "../layouts/Users.vue";
 
+// Employees Components
+import Employees from "@/layouts/Employees.vue";
+import AddEmployee from "@/components/employees/AddEmployee.vue";
+import EmployeeDetails from "@/components/employees/EmployeeDetails.vue";
+
 // Dashboard Components
 import Dashboard from "../layouts/Dashboard.vue";
 
@@ -230,6 +235,31 @@ const routes = [
                         path: "new-room",
                         component: Rooms,
                         name: "new-room",
+                    },
+                ],
+            },
+            {
+                path: "/employees",
+                children: [
+                    {
+                        path: "",
+                        component: Employees,
+                        name: "employees",
+                    },
+                    {
+                        path: "add-employee",
+                        component: AddEmployee,
+                        name: "add-employee",
+                    },
+                    {
+                        path: ":id/edit-employee",
+                        component: AddEmployee,
+                        name: "edit-employee",
+                    },
+                    {
+                        path: ":id",
+                        component: EmployeeDetails,
+                        name: "employee-details",
                     },
                 ],
             },

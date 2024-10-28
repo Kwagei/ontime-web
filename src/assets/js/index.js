@@ -511,10 +511,10 @@ export const getEvents = async (id, query = {}) => {
             current = 0,
         } = query;
 
-        let url = `${API_URL}events/`;
+        let url = `${API_URL}events`;
 
         if (id) {
-            url += id;
+            url += "/" + id;
         } else {
             url += `?&start=${start}&limit=${limit}`;
 
@@ -556,6 +556,54 @@ export const getEvents = async (id, query = {}) => {
         return data;
     } catch (error) {
         console.error("Error: ", error);
+    }
+};
+
+// EMPLOYEES
+export const getEmployees = async (id, query = {}) => {
+    try {
+        const {
+            search = "",
+            start = 0,
+            limit = 10,
+            sort = "",
+            order = "",
+        } = query;
+
+        let url = `${API_URL}employees`;
+
+        if (id) {
+            url += "/" + id;
+        } else {
+            url += `?&start=${start}&limit=${limit}`;
+
+            if (search) {
+                url += `&search=${search}`;
+            }
+
+            if (sort) {
+                url += `&sort=${sort}&order=${order}`;
+            }
+        }
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                authorization: API_KEY,
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            console.error("Unable to load ongoing events");
+            return;
+        }
+
+        const { data } = await response.json();
+
+        return data;
+    } catch (error) {
+        console.error("Unable to fetch employees: ", error);
     }
 };
 

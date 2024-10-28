@@ -14,7 +14,7 @@ dayjs.extend(customParseFormat);
  * @throws Will throw an error if the contact number or email is invalid.
  */
 export const msisdnValidation = (msisdns) => {
-    if (!msisdns) return false;
+    if (!msisdns.length) return false;
 
     let contacts = msisdns;
     const serviceCode = ["555", "88", "77"];
@@ -56,6 +56,8 @@ export const msisdnValidation = (msisdns) => {
  * @returns {boolean} - true / false
  */
 export const emailValidation = (mail) => {
+    if (!mail) return { valid: false };
+
     const isValid = validator.isEmail(mail.trim());
 
     if (!isValid) {
@@ -345,7 +347,7 @@ export const capitalize = (str) => {
 // msisdn should validated with the `msisdnValidation()` method
 // before formatting it with this method
 export const formatMsisdn = (tmpMsisdn) => {
-    if (!tmpMsisdn) return;
+    if (!tmpMsisdn) return "";
 
     let msisdn = "";
 
@@ -354,5 +356,6 @@ export const formatMsisdn = (tmpMsisdn) => {
     }
 
     if (msisdn.startsWith("231")) return "231" + msisdn.slice(3, 12);
-    return "231" + msisdn.slice(1, 10);
+    else if (msisdn.startsWith("0")) return "231" + msisdn.slice(1, 10);
+    return msisdn;
 };

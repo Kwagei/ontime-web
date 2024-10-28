@@ -102,7 +102,7 @@
                 </div>
 
                 <div class="form-control rounded col">
-                    <Bar v-model:totalVisits="totalVisits" />
+                    <Bar />
                 </div>
 
                 <div class="form-control rounded col-12" style="padding: 3rem">

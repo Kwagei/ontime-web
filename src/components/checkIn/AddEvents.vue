@@ -319,7 +319,6 @@ const errorRetrievingEvents = ref(false);
 const participant_id = ref("");
 const msisdn = ref("");
 const visitorId = ref("");
-const host_id = ref("");
 const room_id = ref("");
 const address = ref("");
 const purpose = ref("");
@@ -482,10 +481,9 @@ const checkParticipantIn = async () => {
         event_id: eventID.value,
         items: [],
         room_id: room_id.value,
-        host_id: host_id.value,
         purpose: purpose.value,
-        address: address.value,
         participant_id: participant_id.value,
+        type: "Event",
     };
 
     const response = await registerVisit(visitData);
@@ -554,6 +552,7 @@ const participantDetail = async (id) => {
         } else {
             alert.value.message = response.result.message;
             alert.value.status = "danger";
+            $sectionIsLoading.value = false;
 
             showModal();
             return;
@@ -579,7 +578,6 @@ const participantDetail = async (id) => {
     visitorId.value = visitorData.id;
     msisdn.value = visitorData.msisdn;
     room_id.value = event.room_id;
-    host_id.value = event.host_id;
 
     checkParticipantIn();
 };

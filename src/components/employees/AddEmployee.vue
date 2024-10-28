@@ -272,6 +272,7 @@ const roomsData = ref([]);
 const msisdnError = ref("");
 const emailError = ref("");
 
+const employeeId = ref("");
 const employeeInfo = ref({});
 
 // Modal Data
@@ -334,7 +335,7 @@ const onSubmit = async () => {
     // Reset form if the response is successful
     if (response.status == 200 || response.status == 201) {
         resetForm();
-        alert.value.pageLink = "/employees";
+        alert.value.pageLink = "/employees/" + employeeId.value;
     }
 };
 
@@ -342,7 +343,7 @@ async function createEmployee(employee, id) {
     let createdEmployee;
 
     try {
-        await $.ajax(`${API_URL}employees${"/" + id || ""}`, {
+        await $.ajax(`${API_URL}employees${id ? "/" + id : ""}`, {
             method: id ? "PUT" : "POST",
             data: employee,
             headers: {
@@ -352,10 +353,10 @@ async function createEmployee(employee, id) {
                 loading.value = false;
 
                 createdEmployee = res;
+                employeeId.value = res.data.id;
             },
         });
 
-        console.log("returning: ", createdEmployee);
         return createdEmployee;
     } catch (err) {
         loading.value = false;

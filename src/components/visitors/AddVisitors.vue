@@ -327,7 +327,7 @@
                                 </li>
                             </template>
                             <router-link
-                                :to="{ name: 'new-room' }"
+                                :to="{ name: 'add-employee' }"
                                 class="text-primary"
                             >
                                 <li class="dropdown-item">

@@ -357,5 +357,5 @@ export const formatMsisdn = (tmpMsisdn) => {
 
     if (msisdn.startsWith("231")) return "231" + msisdn.slice(3, 12);
     else if (msisdn.startsWith("0")) return "231" + msisdn.slice(1, 10);
-    return msisdn;
+    return "231" + msisdn.slice(0, 9);
 };

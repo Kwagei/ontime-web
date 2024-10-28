@@ -101,6 +101,10 @@ const navItems = [
         name: "events",
         svg: "calendar-event-agenda",
     },
+    {
+        name: "employees",
+        svg: "avatar",
+    },
     // {
     // 	name: "users",
     // 	svg: "avatar",

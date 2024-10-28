@@ -14,7 +14,7 @@ dayjs.extend(customParseFormat);
  * @throws Will throw an error if the contact number or email is invalid.
  */
 export const msisdnValidation = (msisdns) => {
-    if (!msisdns) return false;
+    if (!msisdns.length) return false;
 
     let contacts = msisdns;
     const serviceCode = ["555", "88", "77"];
@@ -56,6 +56,8 @@ export const msisdnValidation = (msisdns) => {
  * @returns {boolean} - true / false
  */
 export const emailValidation = (mail) => {
+    if (!mail) return { valid: false };
+
     const isValid = validator.isEmail(mail.trim());
 
     if (!isValid) {

@@ -1,10 +1,10 @@
 <template>
-    <div id="eventsWrapper" class="d-flex flex-column container">
+    <div id="employeesWrapper" class="d-flex flex-column container">
         <div
             id="breadCrumbsOptionsTopWrapper"
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
         >
-            <BreadCrumbs :breadCrumbs="breadCrumbs" />
+            <BreadCrumbs :breadCrumbs="['Employees']" />
 
             <div class="d-flex" style="gap: 0.521rem; margin-left: auto">
                 <RefreshList @click="refresh = true" />
@@ -19,19 +19,12 @@
                         >
                             Export
                         </li>
-                        <li
-                            @click="displayFilterModal"
-                            id="filter-events"
-                            class="dropdown-item"
-                        >
-                            Filter Events
-                        </li>
                     </ul>
                 </div>
 
-                <router-link :to="{ name: 'add-event' }">
+                <router-link :to="{ name: 'add-employee' }">
                     <button
-                        id="addEventBtn"
+                        id="addEmployeeBtn"
                         type="button"
                         class="btn btn-primary"
                     >
@@ -42,16 +35,12 @@
             </div>
         </div>
 
-        <EventsTable
-            v-model:refresh="refresh"
-            v-model:filterDates="filterDates"
-        />
+        <EmployeesTable v-model:refresh="refresh" />
 
-        <FilterModal @done="filterCompleted" />
         <ExportModal
             :exportFields="exportFields"
             v-model:exportTitle="exportTitle"
-            @export="exportEvents"
+            @export="exportEmployees"
         />
     </div>
 </template>
@@ -59,35 +48,30 @@
 <script setup>
 import RefreshList from "../components/RefreshList.vue";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
-import EventsTable from "../components/events/EventsTable.vue";
+import EmployeesTable from "../components/employees/EmployeesTable.vue";
 import Options from "../components/Options.vue";
 import Icons from "../components/Icons.vue";
 const plusIcon = "add";
 
 import { getCurrentInstance, onMounted, ref } from "vue";
-import { csvExport, getEvents } from "../assets/js/index.js";
-import FilterModal from "@/components/modals/FilterModal.vue";
+import { csvExport, getEmployees } from "../assets/js/index.js";
 import ExportModal from "@/components/modals/ExportModal.vue";
-import {
-    formatDateTime,
-    hideSidebarOnSmallScreen,
-    showModal,
-} from "@/util/util";
+import { hideSidebarOnSmallScreen, showModal } from "@/util/util";
 
 const exportTitle = defineModel("exportTitle");
 
 const exportFields = ref([
-    { name: "Title", selected: false },
-    { name: "Host", selected: false },
+    { name: "First Name", selected: false },
+    { name: "Last Name", selected: false },
+    { name: "Phone Number", data: "msisdn", selected: false },
+    { name: "Position", selected: false },
+    { name: "Email", selected: false },
+    { name: "Address", selected: false },
     { name: "Room", selected: false },
-    { name: "Start Date", selected: false },
-    { name: "End Date", selected: false },
-    { name: "Facilitator", selected: false },
-    { name: "Type", selected: false },
-    { name: "Details", selected: false },
+    { name: "Creation Date", data: "created_at", selected: false },
 ]);
 
-exportTitle.value = "Events";
+exportTitle.value = "Employees";
 
 const props = defineProps({
     breadCrumbs: {
@@ -108,47 +92,25 @@ onMounted(() => {
 });
 
 const refresh = ref(false);
-const filterDates = ref({
-    from: "",
-    to: "",
-});
 
-const totalEvents = defineModel("totalEvents");
+const exportEmployees = async (fields) => {
+    const { employees } = await getEmployees(null, { limit: "all" });
 
-const exportEvents = async (fields) => {
-    const { events } = await getEvents("", {
-        limit: totalEvents.value,
-    });
-
-    events.forEach((event) => {
-        event.start_date = formatDateTime(event.start_date);
-        event.end_date = formatDateTime(event.end_date);
-    });
-
-    const selectedEvents = events.map((visit) => {
+    const selectedEmployees = employees.map((employee) => {
         const data = {};
         for (const field of fields) {
-            data[field] = visit[field];
+            data[field] = employee[field];
         }
 
         return data;
     });
 
-    csvExport(selectedEvents);
+    csvExport(selectedEmployees);
 };
-
-function displayFilterModal() {
-    showModal("#filterModal", "#modal-dialog");
-}
 
 const displayExportModay = () => {
     showModal("#exportModal", "#modal-dialog");
 };
-
-function filterCompleted(newDates) {
-    // update date ranges, then it will be caught by watchers in events table
-    filterDates.value = newDates;
-}
 </script>
 
 <style scoped>
@@ -161,7 +123,7 @@ svg {
     color: white !important;
 }
 
-#eventsWrapper {
+#employeesWrapper {
     gap: 1.5rem;
 }
 

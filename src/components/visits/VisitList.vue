@@ -85,8 +85,6 @@ const columns = [
         data: null,
         title: "Purpose",
         render: (data) => {
-            console.log("data: ", data);
-
             if (data.event_id)
                 return `<a href="/events/${data.event_id}">${data.purpose}</a>`;
             return data.purpose;

@@ -15,10 +15,7 @@
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
-        <div
-            class="mt-4 form-control input"
-            style="margin: auto; padding: 3rem"
-        >
+        <div class="form-control input" style="margin: auto; padding: 3rem">
             <form
                 class="row g-3 needs-validation"
                 novalidate
@@ -79,28 +76,36 @@
                             id="msisdn"
                             aria-describedby="inputGroupPrepend"
                             v-model="msisdn"
+                            autocomplete="off"
                             required
                         />
-                        <div class="invalid-feedback">
-                            Please provide an employee phone number.
+                        <div
+                            class="invalid-feedback"
+                            :class="{ 'd-flex': msisdn && msisdnError }"
+                        >
+                            {{ msisdnError }}
                         </div>
                     </div>
                 </div>
 
-                <!-- EMAIL -->
+                <!-- GENDER -->
                 <div class="col-md-6">
-                    <label for="email" class="form-label"> Email </label>
-                    <div class="input-group">
-                        <input
-                            type="email"
-                            class="form-control"
-                            id="email"
+                    <label for="gender" class="form-label is-required">
+                        Gender
+                        <span class="visually-hidden"> (required)</span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <select
+                            class="form-control form-select"
+                            id="gender"
                             aria-describedby="inputGroupPrepend"
-                            v-model="email"
-                        />
-                        <div class="invalid-feedback">
-                            Please provide an employee email.
-                        </div>
+                            v-model="gender"
+                            required
+                        >
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                        <div class="invalid-feedback">Gender is required.</div>
                     </div>
                 </div>
 
@@ -125,23 +130,6 @@
                     </div>
                 </div>
 
-                <!-- ADDRESS -->
-                <div class="col-md-6">
-                    <label for="address" class="form-label"> Address </label>
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="address"
-                            aria-describedby="inputGroupPrepend"
-                            v-model="address"
-                        />
-                        <div class="invalid-feedback">
-                            Please provide an employee address.
-                        </div>
-                    </div>
-                </div>
-
                 <!-- ROOM -->
                 <div class="dropdown col-md-6">
                     <label for="room" class="form-label is-required">
@@ -162,7 +150,7 @@
                         />
 
                         <ul class="dropdown-menu w-100">
-                            <template v-for="room in rooms">
+                            <template v-for="room in roomsData">
                                 <li
                                     class="dropdown-item"
                                     :value="room.id"
@@ -181,6 +169,44 @@
 
                         <div class="invalid-feedback">
                             Please select a room.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADDRESS -->
+                <div class="col-md-6">
+                    <label for="address" class="form-label"> Address </label>
+                    <div class="input-group has-validation">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="address"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="address"
+                        />
+                        <div class="invalid-feedback">
+                            Please provide an employee address.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="col-md-6">
+                    <label for="email" class="form-label"> Email </label>
+                    <div class="input-group">
+                        <input
+                            type="email"
+                            class="form-control"
+                            id="email"
+                            aria-describedby="inputGroupPrepend"
+                            v-model="email"
+                            autocomplete="off"
+                        />
+                        <div
+                            class="invalid-feedback"
+                            :class="{ 'd-flex': emailError }"
+                        >
+                            {{ emailError }}
                         </div>
                     </div>
                 </div>
@@ -215,14 +241,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import BreadCrumbs from "@/components/BreadCrumbs.vue";
 import Modal from "@/components/modals/AlertModal.vue";
-import { registerHost, editHost, getHosts } from "@/assets/js/index.js";
+import { getRooms, API_URL, API_KEY, getEmployees } from "@/assets/js/index.js";
 import {
+    emailValidation,
     formValidation,
     getElement,
+    msisdnValidation,
     removeClass,
     showModal,
 } from "@/util/util.js";
@@ -232,13 +260,19 @@ import router from "@/router";
 const route = useRoute();
 const firstName = ref("");
 const lastName = ref("");
+const gender = ref("");
 const email = ref("");
 const msisdn = ref("");
 const address = ref("");
 const position = ref("");
 const roomValue = ref("");
+const roomId = ref("");
 
-const rooms = ref([]);
+const roomsData = ref([]);
+const msisdnError = ref("");
+const emailError = ref("");
+
+const employeeInfo = ref({});
 
 // Modal Data
 const alert = ref({
@@ -257,67 +291,167 @@ const activeBreadCrumbs = ref([]);
 const breadCrumbs = defineModel("breadCrumbs");
 breadCrumbs.value = route.path.split("/").slice(1);
 activeBreadCrumbs.value = breadCrumbs.value;
-const tem = [...breadCrumbs.value];
-const formStatus = tem.pop();
 
 // Functions
 const onSubmit = async () => {
     if (loading.value) return;
 
-    if (!name.value) {
+    if (
+        !firstName.value ||
+        !lastName.value ||
+        !msisdn.value ||
+        !gender.value ||
+        !position.value ||
+        !roomId.value
+    ) {
         return;
     }
 
     loading.value = true;
 
-    const host = {
-        name: name.value,
-        details: details.value,
-        type: type.value,
+    const employee = {
+        firstName: firstName.value,
+        lastName: lastName.value,
+        gender: gender.value,
+        msisdn: msisdn.value,
+        email: email.value || null,
+        address: address.value || null,
+        position: position.value,
+        room_id: roomId.value,
     };
 
-    const response = formStatus.startsWith("new")
-        ? await registerHost(host)
-        : await editHost(hostInfo.id, host);
+    const response = route.params.id
+        ? await createEmployee(employee, route.params.id)
+        : await createEmployee(employee);
 
-    showModal("#alertModal", "#alertModalBody");
-    alert.value.status = response.ok ? "success" : "danger";
-    alert.value.message = response.result.message;
+    showModal();
+    alert.value.status =
+        response.status == 201 || response.status == 200 ? "success" : "danger";
+    alert.value.message = response.message;
 
     loading.value = false;
 
     // Reset form if the response is successful
-    if (response.ok) {
+    if (response.status == 200 || response.status == 201) {
         resetForm();
+        alert.value.pageLink = "/employees";
     }
 };
 
-const fetchHost = async () => {
-    if (formStatus.startsWith("edit")) {
-        buttonLabel.value = "Update";
-        const id = breadCrumbs.value[1];
-        hostInfo = await getHosts({ id });
+async function createEmployee(employee, id) {
+    let createdEmployee;
 
-        name.value = hostInfo.name;
-        details.value = hostInfo.details;
+    try {
+        await $.ajax(`${API_URL}employees${"/" + id || ""}`, {
+            method: id ? "PUT" : "POST",
+            data: employee,
+            headers: {
+                authorization: API_KEY,
+            },
+            success: (res) => {
+                loading.value = false;
+
+                createdEmployee = res;
+            },
+        });
+
+        console.log("returning: ", createdEmployee);
+        return createdEmployee;
+    } catch (err) {
+        loading.value = false;
+
+        console.error("error creating employee: ", err);
+        createdEmployee = err.responseJSON;
+
+        return createdEmployee;
+    }
+}
+
+const fetchEmployeeToEdit = async () => {
+    if (route.params.id) {
+        buttonLabel.value = "Update";
+        const id = route.params.id;
+        employeeInfo.value = await getEmployees(id);
+
+        // handle error fetching employee to edit
+        if (!employeeInfo.value) {
+            alert.value.message = "Unable to fetch employee to edit, try again";
+            alert.value.status = "danger";
+            showModal();
+
+            return;
+        }
+
+        employeeInfo.value = employeeInfo.value.employees;
+
+        firstName.value = employeeInfo.value.first_name;
+        lastName.value = employeeInfo.value.last_name;
+        msisdn.value = employeeInfo.value.msisdn;
+        address.value = employeeInfo.value.address;
+        email.value = employeeInfo.value.email;
+        gender.value = employeeInfo.value.gender;
+        position.value = employeeInfo.value.position;
+        roomId.value = employeeInfo.value.room_id;
+        roomValue.value = employeeInfo.value.room;
     }
 };
 
 const resetForm = () => {
-    name.value = "";
-    details.value = "";
+    firstName.value = "";
+    lastName.value = "";
+    email.value = "";
+    msisdn.value = "";
+    address.value = "";
+    roomValue.value = "";
+
     buttonLabel.value = "Save";
 
     // Remove validation classes
-    const form = getElement(".needs-validation");
-    removeClass(form, "was-validated");
+    // const form = ".needs-validation";
+    // removeClass(form, "was-validated");
 };
 
+function updateRoomTerm(room) {
+    roomId.value = room.id;
+    roomValue.value = room.name;
+}
+
 // Lifecycle Hooks
-onMounted(() => {
-    fetchHost();
+onMounted(async () => {
+    const { rooms } = await getRooms();
+    roomsData.value = rooms;
+
+    fetchEmployeeToEdit();
+
     formValidation();
 });
+
+// validate phone number
+watch(
+    () => msisdn.value,
+    (n) => {
+        if (!n)
+            return (msisdnError.value = "Employee phone number is required");
+
+        if (!msisdnValidation([msisdn.value]).valid)
+            return (msisdnError.value = "Invalid phone number");
+
+        msisdnError.value = "";
+    }
+);
+
+// validate email
+watch(
+    () => email.value,
+    (n) => {
+        if (!n) return (emailError.value = "");
+
+        if (!emailValidation(email.value).valid)
+            return (emailError.value = "Invalid email address");
+
+        emailError.value = "";
+    }
+);
 </script>
 
 <style scoped>

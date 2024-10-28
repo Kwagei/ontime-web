@@ -6,7 +6,7 @@
             <BreadCrumbs v-model:breadCrumbs="breadCrumbs" />
         </div>
         <div
-            id="visitorImageInfoWrapper"
+            id="employeeImageInfoWrapper"
             class="mt-4 form-control"
             style="
                 margin: auto;
@@ -32,34 +32,34 @@
                                         />
                                     </div>
                                 </div>
-                                <div class="visitor-info">
+                                <div class="employee-info">
                                     <div>
                                         <span>
-                                            {{ visitorInfo.first_name }}
-                                            {{ visitorInfo.last_name }}
+                                            {{ employeeInfo.first_name }}
+                                            {{ employeeInfo.last_name }}
                                         </span>
                                     </div>
-                                    <div v-if="visitorInfo.address">
+                                    <div v-if="employeeInfo.address">
                                         <span>
                                             <Icons
                                                 class="icons"
                                                 v-model:icon="locationIcon"
                                             />
                                         </span>
-                                        <span class="visitor-item">
-                                            {{ visitorInfo.address }}
+                                        <span class="employee-item">
+                                            {{ employeeInfo.address }}
                                         </span>
                                     </div>
                                     <div class="d-flex gap-2">
-                                        <div v-if="visitorInfo.email">
+                                        <div v-if="employeeInfo.email">
                                             <span>
                                                 <Icons
                                                     class="icons"
                                                     v-model:icon="emailIcon"
                                                 />
                                             </span>
-                                            <span class="visitor-item">
-                                                {{ visitorInfo.email }}
+                                            <span class="employee-item">
+                                                {{ employeeInfo.email }}
                                             </span>
                                         </div>
 
@@ -70,8 +70,8 @@
                                                     v-model:icon="phoneIcon"
                                                 />
                                             </span>
-                                            <span class="visitor-item">
-                                                {{ visitorInfo.msisdn }}
+                                            <span class="employee-item">
+                                                {{ employeeInfo.msisdn }}
                                             </span>
                                         </div>
                                     </div>
@@ -87,12 +87,12 @@
                                                 style="
                                                     text-transform: capitalize;
                                                 "
-                                                class="visitor-item"
+                                                class="employee-item"
                                             >
-                                                {{ visitorInfo.gender }}
+                                                {{ employeeInfo.gender }}
                                             </span>
                                         </div>
-                                        <div v-if="visitorInfo.occupation">
+                                        <div v-if="employeeInfo.position">
                                             <span>
                                                 <Icons
                                                     class="icons"
@@ -105,9 +105,9 @@
                                                 style="
                                                     text-transform: capitalize;
                                                 "
-                                                class="visitor-item"
+                                                class="employee-item"
                                             >
-                                                {{ visitorInfo.occupation }}
+                                                {{ employeeInfo.position }}
                                             </span>
                                         </div>
                                     </div>
@@ -122,9 +122,9 @@
                                 >
                                     <router-link
                                         :to="{
-                                            name: 'edit-visitor',
+                                            name: 'edit-employee',
                                         }"
-                                        v-model:visitor-info="visitorInfo"
+                                        v-model:employee-info="employeeInfo"
                                     >
                                         <button
                                             type="button"
@@ -164,7 +164,7 @@
                 v-show="!showError"
             />
             <h3 class="mt-5 text-center fw-bold" v-if="showError">
-                Unable to load visitor's visits, try again!
+                Unable to load employee's meetings, try again!
             </h3>
         </div>
     </div>
@@ -198,8 +198,8 @@ const table = ref("");
 const showError = ref(false);
 
 const id = ref(route.params.id);
-const visitorInfo = ref("");
-const allVisitorVisits = ref([]);
+const employeeInfo = ref("");
+const allEmployeeMeetings = ref([]);
 
 const locationIcon = "mahali";
 const emailIcon = "email";
@@ -209,7 +209,14 @@ const occupationIcon = "briefcase";
 
 const columns = [
     { data: "date_time", title: "Date" },
-    { data: "room", title: "Room" },
+    {
+        data: null,
+        title: "Visitor",
+        orderable: false,
+        render: (data) => `${data.first_name} ${data.last_name}`,
+    },
+    { data: "msisdn", title: "Phone Number" },
+    { data: "room_name", title: "Room" },
     { data: "departure_time", title: "Departure Time" },
     {
         data: null,
@@ -229,7 +236,7 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/visitors/${id.value}/visits`,
+        url: `${API_URL}/employees/${id.value}/meetings`,
         type: "GET",
         beforeSend: function (xhr) {
             xhr.setRequestHeader("authorization", API_KEY);
@@ -251,17 +258,17 @@ const options = {
             showError.value = false;
             refresh.value = false;
 
-            const { visitor, visits } = json.data;
-            visitor.msisdn = `0${visitor.msisdn.slice(3)}`;
+            const { employee, meetings, totalLength } = json.data;
+            employee.msisdn = `0${employee.msisdn.slice(3)}`;
 
-            visitorInfo.value = visitor;
+            employeeInfo.value = employee;
 
-            json.recordsTotal = visits.length;
-            json.recordsFiltered = visits.length;
+            json.recordsTotal = totalLength;
+            json.recordsFiltered = totalLength;
 
-            allVisitorVisits.value = formatVisitorVisits(visits.visitorVisits);
+            allEmployeeMeetings.value = formatEmployeeMeetings(meetings);
 
-            return allVisitorVisits.value;
+            return allEmployeeMeetings.value;
         },
         error: (error) => {
             console.log("Error fetching data:", error.responseJSON);
@@ -276,7 +283,7 @@ const options = {
         search: "",
         emptyTable: `
 			<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
-				No Visits to show!
+				No Meetings to show!
 				<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M82.5 37.5V35l-15-15H60v-3.75A1.25 1.25 0 0058.75 15h-2.5A1.25 1.25 0 0055 16.25V20H40v-3.75A1.25 1.25 0 0038.75 15h-2.5A1.25 1.25 0 0035 16.25V20h-7.5l-15 15v2.5h5V85H15v2.5h65V85h-2.5V37.5zM35 77.5H25V70a5 5 0 015-5 5 5 0 015 5zm0-25H25V45a5 5 0 015-5 5 5 0 015 5zM52.5 85h-10V70a5 5 0 015-5 5 5 0 015 5zm0-32.5h-10V45a5 5 0 015-5 5 5 0 015 5zm17.5 25H60V70a5 5 0 015-5 5 5 0 015 5zm0-25H60V45a5 5 0 015-5 5 5 0 015 5z"/></svg>
 			</div>
         `,
@@ -292,26 +299,29 @@ const options = {
         </div>
         </div>`,
     },
-    order: [[2, "desc"]],
+    order: [[0, "desc"]],
     destroy: true,
 };
 
-const formatVisitorVisits = (visits) => {
-    for (const visit of visits) {
-        if (visit.date_time) {
-            visit.date_time = formatDateTime(visit.date_time);
+const formatEmployeeMeetings = (meetings) => {
+    for (const meeting of meetings) {
+        if (meeting.date_time) {
+            meeting.date_time = formatDateTime(meeting.date_time);
         }
 
-        if (visit.departure_time) {
-            visit.departure_time = formatDepartureTime(visit.departure_time, {
-                time: true,
-            });
+        if (meeting.departure_time) {
+            meeting.departure_time = formatDepartureTime(
+                meeting.departure_time,
+                {
+                    time: true,
+                }
+            );
         }
 
-        visit.items = visit.items ? visit.items.join(", ") : "";
+        meeting.items = meeting.items ? meeting.items.join(", ") : "";
     }
 
-    return visits;
+    return meetings;
 };
 </script>
 
@@ -334,14 +344,14 @@ const formatVisitorVisits = (visits) => {
     object-fit: cover;
 }
 
-.visitor-info {
+.employee-info {
     margin-top: 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.visitor-item {
+.employee-item {
     font-weight: 400;
     font-size: small;
 }
@@ -363,7 +373,7 @@ const formatVisitorVisits = (visits) => {
 }
 
 @media (max-width: 1000px) {
-    #visitorImageInfoWrapper {
+    #employeeImageInfoWrapper {
         margin-top: 0 !important;
     }
 }

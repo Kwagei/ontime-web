@@ -553,7 +553,10 @@ async function checkInVisitor() {
 
     showModal();
 
-    if (checkInResponse.ok) resetForm();
+    if (checkInResponse.ok) {
+        alert.value.pageLink = "/visits";
+        resetForm();
+    }
 
     loading.value = false;
 }
@@ -706,7 +709,7 @@ watch(
 watch(
     () => email.value,
     (n) => {
-        validateEmail(n);
+        if (n) validateEmail(n);
     }
 );
 
@@ -726,8 +729,6 @@ const validateEmail = (mail) => {
 };
 
 const resetForm = () => {
-    return;
-
     first_name.value = "";
     last_name.value = "";
     msisdn.value = "";

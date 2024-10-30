@@ -242,7 +242,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "@/components/BreadCrumbs.vue";
 import Modal from "@/components/modals/AlertModal.vue";
 import { getRooms, API_URL, API_KEY, getEmployees } from "@/assets/js/index.js";
@@ -254,10 +254,11 @@ import {
     removeClass,
     showModal,
 } from "@/util/util.js";
-import router from "@/router";
 
 // Route and State
 const route = useRoute();
+const router = useRouter();
+
 const firstName = ref("");
 const lastName = ref("");
 const gender = ref("");
@@ -398,6 +399,8 @@ const fetchEmployeeToEdit = async () => {
 };
 
 const resetForm = () => {
+    if (route.params.id) return router.push("/employees/" + route.params.id);
+
     firstName.value = "";
     lastName.value = "";
     email.value = "";

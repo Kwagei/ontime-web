@@ -306,7 +306,7 @@ import {
 
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import {
     capitalize,
     formValidation,
@@ -362,7 +362,9 @@ const props = defineProps({
 
 const loading = ref(false);
 
+const route = useRoute();
 const router = useRouter();
+
 const eventId = ref(router.currentRoute.value.params.id);
 const mode = setMode();
 const errorGettingEventToEdit = ref("");
@@ -513,6 +515,8 @@ const onSubmit = async () => {
 };
 
 function resetForm() {
+    if (route.params.id) router.push("/events/" + route.params.id);
+
     // clear inputs
     title.value = "";
     facilitator.value = "";

@@ -259,3 +259,9 @@ select.form-select {
     margin-right: 10px;
     border-width: 4px;
 }
+
+.textLoadingDiv {
+    background-color: rgba(200, 200, 200, 0.2);
+    border-radius: 5%;
+    min-height: 20px;
+}

@@ -66,7 +66,6 @@ const columns = [
     { data: "email", title: "Email" },
     { data: "address", title: "Address" },
     { data: "occupation", title: "Occupation" },
-    { data: "created_at", title: "Creation Date" },
 ];
 
 const options = {
@@ -154,7 +153,7 @@ const options = {
 			</div>
 		`,
     },
-    order: [[6, "desc"]],
+    order: [[0, "asc"]],
     destroy: true,
     createdRow: (row, data) => {
         $(row).on("click", () => {

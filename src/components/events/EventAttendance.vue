@@ -78,8 +78,12 @@
                         <Icons style="width: 30px" v-model:icon="closeIcon" />
                     </button>
                     <span class="text text-secondary fw-bold">
-                        Showing Attendance for
-                        {{ formatDateTime(selectedDate, { date: true }) }}
+                        {{
+                            dateError
+                                ? dateError
+                                : "Showing Attendance for " +
+                                  formatDateTime(selectedDate, { date: true })
+                        }}
                     </span>
                 </div>
                 <DataTable
@@ -146,7 +150,9 @@ const closeIcon = ref("delete");
 const reloadIcon = ref("reload");
 const filterIcon = ref("filter");
 
+const dateError = ref("");
 const selectedDate = ref("");
+const ignoreWatch = ref(false);
 const showFilterDate = ref(false);
 
 const eventId = ref(props.eventId);
@@ -193,8 +199,8 @@ const options = {
         },
         data: (query) => {
             return {
-                start: query.start,
-                limit: query.length,
+                start: 0,
+                limit: "all",
                 search: query.search.value,
                 sort: "date_time",
                 direction: query.order[0].dir,
@@ -204,7 +210,19 @@ const options = {
         dataSrc: (json) => {
             showError.value = false;
 
-            const { participants: attendees, totalLength } = json.data;
+            const res = json.data;
+            let attendees = res.data.participants;
+
+            // ignore watcher
+            ignoreWatch.value = true;
+            showFilterDate.value = true;
+
+            if (new Date(res.data.date) == "Invalid Date")
+                dateError.value = res.data.date;
+            else {
+                selectedDate.value = res.data.date;
+                dateError.value = "";
+            }
 
             // format each participant record
             attendees.forEach((participant) => {
@@ -241,8 +259,8 @@ const options = {
                     : "";
             });
 
-            json.recordsTotal = totalLength;
-            json.recordsFiltered = totalLength;
+            json.recordsTotal = res.totalLength;
+            json.recordsFiltered = res.totalLength;
 
             attendanceList.value = attendees;
             return attendees;
@@ -280,8 +298,11 @@ const options = {
 			</div>
 		`,
     },
-    order: [[2, "desc"]],
+    order: [[5, "asc"]],
     destroy: true,
+    lengthMenu: ["all"],
+    bLengthChange: false,
+    paging: false,
 };
 
 onMounted(() => {
@@ -373,6 +394,11 @@ watch(
     (newVal) => {
         // ensure filter date input is hidden
         $("#optionsButtonWrapper").click();
+
+        if (ignoreWatch.value) {
+            ignoreWatch.value = false;
+            return;
+        }
 
         // ensure selected date is today or earlier
         if (new Date(newVal) > new Date()) {

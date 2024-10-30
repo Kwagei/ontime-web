@@ -56,7 +56,7 @@ const options = {
             xhr.setRequestHeader("authorization", API_KEY);
         },
         data: (query) => {
-            const sort = "first_name";
+            const sort = query.columns[query.order[0].column].data;
 
             return {
                 start: query.start,
@@ -121,7 +121,7 @@ const options = {
 			</div>
 		`,
     },
-    order: [[7, "desc"]],
+    order: [[0, "asc"]],
     destroy: true,
     createdRow: (row, data) => {
         $(row).on("click", () => {

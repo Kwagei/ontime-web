@@ -531,8 +531,9 @@ const participantDetail = async (id) => {
         participant_id.value = participant.id;
 
         // Check if the visitor exists
+        // if they have already visited, they'll have a visitor_id
         visitorData = await getSingleVisitor({
-            msisdn: participant.visitor_id || formatMsisdn(participant.msisdn),
+            msisdn: formatMsisdn(participant.msisdn),
         });
     }
 

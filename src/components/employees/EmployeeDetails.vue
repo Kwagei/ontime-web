@@ -34,6 +34,14 @@
                                 </div>
                                 <div class="employee-info">
                                     <div>
+                                        <div
+                                            v-if="
+                                                !employeeInfo.first_name ||
+                                                !employeeInfo.last_name
+                                            "
+                                            style="width: 250px"
+                                            class="textLoadingDiv"
+                                        ></div>
                                         <span>
                                             {{ employeeInfo.first_name }}
                                             {{ employeeInfo.last_name }}

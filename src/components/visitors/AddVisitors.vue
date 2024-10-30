@@ -729,6 +729,8 @@ const validateEmail = (mail) => {
 };
 
 const resetForm = () => {
+    if (route.params.id) return router.push("/visitors/" + route.params.id);
+
     first_name.value = "";
     last_name.value = "";
     msisdn.value = "";

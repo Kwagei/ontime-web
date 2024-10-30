@@ -205,6 +205,8 @@ export const formatItems = (belonging) => {
 };
 
 export const formatDetails = (detail) => {
+    if (!detail) return "";
+
     return detail.length > MAX_DETAIL_LEN
         ? `${detail.slice(0, MAX_DETAIL_LEN)}...`
         : detail;

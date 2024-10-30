@@ -34,7 +34,15 @@
                                 </div>
                                 <div class="visitor-info">
                                     <div>
-                                        <span>
+                                        <div
+                                            v-if="
+                                                !visitorInfo.first_name ||
+                                                !visitorInfo.last_name
+                                            "
+                                            class="textLoadingDiv"
+                                            style="width: 250px"
+                                        ></div>
+                                        <span v-else>
                                             {{ visitorInfo.first_name }}
                                             {{ visitorInfo.last_name }}
                                         </span>

@@ -173,7 +173,7 @@ export const formatVisitData = (visits) => {
             visit.date_time = formatDateTime(visit.date_time);
         }
 
-        if (visit.items.length) {
+        if (visit.items?.length) {
             visit.items = formatItems(visit.items);
         } else visit.items = [];
 

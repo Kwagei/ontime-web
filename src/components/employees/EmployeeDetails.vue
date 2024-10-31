@@ -26,9 +26,11 @@
                                 <div>
                                     <div class="profile-container">
                                         <img
-                                            src="../../assets/images/user.png"
+                                            src="../../assets/images/imageLoading.png"
                                             alt="User"
+                                            :key="profilePictureKey"
                                             class="profile-image"
+                                            ref="profilePicture"
                                         />
                                     </div>
                                 </div>
@@ -205,6 +207,9 @@ const refresh = defineModel("refresh");
 const table = ref("");
 const showError = ref(false);
 
+const profilePicture = ref("");
+const profilePictureKey = ref(0);
+
 const id = ref(route.params.id);
 const employeeInfo = ref("");
 const allEmployeeMeetings = ref([]);
@@ -270,6 +275,14 @@ const options = {
             employee.msisdn = `0${employee.msisdn.slice(3)}`;
 
             employeeInfo.value = employee;
+
+            console.log("profile picture: ", profilePicture.value);
+            profilePicture.value.src =
+                "../../assets/images/" +
+                employeeInfo.value.gender?.toLowerCase() +
+                "User.png";
+            profilePictureKey.value += 1;
+            console.log("profile picture: ", profilePicture.value);
 
             json.recordsTotal = totalLength;
             json.recordsFiltered = totalLength;

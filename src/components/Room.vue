@@ -9,13 +9,14 @@
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
-            style="margin-top: 0.3rem"
+            style="margin-top: 1.5rem"
         >
             <BreadCrumbs :breadCrumbs="activeBreadCrumbs" />
         </div>
 
         <div
-            class="mt-4 form-control input"
+            class="form-control input"
+            id="mobileFormWrapper"
             style="margin: auto; padding: 3rem"
         >
             <form
@@ -25,11 +26,10 @@
             >
                 <!-- NAME -->
                 <div class="col-md-6">
-                    <label for="name" class="form-label is-required"
-                        >Name<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
+                    <label for="name" class="form-label is-required">
+                        Name
+                        <span class="visually-hidden">(required)</span>
+                    </label>
                     <div class="input-group has-validation">
                         <input
                             type="text"
@@ -45,9 +45,34 @@
                     </div>
                 </div>
 
+                <!-- TYPE -->
+                <div class="col-md-6">
+                    <label for="type" class="form-label is-required">
+                        Type
+                        <span class="visually-hidden">(required)</span>
+                    </label>
+                    <div class="input-group has-validation">
+                        <select
+                            class="form-select"
+                            v-model="type"
+                            id="type"
+                            aria-describedby="inputGroupPrepend"
+                            autocomplete="off"
+                            required
+                        >
+                            <option>Office</option>
+                            <option>Class</option>
+                            <option>Other</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please provide a room type.
+                        </div>
+                    </div>
+                </div>
+
                 <!-- CODE -->
                 <div class="col-md-6">
-                    <label for="code" class="form-label">Code </label>
+                    <label for="code" class="form-label">Code (alias) </label>
                     <div class="input-group has-validation">
                         <input
                             type="tel"
@@ -79,7 +104,7 @@
                         type="button"
                         class="btn btn-outline-secondary"
                         data-bs-dismiss="modal"
-                        @click="router.back()"
+                        @click="router.push('/rooms')"
                     >
                         Cancel
                     </button>
@@ -106,6 +131,7 @@ const route = useRoute();
 const router = useRouter();
 
 const name = ref("");
+const type = ref("");
 const code = ref("");
 
 const alert = ref({
@@ -115,7 +141,7 @@ const alert = ref({
 });
 
 const buttonLabel = ref("Save");
-let roomInfo;
+let roomInfo = {};
 
 const loading = ref(false);
 
@@ -124,8 +150,6 @@ const activeBreadCrumbs = ref([]);
 const breadCrumbs = defineModel("breadCrumbs");
 breadCrumbs.value = route.path.split("/").slice(1);
 activeBreadCrumbs.value = breadCrumbs.value;
-const tem = [...breadCrumbs.value];
-const formStatus = tem.pop();
 
 // Functions
 const onSubmit = async () => {
@@ -137,18 +161,19 @@ const onSubmit = async () => {
 
     const room = {
         name: name.value,
+        type: type.value,
         code: code.value,
     };
 
     loading.value = true;
 
-    const response = formStatus.startsWith("new")
-        ? await registerRoom(room)
-        : await editRoom(roomInfo.id, room);
+    const response = route.params.id
+        ? await editRoom(route.params.id, room)
+        : await registerRoom(room);
 
     loading.value = false;
 
-    showModal("#alertModal", "#alertModalBody");
+    showModal();
 
     alert.value.status = response.ok ? "success" : "danger";
     alert.value.message = response.result.message;
@@ -161,18 +186,34 @@ const onSubmit = async () => {
 };
 
 const fetchRoom = async () => {
-    if (formStatus.startsWith("edit")) {
+    if (route.params.id) {
+        roomInfo.id = route.params.id;
         buttonLabel.value = "Update";
-        const id = breadCrumbs.value[1];
-        roomInfo = await getRooms({ id });
 
+        const id = route.params.id;
+        roomInfo = await getRooms(id);
+        if (!roomInfo) {
+            alert.value.message = "Unable to fetch room to edit, try again";
+            alert.value.status = "danger";
+
+            showModal();
+            return;
+        }
+
+        roomInfo = roomInfo.rooms;
+
+        roomInfo.id = route.params.id;
         name.value = roomInfo.name;
+        type.value = roomInfo.type;
         code.value = roomInfo.code;
     }
 };
 
 const resetForm = () => {
+    if (route.params.id) return;
+
     name.value = "";
+    type.value = "";
     code.value = "";
     buttonLabel.value = "Save";
 

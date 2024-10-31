@@ -231,11 +231,6 @@ const routes = [
                         component: Hosts,
                         name: "new-host",
                     },
-                    {
-                        path: "new-room",
-                        component: Rooms,
-                        name: "new-room",
-                    },
                 ],
             },
             {
@@ -260,6 +255,22 @@ const routes = [
                         path: ":id",
                         component: EmployeeDetails,
                         name: "employee-details",
+                    },
+                ],
+            },
+            {
+                path: "/rooms",
+                name: "rooms",
+                children: [
+                    {
+                        path: "new-room",
+                        component: Rooms,
+                        name: "new-room",
+                    },
+                    {
+                        path: ":id",
+                        component: Rooms,
+                        name: "specific-room",
                     },
                 ],
             },

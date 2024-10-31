@@ -26,7 +26,7 @@
                                 <div>
                                     <div class="profile-container">
                                         <img
-                                            src="../../assets/images/user.png"
+                                            src="../../assets/images/femaleUser.png"
                                             alt="User"
                                             class="profile-image"
                                         />

@@ -26,11 +26,10 @@
                                 <div>
                                     <div class="profile-container">
                                         <img
-                                            src="../../assets/images/imageLoading.png"
+                                            src="../../assets/images/femaleUser.png"
                                             alt="User"
                                             :key="profilePictureKey"
                                             class="profile-image"
-                                            ref="profilePicture"
                                         />
                                     </div>
                                 </div>
@@ -207,7 +206,7 @@ const refresh = defineModel("refresh");
 const table = ref("");
 const showError = ref(false);
 
-const profilePicture = ref("");
+const profilePictureSrc = ref("../../assets/images/imageLoading.png");
 const profilePictureKey = ref(0);
 
 const id = ref(route.params.id);
@@ -276,13 +275,7 @@ const options = {
 
             employeeInfo.value = employee;
 
-            console.log("profile picture: ", profilePicture.value);
-            profilePicture.value.src =
-                "../../assets/images/" +
-                employeeInfo.value.gender?.toLowerCase() +
-                "User.png";
-            profilePictureKey.value += 1;
-            console.log("profile picture: ", profilePicture.value);
+            updateVisitorProfilePicture(employeeInfo.gender);
 
             json.recordsTotal = totalLength;
             json.recordsFiltered = totalLength;
@@ -344,6 +337,16 @@ const formatEmployeeMeetings = (meetings) => {
 
     return meetings;
 };
+
+/**
+ * TO BE REFACTORED
+ */
+function updateVisitorProfilePicture(gender) {
+    console.log("profile picture: ", profilePictureSrc.value);
+    profilePictureSrc.value = `../../assets/images/${gender?.toLowerCase()}User.png`;
+    console.log("profile picture: ", profilePictureSrc.value);
+    console.log("profile picture: ", profilePictureSrc.value);
+}
 </script>
 
 <style scoped>

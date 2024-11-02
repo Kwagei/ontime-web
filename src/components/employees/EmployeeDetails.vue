@@ -48,16 +48,29 @@
                                             {{ employeeInfo.last_name }}
                                         </span>
                                     </div>
-                                    <div v-if="employeeInfo.address">
-                                        <span>
-                                            <Icons
-                                                class="icons"
-                                                v-model:icon="locationIcon"
-                                            />
-                                        </span>
-                                        <span class="employee-item">
-                                            {{ employeeInfo.address }}
-                                        </span>
+                                    <div class="d-flex gap-2">
+                                        <div v-if="employeeInfo.address">
+                                            <span>
+                                                <Icons
+                                                    class="icons"
+                                                    v-model:icon="locationIcon"
+                                                />
+                                            </span>
+                                            <span class="employee-item">
+                                                {{ employeeInfo.address }}
+                                            </span>
+                                        </div>
+                                        <div v-if="employeeInfo.room">
+                                            <span>
+                                                <Icons
+                                                    class="icons"
+                                                    icon="bed"
+                                                />
+                                            </span>
+                                            <span class="employee-item">
+                                                {{ employeeInfo.room }}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="d-flex gap-2">
                                         <div v-if="employeeInfo.email">

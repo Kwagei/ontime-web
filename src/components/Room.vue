@@ -6,6 +6,13 @@
             status: alert.status,
         }"
     />
+
+    <ConfirmationModal
+        title="Permanently Delete Room"
+        :message="confirmationMessage"
+        @confirmed="deleteRoom"
+    />
+
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -101,6 +108,21 @@
                         {{ buttonLabel }}
                     </button>
                     <button
+                        @click="confirmDeletion"
+                        class="btn btn-danger"
+                        v-if="route.params.id"
+                        type="button"
+                    >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="loading"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        Delete
+                    </button>
+                    <button
                         type="button"
                         class="btn btn-outline-secondary"
                         data-bs-dismiss="modal"
@@ -119,13 +141,21 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import Modal from "./modals/AlertModal.vue";
-import { registerRoom, editRoom, getRooms } from "@/assets/js/index.js";
+import ConfirmationModal from "./modals/ConfirmationModal.vue";
+import {
+    registerRoom,
+    editRoom,
+    getRooms,
+    API_URL,
+    API_KEY,
+} from "@/assets/js/index.js";
 import {
     formValidation,
     getElement,
     removeClass,
     showModal,
 } from "@/util/util.js";
+
 // Route and State
 const route = useRoute();
 const router = useRouter();
@@ -142,6 +172,7 @@ const alert = ref({
 
 const buttonLabel = ref("Save");
 let roomInfo = {};
+const confirmationMessage = ref("");
 
 const loading = ref(false);
 
@@ -153,11 +184,14 @@ activeBreadCrumbs.value = breadCrumbs.value;
 
 // Functions
 const onSubmit = async () => {
-    if (loading.value) return;
-
-    if (!name.value) {
+    // don't update the room if there was an error fetching the room || still already loading or no name or type
+    if (
+        loading.value ||
+        alert.value.status == "danger" ||
+        !name.value ||
+        !type.value
+    )
         return;
-    }
 
     const room = {
         name: name.value,
@@ -191,21 +225,21 @@ const fetchRoom = async () => {
         buttonLabel.value = "Update";
 
         const id = route.params.id;
-        roomInfo = await getRooms(id);
-        if (!roomInfo) {
-            alert.value.message = "Unable to fetch room to edit, try again";
+        roomInfo = await fetchRoomToEdit(id);
+        if (roomInfo.status != 200) {
+            alert.value.message = roomInfo.message;
             alert.value.status = "danger";
 
             showModal();
             return;
         }
 
-        roomInfo = roomInfo.rooms;
+        roomInfo.data = roomInfo.data.rooms;
 
         roomInfo.id = route.params.id;
-        name.value = roomInfo.name;
-        type.value = roomInfo.type;
-        code.value = roomInfo.code;
+        name.value = roomInfo.data.name;
+        type.value = roomInfo.data.type;
+        code.value = roomInfo.data.code;
     }
 };
 
@@ -227,6 +261,55 @@ onMounted(async () => {
     formValidation();
     await fetchRoom();
 });
+
+function confirmDeletion() {
+    // don't delete the room if there was an error fetching the room
+    if (alert.value.status == "danger") return;
+
+    confirmationMessage.value = `Are you sure you want to permanently delete the <strong>${roomInfo.data.name}</strong>?`;
+    showModal("#confirmationModal");
+}
+
+async function deleteRoom() {
+    // don't delete the room if there was an error fetching the room
+    if (alert.value.status == "danger") return;
+
+    $.ajax(`${API_URL}rooms/${route.params.id}`, {
+        method: "DELETE",
+        headers: {
+            authorization: API_KEY,
+        },
+        success: (res) => {
+            alert.value.message = res.message;
+            alert.value.status = "success";
+
+            showModal();
+
+            setTimeout(() => router.push("/rooms"), 1000);
+        },
+        error: (err) => {
+            console.error("error deleting room: ", err);
+
+            alert.value.message = err.responseJSON.message;
+            alert.value.status = "danger";
+
+            showModal();
+        },
+    });
+}
+
+async function fetchRoomToEdit(id) {
+    const options = {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+    };
+
+    const res = await fetch(`${API_URL}rooms/${id}`, options);
+    const data = res.json();
+    return data;
+}
 </script>
 
 <style scoped>

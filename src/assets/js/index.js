@@ -736,13 +736,15 @@ export const editHost = async (id, data) => {
 };
 
 // Room functions
-export const getRooms = async (id) => {
+export const getRooms = async (id, type) => {
     try {
         let url = `${API_URL}rooms`;
 
         if (id) {
             url += `/${id}`;
         }
+
+        if (type) url += `?type=${type}`;
 
         const response = await fetch(url, {
             method: "GET",

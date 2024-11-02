@@ -163,6 +163,7 @@ const exportEventParticipants = async (fields) => {
     const { participants } = await getParticipants(props.event.id, {
         limit: "all",
     });
+    console.log("Participants: ", participants);
 
     const selectedParticipants = participants.map((participant) => {
         const data = {};

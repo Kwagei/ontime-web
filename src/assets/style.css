@@ -241,6 +241,16 @@ a {
     }
 }
 
+@media (max-width: 800px) {
+    #sideBar {
+        width: 100vw !important;
+    }
+
+    #hideSidebarBtn {
+        display: inline-flex !important;
+    }
+}
+
 @media (max-width: 450px) {
     #mobileFormWrapper {
         padding: 20px !important;

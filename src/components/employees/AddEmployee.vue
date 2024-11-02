@@ -422,7 +422,7 @@ function updateRoomTerm(room) {
 
 // Lifecycle Hooks
 onMounted(async () => {
-    const { rooms } = await getRooms();
+    const { rooms } = await getRooms(null, "office");
     roomsData.value = rooms;
 
     fetchEmployeeToEdit();

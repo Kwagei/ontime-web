@@ -419,7 +419,7 @@ function visitorSelected(selectedVisitor) {
 }
 
 async function fetchRooms() {
-    let fetchedRooms = await fetch(`${API_URL}rooms`, {
+    let fetchedRooms = await fetch(`${API_URL}rooms?type=class`, {
         method: "GET",
         headers: {
             authorization: API_KEY,

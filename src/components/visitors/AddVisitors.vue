@@ -475,6 +475,10 @@ const onSubmit = async () => {
     if (!first_name.value || !last_name.value || !msisdn.value || !gender.value)
         return;
 
+    if (!msisdnValidation([msisdn.value]).valid) return;
+
+    if (email.value && !emailValidation(email.value).valid) return;
+
     loading.value = true;
 
     // required fields for a visit check in

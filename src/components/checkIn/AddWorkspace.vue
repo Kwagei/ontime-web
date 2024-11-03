@@ -69,7 +69,7 @@
             <form
                 class="row g-3 needs-validation"
                 novalidate
-                @submit.prevent="checkParticipantIn"
+                @submit.prevent="checkVisitorIn"
             >
                 <!-- PHONE NUMBER -->
                 <div class="col-md-6">
@@ -444,7 +444,7 @@ function updateRoom(selectedRoom) {
 }
 
 // function to validate form before it submit the form
-const checkParticipantIn = async () => {
+const checkVisitorIn = async () => {
     msisdnError.value = false;
     nameError.value = false;
 
@@ -471,31 +471,6 @@ const checkParticipantIn = async () => {
 
     $sectionIsLoading.value = true;
     submitting.value = true;
-
-    const checkInStatus = await visitorCheckInStatus(visitorId.value);
-
-    // handle error getting check in status
-    if (!checkInStatus.ok) {
-        alert.value.message = "Unable to get check in status";
-        alert.value.status = "danger";
-
-        showModal();
-        $sectionIsLoading.value = false;
-        submitting.value = false;
-        return;
-    }
-
-    // indicate visitor is still checked in
-    else if (checkInStatus.result.data.stillCheckedIn) {
-        alert.value.message = "Visitor is Still Checked In";
-        alert.value.status = "warning";
-
-        $sectionIsLoading.value = false;
-        submitting.value = false;
-
-        showModal();
-        return;
-    }
 
     // require values for the submittion of the form
     const visitData = {

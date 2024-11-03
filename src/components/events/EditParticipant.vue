@@ -293,6 +293,10 @@ const onSubmit = async () => {
         return;
     }
 
+    if (!msisdnValidation([msisdn.value]).valid) return;
+
+    if (email.value && !emailValidation(email.value).valid) return;
+
     const participant = {
         first_name: first_name.value,
         last_name: last_name.value,

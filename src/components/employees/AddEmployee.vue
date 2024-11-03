@@ -305,9 +305,12 @@ const onSubmit = async () => {
         !gender.value ||
         !position.value ||
         !roomId.value
-    ) {
+    )
         return;
-    }
+
+    if (!msisdnValidation([msisdn.value]).valid) return;
+
+    if (email.value && !emailValidation(email.value).valid) return;
 
     loading.value = true;
 

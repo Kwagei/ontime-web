@@ -316,6 +316,10 @@ const onSubmit = async () => {
         return;
     }
 
+    if (!msisdnValidation([msisdn.value]).valid) return;
+
+    if (email.value && !emailValidation(email.value).valid) return;
+
     // don't bother recreating participant if already created
     // but there was an error in on of the other steps
     if (participantCreated.value) return checkInParticipant();

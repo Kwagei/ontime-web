@@ -264,12 +264,7 @@
 import { ref, onMounted, getCurrentInstance } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
-import {
-    API_URL,
-    API_KEY,
-    registerVisit,
-    visitorCheckInStatus,
-} from "@/assets/js/index.js";
+import { API_URL, API_KEY, registerVisit } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
 import { formValidation, showModal, formatMsisdn } from "@/util/util";
 
@@ -347,8 +342,8 @@ async function fetchTop10Visitors() {
 
             for (const visitor of tmpVisitors) {
                 visitor.name = `${visitor.first_name} ${
-                    visitor.middle_name || ""
-                } ${visitor.last_name}`;
+                    visitor.middle_name ? visitor.middle_name + " " : ""
+                }${visitor.last_name}`;
             }
 
             visitors.value = tmpVisitors;
@@ -419,7 +414,7 @@ function visitorSelected(selectedVisitor) {
 }
 
 async function fetchRooms() {
-    let fetchedRooms = await fetch(`${API_URL}rooms?type=class`, {
+    let fetchedRooms = await fetch(`${API_URL}rooms?type=workspace`, {
         method: "GET",
         headers: {
             authorization: API_KEY,

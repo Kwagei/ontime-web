@@ -105,6 +105,20 @@
                                         }}
                                     </span>
                                 </div>
+                                <!-- Week Days -->
+                                <div class="d-flex flex-column gap-1">
+                                    <span>
+                                        <Icons icon="calendar-event-agenda" />
+                                        Week Days
+                                    </span>
+                                    <span class="fw-bold">
+                                        {{
+                                            convertNumbersToDays(
+                                                event.week_days
+                                            )
+                                        }}
+                                    </span>
+                                </div>
                                 <!-- Facilitator -->
                                 <div class="d-flex flex-column gap-1">
                                     <span>
@@ -168,6 +182,7 @@ import {
     showModal,
     formatMsisdn,
     formatDateTime,
+    convertNumbersToDays,
 } from "@/util/util";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -422,7 +437,7 @@ const updateEventTerm = (event, idx) => {
 // function for inserting each username in the select element
 const getEventsOptions = async () => {
     try {
-        const res = await getEvents(null, { current: true });
+        const res = await getOngoingEvents();
 
         // if `getEvents` returns a falsy value, indicate error
         if (!res) {
@@ -435,7 +450,7 @@ const getEventsOptions = async () => {
         }
 
         // format event for drop down
-        events.value = res.events;
+        events.value = res.data;
 
         if (!events.value.length) noEvents.value = true;
 
@@ -606,6 +621,25 @@ const updateVisitorVisitStatus = () => {
     // Reset for new participant.
     participant.value = "";
 };
+
+async function getOngoingEvents() {
+    let response;
+
+    await $.ajax(`${API_URL}events/ongoing-events`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY,
+        },
+        success: (res) => {
+            response = res;
+        },
+        error: (err) => {
+            console.error("err: ", err);
+        },
+    });
+
+    return response;
+}
 </script>
 
 <style scoped>

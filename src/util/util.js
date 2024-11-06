@@ -361,3 +361,24 @@ export const formatMsisdn = (tmpMsisdn) => {
     else if (msisdn.startsWith("0")) return "231" + msisdn.slice(1, 10);
     return "231" + msisdn.slice(0, 9);
 };
+
+export const convertNumbersToDays = (
+    numbers,
+    isString = false,
+    wantString = true
+) => {
+    const daysMapping = [null, "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    if (isString) numbers = [numbers];
+
+    let newDays = numbers.map((num) => {
+        if ((num != 0 && !Number(num)) || Number(num) > 6)
+            return "Invalid Date";
+
+        return daysMapping[num];
+    });
+
+    if (wantString) newDays = newDays.join(", ");
+
+    return newDays;
+};

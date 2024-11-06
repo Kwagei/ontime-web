@@ -211,20 +211,95 @@
                     </div>
                 </div>
 
-                <!-- DETAILS -->
-                <div class="col-md-6">
-                    <label for="detail" class="form-label">Details</label>
-                    <div class="input-group">
-                        <textarea
-                            placeholder="Enter details..."
-                            class="form-control"
-                            id="detailsTextarea"
-                            v-model="details"
-                            rows="3"
-                        ></textarea>
+                <!-- WEEK DAYS -->
+                <div class="dropdown col-md-6">
+                    <label for="weekDays" class="form-label is-required">
+                        Week Days
+                        <span class="visually-hidden"> (required)</span>
+                    </label>
 
-                        <div class="invalid-feedback">
-                            Please enter event details.
+                    <div class="input-group has-validation position-relative">
+                        <div
+                            id="weekDaysOptionsWrapper"
+                            class="d-flex flex-wrap justify-content-between gap-0 border border-1 border-dark w-100"
+                            style="border-radius: 7px"
+                        >
+                            <div
+                                @click="weekDays = [1, 2, 3, 4, 5, 6]"
+                                :class="{
+                                    daySelected:
+                                        weekDays.toString() ==
+                                        [1, 2, 3, 4, 5, 6].toString(),
+                                }"
+                                class="p-2 flex-grow-1 text-center"
+                            >
+                                All
+                            </div>
+                            <div
+                                :class="{
+                                    daySelected: weekDays.includes(1),
+                                }"
+                                class="p-2 flex-grow-1 text-center"
+                                @click="toggleDay(1)"
+                            >
+                                Mon
+                            </div>
+                            <div
+                                :class="{
+                                    daySelected: weekDays.includes(2),
+                                }"
+                                class="p-2 flex-grow-1 text-center"
+                                @click="toggleDay(2)"
+                            >
+                                Tue
+                            </div>
+                            <div
+                                :class="{
+                                    daySelected: weekDays.includes(3),
+                                }"
+                                class="p-2 flex-grow-1 text-center"
+                                @click="toggleDay(3)"
+                            >
+                                Wed
+                            </div>
+                            <div
+                                :class="{
+                                    daySelected: weekDays.includes(4),
+                                }"
+                                class="p-2 flex-grow-1 text-center"
+                                @click="toggleDay(4)"
+                            >
+                                Thu
+                            </div>
+                            <div
+                                :class="{
+                                    daySelected: weekDays.includes(5),
+                                }"
+                                class="p-2 flex-grow-1 text-center"
+                                @click="toggleDay(5)"
+                            >
+                                Fri
+                            </div>
+                            <div
+                                :class="{
+                                    daySelected: weekDays.includes(6),
+                                }"
+                                class="p-2 flex-grow-1 text-center"
+                                @click="toggleDay(6)"
+                            >
+                                Sat
+                            </div>
+                        </div>
+
+                        <div
+                            :class="{ 'd-flex': invalidWeekDays }"
+                            class="invalid-feedback"
+                        >
+                            Please select atleast one of the week days.
+                        </div>
+
+                        <div class="helpMessage form-text">
+                            Select the days of the week this event will occur.
                         </div>
                     </div>
                 </div>
@@ -261,6 +336,24 @@
 
                         <div class="invalid-feedback">
                             Please select a type.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DETAILS -->
+                <div class="col-md-6">
+                    <label for="detail" class="form-label">Details</label>
+                    <div class="input-group">
+                        <textarea
+                            placeholder="Enter details..."
+                            class="form-control"
+                            id="detailsTextarea"
+                            v-model="details"
+                            rows="3"
+                        ></textarea>
+
+                        <div class="invalid-feedback">
+                            Please enter event details.
                         </div>
                     </div>
                 </div>
@@ -321,6 +414,7 @@ const facilitator = ref("");
 const startDate = ref("");
 const endDate = ref("");
 const type = ref("");
+const weekDays = ref([1, 2, 3, 4, 5, 6]);
 const details = ref("");
 
 // Rooms Data
@@ -473,6 +567,7 @@ const onSubmit = async () => {
         facilitator: facilitator.value,
         start_date: startDate.value,
         end_date: endDate.value,
+        weekDays: weekDays.value,
         type: type.value,
         host: hostID.value,
         room: roomID.value,
@@ -572,11 +667,13 @@ function setMode() {
 async function getEventToEdit() {
     try {
         const [event] = await getEvents(eventId.value);
+        console.log("event: ", event.week_days);
 
         title.value = event.title;
         type.value = event.type;
         facilitator.value = event.facilitator;
         details.value = event.details;
+        weekDays.value = event.week_days;
         hostValue.value = event.host;
         hostID.value = event.host_id;
         roomValue.value = event.room;
@@ -591,6 +688,12 @@ async function getEventToEdit() {
 
 // format date back to ISOString before setting it as the value in start and end date fields
 const formatEventDates = (date) => new Date(date).toISOString().split("T")[0];
+
+function toggleDay(day) {
+    weekDays.value = weekDays.value.includes(day)
+        ? weekDays.value.filter((weekDay) => weekDay != day)
+        : [...weekDays.value, day].sort((a, b) => a - b);
+}
 </script>
 
 <style scoped>
@@ -612,5 +715,19 @@ a:hover {
 
 #eventsWrapper {
     gap: 1.5rem;
+}
+
+.daySelected {
+    background-color: #555;
+    color: #eee;
+    font-weight: 1000;
+}
+
+#weekDaysOptionsWrapper > div {
+    cursor: pointer;
+}
+
+#weekDaysOptionsWrapper > div:hover {
+    opacity: 0.8;
 }
 </style>

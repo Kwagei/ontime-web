@@ -170,6 +170,7 @@ function hideSidebar() {
 @media (max-width: 800px) {
     #logoLinkWrapper {
         justify-content: space-between !important;
+        padding-left: 30px;
     }
 }
 </style>

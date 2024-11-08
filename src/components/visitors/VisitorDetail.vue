@@ -47,16 +47,32 @@
                                             {{ visitorInfo.last_name }}
                                         </span>
                                     </div>
-                                    <div v-if="visitorInfo.address">
-                                        <span>
-                                            <Icons
-                                                class="icons"
-                                                v-model:icon="locationIcon"
-                                            />
-                                        </span>
-                                        <span class="visitor-item">
-                                            {{ visitorInfo.address }}
-                                        </span>
+                                    <div
+                                        class="d-flex gap-2"
+                                        v-if="visitorInfo.address"
+                                    >
+                                        <div>
+                                            <span>
+                                                <Icons
+                                                    class="icons"
+                                                    v-model:icon="locationIcon"
+                                                />
+                                            </span>
+                                            <span class="visitor-item">
+                                                {{ visitorInfo.address }}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <Icons icon="clock" class="icons" />
+                                            <span class="visitor-item">
+                                                {{
+                                                    formatDateTime(
+                                                        visitorInfo.created_at,
+                                                        { date: true }
+                                                    )
+                                                }}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="d-flex gap-2">
                                         <div v-if="visitorInfo.email">

@@ -101,7 +101,7 @@
                 >
                     <div>
                         <span class="fs-6">Week Days</span>
-                        <h6 class="d-flex gap-2 mt-2 mb-0">
+                        <h6 class="d-flex flex-wrap gap-2 mt-2 mb-0">
                             <div
                                 v-for="day in convertNumbersToDays(
                                     event.week_days,
@@ -268,7 +268,9 @@ li {
     background-color: #ddd;
     color: #333;
     border-radius: 7px;
-    padding: 5px 20px;
+    padding: 0.4rem 0.3rem;
     text-align: center;
+    flex-grow: 1;
+    max-width: 100px;
 }
 </style>

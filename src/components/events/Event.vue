@@ -31,6 +31,7 @@
             <EventAttendance
                 v-if="state == 'todaysAttendance'"
                 :eventId="eventId"
+                :event="event"
                 @switch="switchState"
             />
             <AddParticipant

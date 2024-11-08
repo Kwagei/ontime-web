@@ -23,12 +23,18 @@ const props = defineProps({
 </script>
 
 <style scoped>
+@media (max-width: 1700px) {
+    #eventTitleImageWrapper > h5 {
+        margin-left: 1.75rem;
+    }
+}
+
 @media (max-width: 650px) {
     #eventTitleImageWrapper {
         flex-direction: column !important;
     }
 
-    #eventTitleImageWrapper h5 {
+    #eventTitleImageWrapper > h5 {
         align-self: flex-start;
     }
 }

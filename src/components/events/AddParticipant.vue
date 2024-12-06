@@ -350,7 +350,7 @@ const onSubmit = async () => {
         type: "POST",
         data: body,
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (data) => {
             alert.value.status = "success";
@@ -450,7 +450,7 @@ async function checkInParticipant() {
 
     // format visit data
     const checkInData = {
-        visitor_id: createdVisitor.value.result.data[0].id,
+        visitor_id: createdVisitor.value.result.data.id,
         participant_id: createdParticipant.value.id,
         purpose: props.event?.title,
         room_id: props.event?.room_id,

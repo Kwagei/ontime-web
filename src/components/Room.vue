@@ -142,13 +142,7 @@ import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
 import Modal from "./modals/AlertModal.vue";
 import ConfirmationModal from "./modals/ConfirmationModal.vue";
-import {
-    registerRoom,
-    editRoom,
-    getRooms,
-    API_URL,
-    API_KEY,
-} from "@/assets/js/index.js";
+import { registerRoom, editRoom, API_URL, API_KEY } from "@/assets/js/index.js";
 import {
     formValidation,
     getElement,
@@ -277,7 +271,7 @@ async function deleteRoom() {
     $.ajax(`${API_URL}rooms/${route.params.id}`, {
         method: "DELETE",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             alert.value.message = res.message;
@@ -302,7 +296,7 @@ async function fetchRoomToEdit(id) {
     const options = {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
     };
 

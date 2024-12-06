@@ -261,10 +261,10 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/employees/${id.value}/meetings`,
+        url: `${API_URL}employees/${id.value}/meetings`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             const order =

@@ -144,7 +144,7 @@ const getCurrentWeekData = async () => {
     await $.ajax(`${API_URL}visits/current-week-visits`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             currentWeekVisits = res.data.visits;

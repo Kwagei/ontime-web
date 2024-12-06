@@ -351,7 +351,7 @@ async function createEmployee(employee, id) {
             method: id ? "PUT" : "POST",
             data: employee,
             headers: {
-                authorization: API_KEY,
+                authorization: API_KEY.value,
             },
             success: (res) => {
                 loading.value = false;

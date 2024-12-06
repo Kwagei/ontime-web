@@ -289,7 +289,7 @@ export async function getTodaysVisits() {
     await $.ajax(`${API_URL}visits?today=1`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             todaysVisits = res.data;
@@ -309,7 +309,7 @@ export async function getCurrentWeekData() {
     await $.ajax(`${API_URL}visits?currentWeek=1`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             currentWeekVisits = res.data;
@@ -382,3 +382,16 @@ export const convertNumbersToDays = (
 
     return newDays;
 };
+
+export async function fetchAllRoles() {
+    const res = await fetch(`${API_URL}roles`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY.value,
+        },
+    });
+
+    const data = await res.json();
+
+    return data.data;
+}

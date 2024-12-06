@@ -95,7 +95,7 @@ const fetchPastThreeMonthsVisits = async () => {
     await $.ajax(`${API_URL}visits/past-three-months`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             allVisits = res.data.visits;

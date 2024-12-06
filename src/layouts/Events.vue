@@ -24,7 +24,7 @@
                             id="filter-events"
                             class="dropdown-item"
                         >
-                            Filter Events
+                            Date Range
                         </li>
                     </ul>
                 </div>

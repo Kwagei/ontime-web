@@ -316,7 +316,7 @@ const onSubmit = async () => {
         type: "PUT",
         data: participant,
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (data) => {
             alert.value.status = "success";

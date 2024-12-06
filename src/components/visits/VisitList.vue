@@ -124,7 +124,7 @@ const options = {
         url: `${API_URL}visits`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             const order =

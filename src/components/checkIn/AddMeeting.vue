@@ -363,7 +363,7 @@ async function fetchTop10Visitors() {
     $.ajax(`${API_URL}visitors/top-visitors?notIn=1`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             const tmpVisitors = res.data;
@@ -388,7 +388,7 @@ async function fetchEmployees() {
     $.ajax(`${API_URL}employees?limit=10`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             const tmpEmployees = res.data.employees;
@@ -419,7 +419,7 @@ async function searchVisitors() {
 
             let searchedVisitor = await fetch(url, {
                 headers: {
-                    authorization: API_KEY,
+                    authorization: API_KEY.value,
                 },
             });
 
@@ -470,7 +470,7 @@ async function searchEmployees() {
 
             let searchedEmployee = await fetch(url, {
                 headers: {
-                    authorization: API_KEY,
+                    authorization: API_KEY.value,
                 },
             });
 

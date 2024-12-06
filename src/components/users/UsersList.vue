@@ -60,8 +60,6 @@ const totalUsers = defineModel("totalUsers");
 const columns = [
     { data: "username", title: "User name" },
     { data: "email", title: "Email" },
-    { data: "msisdn", title: "Phone number" },
-    { data: "address", title: "Address" },
     { data: "roles", title: "Role" },
     { data: "created_at", title: "Creation Date" },
 ];
@@ -71,10 +69,10 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/users`,
+        url: `${API_URL}users`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             return {
@@ -99,14 +97,12 @@ const options = {
 
             users.forEach((user) => {
                 user.address = formatAddress(user.address);
-                user.msisdn = `0${user.msisdn[0].slice(3)}`;
                 user.created_at = formatDateTime(user.created_at, {
                     date: true,
                 });
                 user.roles = user.roles[0].toUpperCase();
             });
 
-            console.log(users);
             return users;
         },
         error: (error) => {
@@ -159,10 +155,11 @@ const options = {
 			</div>
 		`,
     },
-    order: [[5, "desc"]],
+    order: [[0, "desc"]],
     destroy: true,
     createdRow: (row, data) => {
         $(row).on("click", (event) => {
+			return;
             if (event.target.dataset.empty) addVisitor();
 
             const visitorData = data;

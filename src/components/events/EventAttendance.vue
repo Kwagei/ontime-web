@@ -192,10 +192,10 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/events/${eventId.value}/attendance/`,
+        url: `${API_URL}events/${eventId.value}/attendance/`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             return {
@@ -371,7 +371,7 @@ async function fetchCompleteAttendance() {
         {
             method: "GET",
             headers: {
-                authorization: API_KEY,
+                authorization: API_KEY.value,
             },
             success: (data) => (res = data),
             error: (error) => {

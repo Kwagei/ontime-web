@@ -108,10 +108,10 @@ const navItems = [
         name: "employees",
         svg: "avatar",
     },
-    // {
-    // 	name: "users",
-    // 	svg: "avatar",
-    // },
+    {
+        name: "users",
+        svg: "avatar",
+    },
 ];
 
 const signOut = () => {

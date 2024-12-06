@@ -567,7 +567,7 @@ const onSubmit = async () => {
         facilitator: facilitator.value,
         start_date: startDate.value,
         end_date: endDate.value,
-        weekDays: weekDays.value,
+        week_days: weekDays.value,
         type: type.value,
         host: hostID.value,
         room: roomID.value,
@@ -584,7 +584,7 @@ const onSubmit = async () => {
         type: options.type,
         data: body,
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (data) => {
             showModal();
@@ -666,8 +666,7 @@ function setMode() {
 
 async function getEventToEdit() {
     try {
-        const [event] = await getEvents(eventId.value);
-        console.log("event: ", event.week_days);
+        const event = await getEvents(eventId.value);
 
         title.value = event.title;
         type.value = event.type;

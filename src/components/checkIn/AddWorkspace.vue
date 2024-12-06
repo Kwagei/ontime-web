@@ -335,7 +335,7 @@ async function fetchTop10Visitors() {
     $.ajax(`${API_URL}visitors/top-visitors?notIn=1`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             const tmpVisitors = res.data;
@@ -366,7 +366,7 @@ async function searchVisitors() {
 
             let searchedVisitor = await fetch(url, {
                 headers: {
-                    authorization: API_KEY,
+                    authorization: API_KEY.value,
                 },
             });
 
@@ -417,7 +417,7 @@ async function fetchRooms() {
     let fetchedRooms = await fetch(`${API_URL}rooms?type=workspace`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
     });
 

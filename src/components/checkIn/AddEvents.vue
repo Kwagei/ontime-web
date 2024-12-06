@@ -257,10 +257,10 @@ const dataTableOptions = ref({
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/events/${eventID.value}/participants`,
+        url: `${API_URL}events/${eventID.value}/participants`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             return {
@@ -419,7 +419,7 @@ const updateEventTerm = (event, idx) => {
     $("eventParticipantsTable").DataTable().destroy();
 
     // update api url in options object
-    dataTableOptions.value.ajax.url = `${API_URL}/events/${eventID.value}/participants`;
+    dataTableOptions.value.ajax.url = `${API_URL}events/${eventID.value}/participants`;
 
     // reload the table with the new url
     dataTableKey.value += 1;
@@ -550,6 +550,7 @@ const participantDetail = async (id) => {
         visitorData = await getSingleVisitor({
             msisdn: formatMsisdn(participant.msisdn),
         });
+        visitorData = visitorData[0];
     }
 
     // Create visitor if this participant is not already a visitor.
@@ -564,7 +565,7 @@ const participantDetail = async (id) => {
         });
 
         if (response.ok) {
-            visitorData = response.result.data[0];
+            visitorData = response.result.data;
         } else {
             alert.value.message = response.result.message;
             alert.value.status = "danger";
@@ -628,7 +629,7 @@ async function getOngoingEvents() {
     await $.ajax(`${API_URL}events/ongoing-events`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             response = res;

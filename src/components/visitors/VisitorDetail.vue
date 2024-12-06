@@ -47,11 +47,8 @@
                                             {{ visitorInfo.last_name }}
                                         </span>
                                     </div>
-                                    <div
-                                        class="d-flex gap-2"
-                                        v-if="visitorInfo.address"
-                                    >
-                                        <div>
+                                    <div class="d-flex gap-2">
+                                        <div v-if="visitorInfo.address">
                                             <span>
                                                 <Icons
                                                     class="icons"
@@ -252,10 +249,10 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/visitors/${id.value}/visits`,
+        url: `${API_URL}visitors/${id.value}/visits`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             const order =

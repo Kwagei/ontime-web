@@ -19,11 +19,10 @@
             >
                 <!-- USERNAME -->
                 <div class="col-md-6">
-                    <label for="username" class="form-label is-required"
-                        >Username<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
+                    <label for="username" class="form-label is-required">
+                        Username
+                        <span class="visually-hidden"> (required) </span>
+                    </label>
                     <div class="input-group has-validation">
                         <input
                             type="text"
@@ -41,7 +40,10 @@
 
                 <!-- PASSWORD -->
                 <div class="col-md-6">
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label is-required">
+                        Password
+                        <span class="visually-hidden"> (required) </span>
+                    </label>
                     <div class="input-group">
                         <input
                             type="password"
@@ -69,43 +71,11 @@
                     </div>
                 </div>
 
-                <!-- PHONE NUMBER -->
-                <div class="col-md-6">
-                    <label for="phone_number" class="form-label is-required"
-                        >Phone number<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="tel"
-                            :class="[
-                                validMsisdn && 'validated',
-                                'form-control',
-                            ]"
-                            v-model="msisdn"
-                            id="phone_number"
-                            aria-describedby="inputGroupPrepend"
-                            required
-                        />
-                        <div
-                            :class="[
-                                'invalid-feedback',
-                                validMsisdn && 'show-feedback',
-                            ]"
-                        >
-                            {{ validMsisdnMessage }}
-                        </div>
-                    </div>
-                    <div class="helpMessage form-text">
-                        Phone number should start with 0. For example:
-                        0778675908
-                    </div>
-                </div>
-
                 <!-- EMAIL -->
                 <div class="col-md-6">
-                    <label for="email" class="form-label">Email</label>
+                    <label for="email" class="form-label is-required"
+                        >Email</label
+                    >
                     <div class="input-group">
                         <input
                             type="email"
@@ -126,78 +96,6 @@
                     <div class="helpMessage form-text">
                         Enter a valid email address. For example:
                         john12@gmail.com
-                    </div>
-                </div>
-
-                <!-- ADDRESS -->
-                <div class="col-md-6">
-                    <label for="address" class="form-label is-required"
-                        >Address<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="address"
-                            v-model="address"
-                            required
-                        />
-                        <div class="invalid-feedback">
-                            Please provide an address.
-                        </div>
-                    </div>
-                    <div class="helpMessage form-text">
-                        Enter descriptive address. For example: Congo Town,
-                        Adjacent Satcom, Monrovia, Liberia
-                    </div>
-                </div>
-
-                <!-- USER ROLES -->
-                <div class="col-md-6">
-                    <label for="user-role" class="form-label is-required"
-                        >User Role<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <select
-                            class="form-select form-control"
-                            aria-label="Default select example"
-                            required
-                            v-model="roles"
-                        >
-                            <option value="administrator">Administrator</option>
-                            <option value="security">Security</option>
-                        </select>
-
-                        <div class="invalid-feedback">
-                            Please select a role.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- GENDER -->
-                <div class="col-md-6">
-                    <label for="address" class="form-label is-required"
-                        >Gender<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <select
-                            class="form-select"
-                            aria-label="Default select example"
-                            required
-                            v-model="gender"
-                        >
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a gender.
-                        </div>
                     </div>
                 </div>
 
@@ -236,7 +134,6 @@ import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
 import { getSingleUser, registerUser, editUser } from "@/assets/js/index.js";
 import {
-    msisdnValidation,
     emailValidation,
     showModal,
     getElement,
@@ -251,11 +148,7 @@ const router = useRouter();
 
 // visitor data
 const username = ref("");
-const msisdn = ref("");
 const email = ref("");
-const address = ref("");
-const gender = ref("");
-const roles = ref("");
 const password = ref("");
 
 const alert = ref({
@@ -281,23 +174,15 @@ const loading = ref(false);
 const onSubmit = async () => {
     if (loading.value) return;
 
-    if (!username.value || !msisdn.value || !address.value || !gender.value) {
+    if (!username.value || !email.value || !password.value) {
         return;
     }
 
     const user = {
         username: username.value,
-
-        // format msisdn for backend
-        msisdn: msisdn.value.startsWith("0")
-            ? `231${msisdn.value.slice(1)}`
-            : msisdn.value,
-
         email: email.value,
-        address: address.value,
-        gender: gender.value,
         password: password.value,
-        roles: [roles.value],
+        roles: ["standard"],
     };
 
     loading.value = true;
@@ -311,7 +196,6 @@ const onSubmit = async () => {
     showModal("#alertModal", "#alertModalBody");
     alert.value.status = response.ok ? "success" : "danger";
     alert.value.message = response.result.message;
-    alert.value.pageLink = `/users/${response.result.data.id}`;
 
     // Reset form if the response is successful
     if (response.ok) {
@@ -326,11 +210,7 @@ const fetchUser = async () => {
         userInfo = user;
         // update references for input fields
         username.value = user.username;
-        msisdn.value = user.msisdn[0];
         email.value = user.email;
-        address.value = user.address;
-        gender.value = user.gender;
-        roles.value = user.roles[0];
     }
 };
 
@@ -342,23 +222,6 @@ const validEmailMessage = ref("Please provide a valid email address");
 const validPasswordMessage = ref(
     "Password should be min 6 characters with at least one upper, lower case, digit and symbol"
 );
-
-const validateMsisdn = (number) => {
-    if (!number) {
-        validMsisdn.value = false;
-        validMsisdnMessage.value = "Please provide a phone number";
-        return;
-    }
-
-    const { valid, message } = msisdnValidation([number]);
-
-    if (!valid) {
-        validMsisdn.value = true;
-        validMsisdnMessage.value = message;
-    } else {
-        validMsisdn.value = false;
-    }
-};
 
 const validateEmail = (mail) => {
     if (!mail) {
@@ -395,13 +258,6 @@ const validatePassword = (pwd) => {
 };
 
 watch(
-    () => msisdn.value,
-    (n) => {
-        validateMsisdn(n);
-    }
-);
-
-watch(
     () => email.value,
     (n) => {
         validateEmail(n);
@@ -417,11 +273,7 @@ watch(
 
 const resetForm = () => {
     username.value = "";
-    msisdn.value = "";
     email.value = "";
-    address.value = "";
-    gender.value = "";
-    roles.value = "";
     password.value = "";
 
     // Remove validation classes

@@ -23,7 +23,7 @@
                             id="filter-visitors"
                             class="dropdown-item"
                         >
-                            Filter Visitors
+                            Date Range
                         </li>
                     </ul>
                 </div>

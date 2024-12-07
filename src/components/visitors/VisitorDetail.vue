@@ -26,7 +26,7 @@
                                 <div>
                                     <div class="profile-container">
                                         <img
-                                            src="../../assets/images/user.png"
+                                            src="../../assets/images/femaleUser.png"
                                             alt="User"
                                             class="profile-image"
                                         />
@@ -47,16 +47,29 @@
                                             {{ visitorInfo.last_name }}
                                         </span>
                                     </div>
-                                    <div v-if="visitorInfo.address">
-                                        <span>
-                                            <Icons
-                                                class="icons"
-                                                v-model:icon="locationIcon"
-                                            />
-                                        </span>
-                                        <span class="visitor-item">
-                                            {{ visitorInfo.address }}
-                                        </span>
+                                    <div class="d-flex gap-2">
+                                        <div v-if="visitorInfo.address">
+                                            <span>
+                                                <Icons
+                                                    class="icons"
+                                                    v-model:icon="locationIcon"
+                                                />
+                                            </span>
+                                            <span class="visitor-item">
+                                                {{ visitorInfo.address }}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <Icons icon="clock" class="icons" />
+                                            <span class="visitor-item">
+                                                {{
+                                                    formatDateTime(
+                                                        visitorInfo.created_at,
+                                                        { date: true }
+                                                    )
+                                                }}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="d-flex gap-2">
                                         <div v-if="visitorInfo.email">
@@ -236,10 +249,10 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/visitors/${id.value}/visits`,
+        url: `${API_URL}visitors/${id.value}/visits`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             const order =

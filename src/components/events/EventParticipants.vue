@@ -128,7 +128,7 @@ const options = {
         url: `${API_URL}events/${eventId}/participants/`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             const order =
@@ -241,7 +241,7 @@ async function deleteParticipant() {
     $.ajax(`${API_URL}event_participants/${participantToDelete.value}`, {
         method: "DELETE",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             $sectionIsLoading.value = false;

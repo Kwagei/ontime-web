@@ -26,8 +26,9 @@
                                 <div>
                                     <div class="profile-container">
                                         <img
-                                            src="../../assets/images/user.png"
+                                            src="../../assets/images/femaleUser.png"
                                             alt="User"
+                                            :key="profilePictureKey"
                                             class="profile-image"
                                         />
                                     </div>
@@ -47,16 +48,29 @@
                                             {{ employeeInfo.last_name }}
                                         </span>
                                     </div>
-                                    <div v-if="employeeInfo.address">
-                                        <span>
-                                            <Icons
-                                                class="icons"
-                                                v-model:icon="locationIcon"
-                                            />
-                                        </span>
-                                        <span class="employee-item">
-                                            {{ employeeInfo.address }}
-                                        </span>
+                                    <div class="d-flex gap-2">
+                                        <div v-if="employeeInfo.address">
+                                            <span>
+                                                <Icons
+                                                    class="icons"
+                                                    v-model:icon="locationIcon"
+                                                />
+                                            </span>
+                                            <span class="employee-item">
+                                                {{ employeeInfo.address }}
+                                            </span>
+                                        </div>
+                                        <div v-if="employeeInfo.room">
+                                            <span>
+                                                <Icons
+                                                    class="icons"
+                                                    icon="bed"
+                                                />
+                                            </span>
+                                            <span class="employee-item">
+                                                {{ employeeInfo.room }}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="d-flex gap-2">
                                         <div v-if="employeeInfo.email">
@@ -205,6 +219,9 @@ const refresh = defineModel("refresh");
 const table = ref("");
 const showError = ref(false);
 
+const profilePictureSrc = ref("../../assets/images/imageLoading.png");
+const profilePictureKey = ref(0);
+
 const id = ref(route.params.id);
 const employeeInfo = ref("");
 const allEmployeeMeetings = ref([]);
@@ -244,10 +261,10 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/employees/${id.value}/meetings`,
+        url: `${API_URL}employees/${id.value}/meetings`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             const order =
@@ -270,6 +287,8 @@ const options = {
             employee.msisdn = `0${employee.msisdn.slice(3)}`;
 
             employeeInfo.value = employee;
+
+            updateVisitorProfilePicture(employeeInfo.gender);
 
             json.recordsTotal = totalLength;
             json.recordsFiltered = totalLength;
@@ -331,6 +350,16 @@ const formatEmployeeMeetings = (meetings) => {
 
     return meetings;
 };
+
+/**
+ * TO BE REFACTORED
+ */
+function updateVisitorProfilePicture(gender) {
+    console.log("profile picture: ", profilePictureSrc.value);
+    profilePictureSrc.value = `../../assets/images/${gender?.toLowerCase()}User.png`;
+    console.log("profile picture: ", profilePictureSrc.value);
+    console.log("profile picture: ", profilePictureSrc.value);
+}
 </script>
 
 <style scoped>

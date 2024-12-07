@@ -86,6 +86,14 @@ onMounted(() => {
     padding: 15px !important;
 }
 
+@media (max-width: 500px) {
+    .checkInOption {
+        min-width: unset;
+        min-height: unset;
+        width: 40vw !important;
+    }
+}
+
 @media (min-width: 1251px) {
     a {
         min-height: 175px !important;

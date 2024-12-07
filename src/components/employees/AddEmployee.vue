@@ -305,9 +305,12 @@ const onSubmit = async () => {
         !gender.value ||
         !position.value ||
         !roomId.value
-    ) {
+    )
         return;
-    }
+
+    if (!msisdnValidation([msisdn.value]).valid) return;
+
+    if (email.value && !emailValidation(email.value).valid) return;
 
     loading.value = true;
 
@@ -348,7 +351,7 @@ async function createEmployee(employee, id) {
             method: id ? "PUT" : "POST",
             data: employee,
             headers: {
-                authorization: API_KEY,
+                authorization: API_KEY.value,
             },
             success: (res) => {
                 loading.value = false;
@@ -422,7 +425,7 @@ function updateRoomTerm(room) {
 
 // Lifecycle Hooks
 onMounted(async () => {
-    const { rooms } = await getRooms();
+    const { rooms } = await getRooms(null, "office");
     roomsData.value = rooms;
 
     fetchEmployeeToEdit();

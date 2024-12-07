@@ -24,12 +24,12 @@
                     </h3>
                 </div>
                 <div
-                    class="bg-dark rounded-circle p-1"
+                    class="bg-dark rounded-circle p-1 overflow-hidden"
                     style="width: 40px; height: 40px"
                 >
                     <img
-                        class="w-100 f-100"
-                        src="../assets/images/user.png"
+                        class="w-100 f-100 overflow-hidden"
+                        src="../assets/images/maleUser.png"
                         alt=""
                     />
                 </div>

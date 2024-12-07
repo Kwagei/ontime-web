@@ -475,6 +475,10 @@ const onSubmit = async () => {
     if (!first_name.value || !last_name.value || !msisdn.value || !gender.value)
         return;
 
+    if (!msisdnValidation([msisdn.value]).valid) return;
+
+    if (email.value && !emailValidation(email.value).valid) return;
+
     loading.value = true;
 
     // required fields for a visit check in
@@ -518,8 +522,8 @@ const onSubmit = async () => {
 
     // Reset form if the response is successful
     if (response.ok) {
-        alert.value.pageLink = `/visitors/${response.result.data[0].id}`;
-        createdVisitor.value = response.result.data[0];
+        alert.value.pageLink = `/visitors/${response.result.data.id}`;
+        createdVisitor.value = response.result.data;
 
         if (mode.value == "checkIn") checkInVisitor();
         else {
@@ -604,7 +608,7 @@ async function fetchEmployees() {
     $.ajax(`${API_URL}employees?limit=10`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             const tmpEmployees = res.data.employees;
@@ -633,7 +637,7 @@ async function searchEmployees() {
 
             let searchedEmployee = await fetch(url, {
                 headers: {
-                    authorization: API_KEY,
+                    authorization: API_KEY.value,
                 },
             });
 

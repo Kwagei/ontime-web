@@ -1,5 +1,12 @@
 <template>
     <AlertModal :data="alert" />
+
+    <ConfirmationModal
+        title="Permanently Delete User"
+        :message="confirmationMessage"
+        @confirmed="deleteUser"
+    />
+
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -19,11 +26,10 @@
             >
                 <!-- USERNAME -->
                 <div class="col-md-6">
-                    <label for="username" class="form-label is-required"
-                        >Username<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
+                    <label for="username" class="form-label is-required">
+                        Username
+                        <span class="visually-hidden"> (required) </span>
+                    </label>
                     <div class="input-group has-validation">
                         <input
                             type="text"
@@ -40,8 +46,11 @@
                 </div>
 
                 <!-- PASSWORD -->
-                <div class="col-md-6">
-                    <label for="password" class="form-label">Password</label>
+                <div class="col-md-6" v-if="!route.params.id">
+                    <label for="password" class="form-label is-required">
+                        {{ route.params.id ? "New " : "" }} Password
+                        <span class="visually-hidden"> (required) </span>
+                    </label>
                     <div class="input-group">
                         <input
                             type="password"
@@ -69,43 +78,11 @@
                     </div>
                 </div>
 
-                <!-- PHONE NUMBER -->
-                <div class="col-md-6">
-                    <label for="phone_number" class="form-label is-required"
-                        >Phone number<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="tel"
-                            :class="[
-                                validMsisdn && 'validated',
-                                'form-control',
-                            ]"
-                            v-model="msisdn"
-                            id="phone_number"
-                            aria-describedby="inputGroupPrepend"
-                            required
-                        />
-                        <div
-                            :class="[
-                                'invalid-feedback',
-                                validMsisdn && 'show-feedback',
-                            ]"
-                        >
-                            {{ validMsisdnMessage }}
-                        </div>
-                    </div>
-                    <div class="helpMessage form-text">
-                        Phone number should start with 0. For example:
-                        0778675908
-                    </div>
-                </div>
-
                 <!-- EMAIL -->
                 <div class="col-md-6">
-                    <label for="email" class="form-label">Email</label>
+                    <label for="email" class="form-label is-required"
+                        >Email</label
+                    >
                     <div class="input-group">
                         <input
                             type="email"
@@ -129,78 +106,6 @@
                     </div>
                 </div>
 
-                <!-- ADDRESS -->
-                <div class="col-md-6">
-                    <label for="address" class="form-label is-required"
-                        >Address<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="address"
-                            v-model="address"
-                            required
-                        />
-                        <div class="invalid-feedback">
-                            Please provide an address.
-                        </div>
-                    </div>
-                    <div class="helpMessage form-text">
-                        Enter descriptive address. For example: Congo Town,
-                        Adjacent Satcom, Monrovia, Liberia
-                    </div>
-                </div>
-
-                <!-- USER ROLES -->
-                <div class="col-md-6">
-                    <label for="user-role" class="form-label is-required"
-                        >User Role<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <select
-                            class="form-select form-control"
-                            aria-label="Default select example"
-                            required
-                            v-model="roles"
-                        >
-                            <option value="administrator">Administrator</option>
-                            <option value="security">Security</option>
-                        </select>
-
-                        <div class="invalid-feedback">
-                            Please select a role.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- GENDER -->
-                <div class="col-md-6">
-                    <label for="address" class="form-label is-required"
-                        >Gender<span class="visually-hidden">
-                            (required)</span
-                        ></label
-                    >
-                    <div class="input-group has-validation">
-                        <select
-                            class="form-select"
-                            aria-label="Default select example"
-                            required
-                            v-model="gender"
-                        >
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a gender.
-                        </div>
-                    </div>
-                </div>
-
                 <div class="col-md-12 d-flex gap-2 justify-content-end">
                     <button
                         type="submit"
@@ -214,12 +119,28 @@
                         >
                             <span class="visually-hidden">Loading...</span>
                         </div>
-                        Save
+                        {{ route.params.id ? "Update" : "Save" }}
                     </button>
                     <button
-                        class="btn btn-outline-secondary"
+                        @click="confirmDeletion"
+                        class="btn btn-danger"
+                        v-if="route.params.id"
                         type="button"
-                        @click="router.back()"
+                    >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="loading"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        Delete
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal"
+                        @click="router.push('/users')"
                     >
                         Cancel
                     </button>
@@ -234,9 +155,14 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
-import { getSingleUser, registerUser, editUser } from "@/assets/js/index.js";
 import {
-    msisdnValidation,
+    getSingleUser,
+    registerUser,
+    editUser,
+    API_URL,
+    API_KEY,
+} from "@/assets/js/index.js";
+import {
     emailValidation,
     showModal,
     getElement,
@@ -244,6 +170,7 @@ import {
     formValidation,
     passwordValidation,
 } from "@/util/util.js";
+import ConfirmationModal from "../modals/ConfirmationModal.vue";
 
 // Route and State
 const route = useRoute();
@@ -251,11 +178,7 @@ const router = useRouter();
 
 // visitor data
 const username = ref("");
-const msisdn = ref("");
 const email = ref("");
-const address = ref("");
-const gender = ref("");
-const roles = ref("");
 const password = ref("");
 
 const alert = ref({
@@ -266,14 +189,13 @@ const alert = ref({
 });
 
 let userInfo;
+const confirmationMessage = ref("");
 
 // Form status and breadcrumbs
 const activeBreadCrumbs = ref([]);
 const breadCrumbs = defineModel("breadCrumbs");
 breadCrumbs.value = route.path.split("/").slice(1);
 activeBreadCrumbs.value = breadCrumbs.value;
-const tem = [...breadCrumbs.value];
-const formStatus = tem.pop();
 
 const loading = ref(false);
 
@@ -281,84 +203,66 @@ const loading = ref(false);
 const onSubmit = async () => {
     if (loading.value) return;
 
-    if (!username.value || !msisdn.value || !address.value || !gender.value) {
-        return;
-    }
+    if (!username.value || !email.value) return;
+
+    // ensure password is given when creating a new user
+    if (!route.params.id && !password.value) return;
 
     const user = {
         username: username.value,
-
-        // format msisdn for backend
-        msisdn: msisdn.value.startsWith("0")
-            ? `231${msisdn.value.slice(1)}`
-            : msisdn.value,
-
         email: email.value,
-        address: address.value,
-        gender: gender.value,
-        password: password.value,
-        roles: [roles.value],
+        roles: ["standard"],
     };
+
+    if (!route.params.id) user.password = password.value;
 
     loading.value = true;
 
-    const response = formStatus.startsWith("new")
+    const response = !route.params.id
         ? await registerUser(user)
         : await editUser(userInfo.id, user);
 
     loading.value = false;
 
-    showModal("#alertModal", "#alertModalBody");
     alert.value.status = response.ok ? "success" : "danger";
     alert.value.message = response.result.message;
-    alert.value.pageLink = `/users/${response.result.data.id}`;
+    showModal();
 
     // Reset form if the response is successful
     if (response.ok) {
         resetForm();
+
+        if (route.params.id) router.push("/users");
     }
 };
 
 const fetchUser = async () => {
-    if (formStatus.startsWith("edit")) {
-        const id = breadCrumbs.value[1];
-        const [user] = await getSingleUser({ id });
-        userInfo = user;
+    if (route.params.id) {
+        const id = route.params.id;
+        const user = await getSingleUser({ id });
+
+        if (user.status != 200) {
+            alert.value.message = user.message;
+            alert.value.status = "danger";
+
+            showModal();
+            return;
+        }
+
+        userInfo = user.data.users;
+
         // update references for input fields
-        username.value = user.username;
-        msisdn.value = user.msisdn[0];
-        email.value = user.email;
-        address.value = user.address;
-        gender.value = user.gender;
-        roles.value = user.roles[0];
+        username.value = userInfo.username;
+        email.value = userInfo.email;
     }
 };
 
 const validEmail = ref(false);
-const validMsisdn = ref(false);
 const validPassword = ref(false);
-const validMsisdnMessage = ref("Please provide a phone number");
 const validEmailMessage = ref("Please provide a valid email address");
 const validPasswordMessage = ref(
     "Password should be min 6 characters with at least one upper, lower case, digit and symbol"
 );
-
-const validateMsisdn = (number) => {
-    if (!number) {
-        validMsisdn.value = false;
-        validMsisdnMessage.value = "Please provide a phone number";
-        return;
-    }
-
-    const { valid, message } = msisdnValidation([number]);
-
-    if (!valid) {
-        validMsisdn.value = true;
-        validMsisdnMessage.value = message;
-    } else {
-        validMsisdn.value = false;
-    }
-};
 
 const validateEmail = (mail) => {
     if (!mail) {
@@ -395,13 +299,6 @@ const validatePassword = (pwd) => {
 };
 
 watch(
-    () => msisdn.value,
-    (n) => {
-        validateMsisdn(n);
-    }
-);
-
-watch(
     () => email.value,
     (n) => {
         validateEmail(n);
@@ -417,11 +314,7 @@ watch(
 
 const resetForm = () => {
     username.value = "";
-    msisdn.value = "";
     email.value = "";
-    address.value = "";
-    gender.value = "";
-    roles.value = "";
     password.value = "";
 
     // Remove validation classes
@@ -429,11 +322,41 @@ const resetForm = () => {
     removeClass(form, "was-validated");
 };
 
+function confirmDeletion() {
+    confirmationMessage.value = `Are you sure you want to permanently delete the <strong>${userInfo.username}</strong>?`;
+    showModal("#confirmationModal");
+}
+
 // Lifecycle Hooks
 onMounted(async () => {
     formValidation();
     await fetchUser();
 });
+
+async function deleteUser() {
+    $.ajax(`${API_URL}users/${route.params.id}`, {
+        method: "DELETE",
+        headers: {
+            authorization: API_KEY.value,
+        },
+        success: () => {
+            alert.value.message = "User Successfully Deleted";
+            alert.value.status = "success";
+
+            showModal();
+
+            setTimeout(() => router.push("/users"), 1000);
+        },
+        error: (err) => {
+            console.error("error deleting user: ", err);
+
+            alert.value.message = err.responseJSON.message;
+            alert.value.status = "danger";
+
+            showModal();
+        },
+    });
+}
 </script>
 
 <style scoped>

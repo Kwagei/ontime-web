@@ -23,14 +23,14 @@
                             id="filter-visitors"
                             class="dropdown-item"
                         >
-                            Date Range
+                            Filter Visitors
                         </li>
                     </ul>
                 </div>
 
-                <router-link :to="{ name: 'add-visitor' }">
+                <router-link :to="{ name: 'new-room' }">
                     <button
-                        id="addVisitorBtn"
+                        id="addRoomBtn"
                         type="button"
                         class="btn btn-primary"
                     >
@@ -41,9 +41,9 @@
             </div>
         </div>
 
-        <VisitorList
+        <RoomsList
             v-model:refresh="refresh"
-            v-model:totalVisitors="totalVisitors"
+            v-model:totalVisitors="totalRooms"
             v-model:filterDates="filterDates"
         />
 
@@ -51,7 +51,7 @@
         <ExportModal
             :exportFields="exportFields"
             v-model:exportTitle="exportTitle"
-            @export="exportVisitors"
+            @export="exportRooms"
         />
 
         <RouterView :breadCrumbs="breadCrumbs" />
@@ -59,54 +59,58 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import BreadCrumbs from "../components/BreadCrumbs.vue";
-import VisitorList from "../components/visitors/VisitorList.vue";
+import RoomsList from "../components/rooms/RoomsList.vue";
 import RefreshList from "../components/RefreshList.vue";
 import Options from "../components/Options.vue";
 import Icons from "../components/Icons.vue";
 const add = "add";
 
 import { RouterLink, RouterView } from "vue-router";
-import { csvExport, getVisitors } from "../assets/js/index.js";
+import { csvExport, getRooms } from "../assets/js/index.js";
 import { hideSidebarOnSmallScreen, showModal } from "@/util/util";
 import FilterModal from "@/components/modals/FilterModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
 
-const totalVisitors = defineModel("totalVisitors");
+const totalRooms = defineModel("totalRooms");
 const breadCrumbs = defineModel("breadCrumbs");
 const refresh = defineModel("refresh");
 const exportFields = ref([
-    { name: "First name", selected: false },
-    { name: "Middle name", selected: false },
-    { name: "Last name", selected: false },
-    { name: "Phone number", selected: false },
+    { name: "Roomname", selected: false },
     { name: "Email", selected: false },
+    { name: "Phone number", selected: false },
     { name: "Address", selected: false },
-    { name: "Occupation", selected: false },
+    { name: "Roles", selected: false },
 ]);
 const exportTitle = defineModel("exportTitle");
-exportTitle.value = "Visitors";
+exportTitle.value = "Rooms";
 
-const exportVisitors = async (fields) => {
-    const { data: visitors } = await getVisitors({
-        limit: totalVisitors.value,
+breadCrumbs.value = ["rooms"];
+
+const exportRooms = async (fields) => {
+    const { rooms } = await getRooms({
+        limit: totalRooms.value,
     });
 
-    const selectedVisitors = visitors.map((visitor) => {
+    const selectedRooms = rooms.map((room) => {
         const data = {};
         for (const field of fields) {
             if (field === "phone_number") {
-                data[field] = `0${visitor.msisdn.slice(3)}`;
+                const [phone_number] = room.msisdn;
+                data[field] = `0${phone_number.slice(3)}`;
+            } else if (field === "roles") {
+                const [room_role] = room[field];
+                data[field] = room_role;
             } else {
-                data[field] = visitor[field];
+                data[field] = room[field];
             }
         }
 
         return data;
     });
 
-    csvExport(selectedVisitors);
+    csvExport(selectedRooms);
 };
 
 const filterDates = ref({
@@ -122,10 +126,6 @@ const displayExportModay = () => {
     showModal("#exportModal", "#modal-dialog");
 };
 
-// section loader flag
-const $sectionIsLoading =
-    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
-
 // update date ranges, then it will be caught by watchers in visitors table
 const filterCompleted = (newDates) => {
     filterDates.value = newDates;
@@ -133,9 +133,6 @@ const filterCompleted = (newDates) => {
 
 onMounted(() => {
     hideSidebarOnSmallScreen();
-
-    // ensure section loader is not visible
-    $sectionIsLoading.value = false;
 });
 </script>
 

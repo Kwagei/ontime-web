@@ -87,6 +87,8 @@ const columns = [
         render: (data) => {
             if (data.event_id)
                 return `<a href="/events/${data.event_id}">${data.purpose}</a>`;
+            else if (data.employee_id)
+                return `<a href="/employees/${data.employee_id}">${data.purpose}</a>`;
             return data.purpose;
         },
     },
@@ -122,7 +124,7 @@ const options = {
         url: `${API_URL}visits`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             const order =

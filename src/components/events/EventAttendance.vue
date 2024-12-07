@@ -14,7 +14,7 @@
                 <BreadCrumbs :breadCrumbs="['events', eventId, 'Attendance']" />
             </div>
             <div id="optionsButtonWrapper" class="d-flex" style="gap: 0.521rem">
-                <button class="reloadIcon" @click="reloadTable">
+                <button class="px-2 reloadIcon" @click="reloadTable">
                     <Icons v-model:icon="reloadIcon" />
                 </button>
                 <div class="dropdown">
@@ -71,11 +71,8 @@
                     class="d-flex align-items-center gap-2 w-100"
                     v-if="showFilterDate"
                 >
-                    <button
-                        @click="clearDateFilter"
-                        class="btn clearDateFilterBtn"
-                    >
-                        <Icons style="width: 30px" v-model:icon="closeIcon" />
+                    <button @click="changeDate('-')" class="btn changeDateBtn">
+                        <Icons style="width: 30px" icon="form-chevron-left" />
                     </button>
                     <span class="text text-secondary fw-bold">
                         {{
@@ -85,6 +82,9 @@
                                   formatDateTime(selectedDate, { date: true })
                         }}
                     </span>
+                    <button @click="changeDate('+')" class="btn changeDateBtn">
+                        <Icons style="width: 30px" icon="form-chevron-right" />
+                    </button>
                 </div>
                 <DataTable
                     class="display w-100 table"
@@ -136,6 +136,7 @@ import AlertModal from "../modals/AlertModal.vue";
 
 const props = defineProps({
     eventId: String,
+    event: Object,
 });
 
 const alert = ref({
@@ -146,7 +147,6 @@ const alert = ref({
 
 const tableKey = ref(0);
 const plusIcon = ref("add");
-const closeIcon = ref("delete");
 const reloadIcon = ref("reload");
 const filterIcon = ref("filter");
 
@@ -192,10 +192,10 @@ const options = {
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/events/${eventId.value}/attendance/`,
+        url: `${API_URL}events/${eventId.value}/attendance/`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             return {
@@ -317,6 +317,10 @@ onMounted(() => {
 			</li>
 		`;
     }
+
+    if (window.innerWidth <= 580) {
+        $("#eventSlotDiv").css("width", "100%");
+    }
 });
 
 const displayExportModay = () => {
@@ -367,7 +371,7 @@ async function fetchCompleteAttendance() {
         {
             method: "GET",
             headers: {
-                authorization: API_KEY,
+                authorization: API_KEY.value,
             },
             success: (data) => (res = data),
             error: (error) => {
@@ -400,23 +404,26 @@ watch(
             return;
         }
 
+        newVal = new Date(newVal);
+
         // ensure selected date is today or earlier
-        if (new Date(newVal) > new Date()) {
-            alert.value.message = "";
-            alert.value.status = "danger";
-
-            showModal();
-
-            $("#alertMessageParagraph").text(
-                "Please select day on or before today on which this event occurred!"
+        if (newVal > new Date()) {
+            showErrorModal(
+                "Please select day on or before today on which this event occurred!",
+                "warning"
             );
-            $("#alertStatusDiv").removeClass("alert-undefined");
-            $("#alertStatusDiv").addClass("alert-danger");
-            $("#alertModalBody > .modal-content").removeClass(
-                "border-undefined"
+            return;
+        } else if (newVal < new Date(props.event.start_date)) {
+            showErrorModal(
+                "Attendance can not be shown for a day prior to the event's start date",
+                "warning"
             );
-            $("#alertModalBody > .modal-content").addClass("border-danger");
-
+            return;
+        } else if (newVal > new Date(props.event.end_date)) {
+            showErrorModal(
+                "Attendance can not be shown for a day after to the event's end date",
+                "warning"
+            );
             return;
         }
 
@@ -433,9 +440,36 @@ watch(
     }
 );
 
-function clearDateFilter() {
-    selectedDate.value = "";
-    showFilterDate.value = false;
+function changeDate(direction = "-") {
+    const tmpDate = new Date(selectedDate.value);
+
+    if (direction == "-") {
+        tmpDate.setDate(tmpDate.getDate() - 1);
+        selectedDate.value = tmpDate.toISOString();
+    } else {
+        tmpDate.setDate(tmpDate.getDate() + 1);
+        selectedDate.value = tmpDate.toISOString();
+    }
+}
+
+function showErrorModal(
+    message = "Something went wrong, please try again",
+    status = "danger"
+) {
+    alert.value.message = "";
+    alert.value.status = "danger";
+
+    showModal();
+
+    $("#alertMessageParagraph").text(message);
+    $("#alertStatusDiv").removeClass("alert-undefined");
+    $("#alertStatusDiv").removeClass("alert-danger");
+    $("#alertStatusDiv").removeClass("alert-warning");
+    $("#alertStatusDiv").addClass(`alert-${status}`);
+    $("#alertModalBody > .modal-content").removeClass("border-undefined");
+    $("#alertModalBody > .modal-content").removeClass("border-danger");
+    $("#alertModalBody > .modal-content").removeClass("border-warning");
+    $("#alertModalBody > .modal-content").addClass(`border-${status}`);
 }
 </script>
 
@@ -450,11 +484,15 @@ function clearDateFilter() {
     #breadCrumbs {
         display: none;
     }
+
+    #eventSlotDiv {
+        width: 100%;
+    }
 }
 
 @media (max-width: 450px) {
     #optionsButtonWrapper {
-        max-width: 17rem;
+        max-width: 95%;
         overflow-x: scroll;
     }
 
@@ -491,8 +529,8 @@ li {
     background-color: #fff;
 }
 
-.clearDateFilterBtn:hover {
-    border: 2px solid black;
-    background-color: #fff;
+.changeDateBtn:hover {
+    background-color: #ddd;
+    border: none;
 }
 </style>

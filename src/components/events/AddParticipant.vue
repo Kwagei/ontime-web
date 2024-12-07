@@ -316,6 +316,10 @@ const onSubmit = async () => {
         return;
     }
 
+    if (!msisdnValidation([msisdn.value]).valid) return;
+
+    if (email.value && !emailValidation(email.value).valid) return;
+
     // don't bother recreating participant if already created
     // but there was an error in on of the other steps
     if (participantCreated.value) return checkInParticipant();
@@ -346,7 +350,7 @@ const onSubmit = async () => {
         type: "POST",
         data: body,
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (data) => {
             alert.value.status = "success";
@@ -446,7 +450,7 @@ async function checkInParticipant() {
 
     // format visit data
     const checkInData = {
-        visitor_id: createdVisitor.value.result.data[0].id,
+        visitor_id: createdVisitor.value.result.data.id,
         participant_id: createdParticipant.value.id,
         purpose: props.event?.title,
         room_id: props.event?.room_id,

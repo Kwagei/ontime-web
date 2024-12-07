@@ -69,7 +69,7 @@
             <form
                 class="row g-3 needs-validation"
                 novalidate
-                @submit.prevent="checkParticipantIn"
+                @submit.prevent="checkVisitorIn"
             >
                 <!-- PHONE NUMBER -->
                 <div class="col-md-6">
@@ -264,12 +264,7 @@
 import { ref, onMounted, getCurrentInstance } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
-import {
-    API_URL,
-    API_KEY,
-    registerVisit,
-    visitorCheckInStatus,
-} from "@/assets/js/index.js";
+import { API_URL, API_KEY, registerVisit } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
 import { formValidation, showModal, formatMsisdn } from "@/util/util";
 
@@ -340,15 +335,15 @@ async function fetchTop10Visitors() {
     $.ajax(`${API_URL}visitors/top-visitors?notIn=1`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             const tmpVisitors = res.data;
 
             for (const visitor of tmpVisitors) {
                 visitor.name = `${visitor.first_name} ${
-                    visitor.middle_name || ""
-                } ${visitor.last_name}`;
+                    visitor.middle_name ? visitor.middle_name + " " : ""
+                }${visitor.last_name}`;
             }
 
             visitors.value = tmpVisitors;
@@ -371,7 +366,7 @@ async function searchVisitors() {
 
             let searchedVisitor = await fetch(url, {
                 headers: {
-                    authorization: API_KEY,
+                    authorization: API_KEY.value,
                 },
             });
 
@@ -419,10 +414,10 @@ function visitorSelected(selectedVisitor) {
 }
 
 async function fetchRooms() {
-    let fetchedRooms = await fetch(`${API_URL}rooms`, {
+    let fetchedRooms = await fetch(`${API_URL}rooms?type=workspace`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
     });
 
@@ -444,7 +439,7 @@ function updateRoom(selectedRoom) {
 }
 
 // function to validate form before it submit the form
-const checkParticipantIn = async () => {
+const checkVisitorIn = async () => {
     msisdnError.value = false;
     nameError.value = false;
 
@@ -471,31 +466,6 @@ const checkParticipantIn = async () => {
 
     $sectionIsLoading.value = true;
     submitting.value = true;
-
-    const checkInStatus = await visitorCheckInStatus(visitorId.value);
-
-    // handle error getting check in status
-    if (!checkInStatus.ok) {
-        alert.value.message = "Unable to get check in status";
-        alert.value.status = "danger";
-
-        showModal();
-        $sectionIsLoading.value = false;
-        submitting.value = false;
-        return;
-    }
-
-    // indicate visitor is still checked in
-    else if (checkInStatus.result.data.stillCheckedIn) {
-        alert.value.message = "Visitor is Still Checked In";
-        alert.value.status = "warning";
-
-        $sectionIsLoading.value = false;
-        submitting.value = false;
-
-        showModal();
-        return;
-    }
 
     // require values for the submittion of the form
     const visitData = {

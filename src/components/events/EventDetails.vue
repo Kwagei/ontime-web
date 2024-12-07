@@ -99,8 +99,25 @@
                     class="d-flex flex-column pt-2 text-left flex-grow-1 gap-2"
                     style="width: 40%"
                 >
-                    <span class="fs-6">Details</span>
-                    <h6 class="mt-2 mb-0">{{ event.details }}</h6>
+                    <div>
+                        <span class="fs-6">Week Days</span>
+                        <h6 class="d-flex flex-wrap gap-2 mt-2 mb-0">
+                            <div
+                                v-for="day in convertNumbersToDays(
+                                    event.week_days,
+                                    false,
+                                    false
+                                )"
+                                class="weekDay"
+                            >
+                                {{ day }}
+                            </div>
+                        </h6>
+                    </div>
+                    <div>
+                        <span class="fs-6">Details</span>
+                        <h6 class="mt-2 mb-0">{{ event.details }}</h6>
+                    </div>
                 </div>
             </div>
         </div>
@@ -131,7 +148,11 @@
 import BreadCrumbs from "../BreadCrumbs.vue";
 import EventParticipants from "./EventParticipants.vue";
 import Icons from "../Icons.vue";
-import { formatDateTime, showModal } from "@/util/util.js";
+import {
+    convertNumbersToDays,
+    formatDateTime,
+    showModal,
+} from "@/util/util.js";
 import RefreshList from "../RefreshList.vue";
 import { csvExport, getParticipants } from "@/assets/js";
 import { ref } from "vue";
@@ -163,6 +184,7 @@ const exportEventParticipants = async (fields) => {
     const { participants } = await getParticipants(props.event.id, {
         limit: "all",
     });
+    console.log("Participants: ", participants);
 
     const selectedParticipants = participants.map((participant) => {
         const data = {};
@@ -240,5 +262,15 @@ li {
     font-size: 1rem;
     font-weight: 600;
     padding: 0.75rem 1rem;
+}
+
+.weekDay {
+    background-color: #ddd;
+    color: #333;
+    border-radius: 7px;
+    padding: 0.4rem 0.3rem;
+    text-align: center;
+    flex-grow: 1;
+    max-width: 100px;
 }
 </style>

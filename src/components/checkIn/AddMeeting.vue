@@ -287,12 +287,7 @@
 import { ref, onMounted, getCurrentInstance } from "vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
-import {
-    API_URL,
-    API_KEY,
-    registerVisit,
-    visitorCheckInStatus,
-} from "@/assets/js/index.js";
+import { API_URL, API_KEY, registerVisit } from "@/assets/js/index.js";
 import { useRouter } from "vue-router";
 import { formValidation, showModal, formatMsisdn } from "@/util/util";
 
@@ -368,7 +363,7 @@ async function fetchTop10Visitors() {
     $.ajax(`${API_URL}visitors/top-visitors?notIn=1`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             const tmpVisitors = res.data;
@@ -393,7 +388,7 @@ async function fetchEmployees() {
     $.ajax(`${API_URL}employees?limit=10`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             const tmpEmployees = res.data.employees;
@@ -424,7 +419,7 @@ async function searchVisitors() {
 
             let searchedVisitor = await fetch(url, {
                 headers: {
-                    authorization: API_KEY,
+                    authorization: API_KEY.value,
                 },
             });
 
@@ -475,7 +470,7 @@ async function searchEmployees() {
 
             let searchedEmployee = await fetch(url, {
                 headers: {
-                    authorization: API_KEY,
+                    authorization: API_KEY.value,
                 },
             });
 
@@ -560,31 +555,6 @@ const checkParticipantIn = async () => {
 
     $sectionIsLoading.value = true;
     submitting.value = true;
-
-    const checkInStatus = await visitorCheckInStatus(visitorId.value);
-
-    // handle error getting check in status
-    if (!checkInStatus.ok) {
-        alert.value.message = "Unable to get check in status";
-        alert.value.status = "danger";
-
-        showModal();
-        $sectionIsLoading.value = false;
-        submitting.value = false;
-        return;
-    }
-
-    // indicate visitor is still checked in
-    else if (checkInStatus.result.data.stillCheckedIn) {
-        alert.value.message = "Visitor is Still Checked In";
-        alert.value.status = "warning";
-
-        $sectionIsLoading.value = false;
-        submitting.value = false;
-
-        showModal();
-        return;
-    }
 
     // require values for the submittion of the form
     const visitData = {

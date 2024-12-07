@@ -105,6 +105,20 @@
                                         }}
                                     </span>
                                 </div>
+                                <!-- Week Days -->
+                                <div class="d-flex flex-column gap-1">
+                                    <span>
+                                        <Icons icon="calendar-event-agenda" />
+                                        Week Days
+                                    </span>
+                                    <span class="fw-bold">
+                                        {{
+                                            convertNumbersToDays(
+                                                event.week_days
+                                            )
+                                        }}
+                                    </span>
+                                </div>
                                 <!-- Facilitator -->
                                 <div class="d-flex flex-column gap-1">
                                     <span>
@@ -168,6 +182,7 @@ import {
     showModal,
     formatMsisdn,
     formatDateTime,
+    convertNumbersToDays,
 } from "@/util/util";
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
@@ -242,10 +257,10 @@ const dataTableOptions = ref({
     select: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}/events/${eventID.value}/participants`,
+        url: `${API_URL}events/${eventID.value}/participants`,
         type: "GET",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader("authorization", API_KEY);
+            xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
             return {
@@ -404,7 +419,7 @@ const updateEventTerm = (event, idx) => {
     $("eventParticipantsTable").DataTable().destroy();
 
     // update api url in options object
-    dataTableOptions.value.ajax.url = `${API_URL}/events/${eventID.value}/participants`;
+    dataTableOptions.value.ajax.url = `${API_URL}events/${eventID.value}/participants`;
 
     // reload the table with the new url
     dataTableKey.value += 1;
@@ -422,7 +437,7 @@ const updateEventTerm = (event, idx) => {
 // function for inserting each username in the select element
 const getEventsOptions = async () => {
     try {
-        const res = await getEvents(null, { current: true });
+        const res = await getOngoingEvents();
 
         // if `getEvents` returns a falsy value, indicate error
         if (!res) {
@@ -435,7 +450,7 @@ const getEventsOptions = async () => {
         }
 
         // format event for drop down
-        events.value = res.events;
+        events.value = res.data;
 
         if (!events.value.length) noEvents.value = true;
 
@@ -535,6 +550,7 @@ const participantDetail = async (id) => {
         visitorData = await getSingleVisitor({
             msisdn: formatMsisdn(participant.msisdn),
         });
+        visitorData = visitorData[0];
     }
 
     // Create visitor if this participant is not already a visitor.
@@ -549,7 +565,7 @@ const participantDetail = async (id) => {
         });
 
         if (response.ok) {
-            visitorData = response.result.data[0];
+            visitorData = response.result.data;
         } else {
             alert.value.message = response.result.message;
             alert.value.status = "danger";
@@ -606,6 +622,25 @@ const updateVisitorVisitStatus = () => {
     // Reset for new participant.
     participant.value = "";
 };
+
+async function getOngoingEvents() {
+    let response;
+
+    await $.ajax(`${API_URL}events/ongoing-events`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY.value,
+        },
+        success: (res) => {
+            response = res;
+        },
+        error: (err) => {
+            console.error("err: ", err);
+        },
+    });
+
+    return response;
+}
 </script>
 
 <style scoped>

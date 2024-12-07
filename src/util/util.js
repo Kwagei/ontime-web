@@ -173,7 +173,7 @@ export const formatVisitData = (visits) => {
             visit.date_time = formatDateTime(visit.date_time);
         }
 
-        if (visit.items.length) {
+        if (visit.items?.length) {
             visit.items = formatItems(visit.items);
         } else visit.items = [];
 
@@ -289,7 +289,7 @@ export async function getTodaysVisits() {
     await $.ajax(`${API_URL}visits?today=1`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             todaysVisits = res.data;
@@ -309,7 +309,7 @@ export async function getCurrentWeekData() {
     await $.ajax(`${API_URL}visits?currentWeek=1`, {
         method: "GET",
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (res) => {
             currentWeekVisits = res.data;
@@ -361,3 +361,37 @@ export const formatMsisdn = (tmpMsisdn) => {
     else if (msisdn.startsWith("0")) return "231" + msisdn.slice(1, 10);
     return "231" + msisdn.slice(0, 9);
 };
+
+export const convertNumbersToDays = (
+    numbers,
+    isString = false,
+    wantString = true
+) => {
+    const daysMapping = [null, "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    if (isString) numbers = [numbers];
+
+    let newDays = numbers.map((num) => {
+        if ((num != 0 && !Number(num)) || Number(num) > 6)
+            return "Invalid Date";
+
+        return daysMapping[num];
+    });
+
+    if (wantString) newDays = newDays.join(", ");
+
+    return newDays;
+};
+
+export async function fetchAllRoles() {
+    const res = await fetch(`${API_URL}roles`, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY.value,
+        },
+    });
+
+    const data = await res.json();
+
+    return data.data;
+}

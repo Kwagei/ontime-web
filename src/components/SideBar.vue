@@ -4,21 +4,24 @@
         style="height: 100%"
         id="sideBar"
     >
-        <div class="d-flex justify-content-between">
+        <div
+            class="d-flex justify-content-center align-items-center"
+            id="logoLinkWrapper"
+        >
             <a
                 href="/"
                 id="logoLink"
-                class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
+                class="d-flex justify-content-center align-items-center mb-3 mb-md-0 text-white text-decoration-none"
             >
-                <h1 class="m-0 px-4">OnTime</h1>
+                <img src="../assets/images/blackBgLogo.png" class="logo" />
             </a>
             <img
                 src="../assets/images/delete.png"
                 class="d-none"
                 id="hideSidebarBtn"
                 alt="Close"
-                width="25"
-                height="25"
+                width="30"
+                height="30"
                 fill="white"
                 @click="hideSidebar"
                 style="cursor: pointer"
@@ -105,10 +108,14 @@ const navItems = [
         name: "employees",
         svg: "avatar",
     },
-    // {
-    // 	name: "users",
-    // 	svg: "avatar",
-    // },
+    {
+        name: "users",
+        svg: "avatar",
+    },
+    {
+        name: "rooms",
+        svg: "bed",
+    },
 ];
 
 const signOut = () => {
@@ -123,10 +130,8 @@ function hideSidebar() {
 </script>
 
 <style scoped>
-@media (max-width: 1250px) {
-    #hideSidebarBtn {
-        display: inline-flex !important;
-    }
+#sideBar {
+    overflow-y: scroll;
 }
 
 .nav-pills svg {
@@ -145,6 +150,11 @@ function hideSidebar() {
 #logoLink {
     margin-bottom: 0 !important;
 }
+#logoLink:hover {
+    background-color: transparent !important;
+    width: 65px;
+    height: 65px;
+}
 
 #checkInNavItem div {
     cursor: pointer;
@@ -154,5 +164,17 @@ function hideSidebar() {
 #checkInNavItem div:hover {
     background-color: #eee;
     color: #000000 !important;
+}
+
+.logo {
+    max-width: 70px;
+    max-height: 70px;
+}
+
+@media (max-width: 800px) {
+    #logoLinkWrapper {
+        justify-content: space-between !important;
+        padding-left: 30px;
+    }
 }
 </style>

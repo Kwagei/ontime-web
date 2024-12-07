@@ -230,7 +230,7 @@ import AlertModal from "../modals/AlertModal.vue";
 import BreadCrumbs from "../BreadCrumbs.vue";
 
 import { ref, onMounted, watch, getCurrentInstance } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import $ from "jquery";
 
 import { API_KEY, API_URL } from "@/assets/js/index.js";
@@ -255,6 +255,8 @@ const $sectionIsLoading =
 
 // Route and State
 const route = useRoute();
+const router = useRouter();
+
 const eventId = route.params.id;
 const breadCrumbs = ["Events", eventId, "Edit Participant"];
 
@@ -291,6 +293,10 @@ const onSubmit = async () => {
         return;
     }
 
+    if (!msisdnValidation([msisdn.value]).valid) return;
+
+    if (email.value && !emailValidation(email.value).valid) return;
+
     const participant = {
         first_name: first_name.value,
         last_name: last_name.value,
@@ -310,7 +316,7 @@ const onSubmit = async () => {
         type: "PUT",
         data: participant,
         headers: {
-            authorization: API_KEY,
+            authorization: API_KEY.value,
         },
         success: (data) => {
             alert.value.status = "success";
@@ -410,6 +416,8 @@ const validateEmail = (mail) => {
 };
 
 const resetForm = () => {
+    if (route.params.id) return router.go(0);
+
     first_name.value = "";
     last_name.value = "";
     msisdn.value = "";

@@ -1,5 +1,12 @@
 <template>
     <AlertModal :data="alert" />
+
+    <ConfirmationModal
+        title="Permanently Delete User"
+        :message="confirmationMessage"
+        @confirmed="deleteUser"
+    />
+
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -39,9 +46,9 @@
                 </div>
 
                 <!-- PASSWORD -->
-                <div class="col-md-6">
+                <div class="col-md-6" v-if="!route.params.id">
                     <label for="password" class="form-label is-required">
-                        Password
+                        {{ route.params.id ? "New " : "" }} Password
                         <span class="visually-hidden"> (required) </span>
                     </label>
                     <div class="input-group">
@@ -112,12 +119,28 @@
                         >
                             <span class="visually-hidden">Loading...</span>
                         </div>
-                        Save
+                        {{ route.params.id ? "Update" : "Save" }}
                     </button>
                     <button
-                        class="btn btn-outline-secondary"
+                        @click="confirmDeletion"
+                        class="btn btn-danger"
+                        v-if="route.params.id"
                         type="button"
-                        @click="router.back()"
+                    >
+                        <div
+                            class="spinner-border submitBtnLoader"
+                            role="status"
+                            v-if="loading"
+                        >
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        Delete
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal"
+                        @click="router.push('/users')"
                     >
                         Cancel
                     </button>
@@ -132,7 +155,13 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BreadCrumbs from "../BreadCrumbs.vue";
 import AlertModal from "../modals/AlertModal.vue";
-import { getSingleUser, registerUser, editUser } from "@/assets/js/index.js";
+import {
+    getSingleUser,
+    registerUser,
+    editUser,
+    API_URL,
+    API_KEY,
+} from "@/assets/js/index.js";
 import {
     emailValidation,
     showModal,
@@ -141,6 +170,7 @@ import {
     formValidation,
     passwordValidation,
 } from "@/util/util.js";
+import ConfirmationModal from "../modals/ConfirmationModal.vue";
 
 // Route and State
 const route = useRoute();
@@ -159,14 +189,13 @@ const alert = ref({
 });
 
 let userInfo;
+const confirmationMessage = ref("");
 
 // Form status and breadcrumbs
 const activeBreadCrumbs = ref([]);
 const breadCrumbs = defineModel("breadCrumbs");
 breadCrumbs.value = route.path.split("/").slice(1);
 activeBreadCrumbs.value = breadCrumbs.value;
-const tem = [...breadCrumbs.value];
-const formStatus = tem.pop();
 
 const loading = ref(false);
 
@@ -174,50 +203,62 @@ const loading = ref(false);
 const onSubmit = async () => {
     if (loading.value) return;
 
-    if (!username.value || !email.value || !password.value) {
-        return;
-    }
+    if (!username.value || !email.value) return;
+
+    // ensure password is given when creating a new user
+    if (!route.params.id && !password.value) return;
 
     const user = {
         username: username.value,
         email: email.value,
-        password: password.value,
         roles: ["standard"],
     };
 
+    if (!route.params.id) user.password = password.value;
+
     loading.value = true;
 
-    const response = formStatus.startsWith("new")
+    const response = !route.params.id
         ? await registerUser(user)
         : await editUser(userInfo.id, user);
 
     loading.value = false;
 
-    showModal("#alertModal", "#alertModalBody");
     alert.value.status = response.ok ? "success" : "danger";
     alert.value.message = response.result.message;
+    showModal();
 
     // Reset form if the response is successful
     if (response.ok) {
         resetForm();
+
+        if (route.params.id) router.push("/users");
     }
 };
 
 const fetchUser = async () => {
-    if (formStatus.startsWith("edit")) {
-        const id = breadCrumbs.value[1];
-        const [user] = await getSingleUser({ id });
-        userInfo = user;
+    if (route.params.id) {
+        const id = route.params.id;
+        const user = await getSingleUser({ id });
+
+        if (user.status != 200) {
+            alert.value.message = user.message;
+            alert.value.status = "danger";
+
+            showModal();
+            return;
+        }
+
+        userInfo = user.data.users;
+
         // update references for input fields
-        username.value = user.username;
-        email.value = user.email;
+        username.value = userInfo.username;
+        email.value = userInfo.email;
     }
 };
 
 const validEmail = ref(false);
-const validMsisdn = ref(false);
 const validPassword = ref(false);
-const validMsisdnMessage = ref("Please provide a phone number");
 const validEmailMessage = ref("Please provide a valid email address");
 const validPasswordMessage = ref(
     "Password should be min 6 characters with at least one upper, lower case, digit and symbol"
@@ -281,11 +322,41 @@ const resetForm = () => {
     removeClass(form, "was-validated");
 };
 
+function confirmDeletion() {
+    confirmationMessage.value = `Are you sure you want to permanently delete the <strong>${userInfo.username}</strong>?`;
+    showModal("#confirmationModal");
+}
+
 // Lifecycle Hooks
 onMounted(async () => {
     formValidation();
     await fetchUser();
 });
+
+async function deleteUser() {
+    $.ajax(`${API_URL}users/${route.params.id}`, {
+        method: "DELETE",
+        headers: {
+            authorization: API_KEY.value,
+        },
+        success: () => {
+            alert.value.message = "User Successfully Deleted";
+            alert.value.status = "success";
+
+            showModal();
+
+            setTimeout(() => router.push("/users"), 1000);
+        },
+        error: (err) => {
+            console.error("error deleting user: ", err);
+
+            alert.value.message = err.responseJSON.message;
+            alert.value.status = "danger";
+
+            showModal();
+        },
+    });
+}
 </script>
 
 <style scoped>

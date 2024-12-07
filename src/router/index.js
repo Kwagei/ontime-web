@@ -10,8 +10,6 @@ import ResetPassword from "../views/ResetPassword.vue";
 import ResetCode from "@/components/resetPassword/ResetCode.vue";
 import ResetMail from "@/components/resetPassword/ResetMail.vue";
 import AppView from "@/views/AppView.vue";
-import AddUsers from "@/components/users/AddUsers.vue";
-import UserDetail from "@/components/users/UserDetail.vue";
 import NewPassword from "@/components/resetPassword/NewPassword.vue";
 
 // Landing Page
@@ -32,6 +30,7 @@ import AddWorkspace from "@/components/checkIn/AddWorkspace.vue";
 
 // Users Components
 import Users from "../layouts/Users.vue";
+import AddUsers from "../components/users/AddUsers.vue";
 
 // Employees Components
 import Employees from "@/layouts/Employees.vue";
@@ -41,9 +40,12 @@ import EmployeeDetails from "@/components/employees/EmployeeDetails.vue";
 // Dashboard Components
 import Dashboard from "../layouts/Dashboard.vue";
 
+// Room Components
+import Room from "@/components/rooms/Room.vue";
+import Rooms from "@/layouts/Rooms.vue";
+
 // Other Components
 import Hosts from "@/components/hosts/Hosts.vue";
-import Rooms from "@/components/Room.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
@@ -182,18 +184,8 @@ const routes = [
                     },
                     {
                         path: ":id",
-                        children: [
-                            {
-                                path: "",
-                                component: UserDetail,
-                                name: "userDetail",
-                            },
-                            {
-                                path: "edit-user",
-                                component: AddUsers,
-                                name: "edit-user",
-                            },
-                        ],
+                        component: AddUsers,
+                        name: "user-detail",
                     },
                 ],
             },
@@ -260,16 +252,20 @@ const routes = [
             },
             {
                 path: "/rooms",
-                name: "rooms",
                 children: [
                     {
-                        path: "new-room",
+                        path: "",
                         component: Rooms,
+                        name: "rooms",
+                    },
+                    {
+                        path: "new-room",
+                        component: Room,
                         name: "new-room",
                     },
                     {
                         path: ":id",
-                        component: Rooms,
+                        component: Room,
                         name: "specific-room",
                     },
                 ],

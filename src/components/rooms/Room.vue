@@ -139,9 +139,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import BreadCrumbs from "../components/BreadCrumbs.vue";
-import Modal from "./modals/AlertModal.vue";
-import ConfirmationModal from "./modals/ConfirmationModal.vue";
+import BreadCrumbs from "../BreadCrumbs.vue";
+import Modal from "../modals/AlertModal.vue";
+import ConfirmationModal from "../modals/ConfirmationModal.vue";
 import { registerRoom, editRoom, API_URL, API_KEY } from "@/assets/js/index.js";
 import {
     formValidation,
@@ -228,8 +228,6 @@ const fetchRoom = async () => {
             return;
         }
 
-        roomInfo.data = roomInfo.data.rooms;
-
         roomInfo.id = route.params.id;
         name.value = roomInfo.data.name;
         type.value = roomInfo.data.type;
@@ -273,8 +271,8 @@ async function deleteRoom() {
         headers: {
             authorization: API_KEY.value,
         },
-        success: (res) => {
-            alert.value.message = res.message;
+        success: () => {
+            alert.value.message = "Room Successfully Deleted";
             alert.value.status = "success";
 
             showModal();
@@ -301,7 +299,7 @@ async function fetchRoomToEdit(id) {
     };
 
     const res = await fetch(`${API_URL}rooms/${id}`, options);
-    const data = res.json();
+    const data = await res.json();
     return data;
 }
 </script>

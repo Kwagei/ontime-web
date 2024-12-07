@@ -44,10 +44,12 @@
                                     <label
                                         class="form-label is-required"
                                         for="email"
-                                        >Email<span class="visually-hidden">
-                                            (required)</span
-                                        ></label
                                     >
+                                        Username / Email
+                                        <span class="visually-hidden">
+                                            (required)
+                                        </span>
+                                    </label>
                                     <div class="input-group has-validation">
                                         <input
                                             type="text"
@@ -258,6 +260,7 @@ const signIn = async () => {
             const { token } = result.data;
             const decodedToken = jwtDecode(token);
             API_KEY.value = decodedToken.tenant_api_key;
+
             setCookie("token", token, keepLoggedIn.value ? 1 : 0.5);
 
             // Navigate to the dashboard page

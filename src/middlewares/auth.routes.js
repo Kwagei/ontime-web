@@ -5,7 +5,11 @@ import { API_KEY } from "@/assets/js";
 import { jwtDecode } from "jwt-decode";
 
 router.beforeEach((to, from, next) => {
-    if (API_KEY.value == "") {
+    if (
+        to.fullPath != "/sign-in" &&
+        to.fullPath != "/" &&
+        API_KEY.value == ""
+    ) {
         API_KEY.value = jwtDecode(getCookie("token")).tenant_api_key;
     }
 

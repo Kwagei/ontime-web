@@ -461,14 +461,12 @@ export const getSingleUser = async (data) => {
             },
         });
 
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
+        const res = await response.json();
 
-        const { data } = await response.json();
-
-        return data.users;
-    } catch (error) {}
+        return res;
+    } catch (error) {
+        console.error("Error fetching single user: ", error);
+    }
 };
 
 /**

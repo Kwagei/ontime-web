@@ -112,6 +112,10 @@ const navItems = [
         name: "users",
         svg: "avatar",
     },
+    {
+        name: "rooms",
+        svg: "bed",
+    },
 ];
 
 const signOut = () => {

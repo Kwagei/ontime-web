@@ -2,6 +2,7 @@ import { API_KEY, API_URL } from "@/assets/js";
 import validator from "validator";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import CryptoJS from "crypto-js";
 
 dayjs.extend(customParseFormat);
 
@@ -394,4 +395,25 @@ export async function fetchAllRoles() {
     const data = await res.json();
 
     return data.data;
+}
+
+export function encrypt(text) {
+    const iv = CryptoJS.lib.WordArray.random(16);
+    text = CryptoJS.AES.encrypt(text, import.meta.env.VITE_ENCRYPTION_KEY, {
+        iv,
+    });
+    return { iv: iv.toString("hex"), text: text.toString("hex") };
+}
+
+export function decrypt(text, iv) {
+    console.log("decrypting: ", text);
+
+    const decrypted = CryptoJS.AES.decrypt(
+        text,
+        import.meta.env.VITE_ENCRYPTION_KEY,
+        { iv }
+    );
+    console.log("decrypted: ", decrypted.toString());
+
+    return decrypted.toString();
 }

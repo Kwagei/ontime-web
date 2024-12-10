@@ -551,7 +551,6 @@ export const getEvents = async (id, query = {}) => {
             return;
         }
         const { data } = await response.json();
-        console.log({ data });
 
         return data;
     } catch (error) {

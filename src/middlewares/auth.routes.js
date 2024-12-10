@@ -3,6 +3,7 @@ import store from "@/store";
 import { getCookie, isAuthenticated } from "./auth.cookie";
 import { API_KEY } from "@/assets/js";
 import { jwtDecode } from "jwt-decode";
+import { decrypt } from "@/util/util.js";
 
 router.beforeEach((to, from, next) => {
     if (
@@ -10,7 +11,11 @@ router.beforeEach((to, from, next) => {
         to.fullPath != "/" &&
         API_KEY.value == ""
     ) {
-        API_KEY.value = jwtDecode(getCookie("token")).tenant_api_key;
+        const token = getCookie("token");
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            API_KEY.value = decodedToken.a;
+        }
     }
 
     if (to.matched.some((record) => record.meta.requiresAuth)) {

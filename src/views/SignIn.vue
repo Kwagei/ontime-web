@@ -259,7 +259,7 @@ const signIn = async () => {
             // Set the user's authentication token in the cookie
             const { token } = result.data;
             const decodedToken = jwtDecode(token);
-            API_KEY.value = decodedToken.tenant_api_key;
+            API_KEY.value = decodedToken.a;
 
             setCookie("token", token, keepLoggedIn.value ? 1 : 0.5);
 

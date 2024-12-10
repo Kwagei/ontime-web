@@ -96,7 +96,8 @@ const options = {
             totalRooms.value = totalLength;
 
             rooms.forEach((room) => {
-                room.address = formatAddress(room.address);
+                room.type =
+                    room.type.charAt(0).toUpperCase() + room.type.slice(1);
                 room.created_at = formatDateTime(room.created_at, {
                     date: true,
                 });
@@ -166,7 +167,6 @@ const options = {
 const table = ref();
 const tableKey = ref(0);
 const showError = ref(false);
-const MAX_DETAIL_LEN = 30;
 
 const router = useRouter();
 const refresh = defineModel("refresh");
@@ -178,20 +178,6 @@ watch(
         tableKey.value += 1;
     }
 );
-
-function formatAddress(address) {
-    if (!address) {
-        return "";
-    }
-
-    const addressLen = address.length;
-    const newAddress =
-        addressLen >= MAX_DETAIL_LEN
-            ? `${address.slice(0, MAX_DETAIL_LEN)}...`
-            : address;
-
-    return newAddress;
-}
 
 const filterInfo = computed(() => {
     return `Showing rooms ${

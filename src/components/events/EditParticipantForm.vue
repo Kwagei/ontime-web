@@ -1,5 +1,4 @@
 <template>
-    <!-- BELONGING MODAL -->
     <div
         class="modal fade"
         id="editParticipantModal"
@@ -234,7 +233,7 @@
                                 v-if="errorStatus == 409"
                                 type="submit"
                                 class="btn btn-danger"
-                                @click="$emit('deleteParticipant', msisdn)"
+                                @click="$emit('deleteParticipant', id)"
                             >
                                 Delete
                             </button>
@@ -266,6 +265,7 @@ const props = defineProps({
 });
 
 // Participant data
+const id = ref("");
 const first_name = ref("");
 const last_name = ref("");
 const msisdn = ref("");
@@ -363,6 +363,7 @@ function initializeFormData() {
     errorMessage.value = props.data.errorMessage;
     participantIndex.value = props.data.idx + 1;
 
+    id.value = props.data.participant?.id;
     first_name.value = props.data.participant?.first_name;
     last_name.value = props.data.participant?.last_name;
     msisdn.value = props.data.participant?.msisdn;

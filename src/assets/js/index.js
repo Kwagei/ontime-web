@@ -426,6 +426,7 @@ export const resetPassword = async (data) => {
         );
 
         const result = await response.json();
+        console.log("result: ", result);
 
         return { ok: response.ok, result };
     } catch (error) {

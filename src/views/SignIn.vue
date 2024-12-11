@@ -132,6 +132,12 @@
                                             Keep me logged in
                                         </label>
                                     </div>
+                                    <router-link
+                                        class="link fw-bold fs-7"
+                                        to="/reset-password"
+                                    >
+                                        Forgot Password
+                                    </router-link>
                                 </div>
 
                                 <div

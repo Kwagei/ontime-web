@@ -275,3 +275,7 @@ select.form-select {
     border-radius: 5%;
     min-height: 20px;
 }
+
+.lightText {
+    color: #666;
+}

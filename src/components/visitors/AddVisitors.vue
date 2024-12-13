@@ -525,7 +525,7 @@ const onSubmit = async () => {
         alert.value.pageLink = `/visitors/${response.result.data.id}`;
         createdVisitor.value = response.result.data;
 
-        if (mode.value == "checkIn") checkInVisitor();
+        if (mode.value == "checkIn") await checkInVisitor();
         else {
             loading.value = false;
             resetForm();

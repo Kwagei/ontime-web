@@ -45,6 +45,9 @@
                                 :value="visitor.id"
                             >
                                 {{ visitor.name }}
+                                <span class="lightText">
+                                    ({{ visitor.msisdn }})
+                                </span>
                             </li>
                         </template>
                         <router-link
@@ -124,6 +127,9 @@
                                     :value="visitor.id"
                                 >
                                     {{ visitor.name }}
+                                    <span class="lightText">
+                                        ({{ visitor.msisdn }})
+                                    </span>
                                 </li>
                             </template>
                             <router-link
@@ -154,6 +160,7 @@
                             aria-describedby="inputGroupPrepend"
                             v-model="visitor"
                             required
+                            disabled
                             :class="{ inputOutline: nameError }"
                         />
                         <div

@@ -67,6 +67,7 @@ const columns = [
     { data: "facilitator", title: "Facilitator" },
     { data: "type", title: "Type" },
     { data: "details", title: "Details" },
+    { data: "created_at", title: "Creation Date", visible: false },
 ];
 
 const options = {
@@ -79,18 +80,14 @@ const options = {
             xhr.setRequestHeader("authorization", API_KEY.value);
         },
         data: (query) => {
-            const order =
-                query.columns[query.order[0].column].data === "date"
-                    ? "date_time"
-                    : query.columns[query.order[0].column].data;
             return {
                 start: query.start,
                 limit: query.length,
                 search: query.search.value,
-                sort: order,
+                sort: query.columns[query.order[0].column].data,
                 from: filterDates.value.from || undefined,
                 to: filterDates.value.to || undefined,
-                order: query.order[0].dir,
+                direction: query.order[0].dir,
             };
         },
         dataSrc: (json) => {
@@ -151,7 +148,7 @@ const options = {
 			</div>
 		`,
     },
-    order: [[0, "asc"]],
+    order: [[7, "desc"]],
     destroy: true,
     createdRow: (row, data) => {
         $(row).on("click", (event) => {

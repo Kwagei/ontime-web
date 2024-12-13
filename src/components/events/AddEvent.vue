@@ -717,7 +717,7 @@ a:hover {
 }
 
 .daySelected {
-    background-color: #555;
+    background-color: #666;
     color: #eee;
     font-weight: 1000;
 }

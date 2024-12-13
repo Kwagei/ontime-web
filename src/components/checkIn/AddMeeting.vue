@@ -12,7 +12,7 @@
         <form @submit.prevent v-show="stage == 0" class="row g-3">
             <div class="dropdown mt-2" id="selectEventWrapper">
                 <label for="selectVisitorInput" class="form-label is-required">
-                    Find Visitor by Contact or Name
+                    Find Visitor by Phone Number or Name
                 </label>
 
                 <div class="input-group has-validation">
@@ -45,6 +45,9 @@
                                 :value="visitor.id"
                             >
                                 {{ visitor.name }}
+                                <span class="lightText">
+                                    ({{ visitor.msisdn }})
+                                </span>
                             </li>
                         </template>
                         <router-link
@@ -124,6 +127,9 @@
                                     :value="visitor.id"
                                 >
                                     {{ visitor.name }}
+                                    <span class="lightText">
+                                        ({{ visitor.msisdn }})
+                                    </span>
                                 </li>
                             </template>
                             <router-link
@@ -154,6 +160,7 @@
                             aria-describedby="inputGroupPrepend"
                             v-model="visitor"
                             required
+                            disabled
                             :class="{ inputOutline: nameError }"
                         />
                         <div
@@ -171,7 +178,7 @@
                         for="validationCustomEmployeeNumber"
                         class="form-label is-required"
                     >
-                        Employee
+                        Visiting
                         <span class="visually-hidden">(required)</span>
                     </label>
                     <div class="input-group has-validation">
@@ -192,7 +199,7 @@
                             :class="{ 'd-flex': employeeError }"
                             class="invalid-feedback"
                         >
-                            Please select an employee.
+                            Please select who you are visiting.
                         </div>
                         <ul class="dropdown-menu w-100">
                             <li class="dropdown-item" v-if="noEmployeeMatch">
@@ -216,6 +223,9 @@
                                     :value="employee.id"
                                 >
                                     {{ employee.name }}
+                                    <span class="lightText">
+                                        ({{ employee.msisdn }})
+                                    </span>
                                 </li>
                             </template>
                             <router-link

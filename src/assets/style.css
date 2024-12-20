@@ -279,3 +279,28 @@ select.form-select {
 .lightText {
     color: #666;
 }
+
+#checkInTypeWrapper {
+    width: 100%;
+    align-self: center;
+}
+
+.checkInTypeBtn {
+    width: 100%;
+    padding: 10px;
+    font-weight: 800;
+    color: #666;
+    border: none;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+}
+
+.activeCheckInTypeBtn {
+    color: #eee;
+    background-color: #555;
+}
+
+#checkInTypeWrapper > a {
+    width: 40%;
+    max-width: 200px;
+}

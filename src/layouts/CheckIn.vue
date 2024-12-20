@@ -1,5 +1,18 @@
 <template>
-    <div class="d-flex flex-column gap-4 text-center mt-5">
+    <div class="d-flex flex-column gap-4 text-center">
+        <div
+            id="checkInTypeWrapper"
+            class="d-flex justify-content-center gap-0"
+        >
+            <router-link to="/check-in">
+                <button class="checkInTypeBtn activeCheckInTypeBtn">
+                    Visitor
+                </button>
+            </router-link>
+            <router-link to="/check-in/employee">
+                <button class="checkInTypeBtn">Employee</button>
+            </router-link>
+        </div>
         <div>
             <h1 class="text text-primary">Purpose</h1>
             <h3>Why are you here?</h3>
@@ -51,7 +64,7 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 import Icons from "../components/Icons.vue";
 import { onMounted, getCurrentInstance } from "vue";
 import { hideSidebarOnSmallScreen } from "@/util/util";
@@ -91,12 +104,6 @@ onMounted(() => {
         min-width: unset;
         min-height: unset;
         width: 40vw !important;
-    }
-}
-
-@media (min-width: 1251px) {
-    a {
-        min-height: 175px !important;
     }
 }
 </style>

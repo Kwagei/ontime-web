@@ -36,6 +36,7 @@ import AddUsers from "../components/users/AddUsers.vue";
 import Employees from "@/layouts/Employees.vue";
 import AddEmployee from "@/components/employees/AddEmployee.vue";
 import EmployeeDetails from "@/components/employees/EmployeeDetails.vue";
+import EmployeeAttendance from "@/layouts/EmployeeAttendance.vue";
 
 // Dashboard Components
 import Dashboard from "../layouts/Dashboard.vue";
@@ -46,10 +47,11 @@ import Rooms from "@/layouts/Rooms.vue";
 
 // Other Components
 import Hosts from "@/components/hosts/Hosts.vue";
+import CheckIn from "@/layouts/CheckIn.vue";
 
 // Dependecies Imports
 import { createRouter, createWebHistory } from "vue-router";
-import CheckIn from "@/layouts/CheckIn.vue";
+import EmployeeCheckInForm from "@/components/checkIn/EmployeeCheckInForm.vue";
 
 const routes = [
     {
@@ -167,6 +169,11 @@ const routes = [
                         component: AddWorkspace,
                         name: "visit-workspace",
                     },
+                    {
+                        path: "employee",
+                        component: EmployeeCheckInForm,
+                        name: "employee-check-in",
+                    },
                 ],
             },
             {
@@ -249,6 +256,11 @@ const routes = [
                         name: "employee-details",
                     },
                 ],
+            },
+            {
+                path: "/employee-attendance",
+                component: EmployeeAttendance,
+                name: "employee-attendance",
             },
             {
                 path: "/rooms",

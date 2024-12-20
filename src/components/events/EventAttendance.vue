@@ -25,7 +25,7 @@
                         aria-expanded="false"
                         style="min-height: 40px"
                     >
-                        <Icons v-model:icon="filterIcon" />
+                        <Icons icon="calendar-event-agenda" />
                     </button>
                     <ul class="dropdown-menu boxShadow rounded">
                         <li class="dropdown-item">
@@ -442,14 +442,25 @@ watch(
 
 function changeDate(direction = "-") {
     const tmpDate = new Date(selectedDate.value);
+    console.log("Event: ", props.event);
 
     if (direction == "-") {
         tmpDate.setDate(tmpDate.getDate() - 1);
-        selectedDate.value = tmpDate.toISOString();
+
+        const startDate = new Date(props.event.start_date);
+        console.log(tmpDate, " | ", startDate);
+        if (tmpDate < startDate) return;
     } else {
         tmpDate.setDate(tmpDate.getDate() + 1);
-        selectedDate.value = tmpDate.toISOString();
+
+        const endDate = new Date(props.event.end_date);
+        console.log(tmpDate, " | ", endDate);
+        if (tmpDate > endDate || tmpDate > new Date()) return;
     }
+
+    console.log("SETTING DATE");
+
+    selectedDate.value = tmpDate.toISOString();
 }
 
 function showErrorModal(

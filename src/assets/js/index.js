@@ -113,6 +113,43 @@ export const getVisits = async (queryParams = {}) => {
     }
 };
 
+/**
+ * Gets a paginated list of employee attendance.
+ *
+ * @param {GetEmployeesQueryParams} [queryParams={}] - The query parameters for the request.
+ * @returns {Promise<Object[]>} - The list of employees.
+ */
+export const getEmployeesAttendance = async (queryParams = {}) => {
+    const {
+        search = "",
+        start = 0,
+        limit = 20,
+        sort = "",
+        order = "desc",
+    } = queryParams;
+
+    let url = `${API_URL}employee_attendance?start=${start}&limit=${limit}`;
+
+    if (search) {
+        url += `&search=${search}`;
+    }
+
+    if (sort) {
+        url += `&sort=${sort}&order=${order}`;
+    }
+
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY.value,
+        },
+        ContentType: "application/json",
+    });
+
+    const result = await response.json();
+    return { ok: response.ok, result };
+};
+
 export const updateDepartureTime = async (id, data) => {
     // Update departure time
     const options = {
@@ -128,7 +165,25 @@ export const updateDepartureTime = async (id, data) => {
 
     const result = await response.json();
 
-    if (!response.ok) return { ok: false, result };
+    return { ok: response.ok, result };
+};
+
+export const updateEmployeeDepartureTime = async (id) => {
+    // Update departure time
+    const options = {
+        method: "PUT",
+        headers: {
+            authorization: API_KEY.value,
+            "Content-Type": "application/json",
+        },
+    };
+
+    const response = await fetch(
+        `${API_URL}employee_attendance/${id}`,
+        options
+    );
+
+    const result = await response.json();
 
     return { ok: response.ok, result };
 };
@@ -595,13 +650,13 @@ export const getEmployees = async (id, query = {}) => {
         });
 
         if (!response.ok) {
-            console.error("Unable to load ongoing events");
+            console.error("Unable to load employees");
             return;
         }
 
-        const { data } = await response.json();
+        const result = await response.json();
 
-        return data;
+        return result.data;
     } catch (error) {
         console.error("Unable to fetch employees: ", error);
     }

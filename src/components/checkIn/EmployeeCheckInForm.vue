@@ -1,5 +1,6 @@
 <template>
     <AlertModal :data="alert" />
+    <BigAlertModal :data="bigAlertData" />
 
     <div class="table-responsive p-0 d-flex flex-column" style="gap: 0.7rem">
         <div
@@ -36,6 +37,7 @@
                         @keyup.delete="handleDelete"
                         @focusin="selectedInputIdx = 0"
                         v-model="digits[0]"
+                        ref="firstDigitInput"
                         class="codeInput"
                     />
                     <input
@@ -85,18 +87,26 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, ref } from "vue";
+import { getCurrentInstance, onMounted, ref } from "vue";
 import AlertModal from "../modals/AlertModal.vue";
+import BigAlertModal from "../modals/BigAlertModal.vue";
 import { showModal } from "@/util/util";
 import { API_KEY, API_URL } from "@/assets/js";
 
 const selectedInputIdx = ref(0);
-const digits = ref(new Array().fill(0));
+const firstDigitInput = ref("");
+const digits = ref(new Array(4));
 
 const alert = ref({
     message: "",
     status: "success",
     pageLink: "",
+});
+
+const bigAlertData = ref({
+    heading: "",
+    message: "",
+    status: "success",
 });
 const $sectionIsLoading =
     getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
@@ -123,13 +133,19 @@ function checkIn() {
             method: "POST",
             ContentType: "application/json",
             success: (res) => {
-                console.log("Checked In: ", res);
+                bigAlertData.value.message =
+                    "Let’s make today productive and impactful. You’ve got this!";
+                bigAlertData.value.heading = `Welcome ${
+                    res.data.employee.first_name +
+                    " " +
+                    res.data.employee.last_name
+                }!`;
+                bigAlertData.value.status = "success";
+                bigAlertData.value.pageLink = "/employee-attendance";
 
-                alert.value.message = res.message;
-                alert.value.status = "success";
-                alert.value.pageLink = "/employee-attendance";
+                showModal("#bigAlertModal", "modal-body");
 
-                showModal();
+                digits.value = new Array(4);
 
                 $sectionIsLoading.value = false;
             },
@@ -185,12 +201,15 @@ function handleCodeInput(event) {
             [selectedInputIdx.value + 1].focus();
     }
 }
+
+onMounted(() => {
+    firstDigitInput.value.focus();
+});
 </script>
 
 <style scoped>
 .codeInput {
     border: 1px solid #aaa;
-    outline: 1px solid #aaa;
     height: 100px;
     width: 90px;
     font-size: 45px;
@@ -199,6 +218,10 @@ function handleCodeInput(event) {
     color: #333;
     cursor: pointer;
     caret-color: transparent;
+}
+
+.codeInput:focus {
+    outline: 1px solid #333;
 }
 
 #checkInDigitsWrapper {

@@ -109,6 +109,11 @@ const navItems = [
         svg: "employees",
     },
     {
+        name: "attendance",
+        url: "employee-attendance",
+        svg: "task-list",
+    },
+    {
         name: "users",
         svg: "administrator",
     },

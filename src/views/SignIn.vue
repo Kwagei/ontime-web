@@ -75,10 +75,12 @@
                                     <label
                                         class="form-label is-required"
                                         for="password"
-                                        >Password<span class="visually-hidden">
-                                            (required)</span
-                                        ></label
                                     >
+                                        Password
+                                        <span class="visually-hidden">
+                                            (required)
+                                        </span>
+                                    </label>
 
                                     <div
                                         class="input-group has-validation position-relative"
@@ -92,21 +94,6 @@
                                             required
                                             autocomplete="true"
                                         />
-                                        <div
-                                            @click="togglePassword"
-                                            class="position-absolute end-0 cursor-pointer h-100 px-2 d-flex justify-content-center align-items-center password-visibility"
-                                        >
-                                            <Icons
-                                                class="cursor-pointer"
-                                                v-if="showPassword"
-                                                v-model:icon="visionIcon"
-                                            />
-                                            <Icons
-                                                class="cursor-pointer"
-                                                v-if="hidePassword"
-                                                v-model:icon="hideIcon"
-                                            />
-                                        </div>
                                         <div class="invalid-feedback">
                                             Please provide an email or username.
                                         </div>
@@ -123,15 +110,21 @@
                                             type="checkbox"
                                             value=""
                                             id="form1Example3"
-                                            @change="stayLoggedIn"
+                                            @click="togglePassword"
                                         />
                                         <label
                                             class="form-check-label"
                                             for="form1Example3"
                                         >
-                                            Keep me logged in
+                                            Show Password
                                         </label>
                                     </div>
+                                    <router-link
+                                        class="link fw-bold fs-7"
+                                        to="/reset-password"
+                                    >
+                                        Forgot Password
+                                    </router-link>
                                 </div>
 
                                 <div
@@ -177,8 +170,6 @@ import { API_KEY, login } from "@/assets/js";
 import { setCookie } from "@/middlewares/auth.cookie";
 import { jwtDecode } from "jwt-decode";
 
-const visionIcon = "accessibility-vision";
-const hideIcon = "hide";
 const signInIcon = "session-enter";
 const hidePassword = ref(true);
 const showPassword = ref(false);
@@ -192,10 +183,6 @@ const isWarning = ref(false);
 const warningMessage = ref("");
 const warningStatus = ref("");
 const warningBgColor = ref("");
-
-const stayLoggedIn = (event) => {
-    keepLoggedIn.value = event.target.checked;
-};
 
 const loading = ref(false);
 

@@ -387,8 +387,6 @@ const fetchEmployeeToEdit = async () => {
             return;
         }
 
-        employeeInfo.value = employeeInfo.value.employees;
-
         firstName.value = employeeInfo.value.first_name;
         lastName.value = employeeInfo.value.last_name;
         msisdn.value = employeeInfo.value.msisdn;

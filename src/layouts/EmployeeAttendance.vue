@@ -1,5 +1,5 @@
 <template>
-    <div id="visitor-view" class="d-flex flex-column container">
+    <div id="visit-view" class="d-flex flex-column container">
         <div
             id="breadCrumbsOptionsTopWrapper"
             class="d-flex justify-content-between align-items-center container p-0 mx-auto"
@@ -8,6 +8,7 @@
 
             <div class="d-flex" style="gap: 0.521rem; margin-left: auto">
                 <RefreshList @click="refresh = true" />
+
                 <div class="dropdown">
                     <Options />
                     <ul class="dropdown-menu boxShadow rounded">
@@ -20,18 +21,18 @@
                         </li>
                         <li
                             @click="displayFilterModal"
-                            id="filter-visitors"
+                            id="filter-employees"
                             class="dropdown-item"
                         >
-                            Filter Visitors
+                            Date Range
                         </li>
                     </ul>
                 </div>
 
-                <router-link :to="{ name: 'add-user' }">
+                <router-link :to="{ name: 'employee-check-in' }">
                     <button
-                        id="addUserBtn"
                         type="button"
+                        id="addVisitBtn"
                         class="btn btn-primary"
                     >
                         <Icons v-model:icon="add" />
@@ -41,66 +42,88 @@
             </div>
         </div>
 
-        <UsersList
+        <EmployeeAttendanceTable
             v-model:refresh="refresh"
-            v-model:totalVisitors="totalUsers"
             v-model:filterDates="filterDates"
+            v-model:totalVisits="totalVisits"
         />
 
         <FilterModal @done="filterCompleted" />
         <ExportModal
             :exportFields="exportFields"
             v-model:exportTitle="exportTitle"
-            @export="exportUsers"
+            @export="exportVisits"
         />
-
-        <RouterView :breadCrumbs="breadCrumbs" />
+        <RouterView />
     </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { getCurrentInstance, ref, onMounted } from "vue";
+
 import BreadCrumbs from "../components/BreadCrumbs.vue";
-import UsersList from "../components/users/UsersList.vue";
 import RefreshList from "../components/RefreshList.vue";
 import Options from "../components/Options.vue";
 import Icons from "../components/Icons.vue";
 const add = "add";
 
 import { RouterLink, RouterView } from "vue-router";
-import { csvExport, getUsers } from "../assets/js/index.js";
-import { hideSidebarOnSmallScreen, showModal } from "@/util/util";
+import { csvExport, getEmployeesAttendance } from "../assets/js/index.js";
 import FilterModal from "@/components/modals/FilterModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
+import {
+    formatVisitData,
+    hideSidebarOnSmallScreen,
+    showModal,
+} from "@/util/util";
+import EmployeeAttendanceTable from "@/components/employeeAttendance/EmployeeAttendanceTable.vue";
 
-const totalUsers = defineModel("totalUsers");
 const breadCrumbs = defineModel("breadCrumbs");
 const refresh = defineModel("refresh");
-const exportFields = ref([
-    { name: "Username", selected: false },
-    { name: "Email", selected: false },
-    { name: "Role", selected: false },
-    { name: "Created At", selected: false },
-]);
+const totalVisits = defineModel("totalVisits");
 const exportTitle = defineModel("exportTitle");
-exportTitle.value = "Users";
 
-const exportUsers = async (fields) => {
-    const { users } = await getUsers({
-        limit: totalUsers.value,
+const exportFields = ref([
+    { name: "Date time", selected: false },
+    { name: "First Name", selected: false },
+    { name: "Last Name", selected: false },
+    { name: "Phone number", selected: false },
+    { name: "Departure Time", selected: false },
+    { name: "Room name", selected: false },
+]);
+
+exportTitle.value = "Visits";
+
+breadCrumbs.value = ["Today's Attendance"];
+
+const exportVisits = async (fields) => {
+    const res = await getEmployeesAttendance({
+        limit: "all",
     });
 
-    const selectedUsers = users.map((user) => {
-        const data = {};
+    const formattedVisitData = formatVisitData(
+        res.result.data.employeeAttendance
+    );
 
+    const selectedVisits = formattedVisitData.map((visit) => {
+        const data = {};
         for (const field of fields) {
-            data[field] = user[field];
+            if (field === "phone_number") {
+                data[field] = `0${visit.msisdn.slice(3)}`;
+            } else if (field === "items") {
+                // if items array is empty, pass an empty string
+                if (Array.isArray(visit[field]))
+                    data[field] = visit[field].join(", ");
+                else data[field] = visit[field];
+            } else {
+                data[field] = visit[field];
+            }
         }
 
         return data;
     });
 
-    csvExport(selectedUsers);
+    csvExport(selectedVisits);
 };
 
 const filterDates = ref({
@@ -108,36 +131,39 @@ const filterDates = ref({
     to: "",
 });
 
-const displayFilterModal = () => {
+function displayFilterModal() {
     showModal("#filterModal", "#modal-dialog");
-};
+}
+
+// section loader flag
+const $sectionIsLoading =
+    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
 
 const displayExportModay = () => {
     showModal("#exportModal", "#modal-dialog");
 };
 
-// update date ranges, then it will be caught by watchers in visitors table
-const filterCompleted = (newDates) => {
+// update date ranges, then it will be caught by watchers in employees table
+function filterCompleted(newDates) {
     filterDates.value = newDates;
-};
+}
 
 onMounted(() => {
     hideSidebarOnSmallScreen();
+
+    // ensure loader is not visible
+    $sectionIsLoading.value = false;
 });
 </script>
 
 <style scoped>
+#visit-view {
+    gap: 1.5rem;
+}
+
 svg {
     height: 20px !important;
     margin: 0 !important;
-}
-
-#new-visitor:hover {
-    color: white !important;
-}
-
-#visitor-view {
-    gap: 1.5rem;
 }
 
 .btn {
@@ -153,6 +179,25 @@ svg {
 .list-options svg {
     height: 20px !important;
     margin: 0 !important;
+}
+.m-3 {
+    display: flex;
+    height: 300px;
+    align-items: center;
+    flex-direction: column;
+    /* background-color: aquamarine; */
+    padding: 0.5rem;
+    justify-content: space-between;
+}
+
+.m-3 button {
+    width: 250px;
+    padding: 0.5rem;
+}
+
+#offcanvasExample {
+    position: fixed;
+    z-index: 999999;
 }
 
 li {

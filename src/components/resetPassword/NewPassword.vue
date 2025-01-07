@@ -130,8 +130,8 @@ import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import { formValidation, passwordValidation } from "@/util/util";
-import { editUser } from "@/assets/js";
 import store from "@/store";
+import { API_URL, STANDARD_API_KEY } from "@/assets/js";
 const router = useRouter();
 
 const isWarning = ref(false);
@@ -186,9 +186,7 @@ const onSubmit = async () => {
     loading.value = true;
 
     // Make an API call to reset user password.
-    const { ok, result } = await editUser(user_id, {
-        password: newPassword.value,
-    });
+    const { ok, result } = await resetUserPassword(user_id, newPassword.value);
 
     loading.value = false;
 
@@ -213,6 +211,34 @@ const signIn = () => {
 onMounted(async () => {
     formValidation();
 });
+
+const resetUserPassword = async (id, password) => {
+    try {
+        const options = {
+            method: "PUT",
+            headers: {
+                authorization: STANDARD_API_KEY,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id, password }),
+        };
+
+        const response = await fetch(
+            `${API_URL}reset-password/change`,
+            options
+        );
+
+        const result = await response.json();
+
+        return { ok: response.ok, result };
+    } catch (error) {
+        console.error("Error:", error);
+        return {
+            ok: false,
+            result: { message: "Unable to change password, try again" },
+        };
+    }
+};
 
 /**
  * Displays a warning message with the specified content, class name, and background color.

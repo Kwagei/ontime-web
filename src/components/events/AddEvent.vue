@@ -635,7 +635,7 @@ onMounted(async () => {
     hostsData.value = hosts;
     hostsTerm.value = hosts;
 
-    const { rooms } = await getRooms(null, "class");
+    const { rooms } = await getRooms(null, "workspace");
     roomsData.value = rooms;
     roomTem.value = rooms;
 
@@ -717,7 +717,7 @@ a:hover {
 }
 
 .daySelected {
-    background-color: #555;
+    background-color: #666;
     color: #eee;
     font-weight: 1000;
 }

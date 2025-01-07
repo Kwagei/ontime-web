@@ -26,7 +26,7 @@
             <DataTable
                 v-show="!showError"
                 :key="tableKey"
-                id="visitsTable"
+                id="attendanceTable"
                 class="display w-100 table"
                 :columns="columns"
                 :options="options"
@@ -34,14 +34,19 @@
             />
 
             <h3 class="mt-5 text-center fw-bold" v-if="showError">
-                Unable to load visits, try again!
+                Unable to load attendance, try again!
             </h3>
         </div>
     </div>
 </template>
 
 <script setup>
-import { API_KEY, API_URL, updateDepartureTime } from "@/assets/js/index.js";
+import {
+    API_KEY,
+    API_URL,
+    updateDepartureTime,
+    updateEmployeeDepartureTime,
+} from "@/assets/js/index.js";
 import { formatDateTime, formatVisitData, showModal } from "@/util/util.js";
 import AlertModal from "../modals/AlertModal.vue";
 
@@ -76,23 +81,12 @@ const columns = [
     {
         data: null,
         render: (data) =>
-            `<a href="/visitors/${data.visitor_id}">${data.visitor}</a>`,
-        title: "Visitor",
+            `<a href="/employees/${data.employee_id}">${data.employee_name}</a>`,
+        title: "Employee",
         orderable: false,
     },
     { data: "departure_time", title: "Departure Time" },
-    {
-        data: null,
-        title: "Purpose",
-        render: (data) => {
-            if (data.event_id)
-                return `<a href="/events/${data.event_id}">${data.purpose}</a>`;
-            else if (data.employee_id)
-                return `<a href="/employees/${data.employee_id}">${data.purpose}</a>`;
-            return data.purpose;
-        },
-    },
-    { data: "items", title: "Items" },
+    { data: "room_name", title: "Room" },
     {
         data: null,
         title: "Status",
@@ -121,7 +115,7 @@ const options = {
     responsive: true,
     serverSide: true,
     ajax: {
-        url: `${API_URL}visits`,
+        url: `${API_URL}employee_attendance`,
         type: "GET",
         beforeSend: function (xhr) {
             xhr.setRequestHeader("authorization", API_KEY.value);
@@ -137,7 +131,7 @@ const options = {
                 limit: query.length,
                 search: query.search.value,
                 sort: order,
-                // get today's visits if we're not filtering visits in a date range
+                // get today's attendance if we're not filtering attendance in a date range
                 today:
                     filterDates.value.from || filterDates.value.to ? null : "1",
                 from: filterDates.value.from || "",
@@ -149,13 +143,13 @@ const options = {
             showError.value = false;
             refresh.value = false;
 
-            const { visits, totalLength } = json.data;
+            const { employeeAttendance, totalLength } = json.data;
 
             json.recordsTotal = totalLength;
             json.recordsFiltered = totalLength;
             totalVisits.value = totalLength;
 
-            return formatVisitData(visits);
+            return formatVisitData(employeeAttendance);
         },
         error: (error) => {
             console.log("Error fetching data:", error);
@@ -169,9 +163,12 @@ const options = {
         search: "",
         emptyTable: `
 				<div class="d-flex flex-column justify-content-center align-items-center gap-3 p-4">
-					No Visits Today!
+					No Employee Attendance Today!
 					<svg style="width: 5rem; height: 5rem;" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#000000" fill-rule="evenodd" d="M82.5 37.5V35l-15-15H60v-3.75A1.25 1.25 0 0058.75 15h-2.5A1.25 1.25 0 0055 16.25V20H40v-3.75A1.25 1.25 0 0038.75 15h-2.5A1.25 1.25 0 0035 16.25V20h-7.5l-15 15v2.5h5V85H15v2.5h65V85h-2.5V37.5zM35 77.5H25V70a5 5 0 015-5 5 5 0 015 5zm0-25H25V45a5 5 0 015-5 5 5 0 015 5zM52.5 85h-10V70a5 5 0 015-5 5 5 0 015 5zm0-32.5h-10V45a5 5 0 015-5 5 5 0 015 5zm17.5 25H60V70a5 5 0 015-5 5 5 0 015 5zm0-25H60V45a5 5 0 015-5 5 5 0 015 5z"/></svg>
-					<button class="btn btn-secondary" onclick="document.getElementById('addVisitBtn').click()">
+					<button class="btn btn-secondary"
+                        data-bs-toggle="offcanvas"
+						data-bs-target="#offcanvasExample"
+						aria-controls="offcanvasExample">
 					   <svg style="width: 1rem; height: 2rem;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" fill-rule="evenodd" d="M85 40H60V15a5 5 0 00-5-5H45a5 5 0 00-5 5v25H15a5 5 0 00-5 5v10a5 5 0 005 5h25v25a5 5 0 005 5h10a5 5 0 005-5V60h25a5 5 0 005-5V45a5 5 0 00-5-5"/></svg>
 						New
 					</button>
@@ -186,12 +183,12 @@ const options = {
 				</div>
 			`,
         loadingRecords: `
-				<div class="d-flex justify-content-center p-4">
-					<div class="spinner-border" role="status">
-						<span class="visually-hidden">Loading...</span>
-					</div>
+			<div class="d-flex justify-content-center p-4">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Loading...</span>
 				</div>
-			`,
+			</div>
+		`,
     },
     order: [[0, "desc"]],
     createdRow: (row, data) => {
@@ -218,10 +215,10 @@ const filterInfo = computed(() => {
 });
 
 // function to update departure time
-const handleCheckout = async (visit) => {
-    // indicate visitor already checked out
-    if (visit.departure_time) {
-        alert.value.message = "Visitor Already Checked Out";
+const handleCheckout = async (data) => {
+    // indicate employee already checked out
+    if (data.departure_time) {
+        alert.value.message = "Employee Already Checked Out";
         alert.value.status = "warning";
 
         showModal();
@@ -229,19 +226,19 @@ const handleCheckout = async (visit) => {
     }
 
     $sectionIsLoading.value = true;
-    const updatedDepartureTime = await updateDepartureTime(visit.id);
+    const updatedDepartureTime = await updateEmployeeDepartureTime(data.id);
     $sectionIsLoading.value = false;
 
     if (updatedDepartureTime.ok) {
-        alert.value.message = "Visitor Checked Out";
+        alert.value.message = "Employee Checked Out";
         alert.value.status = "success";
 
         showModal();
 
-        // refresh visits table
+        // refresh attendance table
         tableKey.value += 1;
     } else {
-        alert.value.message = "Unable to check visitor out, try again";
+        alert.value.message = "Unable to check employee out, try again";
         alert.value.status = "danger";
         showModal();
     }

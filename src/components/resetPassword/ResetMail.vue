@@ -7,11 +7,13 @@
             >
                 <div id="mobileFormWrapper" class="card-body p-5">
                     <div class="d-flex justify-content-center mb-4">
-                        <img
-                            src="@/assets/images/ontime_logo.jpg"
-                            style="width: 9rem"
-                            alt=""
-                        />
+                        <router-link to="/">
+                            <img
+                                src="@/assets/images/ontime_logo.jpg"
+                                style="width: 9rem"
+                                alt=""
+                            />
+                        </router-link>
                     </div>
 
                     <!-- RESET PASSWORD FORM -->
@@ -124,18 +126,28 @@ const onSubmit = async () => {
     if (loading.value) return;
 
     // Check if email is not empty.
-    if (!email) {
+    if (!email.value) {
         return;
     }
 
     loading.value = true;
 
     // Make an API call to reset user password.
-    const { ok, result } = await resetPassword({
+    const res = await resetPassword({
         email: email.value,
     });
 
     loading.value = false;
+
+    let ok, result;
+
+    if (!res) {
+        ok = false;
+        result = { message: "Unable to reset password, try again" };
+    } else {
+        ok = res.ok;
+        result = res.result;
+    }
 
     isWarning.value = true;
 

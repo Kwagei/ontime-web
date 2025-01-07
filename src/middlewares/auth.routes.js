@@ -3,7 +3,6 @@ import store from "@/store";
 import { getCookie, isAuthenticated } from "./auth.cookie";
 import { API_KEY } from "@/assets/js";
 import { jwtDecode } from "jwt-decode";
-import { decrypt } from "@/util/util.js";
 
 router.beforeEach((to, from, next) => {
     if (
@@ -26,25 +25,24 @@ router.beforeEach((to, from, next) => {
 
     // if user is logged in and they're trying to access a route that requires
     // them to be logged, redirect them to the Landing Page
-    else if (
-        to.matched.some((record) => record.meta.logOutRequired) &&
-        isAuthenticated()
-    ) {
-        // if (to.path === "/reset-password/code") {
-        // 	if (!store.state.hasVisitedResetPassword) {
-        // 		return next("/reset-password");
-        // 	}
-        // 	return next();
-        // }
+    else if (to.matched.some((record) => record.meta.logOutRequired)) {
+        if (isAuthenticated()) return next("/");
 
-        // if (to.path === "/reset-password/new-password") {
-        // 	if (!store.state.hasVisitedResetPassword) {
-        // 		return next("/reset-password/code");
-        // 	}
-        // 	return next();
-        // }
+        if (to.path === "/reset-password/code") {
+            if (!store.state.hasVisitedResetPassword) {
+                return next("/reset-password");
+            }
+            return next();
+        }
 
-        return next("/");
+        if (to.path === "/reset-password/new-password") {
+            if (!store.state.hasVisitedResetPassword) {
+                return next("/reset-password/code");
+            }
+            return next();
+        }
+
+        next();
     } else next();
 });
 

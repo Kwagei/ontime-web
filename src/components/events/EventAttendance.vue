@@ -148,7 +148,6 @@ const alert = ref({
 const tableKey = ref(0);
 const plusIcon = ref("add");
 const reloadIcon = ref("reload");
-const filterIcon = ref("filter");
 
 const dateError = ref("");
 const selectedDate = ref("");
@@ -170,11 +169,9 @@ const exportFields = ref([
     { name: "Items", selected: false },
 ]);
 
-const $sectionIsLoading =
-    getCurrentInstance().appContext.config.globalProperties.$sectionIsLoading;
-
 const exportTitle = defineModel("exportTitle");
 exportTitle.value = "Event Attendance";
+const attendanceToExport = ref([]);
 
 const columns = [
     { data: "first_name", title: "First Name", orderable: false },
@@ -263,6 +260,7 @@ const options = {
             json.recordsFiltered = res.totalLength;
 
             attendanceList.value = attendees;
+            attendanceToExport.value = attendees;
             return attendees;
         },
         error: (error) => {
@@ -328,65 +326,32 @@ const displayExportModay = () => {
 };
 
 const exportEventsAttendance = async (fields) => {
-    $sectionIsLoading.value = true;
-    const completeAttendance = await fetchCompleteAttendance();
-    $sectionIsLoading.value = false;
+    const selectedAttendee = attendanceToExport.value.map((attendee) => {
+        const data = {};
 
-    if (completeAttendance.status != 200) return;
-
-    const selectedAttendee = completeAttendance.data.participants.map(
-        (attendee) => {
-            const data = {};
-
-            for (const field of fields) {
-                if (field === "phone_number") {
-                    data[field] = attendee.msisdn.startsWith("231")
-                        ? `0${attendee.msisdn.slice(3)}`
-                        : attendee.msisdn;
-                } else if (field === "time_in") {
-                    data[field] = attendee.visit_date_time;
-                } else if (field === "time_out") {
-                    data[field] = attendee.visit_departure_time;
-                } else if (field === "items") {
-                    data[field] = attendee.items.join(", ");
+        for (const field of fields) {
+            if (field === "phone_number") {
+                data[field] = attendee.msisdn.startsWith("0")
+                    ? `231${attendee.msisdn.slice(3)}`
+                    : attendee.msisdn;
+            } else if (field === "time_in") {
+                data[field] = attendee.visit_date_time;
+            } else if (field === "time_out") {
+                data[field] = attendee.visit_departure_time;
+            } else {
+                if (!attendee[field]) {
+                    data[field] = "";
                 } else {
                     data[field] = attendee[field];
                 }
             }
-
-            console.log("final export data: ", data);
-
-            return data;
         }
-    );
+
+        return data;
+    });
 
     csvExport(selectedAttendee);
 };
-
-async function fetchCompleteAttendance() {
-    let res;
-
-    await $.ajax(
-        `${API_URL}events/${eventId.value}/attendance?date=${selectedDate.value}&start=0&limit=all`,
-        {
-            method: "GET",
-            headers: {
-                authorization: API_KEY.value,
-            },
-            success: (data) => (res = data),
-            error: (error) => {
-                console.error("Unable to load complete attendance: ", error);
-                alert.value.message = "Unable to load complete attendance";
-                alert.value.status = "danger";
-
-                res = error;
-            },
-        }
-    );
-
-    console.log("final res: ", res);
-    return res;
-}
 
 function reloadTable() {
     showError.value = false;

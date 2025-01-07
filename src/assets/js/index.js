@@ -791,31 +791,36 @@ export const editHost = async (id, data) => {
 };
 
 // Room functions
-export const getRooms = async (id, type) => {
-    try {
-        let url = `${API_URL}rooms`;
+export const getRooms = async (
+    id,
+    type,
+    options = {
+        start: 0,
+        limit: 10,
+    }
+) => {
+    let url = `${API_URL}rooms?start=${options.start}&limit=${options.limit}`;
 
-        if (id) {
-            url += `/${id}`;
-        }
+    if (id) {
+        url += `/${id}`;
+    }
 
-        if (type) url += `?type=${type}`;
+    if (type) url += `&type=${type}`;
 
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                authorization: API_KEY.value,
-                "Content-Type": "application/json",
-            },
-        });
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            authorization: API_KEY.value,
+            "Content-Type": "application/json",
+        },
+    });
 
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-        const { data: rooms } = await response.json();
+    if (!response.ok) {
+        return;
+    }
+    const res = await response.json();
 
-        return rooms;
-    } catch (error) {}
+    return res.data;
 };
 
 export const registerRoom = async (data) => {

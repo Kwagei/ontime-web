@@ -635,7 +635,7 @@ onMounted(async () => {
     hostsData.value = hosts;
     hostsTerm.value = hosts;
 
-    const { rooms } = await getRooms(null, "class");
+    const { rooms } = await getRooms(null, "workspace");
     roomsData.value = rooms;
     roomTem.value = rooms;
 

@@ -1,4 +1,6 @@
 <template>
+    <AlertModal :data="alert" />
+
     <div id="visitor-view" class="d-flex flex-column container">
         <div
             id="breadCrumbsOptionsTopWrapper"
@@ -72,6 +74,7 @@ import { csvExport, getRooms } from "../assets/js/index.js";
 import { hideSidebarOnSmallScreen, showModal } from "@/util/util";
 import FilterModal from "@/components/modals/FilterModal.vue";
 import ExportModal from "@/components/modals/ExportModal.vue";
+import AlertModal from "@/components/modals/AlertModal.vue";
 
 const totalRooms = defineModel("totalRooms");
 const breadCrumbs = defineModel("breadCrumbs");
@@ -86,25 +89,32 @@ const exportFields = ref([
 const exportTitle = defineModel("exportTitle");
 exportTitle.value = "Rooms";
 
+const alert = ref({
+    message: "",
+    status: "",
+    pageLink: "",
+});
+
 breadCrumbs.value = ["rooms"];
 
 const exportRooms = async (fields) => {
-    const { rooms } = await getRooms({
-        limit: totalRooms.value,
+    const rooms = await getRooms(null, null, {
+        limit: "all",
     });
+
+    if (!rooms) {
+        alert.value.message = "Unable to load rooms";
+        alert.value.status = "danger";
+
+        showModal();
+        return;
+    }
 
     const selectedRooms = rooms.map((room) => {
         const data = {};
+
         for (const field of fields) {
-            if (field === "phone_number") {
-                const [phone_number] = room.msisdn;
-                data[field] = `0${phone_number.slice(3)}`;
-            } else if (field === "roles") {
-                const [room_role] = room[field];
-                data[field] = room_role;
-            } else {
-                data[field] = room[field];
-            }
+            data[field] = room[field];
         }
 
         return data;

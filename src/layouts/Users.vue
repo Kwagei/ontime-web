@@ -79,9 +79,8 @@ const refresh = defineModel("refresh");
 const exportFields = ref([
     { name: "Username", selected: false },
     { name: "Email", selected: false },
-    { name: "Phone number", selected: false },
-    { name: "Address", selected: false },
-    { name: "Roles", selected: false },
+    { name: "Role", selected: false },
+    { name: "Created At", selected: false },
 ]);
 const exportTitle = defineModel("exportTitle");
 exportTitle.value = "Users";
@@ -93,16 +92,9 @@ const exportUsers = async (fields) => {
 
     const selectedUsers = users.map((user) => {
         const data = {};
+
         for (const field of fields) {
-            if (field === "phone_number") {
-                const [phone_number] = user.msisdn;
-                data[field] = `0${phone_number.slice(3)}`;
-            } else if (field === "roles") {
-                const [user_role] = user[field];
-                data[field] = user_role;
-            } else {
-                data[field] = user[field];
-            }
+            data[field] = user[field];
         }
 
         return data;

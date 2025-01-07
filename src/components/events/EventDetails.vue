@@ -184,11 +184,16 @@ const exportEventParticipants = async (fields) => {
     const { participants } = await getParticipants(props.event.id, {
         limit: "all",
     });
-    console.log("Participants: ", participants);
 
     const selectedParticipants = participants.map((participant) => {
         const data = {};
+
         for (const field of fields) {
+            if (!participant[field]) {
+                data[field] = "";
+                return data;
+            }
+
             if (field === "phone_number") {
                 data[field] = `0${participant.msisdn.slice(3)}`;
             } else {

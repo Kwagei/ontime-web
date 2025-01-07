@@ -44,7 +44,6 @@ import AlertModal from "../modals/AlertModal.vue";
 
 const router = useRouter();
 const eventId = router.currentRoute.value.params.id;
-const totalEventParticipants = defineModel("totalEventParticipants");
 const showError = ref(false);
 const emit = defineEmits(["switch"]);
 

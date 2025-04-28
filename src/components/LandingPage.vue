@@ -67,11 +67,11 @@
                 <div id="sectionOverlay"></div>
                 <div id="sectionWrapper" class="mx-auto">
                     <p class="sectionText fw-bold">
-                        <span class="orange">On</span>Time is a check-in and
-                        events attendance system designed to streamline the
+                        <span class="orange">On</span>Time is a visitors and
+                        events management system designed to streamline the
                         process of recording visitor information, managing
-                        attendance for events, data visualization and management
-                        at the Orange Digital Center (ODC).
+                        events attendance, scheduling events, employees
+                        attendance, data visualization &amp; management, etc.
                     </p>
                     <router-link :to="{ name: 'dashboard' }">
                         <button type="button" class="btn btn-primary">
@@ -90,16 +90,12 @@
                     <p>
                         OnTime is a comprehensive platform designed to
                         streamline organizational management, offering robust
-                        solutions for attendance tracking, visitor check-ins,
-                        and event scheduling. Tailored to enhance productivity
-                        and improve team dynamics, OnTime simplifies daily
-                        operations with a user-friendly interface, ensuring
-                        smooth processes from workforce management to visitor
-                        handling. At places like the Orange Digital Center
-                        (ODC), where visitors must undergo detailed check-in and
-                        check-out procedures to ensure security and prevent
-                        theft, OnTime can automate and optimize these processes
-                        for greater efficiency.
+                        solutions for tracking events attendance, visitor
+                        check-ins, employees check-in and event scheduling.
+                        Tailored to enhance productivity and improve team
+                        dynamics, OnTime simplifies daily operations with a
+                        user-friendly interface, ensuring smooth processes from
+                        workforce management to visitor handling.
                     </p>
                 </div>
             </section>
@@ -109,24 +105,38 @@
                 <div class="container mx-auto fs-4">
                     <h2 class="section-title">The Problem</h2>
                     <p>
-                        Each day, visitors at the Orange Digital Center (ODC)
-                        must undergo a lengthy procedure before entering and
-                        leaving the premises. The procedure involves the
-                        collection of personal information (name, phone number,
-                        address, etc), the purpose of their visit, and a
-                        detailed account of the items in the visitor's
-                        possession (backpack, laptop, etc.) - this is done as a
-                        measure to mitigate the risk of theft. When checking
-                        out, the items in the visitor's possession are verified
-                        to ensure they match the items declared upon check-in.
-                        OnTime provides a holistic solution for managing the
-                        entry and exit of visitors to the ODC. It is designed to
-                        streamline the registration, check-in, and check-out
-                        processes for visitors, capturing relevant information
-                        such as their name, host, reason for visit, arrival
-                        time, and departure time. Additionally, it will offer
-                        administrators a web-based interface for viewing visitor
-                        records and generating reports for analysis purposes.
+                        At most entities, using our partner Orange Digital
+                        Center (ODC) as a case study, visitors, employees, event
+                        attendees or guests must undergo a lengthy procedure
+                        before entering and leaving the premises. The procedure
+                        involves the collection of personal information (name,
+                        phone number, address, arrival time, departure time,
+                        etc), the purpose of their visit, and a detailed account
+                        of the items in the visitor's possession (backpack,
+                        laptop, etc). This is done as a measure to mitigate the
+                        risk of theft. When checking out, the items in the
+                        visitor's possession are verified to ensure they match
+                        the items declared upon check-in. OnTime provides a
+                        holistic solution for managing the entry and exit of
+                        visitors, employees, event attendees and guests to the
+                        ODC. <span class="orange">On</span>Time simplifies the
+                        registration, check-in, and check-out processes for
+                        visitors, capturing relevant information such as their
+                        name, host, reason for visit, arrival time, and
+                        departure time. The bio-data of the visitors are stored
+                        in the system effectively effectively factoring out the
+                        repetitive step of entering bio-data on each visit.
+                        Employees are assigned check-in code to avoid repeatedly
+                        entering their bio-data and arrival time, which the
+                        system automatically inputs.
+                        <span class="orange">On</span>Time also eases event
+                        attendees / participants check-in by providing a feature
+                        to import participants prior to the event. In this way,
+                        when the participant arrives, the events managers just
+                        need to confirm whether their name is on the list.
+                        Additionally, it will offer administrators a web-based
+                        interface for viewing visitor records and generating
+                        reports for analysis purposes.
                     </p>
                 </div>
             </section>
@@ -139,40 +149,44 @@
                         <!-- Dashboard -->
                         <div class="col-md-5 features">
                             <img
-                                src="../assets/images/dashboard.png"
+                                src="../assets/images/features/dashboard.png"
                                 alt="Visitor Check-ins"
                                 class="img-fluid"
                             />
                             <h3>Dashboard</h3>
                             <p class="fs-5">
                                 Track the total number of visits, visitors, and
-                                events happening at the ODC. Insights on the
-                                number of male and female students visiting for
-                                a week or the last 3 months.
+                                events. Insights on the number of male and
+                                female visitors for a week or the last 3 months.
                             </p>
                         </div>
+
                         <!-- Check In -->
                         <div class="col-md-5 features">
                             <img
-                                src="../assets/images/check-in.png"
-                                alt="Attendance Management"
+                                src="../assets/images/features/visitor-check-in.png"
+                                alt="Visitor Check In"
                                 class="img-fluid"
                             />
-                            <h3>Check-In</h3>
+                            <h3>Visitor Check-In</h3>
                             <p class="fs-5">
-                                Check-in, and check-out processes for visitors,
-                                capturing information such as their name, host,
-                                reason for visit, arrival time, and departure
-                                time. Additionally, it will offer administrators
-                                an interface for viewing visitor records, and
-                                generating reports for analysis purposes.
+                                Check-in, and check-out processes for visitors
+                                after their their first visit when their
+                                bio-data are captured, will be as easy as
+                                searching for their name or contact then,
+                                entering their reason for visit and items if
+                                necessary. Additionally, it will offer
+                                administrators an interface for viewing visitor
+                                records, and generating reports for analysis
+                                purposes.
                             </p>
                         </div>
+
                         <!-- Event - Check In -->
                         <div class="col-md-5 features">
                             <img
-                                src="../assets/images/events.png"
-                                alt="Event Scheduling"
+                                src="../assets/images/features/events.png"
+                                alt="Event Check In"
                                 class="img-fluid"
                             />
                             <h3>Event Check-In</h3>
@@ -183,48 +197,85 @@
                                 synchronizes with the event's attendance.
                             </p>
                         </div>
-                        <!-- Attendance -->
+
+                        <!-- Event Attendance -->
                         <div class="col-md-5 features">
                             <img
-                                src="../assets/images/attendance.png"
-                                alt="Event Scheduling"
+                                src="../assets/images/features/attendance.png"
+                                alt="Event Attendance"
                                 class="img-fluid"
                             />
-                            <h3>Attendance</h3>
+                            <h3>Event Attendance</h3>
                             <p class="fs-5">
-                                Capturing attendance for an event has been done
-                                manually on paper so far at the ODC.
+                                At most entities, capturing attendance for an
+                                event has been done manually on paper so far.
                                 <span class="orange">On</span>Time automates
                                 this process by recording attendance for each
                                 participant after being checked in.
                             </p>
                         </div>
-                        <!-- Data Import -->
+
+                        <!-- Employee Check In -->
                         <div class="col-md-5 features">
                             <img
-                                src="../assets/images/import.png"
-                                alt="Event Scheduling"
+                                src="../assets/images/features/employee-check-in.png"
+                                alt="Employee Check In"
+                                class="img-fluid"
+                            />
+                            <h3>Employee Check In</h3>
+                            <p class="fs-5">
+                                With <span class="orange">On</span>Time, on each
+                                day of work, an employee can simply enter their
+                                personal check in code, not having to bother
+                                with the stress of repetitively writing name,
+                                contact, arrival time, etc daily.
+                            </p>
+                        </div>
+
+                        <!-- Visit / Check In Purpose -->
+                        <div class="col-md-5 features">
+                            <img
+                                src="../assets/images/features/visit-purposes.png"
+                                alt="Visit Purposes"
+                                class="img-fluid"
+                            />
+                            <h3>Visit / Check In Purposes</h3>
+                            <p class="fs-5">
+                                <span class="orange">On</span>Time handles
+                                visitors with different purposes while keeping
+                                record of each person entering or leaving the
+                                facility.
+                            </p>
+                        </div>
+
+                        <!-- Participants Data Import -->
+                        <div class="col-md-5 features">
+                            <img
+                                src="../assets/images/features/import.png"
+                                alt="Event Participants Import"
                                 class="img-fluid"
                             />
                             <h3>Data Import</h3>
                             <p class="fs-5">
                                 OnTime supports the importation of data using
                                 CSV files, which simplifies the process of
-                                handling large amounts of information, for
-                                example importing participants for an event
+                                handling large amounts of information. For
+                                example, importing participants for an event
                                 through a CSV file downloaded from a google
                                 form. This feature allows users to quickly
                                 upload data in bulk, significantly eradicating
                                 the manual process of typing in participants
                                 information individually which is liable to
-                                mistakes and oversights.
+                                delay in check-in process, mistakes and
+                                oversights.
                             </p>
                         </div>
+
                         <!-- Data Export -->
                         <div class="col-md-5 features">
                             <img
-                                src="../assets/images/export.png"
-                                alt="Event Scheduling"
+                                src="../assets/images/features/export.png"
+                                alt="Data Export"
                                 class="img-fluid"
                             />
                             <h3>Data Export</h3>
@@ -232,7 +283,8 @@
                                 OnTime supports the exportation of data such as,
                                 attendance, visits, visitors, participants into
                                 CSV files, simplifying the sharing of
-                                information with just few clicks.
+                                information and generating reports with just few
+                                clicks.
                             </p>
                         </div>
                     </div>
@@ -247,8 +299,8 @@
                         <div class="team-member">
                             <div class="team-img">
                                 <img
-                                    src="../assets/images/peace.jpg"
-                                    alt="Team Member"
+                                    src="../assets/images/people/peace.jpg"
+                                    alt="Emmanuel Peace Browne"
                                     class="team-photo"
                                 />
                             </div>
@@ -262,8 +314,8 @@
                         <div class="team-member">
                             <div class="team-img">
                                 <img
-                                    src="../assets/images/dave.jpg"
-                                    alt="Team Member"
+                                    src="../assets/images/people/dave.jpg"
+                                    alt="Dave Wonnah"
                                     class="team-photo"
                                 />
                             </div>
@@ -277,8 +329,8 @@
                         <div class="team-member">
                             <div class="team-img">
                                 <img
-                                    src="../assets/images/jeedo.jpg"
-                                    alt="Team Member"
+                                    src="../assets/images/people/jeedo.jpg"
+                                    alt="Jee-do Gbozee Arkoi"
                                     class="team-photo"
                                 />
                             </div>
@@ -299,7 +351,8 @@
                 <div class="container-xxl footer-terms">
                     <ul class="navbar-nav gap-md-3 py-2">
                         <li class="nav-link fw-bold">
-                            © <span class="orange">On</span>Time 2024
+                            © <span class="orange">On</span>Time
+                            {{ new Date().getFullYear() }}
                         </li>
                     </ul>
                 </div>
@@ -384,7 +437,7 @@ body {
 }
 
 .sectionText {
-    max-width: 59rem;
+    max-width: 62rem;
     font-size: 2.5em;
 }
 

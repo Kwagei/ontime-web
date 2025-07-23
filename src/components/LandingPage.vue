@@ -47,6 +47,9 @@
                             <a class="nav-link" href="#features"> Features </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="#test"> Test App </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#team"> Our Team </a>
                         </li>
                         <li @click="signOut" v-if="loggedIn" class="nav-item">

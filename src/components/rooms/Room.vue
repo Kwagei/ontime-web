@@ -133,15 +133,22 @@
                 </div>
             </form>
         </div>
+
+        <div>
+            <TrackChanges :changes="changes" />
+        </div>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+
 import BreadCrumbs from "../BreadCrumbs.vue";
 import Modal from "../modals/AlertModal.vue";
 import ConfirmationModal from "../modals/ConfirmationModal.vue";
+import TrackChanges from "../TrackChanges.vue";
+
 import { registerRoom, editRoom, API_URL, API_KEY } from "@/assets/js/index.js";
 import {
     formValidation,
@@ -166,6 +173,7 @@ const alert = ref({
 
 const buttonLabel = ref("Save");
 let roomInfo = {};
+const changes = ref([]);
 const confirmationMessage = ref("");
 
 const loading = ref(false);
@@ -235,6 +243,7 @@ const fetchRoom = async () => {
         type.value =
             roomInfo.type.charAt(0).toUpperCase() + roomInfo.type.slice(1);
         code.value = roomInfo.code;
+        changes.value = roomInfo.changes;
     }
 };
 

@@ -291,6 +291,31 @@
                 </div>
             </section>
 
+            <!-- Test Credentials -->
+            <section id="test" class="team-section p-3 fw-bold pb-5">
+                <div
+                    id="testWrapper"
+                    class="container d-flex justify-content-between gap-3"
+                >
+                    <div
+                        class="d-flex justify-content-start flex-column border-3 align-self-center"
+                    >
+                        <h2 class="section-title">Test Credentials</h2>
+                        <p>
+                            Test the application to better understand how it
+                            fits your needs.
+                        </p>
+                    </div>
+                    <div class="credentials-photo-wrapper">
+                        <img
+                            src="../assets/images/credentials.png"
+                            alt="Test Credentials Photo"
+                            class="credentials-photo"
+                        />
+                    </div>
+                </div>
+            </section>
+
             <!-- Our Team Section -->
             <section id="team" class="team-section p-3 fw-bold bg-light">
                 <div id="teamWrapper" class="container">
@@ -445,11 +470,19 @@ body {
     .sectionText {
         font-size: 2em;
     }
+
+    .credentials-photo {
+        max-width: 80% !important;
+    }
 }
 
 @media (max-width: 449px) {
     .sectionText {
         font-size: 1.5em;
+    }
+
+    .credentials-photo {
+        max-width: 100% !important;
     }
 }
 
@@ -496,6 +529,10 @@ body {
     #sectionWrapper {
         padding-left: 1.5rem !important;
         padding-right: 1.5rem !important;
+    }
+
+    #testWrapper {
+        flex-direction: column;
     }
 }
 
@@ -595,6 +632,11 @@ body {
     overflow: auto;
     object-fit: cover;
     margin-bottom: 10px;
+}
+
+.credentials-photo {
+    max-width: 600px;
+    border-radius: 15px;
 }
 
 .orange {

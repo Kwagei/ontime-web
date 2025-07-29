@@ -568,7 +568,7 @@ async function checkInVisitor() {
 const fetchVisitor = async () => {
     if (formStatus.startsWith("edit")) {
         const id = breadCrumbs.value[1];
-        visitorInfo = await getSingleVisitor({ id });
+        [visitorInfo] = await getSingleVisitor({ id });
 
         // update references for input fields
         first_name.value = visitorInfo.first_name;

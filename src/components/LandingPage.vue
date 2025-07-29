@@ -78,7 +78,7 @@
                     </p>
                     <router-link :to="{ name: 'dashboard' }">
                         <button type="button" class="btn btn-primary">
-                            Dashboard
+                            Get Started
                         </button>
                     </router-link>
                 </div>
@@ -377,12 +377,28 @@
             <footer class="footer navbar" data-bs-theme="dark">
                 <h2 class="visually-hidden">Sitemap & information</h2>
                 <div class="container-xxl footer-terms">
-                    <ul class="navbar-nav gap-md-3 py-2">
-                        <li class="nav-link fw-bold">
+                    <div
+                        id="footer-wrapper"
+                        class="d-flex gap-2 justify-content-between py-2"
+                    >
+                        <div class="nav-link fw-bold">
                             © <span class="orange">On</span>Time
                             {{ new Date().getFullYear() }}
-                        </li>
-                    </ul>
+                        </div>
+                        <div class="nav-link fw-bold">
+                            <span class="min-width: 300px">
+                                In Partnership with
+                                <a
+                                    class="text-primary fw-bold"
+                                    style="text-decoration: none"
+                                    target="_blank"
+                                    href="https://kwagei.com"
+                                >
+                                    Kwagei Group of Companies
+                                </a>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </footer>
         </div>
@@ -410,7 +426,6 @@ $("#navBarToggler").on("click", () => {
 });
 
 function signOut() {
-    console.log("-------- LOGGING OUT ---------");
     removeCookie("token");
     router.go(0);
 }
